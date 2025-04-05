@@ -1,0 +1,40 @@
+<?php
+
+$language_array = array(
+
+    'admin'                 => 'Amministrazione',
+    'buddy_list'            => 'Elenco amici',
+    'cash-box'              => 'Registratore di cassa',
+    'edit_account'          => 'Modifica Account',
+    'galleries'             => 'Gallerie',
+    'login_titel'           => 'Accedi',
+    'login'                 => 'Accedi',
+    'logout'                => 'Esci',
+    'lost_password'         => 'Hai dimenticato la password?',
+    'messenger'             => 'Messaggi',
+    'n_a'                   => 'n/a',
+    'overview'              => 'Panoramica',
+    'register'              => 'Registrazione',
+    'register_now'          => 'Registrati ora',
+    'registered_users'      => 'Utenti registrati',
+    'welcome_back'          => 'Benvenuto',
+    'no_new_messages'       => 'Nessun nuovo messaggio.',
+    'one_new_message'       => '<span style="color: #D7171A">Hai un nuovo messaggio.</span>',
+    'x_new_message'         => '<span style="color: #D7171A">Hai %new_messages% nuovi messaggi.</span>',
+    'cookie_title'          => 'Accetta i cookie',
+    'cookie_text'           => 'Per poter utilizzare tutte le funzionalità della home page, è necessario accettare i cookie!',
+    'info1'                 => 'Bentornato!',
+    'info2'                 => 'Non vediamo l\'ora di rivederti! Ottieni l\'accesso a notizie, informazioni, consigli, download e molto altro,',
+    'info3'                 => 'Spiacenti!',
+    'info4'                 => 'Per accedere al sito devi accettare i cookie!',
+    'have_an_account'       => 'Non hai ancora un account?',
+    'return_to'             => 'Indietro',
+    'log_in'                => 'Accedi',
+    'reg'                   => 'Registrazione',
+    'forgotten_your_login'  => 'Vuoi accedere?',
+    'info_login'            => 'Prima di iniziare, devi accedere o registrarti se non hai ancora un account.',
+    'enter_your_email'      => 'Inserisci il tuo indirizzo email',
+    'enter_password'        => 'Inserisci la password',
+    'need_account'          => 'Hai bisogno di un account?'
+);
+
