@@ -1,0 +1,15 @@
+Options -MultiViews
+
+<IfModule mod_rewrite.c>
+    RewriteEngine on
+    # Setze den Basis-Pfad auf das root-Verzeichnis
+    RewriteBase /
+
+    # Falls die angeforderte Datei oder das Verzeichnis nicht existiert, leite die Anfrage weiter
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Leite alle Anfragen an das rewrite.php weiter
+    RewriteRule ^(.*)$ rewrite.php?url=$1 [L,QSA]
+</IfModule>
+
