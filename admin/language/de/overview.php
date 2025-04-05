@@ -1,0 +1,46 @@
+<?php
+
+$language_array = Array(
+
+  'access_denied'     => 'Zugriff verweigert',
+  'apache'            => 'Apache',
+  'apache_modules'    => 'Apache Module',
+  'create'            => 'erstellen',
+  'current'           => 'aktuell',
+  'databasename'      => 'Datenbankname',
+  'disable'           => 'nicht vorhanden',
+  'enable'            => 'vorhanden',
+  'green'             => 'Grün',
+  'interface'         => 'Schnittstelle',
+  'last_login'        => 'dein letzte Anmeldung war am',
+  'legend'            => 'Erklärung',
+  'mysql_version'     => 'MySQL Version',
+  'notice1'           => 'Hinweis:',
+  'notice2'           => 'Hoher Wert:',
+  'off'               => 'Aus',
+  'on'                => 'An',
+  'orange'            => 'Orange',
+  'path'              => 'Pfad',
+  'php_settings'      => 'PHP Einstellungen',
+  'php_version'       => 'PHP Version',
+  'read'              => 'auslesen',
+  'red'               => 'Rot',
+  'server_api'        => 'Server API',
+  'server_host'       => 'Server Host',
+  'server_machine'    => 'Server Maschine',
+  'server_os'         => 'Server BS',
+  'server_release'    => 'Server Veröffentlichung',
+  'server_version'    => 'Server Version',
+  'serverinfo'        => 'Serverinfo',
+  'setting_error'     => 'nicht empfohlen',
+  'setting_notice'    => 'Hinweis zur Einstellung',
+  'setting_ok'        => 'Einstellung ok',
+  'supported_types'   => 'Unterstützte Typen',
+  'version'           => 'Version',
+  'webspell_version'  => 'Webspell RM Version',
+  'zend_version'      => 'Zend Version',
+  'na'                => 'Information nicht verfügbar',
+  'error'             => 'Server ist nicht Update Kompatibel oder die Updatedatei ist nicht vorhanden!'
+  
+);
+

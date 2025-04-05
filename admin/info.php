@@ -186,7 +186,7 @@ echo'<div class="card">
           <div class="col-md-6">
             <div class="card">
               <div class="card-header">
-                <img src="/components/admin/images/info-logo.jpg" style="max-width: 100%;height: auto;">
+                <img src="/admin/images/info-logo.jpg" style="max-width: 100%;height: auto;">
               </div>            
               <div class="card-body" style="min-height: 270px">
                 <h4>'.$_language->module['welcome'].'</h4>
@@ -216,7 +216,7 @@ echo'<div class="card">
           </div>
           <div class="card-body">
             <div class="style_prevu_kit">
-              <a href="admincenter.php?site=update&action=update" target="_self" style="text-decoration:none">
+              <a href="admincenter.php?site=update" target="_self" style="text-decoration:none">
                 <div class="cart">
                   <div class="cart-block">
                     <div class="logo1 image_caption text-center" style="height:220px">

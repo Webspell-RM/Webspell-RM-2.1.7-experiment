@@ -36,6 +36,63 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
 */
 ```
+
+/webspell-rm/
+├── /admin/					# Adminbereich
+│   ├── /css/				# CSS-Dateien für den Adminbereich
+│   ├── /images/			# Bilder für den Adminbereich
+│   ├── /img/				# 
+│   │	└──	colorpicker		# bootstrap-colorpicker für den Adminbereich
+│   ├── /js/				# JavaScript-Dateien für Admin-Funktionen
+│   ├── /templates/			# Templates für den Adminbereich
+│   ├── /languages/			# Sprachdateien für den Adminbereich
+│   │	├── /de/			# Deutsche Sprachdateien
+│   │   ├── /en/			# Englische Sprachdateien
+│   │   └── /it/			# Italenische Sprachdateien
+│   └── /login/				# Direkter Login für den Adminbereich
+│
+├── /components/			# Wiederverwendbare Komponenten
+│
+├── /images/				# Allgemeine Bilder
+│  	├──	avatars				# Avatar der User	
+│  	├──	languages			# Flag der Sprachauswahl	
+│  	└──	userpics			# Userpic der User
+│	
+├── /includes/				# Kernfunktionen und -klassen
+│   ├── /classes/			# PHP-Klassen
+│   ├── /config/			# Konfigurationsdateien
+│   ├── /functions/			# Hilfsfunktionen
+│   ├── /langs/				# Sprachdateien
+│   ├── /modules/			# Module für zusätzliche Funktionen
+│   └── /system/			# Systembezogene Dateien
+│
+├── /install/				# Installationsskripte und -dateien│
+│   ├── /css/				# 
+│   ├── /images/			# 
+│   ├── /installer/			# 
+│   ├── /languages/			# 
+│   └── /templates/			# 
+│
+├── /languages/				# Sprachdateien für das Frontend
+│   ├── /de/				# Deutsche Sprachdateien
+│   ├── /en/				# Englische Sprachdateien
+│   └── /it/				# Italenische Sprachdateien
+│
+├── /system/				# System / Plugin / Widget / SQL
+│   └── /func/				# Funktionen
+│
+├── /tmp/                 	# Temporäre Dateien
+├── /.gitignore				# Git-Ignore-Datei
+├── /.htaccess				# Apache-Konfigurationsdatei
+├── /.htaccess_ws			# Webspell-spezifische Apache-Konfigurationsdatei
+├── /CHANGELOG.md			# Änderungsprotokoll
+├── /README.md				# Projektbeschreibung
+├── /index.php				# Einstiegspunkt der Anwendung
+├── /license.txt			# Lizenzinformationen
+├── /package.json			# Node.js Paketkonfiguration
+└── /rewrite.php			# URL-Umschreibungslogik
+
+
 	Webspell-RM is a free Content Management System (CMS) that is available free of charge at https://www.webspell-rm.de. The following information should give you a first impression of how it works.
 
 	Webspell-RM mit angepassten, optimierten und sicherren code
