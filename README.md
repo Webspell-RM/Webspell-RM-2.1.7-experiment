@@ -38,7 +38,7 @@
 ```
 
 # 📁 webSPELL-RM 2.1.6 – Ordnerstruktur
-
+````
 /webspell-rm/
 ├── admin/                       # Adminbereich
 │   ├── css/                     # CSS für das Backend
