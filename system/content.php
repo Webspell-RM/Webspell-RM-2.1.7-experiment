@@ -117,7 +117,7 @@ function get_header_modul() {
 
 // Navigations Modul
 function get_navigation_modul() {
-    global $logo, $theme_name, $themes, $site, $_language, $language, $loggedin, $url;
+    global $logo, $theme_name, $themes, $site, $_language, $loggedin, $url;
     global $modulname;
     register_widget_module("navigation_widget");
 }
