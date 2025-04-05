@@ -1,0 +1,71 @@
+<!-- navigation_main_head -->
+<li><a class="nav-link" href="{{ url }}" target="{{ windows }}">{{ name }}&nbsp;</a></li>
+<!-- END -->
+
+<!-- navigation_dd_head -->
+<li class="dropdown"><a class="nav-link" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ name }} <i class="bi bi-chevron-down"></i></a>
+<!-- END -->
+
+<!-- navigation_sub_open -->
+    <ul>
+<!-- END -->
+
+<!-- navigation_sub_nav -->
+    <li><a href="{{ url }}">{{ name }}</a></li>
+<!-- END -->
+
+<!-- navigation_sub_close -->
+    </ul>
+<!-- END -->
+
+<!-- navigation_dd_foot -->
+</li>
+<!-- END -->
+
+<!-- navigation_login_head -->
+<li class="dropdown">
+<!-- END -->
+
+<!-- navigation_login_loggedin -->
+    {{ newmessages }}
+</li>
+<li class="dropdown">{{ icon }}</li>
+<li class="dropdown">
+    <a class="nav-link" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <img class="avatar_small" style="height: 21px;width: 28px;margin-left: -5px;" src="../images/avatars/{{ l_avatar }}" alt="{{ nickname }}" title="{{ nickname }}" data-toggle="tooltip" data-html="true" data-bs-placement="right" data-bs-original-title="{{ nickname }}"/><i class="bi bi-chevron-down"></i>
+    </a>
+    <ul style="margin-top: 4px;">
+        <li><a class="dropdown-item" href="index.php?site=profile&id={{ userID }}">{{ to_profil }}</a></li>
+        {{ dashboard }}
+        <li><a class="dropdown-item" href="index.php?site=logout">{{ lang_log_off }}</a></li>
+    </ul>
+</li>
+<!-- END -->
+
+<!-- navigation_login_admin -->          
+<!-- END -->
+
+<!-- navigation_login_log_off -->
+<!-- END -->
+
+<!-- navigation_login_login -->
+<li><a class="nav-link" href="index.php?site=login">{{ lang_login }}</a></li>
+<!-- END -->
+
+<!-- navigation_login_foot -->
+<!-- END -->
+
+<!-- navigation_languages -->                
+<!-- Icon dropdown -->
+<li class="nav-item dropdown">
+    <a class="nav-link" href="#" id="navbarDropdown" role="button" aria-expanded="false">{{ flag }}&nbsp;<i class="bi bi-chevron-down"></i></a>
+    <ul class="dropdown-menu" aria-labelledby="navbarDropdown" style="margin-top: 2px;">
+        <li>{{ de_languages_ok }}</li>
+        <li><hr class="dropdown-divider" /></li>
+        <li>{{ de_languages }}</li>
+        <li>{{ en_languages }}</li>
+        <li>{{ it_languages }}</li>          
+    </ul>
+</li>
+<!-- END -->
+

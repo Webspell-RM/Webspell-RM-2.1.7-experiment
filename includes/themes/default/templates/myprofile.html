@@ -1,0 +1,371 @@
+<!-- myprofile_head --> 
+<div class="head-boxes">     
+    <span class="head-boxes-head">{{ title }}</span> 
+    <h2 class="head-h2">     
+        <span class="head-boxes-title">{{ title }}</span> 
+    </h2> 
+    <p class="head-boxes-foot">{{ subtitle }}</p> 
+</div> 
+<!-- END -->  
+
+<!-- myprofile_content_one -->
+
+<div class="card">
+    <div class="card-body">
+        <form class="form-horizontal needs-validation" method="post" id="post" name="post" action="index.php?site=myprofile" enctype="multipart/form-data" novalidate>
+        <div class="row">
+            <div class="col-md-3 col-sm-12">
+                <h5>{{ personal_info }}</h5>
+            </div>
+            <div class="col-md-9 col-sm-12 text-end">
+                <a href="index.php?site=myprofile&amp;action=editpwd" class="btn btn-warning btn-sm"><i class="bi bi-shield-lock"></i> {{ edit_password }}</a>
+                <a href="index.php?site=myprofile&amp;action=editmail" title="{{ email }}" class="btn btn-info btn-sm"><i class="bi bi-envelope"></i> {{ edit_mail }}</a>
+                <a href="index.php?site=myprofile&amp;action=deleteaccount" class="btn btn-danger btn-sm"><i class="bi bi-trash3"></i> {{ del_acc }}</a>
+            </div>
+        </div>  
+
+        <p>{{ showerror }}</p>
+
+        <div class="row">
+            <div class="col-lg-3 col-sm-3">
+                <div class="form-group">
+                    <label for="avatar" class="control-label">{{ lang_avatar }}:</label>
+                </div>{{ viewavatar }}
+                <div class="form-group">
+                    <label for="userpic" class="control-label">{{ lang_userpic }}:</label>
+                </div>{{ viewpic }}
+            </div>
+            <div class="col-lg-9 col-sm-9">
+                
+                <div class="row">
+                    <div class="col-lg-6 col-sm-6">
+                        <div class="mb-3">
+                            <label for="nickname" class="control-label">{{ nick_name }}:</label>
+                            <input type="text" class="form-control form-control-sm" name="nickname" id="nickname" value="{{ nickname }}" maxlength="30" autocomplete="nickname">
+                        </div>
+                        <div class="mb-3">
+                            <label for="firstname" class="control-label">{{ first_name }}:<font color="#DD0000">*</font></label>
+                            <input type="text" class="form-control form-control-sm" name="firstname" id="firstname" value="{{ firstname }}" autocomplete="given-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="lastname" class="control-label">{{ last_name }}:</label>
+                            <input id="lastname" class="form-control form-control-sm" type="text" name="lastname" value="{{ lastname }}" autocomplete="family-name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="bday" class="control-label">{{ date_of_birth }}:<font color="#DD0000">*</font></label>
+                            <input type="date" class="form-control form-control-sm input-lg" name="birthday" value="{{ birthday }}" required="true">
+                        </div>
+                        <div class="mb-3">
+                            <label for="gender" class="control-label">{{ lang_gender }}:</label>
+                            <select id="gender" class="form-select form-select-sm" name="gender">{{ gender }}</select>        
+                        </div>
+                        <div class="mb-3">
+                            <label for="town" class="control-label">{{ lang_town }}:</label>
+                            <input id="town" class="form-control form-control-sm" type="text" name="town" autocomplete="locality" value="{{ town }}">        
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-sm-6">
+                        <div class="mb-3">
+                            <label for="pm-mail" class="control-label">{{ mail_on_new_pm }}:</label>
+                            <select id="pm-mail" class="form-select form-select-sm" name="pm_mail">{{ pm_mail }}</select>        
+                        </div>
+                        {{ newsletter }}    
+                        <div class="mb-3">
+                            <label for="email_hide" class="control-label">{{ hide_e_mail }}</label>
+                            <select id="email_hide" class="form-select form-select-sm" name="email_hide">{{ email_hide }}</select>  
+                        </div>
+                        <div class="mb-3">
+                            <label for="language" class="control-label">{{ language }}:</label>
+                            <select id="language" class="form-select form-select-sm" name="language">{{ langdirs }}</select>        
+                        </div>
+                        <div class="mb-3">
+                            <label for="pm-format" class="control-label">{{ formatdate }}:</label>
+                            <select id="pm-format" class="form-select form-select-sm" name="date_format">{{ format_date }}</select>        
+                        </div>    
+                        <div class="mb-3">
+                            <label for="format-time" class="control-label">{{ formattime }}:</label>
+                            <select id="format-time" class="form-select form-select-sm" name="time_format">{{ format_time }}</select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="profile_visibilitye" class="control-label">{{ profilevisibility }}:</label>
+                            <select id="profile_visibility" class="form-select form-select-sm" name="profile_visibility">{{ profile_visibility }}</select>
+                        </div>
+
+                    </div> 
+                </div>   
+            </div>
+            <div class="ca1rd margin-top-lg">
+                <div class="profile-head">
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="avatar-tab" data-bs-toggle="tab" href="#avatar" role="tab" aria-controls="avatar" aria-selected="false">{{ lang_avatar }} & {{ lang_userpic }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="about-tab" data-bs-toggle="tab" href="#about" role="tab" aria-controls="about" aria-selected="true">{{ about_myself }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="social_media-tab" data-bs-toggle="tab" href="#social_media" role="tab" aria-controls="social_media" aria-selected="false">{{ social_media }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="games-tab" data-bs-toggle="tab" href="#games" role="tab" aria-controls="games" aria-selected="false">{{ lang_games }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="signatur-tab" data-bs-toggle="tab" href="#signatur" role="tab" aria-controls="signatur" aria-selected="false">{{ signature }}</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content profile-tab" id="myTabContent">
+                        <div class="tab-pane fade show active" id="avatar" role="tabpanel" aria-current="avatar-tab">                                        
+                            <div class="col-12">
+                                <h5 class="d-flex justify-content-center">{{ lang_avatar }} & {{ lang_userpic }}</h5>
+                                <div class="row">
+                                    <div class="col-lg-6 col-sm-6">
+
+                                        <label for="avatar" class="control-label">{{ lang_avatar }}</label>
+                                        <input class="btn btn-info btn-sm text-dark form-control" name="avatar" type="file"><br><span class="help-block">{{ or }}</span>
+                                        <input name="avatar_url" class="form-control form-control-sm" type="text" placeholder="https://">
+                                        <span class="help-block">(max: 480px / 480px)</span><br>
+                                        <input name="delavatar" type="checkbox" class="form-check-input" value="1"> {{ lang_avatar }} {{ delete }}
+                                            
+                                    </div>
+                                    <div class="col-lg-6 col-sm-6">
+                                        <label for="userpic" class="control-label">{{ lang_userpic }}</label>
+                                        <input class="btn btn-info btn-sm text-dark form-control" name="userpic" type="file"><br><span class="help-block">{{ or }}</span>
+                                        <input name="userpic_url" class="form-control form-control-sm" type="text" placeholder="https://">
+                                        <span class="help-block">(max: 480px / 480px)</span><br>
+                                        <input name="deluserpic" type="checkbox" class="form-check-input" value="1"> {{ lang_userpic }} {{ delete }}
+
+                                    </div>            
+                                </div>
+                            </div>                                            
+                        </div>
+                        <div class="tab-pane fade" id="about" role="tabpanel" aria-current="about-tab">                                        
+                            <div class="col-12">
+                                <h5 class="d-flex justify-content-center">{{ about_myself }}</h5>
+                                <textarea class="ckeditor form-control" id="ckeditor" name="messageabout" cols="70" rows="5">{{ about }}</textarea>
+                            </div>                                            
+                        </div>
+
+                        <div class="tab-pane fade" id="social_media" role="tabpanel" aria-current="social_media-tab">                                        
+                            <div class="col-md-12">                                                
+                                <h5 class="d-flex justify-content-center">{{ social_media }}</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="homepage" class="control-label">{{ home_page }}:</label>
+                                            <input id="homepage" class="form-control form-control-sm" type="text" name="homepage" value="{{ homepage }}">
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="twitch" class="control-label">{{ media_twitch }}:</label>
+                                            <input id="twitch" class="form-control form-control-sm" type="text" name="twitch" value="{{ twitch }}">
+                                        </div>
+                                                    
+                                        <div class="mb-3">
+                                            <label for="youtube" class="control-label">{{ media_youtube }}:</label>
+                                            <input id="youtube" class="form-control form-control-sm" type="text" name="youtube" value="{{ youtube }}">
+                                        </div>
+                                                    
+                                        <div class="mb-3">
+                                            <label for="twitter" class="control-label">{{ media_twitter }}:</label>
+                                            <input id="twitter" class="form-control form-control-sm" type="text" name="twitter" value="{{ twitter }}">
+                                        </div>
+                                    </div>
+                                                
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="discord" class="control-label">{{ lang_discord }}</label>
+                                            <input id="discord" class="form-control form-control-sm" type="text" name="discord" value="{{ discord }}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="instagram" class="control-label">{{ media_instagram }}:</label>
+                                            <input id="instagram" class="form-control form-control-sm" type="text" name="instagram" value="{{ instagram }}">
+                                        </div>
+                                                    
+                                        <div class="mb-3">
+                                            <label for="facebook" class="control-label">{{ media_facebook }}:</label>
+                                            <input id="facebook" class="form-control form-control-sm" type="text" name="facebook" value="{{ facebook }}">
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="steam" class="control-label">{{ media_steam }}:</label>
+                                            <input id="steam" class="form-control form-control-sm" type="text" name="steam" value="{{ steam }}">
+                                        </div>
+                                    </div>
+                                </div>    
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="games" role="tabpanel" aria-current="games-tab">                                        
+                            <div class="col-12">
+                                <h5 class="d-flex justify-content-center">{{ lang_games }}</h5>
+                                <small>({{ game_selection }})</small>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <select name="games[]" multiple="multiple" cols="70" rows="15" class="form-select" value="{{ town }}" style="height: 200px">
+                                            {{ games }}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>                                                
+                        </div>
+                        <div class="tab-pane fade" id="signatur" role="tabpanel" aria-current="signatur-tab">                                        
+                            <div class="col-12">
+                                <h5 class="d-flex justify-content-center">{{ signature }}</h5>
+                                <textarea class="ckeditor form-control" id="ckeditor" name="usertext" cols="70" rows="5">{{ usertext }}</textarea>
+                            </div>                                            
+                        </div>
+                    </div>  
+                </div>
+            </div>
+        </div>
+
+
+
+
+<!-- END -->
+<!-- myprofile_content_two -->
+        <hr>
+        <div class="row">
+            <div class="col-md-2">
+                <font color="#DD0000">*</font>{{ fields_star_required }}<br>
+                <button type="submit" class="btn btn-success btn-sm" name="submit"><i class="bi bi-save"></i> {{ update_profile }}</button>
+            </div>
+
+            <div class="col-md-10">
+                <blockquote>
+                    <b>{{ lang_hint }}</b><font color="#DD0000">*</font><br />
+                    <!-- <input type="checkbox" class="form-check-input" id="accept_gdpr" value="0"> {{ lang_GDPRinfo }}<br /><br />
+                    <a href="index.php?site=privacy_policy">{{ lang_privacy_policy }}</a>-->
+                    <input type="checkbox" class="form-check-input" id="invalidCheck" value="0" required> <label class="form-check-label" for="invalidCheck">{{ lang_GDPRinfo }}</label>
+                </blockquote>
+            </div>
+        </div>
+    </form>
+</div>
+</div>
+<!-- END -->
+
+
+<!-- myprofile_editpwd -->
+<div class="card">
+    <div class="card-body">
+        <h5>{{ edit_password }}:</h5>
+        <form method="post" action="index.php?site=myprofile" class="form-horizontal" role="form">
+
+        <div class="form-group row mb-3">
+            <label for="oldpwd" class="col-lg-3 control-label">{{ old_password }}:</label>
+
+            <div class="col-lg-9">
+                <input type="password" name="oldpwd" id="oldpwd" class="form-control">
+            </div>
+        </div>
+
+        <div class="form-group row mb-3">
+            <label for="pwd1" class="col-lg-3 control-label">{{ new_password }}:</label>
+
+            <div class="col-lg-9">
+                <input type="password" name="pwd1" id="pwd1" class="form-control">
+            </div>
+        </div>
+
+        <div class="form-group row mb-3">
+            <label for="pwd2" class="col-lg-3 control-label">{{ repeat_new_password }}:</label>
+
+            <div class="col-lg-9">
+                <input type="password" name="pwd2" id="pwd2" class="form-control">
+            </div>
+        </div>
+
+        <div class="form-group row mb-3">
+            <div class="col-lg-6">
+                <a href="index.php?site=myprofile" class="btn btn-primary">
+                    <i class="bi bi-arrow-bar-left"></i> {{ back }}
+                </a>
+            </div>
+            <div class="col-lg-6 text-end">
+                <input type="hidden" name="id" value="{{ userID }}">
+                <button  class="btn btn-danger" type="submit" name="savepwd"><i class="bi bi-shield-lock"></i> {{ change_password }}</button>
+            </div>
+        </div>
+        </form>
+    </div>
+</div>
+<!-- END -->
+
+<!-- myprofile_editmail -->
+<div class="card">
+    <div class="card-body">
+        <h5>{{ edit_mail }}:</h5>
+        <form method="post" action="index.php?site=myprofile" class="form-horizontal" role="form">
+
+        <div class="form-group row mb-3">
+            <label for="oldpwd" class="col-lg-3 control-label">{{ password }}:</label>
+
+            <div class="col-lg-9">
+                <input type="password" name="oldpwd" id="oldpwd" class="form-control">
+            </div>
+        </div>
+
+        <div class="form-group row mb-3">
+            <label for="mail1" class="col-lg-3 control-label">{{ new_email }}:</label>
+
+            <div class="col-lg-9">
+                <input type="email" name="mail1" id="mail1" autocomplete="email" class="form-control">
+            </div>
+        </div>
+
+        <div class="form-group row mb-3">
+            <label for="mail2" class="col-lg-3 control-label">{{ repeat_new_email }}:</label>
+
+            <div class="col-lg-9">
+                <input type="email" name="mail2" id="mail2" autocomplete="email" class="form-control">
+            </div>
+        </div>
+
+        <div class="form-group row mb-3">
+            <div class="col-lg-6">
+                <a href="index.php?site=myprofile" class="btn btn-primary">
+                    <i class="bi bi-arrow-bar-left"></i> {{ back }}
+                </a>
+            </div>
+            <div class="col-lg-6 text-end">
+                <input type="hidden" name="userid" value="{{ userID }}">
+                <button  class="btn btn-danger" type="submit" name="savemail"><i class="bi bi-envelope-check"></i> {{ change_mail }}</button>
+            </div>
+        </div>
+        </form>
+    </div>
+</div>
+<!-- END -->
+
+<!-- myprofile_deleteaccount -->
+<div class="card">
+    <div class="card-body">
+        <form method="post" action="index.php?site=myprofile" class="form-horizontal" role="form">
+        {{ del_realy }}<br><br>
+
+        <div class="form-group row mb-3">
+            <label for="pwd" class="col-lg-3 control-label">{{ password }}:</label>
+           <div class="col-lg-9">
+            <input type="password" name="pwd" id="pwd" class="form-control">
+           </div>
+           
+        </div>
+
+        <div class="form-group row mb-3">
+            <div class="col-lg-6">
+                <a href="index.php?site=myprofile" class="btn btn-primary">
+                    <i class="bi bi-arrow-bar-left"></i> {{ back }}
+                </a>
+            </div>
+            <div class="col-lg-6 text-end">
+                <input type="hidden" name="id" value="{{ userID }}">
+                <button class="btn btn-danger" type="submit" name="deleteAccount"><i class="bi bi-trash3"></i> {{ del_acc }}</button>
+            </div>
+            <div class="col-lg-7"></div>
+        </div>
+        </form>
+    </div>
+</div>
+<!-- END -->
+
+
