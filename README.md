@@ -39,7 +39,61 @@
 
 # 📁 webSPELL-RM 2.1.6 – Ordnerstruktur
 
-/webspell-rm/ ├── admin/ # Adminbereich │ ├── css/ # CSS für das Backend │ ├── images/ # Bilder für das Backend │ ├── img/colorpicker/ # Bootstrap Colorpicker │ ├── js/ # JS-Funktionen für Adminbereich │ ├── templates/ # Admin-Templates │ ├── languages/ # Sprachen für Admin │ │ ├── de/ │ │ ├── en/ │ │ └── it/ │ └── login/ # Admin-Login-System │ ├── components/ # Wiederverwendbare UI-Komponenten │ ├── images/ # Öffentliche Bilder │ ├── avatars/ # Nutzer-Avatare │ ├── languages/ # Sprach-Flaggen │ └── userpics/ # Nutzerbilder │ ├── includes/ # Systemlogik │ ├── classes/ # Zentrale PHP-Klassen │ ├── config/ # Konfiguration (z. B. DB) │ ├── functions/ # Hilfsfunktionen │ ├── langs/ # Sprachstrings │ ├── modules/ # Erweiterbare Funktions-Module │ └── system/ # Systemfunktionen und Loader │ ├── install/ # Installer │ ├── css/ │ ├── images/ │ ├── installer/ │ ├── languages/ │ └── templates/ │ ├── languages/ # Sprachdateien fürs Frontend │ ├── de/ │ ├── en/ │ └── it/ │ ├── system/ # Plugins, Widgets, SQL-Importe │ └── func/ # Allgemeine Systemfunktionen │ ├── tmp/ # Temporäre Dateien & Caches │ ├── .gitignore # Git-Ignore-Konfiguration ├── .htaccess # Apache-Konfiguration ├── .htaccess_ws # Webspell Rewrite-Konfig ├── CHANGELOG.md # Versionshistorie ├── README.md # Projektbeschreibung ├── index.php # Einstiegspunkt Frontend ├── license.txt # Lizenzbedingungen ├── package.json # Node.js-Abhängigkeiten └── rewrite.php # URL-Rewrite-Engine
+/webspell-rm/
+├── admin/                       # Adminbereich
+│   ├── css/                     # CSS für das Backend
+│   ├── images/                  # Bilder für das Backend
+│   ├── img/colorpicker/         # Bootstrap Colorpicker
+│   ├── js/                      # JS-Funktionen für Adminbereich
+│   ├── templates/               # Admin-Templates
+│   ├── languages/               # Sprachen für Admin
+│   │   ├── de/
+│   │   ├── en/
+│   │   └── it/
+│   └── login/                   # Admin-Login-System
+│
+├── components/                  # Wiederverwendbare UI-Komponenten
+│
+├── images/                      # Öffentliche Bilder
+│   ├── avatars/                 # Nutzer-Avatare
+│   ├── languages/               # Sprach-Flaggen
+│   └── userpics/                # Nutzerbilder
+│
+├── includes/                    # Systemlogik
+│   ├── classes/                 # Zentrale PHP-Klassen
+│   ├── config/                  # Konfiguration (z. B. DB)
+│   ├── functions/               # Hilfsfunktionen
+│   ├── langs/                   # Sprachstrings
+│   ├── modules/                 # Erweiterbare Funktions-Module
+│   └── system/                  # Systemfunktionen und Loader
+│
+├── install/                     # Installer
+│   ├── css/
+│   ├── images/
+│   ├── installer/
+│   ├── languages/
+│   └── templates/
+│
+├── languages/                   # Sprachdateien fürs Frontend
+│   ├── de/
+│   ├── en/
+│   └── it/
+│
+├── system/                      # Plugins, Widgets, SQL-Importe
+│   └── func/                    # Allgemeine Systemfunktionen
+│
+├── tmp/                         # Temporäre Dateien & Caches
+│
+├── .gitignore                   # Git-Ignore-Konfiguration
+├── .htaccess                    # Apache-Konfiguration
+├── .htaccess_ws                 # Webspell Rewrite-Konfig
+├── CHANGELOG.md                 # Versionshistorie
+├── README.md                    # Projektbeschreibung
+├── index.php                    # Einstiegspunkt Frontend
+├── license.txt                  # Lizenzbedingungen
+├── package.json                 # Node.js-Abhängigkeiten
+└── rewrite.php                  # URL-Rewrite-Engine
+
 
 	Webspell-RM is a free Content Management System (CMS) that is available free of charge at https://www.webspell-rm.de. The following information should give you a first impression of how it works.
 
