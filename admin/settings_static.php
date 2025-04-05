@@ -397,4 +397,5 @@ if (isset($_GET[ 'action' ]) && $_GET[ 'action' ] == "add") {
 	echo'</table>';
 }
 echo '</div></div>';
+
 ?>

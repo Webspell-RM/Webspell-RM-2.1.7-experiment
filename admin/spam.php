@@ -515,53 +515,5 @@ echo '</div></div>';
     }
     echo '</div></div>';
 
-  /*   echo '<div class="card">
-        <div class="card-header">
-            Comments
-        </div>
-            <div class="card-body">';
-
-   $get = safe_query("SELECT * FROM " . PREFIX . "plugins_comments_spam ORDER BY date DESC");
-    if (mysqli_num_rows($get)) {
-        echo '<table border="0" cellspacing="1" cellpadding="3" bgcolor="#DDDDDD" width="100%">
-        <tr>
-            <td class="title">' . $_language->module[ "nickname" ] . ':</td>
-            <td class="title">' . $_language->module[ "date" ] . ':</td>
-            <td class="title">' . $_language->module[ "message" ] . ':</td>
-            <td class="title">' . $_language->module[ "options" ] . ':</td>
-        </tr>';
-
-        $i = 0;
-
-        while ($ds = mysqli_fetch_assoc($get)) {
-            if ($i % 2) {
-                $td = 'td1';
-            } else {
-                $td = 'td2';
-            }
-
-            $options = '<input type="button" onclick="MM_confirm(\'' . $_language->module[ "question_delete" ] .
-                '\', \'admincenter.php?site=spam&amp;action=forum_spam&amp;del_option=delete_comment&amp;commentID=' .
-                $ds[ 'commentID' ] . '\')" value="' . $_language->module[ "delete" ] . '" />';
-            if (!empty($ds[ 'userID' ])) {
-                $nick = '<a href="../index.php?site=profile&amp;id=' . $ds[ 'userID' ] . '" target="_blank">' .
-                    getnickname($ds[ 'userID' ]) . '</a>';
-            } else {
-                $nick = $ds[ 'nickname' ];
-            }
-            echo '<tr>
-                <td class="' . $td . '">' . $nick . '</a></td>
-                <td class="' . $td . '">' . getformatdate($ds[ 'date' ]) . '</td>
-                <td class="' . $td . '">' . mb_substr(getinput($ds[ 'comment' ]), 0, 250) . '...</td>
-                <td class="' . $td . '">' . $options . '</td>
-            </tr>';
-
-            $i++;
-        }
-
-        echo '</table>';
-    } else {
-        echo "n/a";
-    }
-    echo '</div></div>';*/
+  
 }

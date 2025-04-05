@@ -2473,4 +2473,4 @@ if (!empty(@$db['active'] == 1) !== false) {
         </div>
     </div>';
             }
-                    ?>
+?>

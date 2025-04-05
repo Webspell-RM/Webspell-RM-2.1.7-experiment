@@ -669,5 +669,6 @@ $CAPCLASS = new \webspell\Captcha;
     </div>
 </div>
 
-';}
+';
+}
 
