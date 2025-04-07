@@ -1,0 +1,33 @@
+{
+"items": [
+			{
+				"index": "php",				
+				"file1": "default/install.php",				
+				"file2": "default/uninstall.php",
+				"file3": "default/index.php"
+			},
+			{
+				"index": "admin"
+			},
+			{
+				"index": "languages"
+			},
+			{
+				"index": "templates"
+			},
+			{
+				"index": "css",
+				"file1": "default/css/stylesheet.css"
+			},
+			{
+				"index": "images",
+				"file1": "default/images/default.jpg",
+				"file2": "default/images/default_login_bg.jpg",
+				"file3": "default/images/default_logo.png",
+				"file4": "default/images/favicon.ico"
+			},
+			{
+				"index": "js"
+			}
+		]
+}

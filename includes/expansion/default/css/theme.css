@@ -1,0 +1,22 @@
+ :root {
+            --primary-color: <?= $primary_color ?>;
+            --secondary-color: <?= $secondary_color ?>;
+            --text-color: <?= $text_color ?>;
+            --background-color: <?= $background_color ?>;
+        }
+
+        body {
+            background-color: var(--background-color) !important;
+        }
+
+        .navbar, footer {
+            background-color: var(--secondary-color) !important;
+        }
+
+        .navbar-brand, .nav-link, footer p {
+            color: var(--text-color) !important;
+        }
+
+        .bg-primary {
+            background-color: var(--primary-color) !important;
+        }

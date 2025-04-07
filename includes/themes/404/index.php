@@ -10,7 +10,7 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
  * @version         Webspell-RM                                                                                                       *
  *                                                                                                                                    *
- * @copyright       2018-2024 by webspell-rm.de <https://www.webspell-rm.de>                                                          *
+ * @copyright       2018-2022 by webspell-rm.de <https://www.webspell-rm.de>                                                          *
  * @support         For Support, Plugins, Templates and the Full Script visit webspell-rm.de <https://www.webspell-rm.de/forum.html>  *
  * @WIKI            webspell-rm.de <https://www.webspell-rm.de/wiki.html>                                                             *
  *                                                                                                                                    *
@@ -25,40 +25,85 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
  */
 
-# Sprachdateien aus dem Plugin-Ordner laden
-$pm = new plugin_manager(); 
-$plugin_language = $pm->plugin_language("navigation", $plugin_path);
-GLOBAL $logo,$theme_name,$themes,$tpl,$loggedin,$index_language,$modRewrite,$action,$modulname;
+$_language->readModule('index');
 
-$qs_arr = array();
-        parse_str($_SERVER['QUERY_STRING'], $qs_arr);
-        
-        $getsite = 'startpage'; #Wird auf der Startseite angezeigt index.php
-        if(isset($qs_arr['site'])) {
-          $getsite = $qs_arr['site'];
+$index_language = $_language->module;
+
+
+header('X-UA-Compatible: IE=edge,chrome=1');
+?>
+<!DOCTYPE html>
+<html class="h-100" lang="<?php echo $_language->language ?>">
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="description" content="Website using webSPELL-RM CMS">
+    <meta name="keywords" content="Clandesign, Webspell, Webspell | RM, Wespellanpassungen, Webdesign, Tutorials, Downloads, Webspell-rm, rm, addon, plugin, Templates Webspell Addons, Webspell-rm, rm, plungin, mods, Webspellanpassungen, Modifikationen und Anpassungen und mehr!">
+    <meta name="robots" content="all">
+    <meta name="abstract" content="Anpasser an Webspell | RM">
+    <meta name="copyright" content="Copyright &copy; 2018-2021 by webspell-rm.de">
+    <meta name="author" content="webspell-rm.de">
+    <meta name="revisit-After" content="1days">
+    <meta name="distribution" content="global">
+    <link rel="SHORTCUT ICON" href="./includes/themes/<?php echo $theme_name; ?>/templates/favicon.ico">
+    <link href="components/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="components/fontawesome/css/all.css" rel="stylesheet">
+ 
+    <!-- Head & Title include -->
+    <title><?= get_sitetitle(); ?></title>
+
+    <base href="<?php echo $rewriteBase; ?>">
+
+    <link href="tmp/rss.xml" rel="alternate" type="application/rss+xml" title="<?php echo $myclanname; ?> - RSS Feed">
+    
+   
+</head>
+<body>
+
+    <div class="d-flex flex-column sticky-footer-wrapper"> <!-- flex -->
+        <main class="flex-fill">  <!-- flex -->
+        <div class="container"> <!-- container-content container-fluid -->
+
+        <style type="text/css">
+        body {
+            background: radial-gradient(ellipse at center, #444 20%,#333333 40%,#222 60%,#111 80%);
+            margin-top: 80px
+          
+        }
+        p.test {
+            font-family: Georgia, serif;
+            font-size: 78px;
+            font-style: italic;
         }
 
-    $ergebnis=safe_query("SELECT * FROM ".PREFIX."settings_expansion WHERE active = '1'");
-    $ds=mysqli_fetch_array($ergebnis);
+        .titlehead {     
+          border: 3px solid;
+          border-color: #c4183c;
+        }
+        </style>
 
-echo'<!-- ======= Navigation ======= -->
-    <header id="header" class="sticky-top d-flex align-items-center header-transparent header-underscore">
-        <div class="container d-flex justify-content-between">
-            <div class="logo">
-                <a href="#"><img class="img-fluid" src="../includes/expansion/'.$ds[ 'pfad' ].'/images/'.$ds[ 'logo_pic' ].'" alt=""></a>
+        <div class="card">
+            <div class="card-body">
+                <div class="titlehead"><br>
+                    <center>
+                <div>
+                    <img class="img-fluid" src="/images/install-logo.jpg" alt="" style="height: 150px"/><br>
+                      <small>Ohje !</small><br>
+                      <p class="test">404 Error.</p><br>
+                      <?php echo $_language->module['info'] ?>
+                </div>
+                <br />
+                      <p><a class="btn btn-warning" href="/admin/admincenter.php?site=settings_themes"><?php echo $_language->module['activate_template'] ?></a></p>
+                      <br />
+                    </center>
+                </div>
             </div>
-            <div class="box">
-                <span class="webspell">'.$ds[ 'logotext1' ].'</span>
-                <span class="slogan">'.$ds[ 'logotext2' ].'</span>
-            </div>
-            <nav id="navbar" class="navbar '.$ds[ 'nav_text_alignment' ].'">
-                <ul>';
-                    include("./includes/modules/navigation.php");
-                    include("./includes/modules/navigation_login.php");
-                    include("./includes/modules/language.php");                        
-            echo'</ul>
-                <i class="bi bi-list mobile-nav-toggle"></i>
-            </nav><!-- .navbar -->
         </div>
-    </header>
-<!-- End Navigation -->';
+
+        </div>
+        </main>
+    </div>
+
+</body>
+</html>

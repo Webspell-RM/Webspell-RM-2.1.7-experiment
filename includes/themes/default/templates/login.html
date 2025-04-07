@@ -16,7 +16,7 @@
                             <h3 class="display-6">{{ login_titel }}</h3>
                             <p class="float-end mb-4">{{ need_account }}
                             <a href="index.php?site=register">{{ reg }}</a></p>
-                            <form method="post" name="login" action="{{ _modulepath }}/checklogin.php" role="form" class="form-horizontal needs-validation" novalidate>
+                            <form method="post" name="login" action="/includes/modules/checklogin.php" role="form" class="form-horizontal needs-validation" novalidate>
                                 <div class="form-group mb-3">
                                     <input name="ws_user" type="email" class="form-control" id="emailAddress" placeholder="{{ enter_your_email }}" required>
                                 </div>

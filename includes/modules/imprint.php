@@ -40,29 +40,54 @@ $data_array = [
 $template = $tpl->loadTemplate("imprint", "head", $data_array);
 echo $template;
 
-$ergebnis = safe_query("
-    SELECT u.firstname, u.lastname, u.nickname, u.userID
-    FROM " . PREFIX . "user_groups as g
-    JOIN " . PREFIX . "user as u ON u.userID = g.userID
-    WHERE (g.page='1' OR g.forum='1' OR g.user='1' OR g.news='1' OR g.clanwars='1' OR g.feedback='1' 
-    OR g.super='1' OR g.gallery='1' OR g.cash='1' OR g.files='1')");
-
+$ergebnis =
+    safe_query(
+        "SELECT
+            u.firstname, u.lastname, u.nickname, u.userID
+        FROM
+            " . PREFIX . "user_groups as g, " . PREFIX . "user as u
+        WHERE
+            u.userID = g.userID
+        AND
+            (g.page='1'
+        OR
+            g.forum='1'
+        OR
+            g.user='1'
+        OR
+            g.news='1'
+        OR
+            g.clanwars='1'
+        OR
+            g.feedback='1'
+        OR
+            g.super='1'
+        OR
+            g.gallery='1'
+        OR
+            g.cash='1'
+        OR
+            g.files='1')"
+    );
 $administrators = '';
 while ($ds = mysqli_fetch_array($ergebnis)) {
-    $administrators .= "<a href='index.php?site=profile&amp;id=" . htmlspecialchars($ds['userID']) . "'>" . htmlspecialchars($ds['firstname']) . " '" . htmlspecialchars($ds['nickname']) . "' " . htmlspecialchars($ds['lastname']) . "</a><br>";
+    $administrators .= "<a href='index.php?site=profile&amp;id=" . $ds[ 'userID' ] . "'>" . $ds[ 'firstname' ] . " '" . $ds[ 'nickname' ] . "' " . $ds[ 'lastname' ] . "</a><br>";
 }
-
-$ergebnis = safe_query("
-    SELECT u.firstname, u.lastname, u.nickname, u.userID
-    FROM " . PREFIX . "user_groups as g
-    JOIN " . PREFIX . "user as u ON u.userID = g.userID
-    WHERE g.moderator='1'");
-
+$ergebnis =
+    safe_query(
+        "SELECT
+            u.firstname, u.lastname, u.nickname, u.userID
+        FROM
+            " . PREFIX . "user_groups as g, " . PREFIX . "user as u
+        WHERE
+            u.userID = g.userID
+        AND
+            g.moderator='1'"
+    );
 $moderators = '';
 while ($ds = mysqli_fetch_array($ergebnis)) {
-    $moderators .= "<a href='index.php?site=profile&amp;id=" . htmlspecialchars($ds['userID']) . "'>" . htmlspecialchars($ds['firstname']) . " '" . htmlspecialchars($ds['nickname']) . "' " . htmlspecialchars($ds['lastname']) . "</a><br>";
+    $moderators .= "<a href='index.php?site=profile&amp;id=" . $ds[ 'userID' ] . "'>" . $ds[ 'firstname' ] . " '" . $ds[ 'nickname' ] . "' " . $ds[ 'lastname' ] . "</a><br>";
 }
-
 // Include version
 include('./system/version.php');
 
@@ -77,9 +102,10 @@ if ($imprint_type) {
     $translate->detectLanguages($imprint_head);
     $imprint_head = $translate->getTextByLanguage($imprint_head);
 } else {
+    
     $imprint_head = '<div class="form-horizontal">
         <div class="form-group">
-            <label class="col-sm-3 control-label">{{ webmaster }}</label>
+            <label class="col-sm-3 control-label"> ' . $_language->module[ 'webmaster' ] . '</label>
             <div class="col-sm-9">
                 <p class="form-control-static">
                     <a href="mailto:' . mail_protect($admin_email) . '">' . $admin_name . '</a>
@@ -87,13 +113,13 @@ if ($imprint_type) {
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label">{{ admins }}</label>
+            <label class="col-sm-3 control-label">' . $_language->module[ 'admins' ] . '</label>
             <div class="col-sm-9">
                 <p class="form-control-static">' . $administrators . '</p>
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label">{{ mods }}</label>
+            <label class="col-sm-3 control-label">' . $_language->module[ 'mods' ] . '</label>
             <div class="col-sm-9">
                 <p class="form-control-static">' . $moderators . '</p>
             </div>
