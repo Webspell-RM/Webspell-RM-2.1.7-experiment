@@ -31,15 +31,16 @@
 // Sprachmodul laden
 $_language->readModule('banned_ips', false, true);
 
-// Berechtigungsprüfung
-$ergebnis = safe_query("SELECT * FROM " . PREFIX . "navigation_dashboard_links WHERE modulname = 'ac_banned_ips'");
-while ($db = mysqli_fetch_array($ergebnis)) {
-    $accesslevel = 'is' . $db['accesslevel'] . 'admin';
+use webspell\AccessControl;
 
-    if (!$accesslevel($userID) || mb_substr(basename($_SERVER['REQUEST_URI']), 0, 15) != "admincenter.php") {
+// Überprüfen, ob der Benutzer die erforderliche Berechtigung hat
+$ergebnis = safe_query("SELECT * FROM " . PREFIX . "navigation_dashboard_links WHERE modulname='ac_banned_ips'");
+while ($db = mysqli_fetch_array($ergebnis)) {
+    $accesslevel = $db['accesslevel'];
+    if (!AccessControl::hasRole($userID, $accesslevel)) {
         die($_language->module['access_denied']);
     }
-}
+}    
 
 // CAPTCHA-Prüfung und Löschen eines Banns
 if (isset($_GET['delete']) && isset($_GET['banID']) && isset($_GET['captcha_hash'])) {

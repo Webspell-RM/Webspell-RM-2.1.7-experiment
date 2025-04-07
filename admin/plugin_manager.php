@@ -40,11 +40,13 @@
 
 $_language->readModule('plugin_manager', false, true);
 
+use webspell\AccessControl;
+
+// Überprüfen, ob der Benutzer die erforderliche Berechtigung hat
 $ergebnis = safe_query("SELECT * FROM " . PREFIX . "navigation_dashboard_links WHERE modulname='ac_plugin_manager'");
 while ($db = mysqli_fetch_array($ergebnis)) {
-    $accesslevel = 'is' . $db['accesslevel'] . 'admin';
-
-    if (!$accesslevel($userID) || mb_substr(basename($_SERVER['REQUEST_URI']), 0, 15) != "admincenter.php") {
+    $accesslevel = $db['accesslevel'];
+    if (!AccessControl::hasRole($userID, $accesslevel)) {
         die($_language->module['access_denied']);
     }
 }

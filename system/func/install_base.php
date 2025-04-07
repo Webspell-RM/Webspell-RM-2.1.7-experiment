@@ -271,7 +271,7 @@ function add_insert_plugin_3($table) {
 function add_insert_plugins_widget($table) {
   global $_database,$modulname,$version,$str;
 
-    if(mysqli_num_rows(safe_query("SELECT * FROM `" . PREFIX . "settings_plugins_widget` WHERE modulname ='".$modulname."'"))>0) {
+    if(mysqli_num_rows(safe_query("SELECT * FROM `" . PREFIX . "settings_plugins` WHERE modulname ='".$modulname."'"))>0) {
       echo "<div class='alert alert-warning'><b>Plugin Widget Einträge:</b><br>".$str." Database entry already exists <br />";
       echo "".$str." Datenbank Eintrag schon vorhanden <br />";
       echo "".$str." La voce del database esiste già <br /></div>";

@@ -28,14 +28,16 @@
 
 $_language->readModule('overview', false, true);
 
-$ergebnis = safe_query("SELECT * FROM ".PREFIX."navigation_dashboard_links WHERE modulname='ac_overview'");
-    while ($db=mysqli_fetch_array($ergebnis)) {
-      $accesslevel = 'is'.$db['accesslevel'].'admin';
+use webspell\AccessControl;
 
-if (!$accesslevel($userID) || mb_substr(basename($_SERVER[ 'REQUEST_URI' ]), 0, 15) != "admincenter.php") {
-    die($_language->module[ 'access_denied' ]);
-}
-}
+// Überprüfen, ob der Benutzer die erforderliche Berechtigung hat
+$ergebnis = safe_query("SELECT * FROM " . PREFIX . "navigation_dashboard_links WHERE modulname='ac_overview'");
+while ($db = mysqli_fetch_array($ergebnis)) {
+    $accesslevel = $db['accesslevel'];
+    if (!AccessControl::hasRole($userID, $accesslevel)) {
+        die($_language->module['access_denied']);
+    }
+} 
 
 $phpversion = phpversion() < '4.3' ? '<font color="#FF0000">' . phpversion() . '</font>' :
     '<font color="#008000">' . phpversion() . '</font>';

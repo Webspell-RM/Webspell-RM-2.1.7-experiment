@@ -29,6 +29,18 @@
 /** ZENITH.Developments | GETSCHONNIK **/
 
 $_language->readModule('plugin_installer', false, true);
+
+use webspell\AccessControl;
+
+// Überprüfen, ob der Benutzer die erforderliche Berechtigung hat
+$ergebnis = safe_query("SELECT * FROM " . PREFIX . "navigation_dashboard_links WHERE modulname='ac_plugin_installer'");
+while ($db = mysqli_fetch_array($ergebnis)) {
+    $accesslevel = $db['accesslevel'];
+    if (!AccessControl::hasRole($userID, $accesslevel)) {
+        die($_language->module['access_denied']);
+    }
+} 
+
 include('../system/func/installer.php');
 include('../system/func/update_base.php');
 

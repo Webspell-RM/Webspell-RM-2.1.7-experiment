@@ -348,6 +348,7 @@ if(file_exists('func/user.php')) { systeminc('func/user'); } else { systeminc('.
 
 // -- ACCESS INFORMATION -- //
 if(file_exists('func/useraccess.php')) { systeminc('func/useraccess'); } else { systeminc('../system/func/useraccess'); }
+if(file_exists('func/access_control.php')) { systeminc('func/access_control'); } else { systeminc('../system/func/access_control'); }
 
 // -- MESSENGER INFORMATION -- //
 if(file_exists('func/messenger.php')) { systeminc('func/messenger'); } else { systeminc('../system/func/messenger'); }

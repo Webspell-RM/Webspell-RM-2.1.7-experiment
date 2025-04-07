@@ -30,6 +30,17 @@
 
 $_language->readModule('editlang', false, true);
 
+use webspell\AccessControl;
+
+// Überprüfen, ob der Benutzer die erforderliche Berechtigung hat
+$ergebnis = safe_query("SELECT * FROM " . PREFIX . "navigation_dashboard_links WHERE modulname='ac_editlang'");
+while ($db = mysqli_fetch_array($ergebnis)) {
+    $accesslevel = $db['accesslevel'];
+    if (!AccessControl::hasRole($userID, $accesslevel)) {
+        die($_language->module['access_denied']);
+    }
+} 
+
 $baseDir = dirname(__DIR__);
 $languageDir = $baseDir . '/languages/';
 $pluginLanguageDir = $baseDir . '/includes/plugins/';

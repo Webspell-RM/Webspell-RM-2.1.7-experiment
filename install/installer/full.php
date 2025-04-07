@@ -462,7 +462,7 @@ $transaction->addQuery("INSERT INTO `".PREFIX."navigation_dashboard_links` (`lin
 (14, 2, '{[de]}Multi-Accounts{[en]}Multi-Accounts{[it]}Multi-Account', 'ac_spam_multi', 'admincenter.php?site=spam&amp;action=multi', 'user', 3),
 (15, 2, '{[de]}gebannte IPs{[en]}banned IPs{[it]}IP bannati', 'ac_spam_banned_ips', 'admincenter.php?site=banned_ips', 'user', 4),
 (16, 5, '{[de]}Webseiten Navigation{[en]}Webside Navigation{[it]}Menu Navigazione Web', 'ac_webside_navigation', 'admincenter.php?site=webside_navigation', 'page', 1),
-(17, 5, '{[de]}Themes Installer{[en]}Themes Installer{[it]}Installazione Themes', 'ac_themes', 'admincenter.php?site=themes_installer', 'page', 2),
+(17, 5, '{[de]}Themes Installer{[en]}Themes Installer{[it]}Installazione Themes', 'ac_themes_installer', 'admincenter.php?site=themes_installer', 'page', 2),
 (18, 5, '{[de]}Themes - Style{[en]}Themes - Style{[it]}Themes Grafici', 'ac_themes', 'admincenter.php?site=settings_themes', 'page', 3),
 (20, 5, '{[de]}Startseite{[en]}Start Page{[it]}Pagina Principale', 'ac_startpage', 'admincenter.php?site=settings_startpage', 'page', 5),
 (21, 5, '{[de]}Statische Seiten{[en]}Static Pages{[it]}Pagine Statiche', 'ac_static', 'admincenter.php?site=settings_static', 'page', 6),
