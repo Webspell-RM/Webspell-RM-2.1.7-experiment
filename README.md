@@ -36,10 +36,12 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
 */
 ```
-````
-Wichtiger Hinweis zur Version 2.1.6 von webSPELL-RM (Alpha)
 
-Die Version 2.1.6 von webSPELL-RM befindet sich derzeit im Alpha-Status. Diese Version ist noch nicht stabil und wurde nicht für den produktiven Einsatz oder eine Installation auf Live-Systemen freigegeben. Es handelt sich um eine Entwicklungs- und Testversion, die möglicherweise viele Fehler und unvollständige Funktionen enthält.
+# 📁 Wichtiger Hinweis zur Version 2.1.6 von Webspell-RM (Alpha)
+
+````
+
+Die Version 2.1.6 von Webspell-RM befindet sich derzeit im Alpha-Status. Diese Version ist noch nicht stabil und wurde nicht für den produktiven Einsatz oder eine Installation auf Live-Systemen freigegeben. Es handelt sich um eine Entwicklungs- und Testversion, die möglicherweise viele Fehler und unvollständige Funktionen enthält.
 
 Bitte beachten Sie, dass diese Version vor der Verwendung einer vollständigen Installation gründlich getestet werden sollte. Wir empfehlen, diese Alpha-Version nur in einer sicheren Testumgebung zu installieren und nicht auf einer Live-Website oder einem produktiven Server zu verwenden.
 
@@ -48,7 +50,7 @@ Die in dieser Version vorgenommenen Änderungen und Anpassungen können unvorher
 Vielen Dank für Ihr Verständnis.
 ````
 
-# 📁 webSPELL-RM 2.1.6 – Ordnerstruktur
+# 📁 Webspell-RM 2.1.6 – Ordnerstruktur
 ````
 
 
