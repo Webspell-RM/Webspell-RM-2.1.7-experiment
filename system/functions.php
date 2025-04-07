@@ -370,6 +370,9 @@ $_language->setLanguage($default_language);
 // -- TEMPLATE SYSTEM -- //
 if(file_exists('func/template.php')) { systeminc('func/template'); } else { systeminc('../system/func/template'); }
 
+#PluginService.php
+if(file_exists('func/plugin_service.php')) { systeminc('func/plugin_service'); } else { systeminc('../system/func/plugin_service'); }
+
 if (!stristr($_SERVER['SCRIPT_NAME'], '/admin/')) {
     $_template = new \Webspell\Template();
 } else {

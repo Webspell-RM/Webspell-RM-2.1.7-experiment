@@ -1393,7 +1393,7 @@ echo'
   <label class="form-check-label" for="flexRadioDefault1">
     '.$_language->module['head_headlines1'].'</label> 
 </div>
-<img style="border:1px solid #000;height:185px" src="/../components/admin/images/headlines/headlines-01.jpg" title="'.$_language->module['head_headlines1'].'" >
+<img style="border:1px solid #000;height:185px" src="/admin/images/headlines/headlines-01.jpg" title="'.$_language->module['head_headlines1'].'" >
 <hr>
 <div class="form-check">
   '.$headlines_02.'
@@ -1401,7 +1401,7 @@ echo'
     '.$_language->module['head_headlines2'].'
   </label>
 </div>
-<img style="border:1px solid #000;height:185px" src="/../components/admin/images/headlines/headlines-02.jpg" title="'.$_language->module['head_headlines2'].'" >
+<img style="border:1px solid #000;height:185px" src="/admin/images/headlines/headlines-02.jpg" title="'.$_language->module['head_headlines2'].'" >
 <hr>
 <div class="form-check">
   '.$headlines_03.'
@@ -1409,7 +1409,7 @@ echo'
     '.$_language->module['head_headlines3'].' 
   </label>
 </div>
-<img style="border:1px solid #000;height:185px" src="/../components/admin/images/headlines/headlines-03.jpg" title="'.$_language->module['head_headlines3'].'" >
+<img style="border:1px solid #000;height:185px" src="/admin/images/headlines/headlines-03.jpg" title="'.$_language->module['head_headlines3'].'" >
 <hr>
 <div class="form-check">
   '.$headlines_04.'
@@ -1417,7 +1417,7 @@ echo'
     '.$_language->module['head_headlines4'].' 
   </label>
 </div>
-<img style="border:1px solid #000;height:185px" src="/../components/admin/images/headlines/headlines-04.jpg" title="'.$_language->module['head_headlines4'].'" >
+<img style="border:1px solid #000;height:185px" src="/admin/images/headlines/headlines-04.jpg" title="'.$_language->module['head_headlines4'].'" >
 <hr>
 <div class="form-check">
   '.$headlines_05.'
@@ -1425,7 +1425,7 @@ echo'
     '.$_language->module['head_headlines5'].' 
   </label>
 </div>
-<img style="border:1px solid #000;height:185px" src="/../components/admin/images/headlines/headlines-05.jpg" title="'.$_language->module['head_headlines5'].'" >
+<img style="border:1px solid #000;height:185px" src="/admin/images/headlines/headlines-05.jpg" title="'.$_language->module['head_headlines5'].'" >
 
   </div>
   <div class="col-md-6">
@@ -1436,7 +1436,7 @@ echo'
     '.$_language->module['head_headlines6'].'  
   </label>
 </div>
-<img style="border:1px solid #000;height:185px" src="/../components/admin/images/headlines/headlines-06.jpg" title="'.$_language->module['head_headlines6'].'" >
+<img style="border:1px solid #000;height:185px" src="/admin/images/headlines/headlines-06.jpg" title="'.$_language->module['head_headlines6'].'" >
 <hr>
 <div class="form-check">
   '.$headlines_07.'
@@ -1444,7 +1444,7 @@ echo'
     '.$_language->module['head_headlines7'].'  
   </label>
 </div>
-<img style="border:1px solid #000;height:185px" src="/../components/admin/images/headlines/headlines-07.jpg" title="'.$_language->module['head_headlines7'].'" >
+<img style="border:1px solid #000;height:185px" src="/admin/images/headlines/headlines-07.jpg" title="'.$_language->module['head_headlines7'].'" >
 <hr>
 <div class="form-check">
   '.$headlines_08.'
@@ -1452,7 +1452,7 @@ echo'
     '.$_language->module['head_headlines8'].'  
   </label>
 </div>
-<img style="border:1px solid #000;height:185px" src="/../components/admin/images/headlines/headlines-08.jpg" title="'.$_language->module['head_headlines8'].'" >
+<img style="border:1px solid #000;height:185px" src="/admin/images/headlines/headlines-08.jpg" title="'.$_language->module['head_headlines8'].'" >
 <hr>
 <div class="form-check">
   '.$headlines_09.'
@@ -1460,7 +1460,7 @@ echo'
     '.$_language->module['head_headlines9'].'  
   </label>
 </div>
-<img style="border:1px solid #000;height:185px" src="/../components/admin/images/headlines/headlines-09.jpg" title="'.$_language->module['head_headlines9'].'" >
+<img style="border:1px solid #000;height:185px" src="/admin/images/headlines/headlines-09.jpg" title="'.$_language->module['head_headlines9'].'" >
 <hr>
 <div class="form-check">
   '.$headlines_10.'
@@ -1468,7 +1468,7 @@ echo'
     '.$_language->module['head_headlines10'].'  
   </label>
 </div>
-<img style="border:1px solid #000;height:185px" src="/../components/admin/images/headlines/headlines-10.jpg" title="'.$_language->module['head_headlines10'].'" >
+<img style="border:1px solid #000;height:185px" src="/admin/images/headlines/headlines-10.jpg" title="'.$_language->module['head_headlines10'].'" >
 
    </div>
     </div>

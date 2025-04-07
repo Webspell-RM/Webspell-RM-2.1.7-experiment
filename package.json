@@ -1,0 +1,24 @@
+{
+  "name": "webspell-rm",
+  "version": "2.1.4",
+  "description": ">\t\t\t\t\t\t\t\t\t\t\t   >### Webspell-RM >\t\t\t\t\t\t    >### Webspell-RM - https://webspell-rm.de > >### WIKI Webspell-RM - http://wiki.webspell-rm.de >",
+  "main": "index.php",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Webspell-RM/Webspell-RM.git"
+  },
+  "author": "",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/Webspell-RM/Webspell-RM/issues"
+  },
+  "homepage": "https://github.com/Webspell-RM/Webspell-RM#readme",
+  "dependencies": {
+    "bootstrap": "^5.2.3",
+    "datatables": "^1.10.18",
+    "jquery": "^3.6.0"
+  }
+}

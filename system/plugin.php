@@ -78,74 +78,47 @@ class plugin_manager
 	//@info Holen Sie sich die Plugin-Daten aus der Datenbank
 	function plugin_data($var, $id = 0, $admin = false)
 	{
-	    global $_database; // Verwendet die globale Datenbankverbindung
-
-	    // Wenn eine ID übergeben wurde, filtere nach dieser ID
-	    if ($id > 0) {
-	        $where = " WHERE `activate`='1' AND `pluginID`=?";
-	        $stmt = $_database->prepare("SELECT * FROM " . PREFIX . "settings_plugins " . $where);
-	        $stmt->bind_param("i", $id); // Bindet die ID als Integer
-	        $stmt->execute();
-	        $query = $stmt->get_result();
-	    } else {
-	        // Je nachdem, ob es sich um eine Admin-Datei oder eine Index-Datei handelt
-	        if ($admin) {
-	            $where = " WHERE `activate`='1' AND `admin_file` LIKE ?";
-	            $likeVar = "%" . $var . "%"; // Bereitet die LIKE-Bedingung vor
-	            $stmt = $_database->prepare("SELECT * FROM " . PREFIX . "settings_plugins " . $where);
-	            $stmt->bind_param("s", $likeVar); // Bindet den String
-	            $stmt->execute();
-	            $q = $stmt->get_result();
-	            if (mysqli_num_rows($q)) {
-	                $tmp = mysqli_fetch_array($q);
-	                $ifiles = $tmp['index_link'];
-	                $tfiles = explode(",", $ifiles);
-	                if (in_array($var, $tfiles)) {
-	                    $where = " WHERE `pluginID`=?";
-	                    $stmt = $_database->prepare("SELECT * FROM " . PREFIX . "settings_plugins " . $where);
-	                    $stmt->bind_param("i", $tmp['pluginID']);
-	                    $stmt->execute();
-	                    $query = $stmt->get_result();
-	                }
-	            }
-	        } else {
-	            // Wenn kein Admin-Modus, dann nach dem index_link filtern
-	            $where = " WHERE `activate`='1' AND `index_link` LIKE ?";
-	            $likeVar = "%" . $var . "%";
-	            $stmt = $_database->prepare("SELECT * FROM " . PREFIX . "settings_plugins " . $where);
-	            $stmt->bind_param("s", $likeVar);
-	            $stmt->execute();
-	            $q = $stmt->get_result();
-	            if (mysqli_num_rows($q)) {
-	                $tmp = mysqli_fetch_array($q);
-	                $ifiles = $tmp['index_link'];
-	                $tfiles = explode(",", $ifiles);
-	                if (in_array($var, $tfiles)) {
-	                    $where = " WHERE `pluginID`=?";
-	                    $stmt = $_database->prepare("SELECT * FROM " . PREFIX . "settings_plugins " . $where);
-	                    $stmt->bind_param("i", $tmp['pluginID']);
-	                    $stmt->execute();
-	                    $query = $stmt->get_result();
-	                }
-	            }
-	        }
-	    }
-
-	    // Falls kein gültiges Ergebnis gefunden wird
-	    if (!isset($query)) {
-	        return false;
-	    }
-
-	    try {
-	        // Wenn das Abfrageergebnis Zeilen enthält, gib die erste Zeile zurück
-	        if (mysqli_num_rows($query)) {
-	            $row = mysqli_fetch_array($query);
-	            return $row;
-	        }
-	    } catch (Exception $e) {
-	        // Wenn ein Fehler auftritt, gib die Fehlermeldung aus
-	        return $e->getMessage();
-	    }
+		if ($id > 0) {
+			$where = " WHERE `activate`='1' AND `pluginID`='" . intval($id) . "'";
+			$query = safe_query("SELECT * FROM " . PREFIX . "settings_plugins " . $where);
+		} else {
+			if ($admin) {
+				$where = " WHERE `activate`='1' AND `admin_file` LIKE '%" . $var . "%'";
+			} else {
+				$where = " WHERE `activate`='1' AND `index_link` LIKE '%" . $var . "%'";
+			}
+			$q = safe_query("SELECT * FROM " . PREFIX . "settings_plugins " . $where);
+			if (mysqli_num_rows($q)) {
+				$tmp = mysqli_fetch_array($q);
+				$ifiles = $tmp['index_link'];
+				$tfiles = explode(",", $ifiles);
+				if (in_array($var, $tfiles)) {
+					$where = " WHERE `pluginID`='" . $tmp['pluginID'] . "'";
+					$query = safe_query("SELECT * FROM " . PREFIX . "settings_plugins " . $where);
+				}
+			}
+			$w = safe_query("SELECT * FROM " . PREFIX . "settings_plugins " . $where);
+			if (mysqli_num_rows($w)) {
+				$xtmp = mysqli_fetch_array($w);
+				$afiles = $xtmp['admin_file'];
+				$bfiles = explode(",", $afiles);
+				if (in_array($var, $bfiles)) {
+					$where = " WHERE `pluginID`='" . $xtmp['pluginID'] . "'";
+					$query = safe_query("SELECT * FROM " . PREFIX . "settings_plugins " . $where);
+				}
+			}
+		}
+		if (!isset($query)) {
+			return false;
+		}
+		try {
+			if (mysqli_num_rows($query)) {
+				$row = mysqli_fetch_array($query);
+				return $row;
+			}
+		} catch (EXCEPTION $e) {
+			return $e->message();
+		}
 	}
 
 
@@ -686,6 +659,19 @@ class plugin_manager
 	    return $_lang->module;
 	}
 
+	function render_array_with_lang(array $data_array, array $lang): array
+	{
+	    foreach ($data_array as $key => $value) {
+	        if (is_string($value)) {
+	            $data_array[$key] = preg_replace_callback('/{{\s*(\w+)\s*}}/', function ($matches) use ($lang) {
+	                $placeholder = $matches[1];
+	                return array_key_exists($placeholder, $lang) ? $lang[$placeholder] : $matches[0];
+	            }, $value);
+	        }
+	    }
+	    return $data_array;
+	}
+
 	function plugin_adminLanguage($plugin, $file, $admin = false)
 	{
 	    try {
@@ -797,6 +783,31 @@ function get_widget($modulname, $widgetdatei)
         // Fehler: Das Plugin wurde nicht in der Datenbank gefunden
         echo '<p class="error">Das Plugin mit dem Modulnamen ' . htmlspecialchars($modulname) . ' wurde nicht gefunden.</p>';
         return false;
+    }
+}
+
+class PluginService
+{
+    private static $templateEngine;
+    private static $pluginLanguages = [];
+
+    // Template-Engine einmal laden
+    public static function getTemplateEngine($pluginPath)
+    {
+        if (self::$templateEngine === null) {
+            self::$templateEngine = new Template($pluginPath . 'templates');
+        }
+        return self::$templateEngine;
+    }
+
+    // Sprachdateien einmal laden
+    public static function getPluginLanguage($pluginName, $pluginPath)
+    {
+        if (!isset(self::$pluginLanguages[$pluginName])) {
+            $pm = new plugin_manager();
+            self::$pluginLanguages[$pluginName] = $pm->plugin_language($pluginName, $pluginPath);
+        }
+        return self::$pluginLanguages[$pluginName];
     }
 }
 

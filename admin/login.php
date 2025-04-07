@@ -10,7 +10,7 @@
 
     <!-- CSS STUFF -->
     <!-- Bootstrap Core CSS -->
-    <link href="../components/admin/css/bootstrap.min.css" rel="stylesheet">    
+    <link href="/admin/css/bootstrap.min.css" rel="stylesheet">    
 
     <link href="./login/style.css" rel="stylesheet">
 

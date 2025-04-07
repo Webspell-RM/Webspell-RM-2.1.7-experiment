@@ -40,42 +40,27 @@ if (!$accesslevel($userID) || mb_substr(basename($_SERVER[ 'REQUEST_URI' ]), 0, 
 }
 }
 
-if (isset($_POST['submit'])) {
-    $imprint = $_POST['message'];
-    $disclaimer_text = $_POST['disclaimer_text'];
-    $type = isset($_POST['type']) ? (int) $_POST['type'] : 0; // Sicherstellen, dass der Typ ein Integer ist
-
+if (isset($_POST[ 'submit' ])) {
+    $imprint = $_POST[ 'message' ];
+    $disclaimer_text = $_POST[ 'disclaimer_text' ];
     $CAPCLASS = new \webspell\Captcha;
-    if ($CAPCLASS->checkCaptcha(0, $_POST['captcha_hash'])) {
-        // Sichere SQL-Abfrage mit vorbereiteten Statements
-        $stmt = $_database->prepare("UPDATE `" . PREFIX . "settings` SET imprint = ?");
-        $stmt->bind_param("s", $_POST['type']);  // Bindet den Typ-Parameter als String
-        $stmt->execute();
-        $stmt->close();
+    if ($CAPCLASS->checkCaptcha(0, $_POST[ 'captcha_hash' ])) {
+        safe_query("UPDATE `" . PREFIX . "settings` SET imprint='" . $_POST[ 'type' ] . "'");
 
-        // Überprüfen, ob ein Eintrag für das Impressum vorhanden ist und ggf. aktualisieren oder einfügen
-        $stmt = $_database->prepare("SELECT * FROM `" . PREFIX . "settings_imprint`");
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($result->num_rows > 0) {
-            // Datensatz existiert, also aktualisieren
-            $stmt = $_database->prepare("UPDATE `" . PREFIX . "settings_imprint` SET imprint = ?, disclaimer_text = ?");
-            $stmt->bind_param("ss", $imprint, $disclaimer_text);
-            $stmt->execute();
-            $stmt->close();
+        if (mysqli_num_rows(safe_query("SELECT * FROM `" . PREFIX . "settings_imprint`"))) {
+            safe_query(
+            "UPDATE
+                `" . PREFIX . "settings_imprint`
+            SET
+                `imprint` = '" . $imprint . "',
+                `disclaimer_text` = '" . $disclaimer_text . "'"
+        );
         } else {
-            // Datensatz existiert nicht, also neuen Eintrag erstellen
-            $stmt = $_database->prepare("INSERT INTO `" . PREFIX . "settings_imprint` (imprint, disclaimer_text) VALUES (?, ?)");
-            $stmt->bind_param("ss", $imprint, $disclaimer_text);
-            $stmt->execute();
-            $stmt->close();
+            safe_query("INSERT INTO `" . PREFIX . "settings_imprint` (imprint, disclaimer_text) values( '" . $imprint . "', '" . $disclaimer_text . "') ");
         }
-
-        // Weiterleitung zur Seite nach erfolgreicher Aktualisierung
         redirect("admincenter.php?site=settings_imprint", "", 0);
     } else {
-        echo $_language->module['transaction_invalid'];  // Fehlermeldung bei ungültigem CAPTCHA
+        echo $_language->module[ 'transaction_invalid' ];
     }
 } else {
     // Variablen für die Radio-Button-Auswahl vorbereiten

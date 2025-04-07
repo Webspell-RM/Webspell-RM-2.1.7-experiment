@@ -101,7 +101,6 @@
 └── rewrite.php                  # URL-Rewrite-Engine – Logik für das Umschreiben von URLs und Weiterleitungen, um benutzerfreundliche URLs zu erzeugen.
 
 
-
 ````
 
 	Webspell-RM is a free Content Management System (CMS) that is available free of charge at https://www.webspell-rm.de. The following information should give you a first impression of how it works.

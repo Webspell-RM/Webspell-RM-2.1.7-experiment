@@ -32,11 +32,21 @@ namespace webspell;
 
 class Template
 {
-    private $rootFolder;
+   # private $rootFolder;
 
     /**
     * @param string $rootFolder base folder where the template files are located
     */
+    #public function __construct($rootFolder = "templates")
+    #{
+    #    $this->rootFolder = $rootFolder;
+    #}
+
+    public $themes_path;
+    public $template_path;
+
+    private $rootFolder;
+
     public function __construct($rootFolder = "templates")
     {
         $this->rootFolder = $rootFolder;
@@ -88,7 +98,10 @@ class Template
     */
     private function replace($template, $data = array())
     {
-        return strtr($template, $data);
+        return preg_replace_callback('/{{\s*(\w+)\s*}}/', function ($matches) use ($data) {
+            $key = $matches[1];
+            return array_key_exists($key, $data) ? $data[$key] : $matches[0];
+        }, $template);
     }
 
     /**
@@ -153,4 +166,31 @@ class Template
         unset($datas);
         return $return;
     }
+
+
 }
+class TemplateService
+{
+    private Template $template;
+
+    public function __construct(?string $templateRoot = null)
+    {
+        $this->template = new Template($templateRoot ?? 'templates');
+    }
+
+    public function render(string $template, string $section, array $data = [], ?string $path = null): string
+    {
+        return $this->template->loadTemplate($template, $section, $data, $path);
+    }
+
+    public function renderSimple(string $template, array $data = []): string
+    {
+        return $this->template->replaceTemplate($template, $data);
+    }
+
+    public function renderMulti(string $template, array $dataList = []): string
+    {
+        return $this->template->replaceMulti($template, $dataList);
+    }
+}
+
