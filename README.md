@@ -36,10 +36,21 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
 */
 ```
+````
+Wichtiger Hinweis zur Version 2.1.6 von webSPELL-RM (Alpha)
+
+Die Version 2.1.6 von webSPELL-RM befindet sich derzeit im Alpha-Status. Diese Version ist noch nicht stabil und wurde nicht für den produktiven Einsatz oder eine Installation auf Live-Systemen freigegeben. Es handelt sich um eine Entwicklungs- und Testversion, die möglicherweise viele Fehler und unvollständige Funktionen enthält.
+
+Bitte beachten Sie, dass diese Version vor der Verwendung einer vollständigen Installation gründlich getestet werden sollte. Wir empfehlen, diese Alpha-Version nur in einer sicheren Testumgebung zu installieren und nicht auf einer Live-Website oder einem produktiven Server zu verwenden.
+
+Die in dieser Version vorgenommenen Änderungen und Anpassungen können unvorhergesehene Probleme verursachen. Verwenden Sie diese Version nur, wenn Sie bereit sind, mögliche Fehler zu beheben und uns bei der Weiterentwicklung zu unterstützen.
+
+Vielen Dank für Ihr Verständnis.
+````
 
 # 📁 webSPELL-RM 2.1.6 – Ordnerstruktur
 ````
-📁 webSPELL-RM 2.1.6 – Ordnerstruktur
+
 
 /webspell-rm/
 ├── admin/                       # Adminbereich – Hier befinden sich alle Dateien, die das Backend betreffen.
@@ -63,15 +74,15 @@
 │
 ├── includes/                    # Systemlogik – Zentrale Dateien, die die Kernlogik und die Systemfunktionen enthalten.
 │   ├── expansion/               # Erweiterungen – Zusätzliche Module oder Anpassungen für das System.
-│   │	└── default/			 # Standard-Erweiterungen – Standardkonfigurationen und Erweiterungen für die Systemfunktionalität.
-│   ├── modules/				 # Systemmodule – Zusätzliche Funktionalitäten oder Dienste für das System.
-│   ├── plugins/ 				 # Plugins – Erweiterungen, die in das System integriert werden.
-│   │	├── navigation/			 # Navigations-Plugin – Logik und Dateien für die Navigation.
-│   │	├── footer/				 # Footer-Plugin – Dateien und Logik für die Fußzeile.
-│   │	└── Plugins/			 # Allgemeine Plugin-Dateien – Dateien und Funktionen für zusätzliche Plugins.
-│   └── themes 					 # System-Designs – Design- und Layout-Dateien für das Frontend.
-│		├── 404/				 # 404-Fehler-Seite – Layout und Design für die 404-Seite.
-│   	└── default/			 # Standard-Design – Standard-Layout und Design-Dateien für das System.
+│   │	└── default/             # Standard-Erweiterungen – Standardkonfigurationen und Erweiterungen für die Systemfunktionalität.
+│   ├── modules/                 # Systemmodule – Zusätzliche Funktionalitäten oder Dienste für das System.
+│   ├── plugins/                 # Plugins – Erweiterungen, die in das System integriert werden.
+│   │	├── navigation/          # Navigations-Plugin – Logik und Dateien für die Navigation.
+│   │	├── footer/              # Footer-Plugin – Dateien und Logik für die Fußzeile.
+│   │	└── Plugins/             # Allgemeine Plugin-Dateien – Dateien und Funktionen für zusätzliche Plugins.
+│   └── themes                   # System-Designs – Design- und Layout-Dateien für das Frontend.
+│       ├── 404/                 # 404-Fehler-Seite – Layout und Design für die 404-Seite.
+│   	└── default/             # Standard-Design – Standard-Layout und Design-Dateien für das System.
 │
 ├── install/                     # Installer – Dateien, die für die Installation und Setup des Systems notwendig sind.
 │   ├── css/                     # Styles für den Installationsprozess – Stylesheets für die Installationsoberfläche.
@@ -99,7 +110,6 @@
 ├── license.txt                  # Lizenzbedingungen – Details zur Lizenz des Projekts, wie die Rechte und Einschränkungen des Quellcodes.
 ├── package.json                 # Node.js-Abhängigkeiten – Paketkonfiguration für Node.js, die die erforderlichen Module und Versionen beschreibt.
 └── rewrite.php                  # URL-Rewrite-Engine – Logik für das Umschreiben von URLs und Weiterleitungen, um benutzerfreundliche URLs zu erzeugen.
-
 
 ````
 
