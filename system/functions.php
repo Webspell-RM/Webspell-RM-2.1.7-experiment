@@ -349,6 +349,7 @@ if(file_exists('func/user.php')) { systeminc('func/user'); } else { systeminc('.
 // -- ACCESS INFORMATION -- //
 if(file_exists('func/useraccess.php')) { systeminc('func/useraccess'); } else { systeminc('../system/func/useraccess'); }
 if(file_exists('func/access_control.php')) { systeminc('func/access_control'); } else { systeminc('../system/func/access_control'); }
+if(file_exists('func/check_access.php')) { systeminc('func/check_access'); } else { systeminc('../system/func/check_access'); }
 
 // -- MESSENGER INFORMATION -- //
 if(file_exists('func/messenger.php')) { systeminc('func/messenger'); } else { systeminc('../system/func/messenger'); }
@@ -687,5 +688,21 @@ function tableExists($table) {
 
     // Überprüfung, ob mindestens eine Zeile gefunden wurde (d.h. die Tabelle existiert)
     return mysqli_num_rows($result) > 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+// Diese Funktion dient zum sicheren Escapen von Eingabewerten für MySQLi
+function escape($string) {
+    global $_database;  // $_database ist die MySQLi-Verbindung
+    return mysqli_real_escape_string($_database, $string);
 }
 ?>

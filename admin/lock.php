@@ -30,14 +30,8 @@ $_language->readModule('lock', false, true);
 
 use webspell\AccessControl;
 
-// Überprüfen, ob der Benutzer die erforderliche Berechtigung hat
-$ergebnis = safe_query("SELECT * FROM " . PREFIX . "navigation_dashboard_links WHERE modulname='ac_settings'");
-while ($db = mysqli_fetch_array($ergebnis)) {
-    $accesslevel = $db['accesslevel'];
-    if (!AccessControl::hasRole($userID, $accesslevel)) {
-        die($_language->module['access_denied']);
-    }
-} 
+// Den Admin-Zugriff für das Modul überprüfen
+checkAdminAccess('ac_lock');  // Modulname für diese Seite
 
 echo '<div class="card">
         <div class="card-header"><i class="bi bi-gear"></i> 

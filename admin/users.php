@@ -30,14 +30,8 @@ $_language->readModule('rank_special', true, true);
 
 use webspell\AccessControl;
 
-// Überprüfen, ob der Benutzer die erforderliche Berechtigung hat
-$ergebnis = safe_query("SELECT * FROM " . PREFIX . "navigation_dashboard_links WHERE modulname='ac_users'");
-while ($db = mysqli_fetch_array($ergebnis)) {
-    $accesslevel = $db['accesslevel'];
-    if (!AccessControl::hasRole($userID, $accesslevel)) {
-        die($_language->module['access_denied']);
-    }
-}
+AccessControl::enforceLogin();     // nur eingeloggte Nutzer
+AccessControl::enforce("admin");   // nur Admins mit gültigem Cookie
 
 if (isset($_POST[ 'edit' ])) {
     $CAPCLASS = new \webspell\Captcha;

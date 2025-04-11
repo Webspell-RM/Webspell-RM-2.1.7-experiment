@@ -3,7 +3,7 @@
 // Sprach-Array für das Modul 'admincenter'
 $language_array = Array(
 
-  'access_denied'     => 'Zugriff verweigert',
+  'access_denied'     => '<div class="alert alert-danger" role="alert">Zugriff verweigert</div>',
   'na'                => 'nicht verfügbar',
   'welcome'           => 'Willkommen',
   'logout'            => 'Logout',

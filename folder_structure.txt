@@ -8,49 +8,54 @@
 │   ├── js/                      # JS-Funktionen für Adminbereich – JavaScript-Dateien für die Verwaltung und interaktive Funktionen.
 │   ├── templates/               # Admin-Templates – Templates für die Darstellung im Adminbereich.
 │   ├── languages/               # Sprachen für Admin – Sprachdateien für den Adminbereich.
-│   │   ├── de/                  # Deutsche Sprachdateien
-│   │   ├── en/                  # Englische Sprachdateien
-│   │   └── it/                  # Italienische Sprachdateien
+│   │   ├── de/                  # Deutsche Sprachdateien – Texte und Übersetzungen für die Admin-Oberfläche.
+│   │   ├── en/                  # Englische Sprachdateien – Texte und Übersetzungen für die Admin-Oberfläche.
+│   │   └── it/                  # Italienische Sprachdateien – Texte und Übersetzungen für die Admin-Oberfläche.
 │   └── login/                   # Admin-Login-System – Dateien, die mit dem Admin-Login-Prozess zusammenhängen.
 │
 ├── components/                  # Wiederverwendbare UI-Komponenten – Gemeinsame UI-Elemente, die in verschiedenen Teilen der Anwendung verwendet werden.
 │
 ├── images/                      # Öffentliche Bilder – Bilder, die für das Frontend oder allgemeine Zwecke genutzt werden.
 │   ├── avatars/                 # Nutzer-Avatare – Bilder, die von Nutzern als Profilbilder verwendet werden.
-│   ├── languages/               # Sprach-Flaggen – Flaggenbilder für die Auswahl der Sprache.
+│   ├── languages/               # Sprach-Flaggen – Flaggenbilder für die Auswahl der Sprache im Frontend.
 │   └── userpics/                # Nutzerbilder – Allgemeine Benutzerbilder, die im Frontend angezeigt werden.
 │
 ├── includes/                    # Systemlogik – Zentrale Dateien, die die Kernlogik und die Systemfunktionen enthalten.
-│   ├── classes/                 # Zentrale PHP-Klassen – PHP-Klassen für grundlegende Funktionen.
-│   ├── config/                  # Konfiguration – Konfigurationsdateien, z. B. Datenbankeinstellungen.
-│   ├── functions/               # Hilfsfunktionen – PHP-Dateien, die allgemeine Hilfsfunktionen bieten.
-│   ├── langs/                   # Sprachstrings – Sprachdateien für das Frontend.
-│   ├── modules/                 # Erweiterbare Funktions-Module – Zusätzliche, optionale Module, die der Installation hinzugefügt werden können.
-│   └── system/                  # Systemfunktionen und Loader – Dateien, die für das Systemmanagement und den Systemstart benötigt werden.
+│   ├── expansion/               # Erweiterungen – Zusätzliche Module oder Anpassungen für das System.
+│   │	└── default/			 # Standard-Erweiterungen – Standardkonfigurationen und Erweiterungen für die Systemfunktionalität.
+│   ├── modules/				 # Systemmodule – Zusätzliche Funktionalitäten oder Dienste für das System.
+│   ├── plugins/ 				 # Plugins – Erweiterungen, die in das System integriert werden.
+│   │	├── navigation/			 # Navigations-Plugin – Logik und Dateien für die Navigation.
+│   │	├── footer/				 # Footer-Plugin – Dateien und Logik für die Fußzeile.
+│   │	└── Plugins/			 # Allgemeine Plugin-Dateien – Dateien und Funktionen für zusätzliche Plugins.
+│   └── themes 					 # System-Designs – Design- und Layout-Dateien für das Frontend.
+│		├── 404/				 # 404-Fehler-Seite – Layout und Design für die 404-Seite.
+│   	└── default/			 # Standard-Design – Standard-Layout und Design-Dateien für das System.
 │
 ├── install/                     # Installer – Dateien, die für die Installation und Setup des Systems notwendig sind.
-│   ├── css/                     # Styles für den Installationsprozess.
-│   ├── images/                  # Bilder für den Installer.
-│   ├── installer/               # Installationsskripte und Logik.
-│   ├── languages/               # Sprachdateien für den Installer.
-│   └── templates/               # Templates für den Installationsprozess.
+│   ├── css/                     # Styles für den Installationsprozess – Stylesheets für die Installationsoberfläche.
+│   ├── images/                  # Bilder für den Installer – Grafiken, die während des Installationsprozesses angezeigt werden.
+│   ├── installer/               # Installationsskripte und Logik – Skripte, die den Installationsprozess steuern.
+│   ├── languages/               # Sprachdateien für den Installer – Texte und Übersetzungen für die Installationsoberfläche.
+│   └── templates/               # Templates für den Installationsprozess – Templates, die im Installationsbereich verwendet werden.
 │
 ├── languages/                   # Sprachdateien fürs Frontend – Alle unterstützten Sprachen für die öffentliche Seite.
-│   ├── de/                      # Deutsche Sprachdateien
-│   ├── en/                      # Englische Sprachdateien
-│   └── it/                      # Italienische Sprachdateien
+│   ├── de/                      # Deutsche Sprachdateien – Texte und Übersetzungen für das Frontend in deutscher Sprache.
+│   ├── en/                      # Englische Sprachdateien – Texte und Übersetzungen für das Frontend in englischer Sprache.
+│   └── it/                      # Italienische Sprachdateien – Texte und Übersetzungen für das Frontend in italienischer Sprache.
 │
 ├── system/                      # Plugins, Widgets, SQL-Importe – Systemdateien, die von Plugins und Erweiterungen genutzt werden.
-│   └── func/                    # Allgemeine Systemfunktionen – Zentrale Systemfunktionen und -skripte.
+│   └── func/                    # Allgemeine Systemfunktionen – Zentrale Systemfunktionen und -skripte, die für das gesamte System verwendet werden.
 │
-├── tmp/                         # Temporäre Dateien & Caches – Dateien, die während der Nutzung erstellt und zwischengespeichert werden.
+├── tmp/                         # Temporäre Dateien & Caches – Dateien, die während der Nutzung erstellt und zwischengespeichert werden, z.B. Caches.
 │
-├── .gitignore                   # Git-Ignore-Konfiguration – Dateien und Verzeichnisse, die in Git ignoriert werden sollen.
+├── .gitignore                   # Git-Ignore-Konfiguration – Dateien und Verzeichnisse, die in Git ignoriert werden sollen, um unnötige Dateien aus dem Repository zu halten.
 ├── .htaccess                    # Apache-Konfiguration – Webserver-Konfiguration für URL-Umschreibungen und -Sicherheitsregeln.
 ├── .htaccess_ws                 # Webspell-spezifische Apache-Konfiguration – Spezielle Regeln für webSPELL.
-├── CHANGELOG.md                 # Versionshistorie – Dokumentation der Änderungen und Updates.
-├── README.md                    # Projektbeschreibung – Allgemeine Informationen zum Projekt.
-├── index.php                    # Einstiegspunkt Frontend – Haupt-Controller für das Frontend der Webseite.
-├── license.txt                  # Lizenzbedingungen – Details zur Lizenz des Projekts.
-├── package.json                 # Node.js-Abhängigkeiten – Paketkonfiguration für Node.js.
-└── rewrite.php                  # URL-Rewrite-Engine – Logik für das Umschreiben von URLs und Weiterleitungen.
+├── CHANGELOG.md                 # Versionshistorie – Dokumentation der Änderungen und Updates, die in jeder Version vorgenommen wurden.
+├── README.md                    # Projektbeschreibung – Allgemeine Informationen zum Projekt, dessen Installation und Nutzung.
+├── index.php                    # Einstiegspunkt Frontend – Haupt-Controller für das Frontend der Webseite, der das Laden der Anwendung steuert.
+├── license.txt                  # Lizenzbedingungen – Details zur Lizenz des Projekts, wie die Rechte und Einschränkungen des Quellcodes.
+├── package.json                 # Node.js-Abhängigkeiten – Paketkonfiguration für Node.js, die die erforderlichen Module und Versionen beschreibt.
+└── rewrite.php                  # URL-Rewrite-Engine – Logik für das Umschreiben von URLs und Weiterleitungen, um benutzerfreundliche URLs zu erzeugen.
+

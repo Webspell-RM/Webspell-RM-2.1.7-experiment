@@ -177,6 +177,7 @@ class LoginCookie
                     $loggedin = true;
                     $userID = $row['userID'];
                     $_SESSION['ws_user'] = $userID;
+                    $_SESSION['userID'] = $userID; // <-- hinzugefügt
                     $_SESSION['ws_lastlogin'] = $row['lastlogin'];
                     $language = $row['language'];
 

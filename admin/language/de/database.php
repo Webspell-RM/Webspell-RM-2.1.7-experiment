@@ -2,7 +2,7 @@
 
 // Sprach-Array für das Modul 'database'
 $language_array = array(
-    'access_denied' => 'Zugriff verweigert',
+    'access_denied'     => '<div class="alert alert-danger" role="alert">Zugriff verweigert</div>',
     'allowed_commands' => 'Erlaubte Befehle: insert, alter table, select',
     'backup_file' => 'Externe Sicherungsdatei',
     'database' => 'Datenbank',

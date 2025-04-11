@@ -33,30 +33,8 @@ $_language->readModule('banned_ips', false, true);
 
 use webspell\AccessControl;
 
-// Überprüfen, ob der Benutzer die erforderliche Berechtigung hat
-$ergebnis = safe_query("SELECT * FROM " . PREFIX . "navigation_dashboard_links WHERE modulname='ac_banned_ips'");
-while ($db = mysqli_fetch_array($ergebnis)) {
-    $accesslevel = $db['accesslevel'];
-    if (!AccessControl::hasRole($userID, $accesslevel)) {
-        die($_language->module['access_denied']);
-    }
-}    
-
-// CAPTCHA-Prüfung und Löschen eines Banns
-if (isset($_GET['delete']) && isset($_GET['banID']) && isset($_GET['captcha_hash'])) {
-    $CAPCLASS = new \webspell\Captcha;
-
-    if ($CAPCLASS->checkCaptcha(0, $_GET['captcha_hash'])) {
-        // Sicheres Löschen eines Banns
-        $banID = (int) $_GET['banID'];
-        $stmt = $_database->prepare("DELETE FROM " . PREFIX . "banned_ips WHERE banID = ?");
-        $stmt->bind_param("i", $banID);
-        $stmt->execute();
-        $stmt->close();
-    } else {
-        echo $_language->module['transaction_invalid'];
-    }
-}
+// Den Admin-Zugriff für das Modul überprüfen
+checkAdminAccess('ac_banned_ips');  // Modulname für diese Seite
 
 // CSRF-Token erstellen und die Liste der Banns abrufen
 $CAPCLASS = new \webspell\Captcha;

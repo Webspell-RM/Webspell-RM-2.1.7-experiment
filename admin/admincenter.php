@@ -54,7 +54,7 @@ $cookievalueadmin = 'false';
 if (isset($_COOKIE['ws_cookie'])) {
 	$cookievalueadmin = 'accepted';
 }
-// extra login
+/*// extra login
 $admin = isanyadmin($userID);
 if (!$loggedin) { // START
 	// include theme / content
@@ -62,7 +62,16 @@ if (!$loggedin) { // START
 }
 if (!$admin || !$cookievalueadmin) {
 	die($_language->module['access_denied']);
-}
+}*/
+require_once '../system/session.php';
+use webspell\AccessControl;
+
+AccessControl::enforceLogin();
+AccessControl::enforce("admin");
+
+
+
+
 if (!isset($_SERVER['REQUEST_URI'])) {
 	$arr = explode('/', $_SERVER['PHP_SELF']);
 	$_SERVER['REQUEST_URI'] = '/' . $arr[count($arr) - 1];
@@ -72,58 +81,84 @@ if (!isset($_SERVER['REQUEST_URI'])) {
 }
 function getplugincatID($catname)
 {
-	$ds = mysqli_fetch_array(safe_query("SELECT * FROM `" . PREFIX . "navigation_dashboard_categories` WHERE name LIKE '%$catname%'"));
-	$SearchString2 = safe_query("SELECT * FROM `" . PREFIX . "navigation_dashboard_links` WHERE catID = '" . $ds['catID'] . "'");
-	if (mysqli_num_rows($SearchString2) >= '1') {
-		return '1';
-	} else {
-		return '0';
-	}
+    // Bereite die SQL-Anfrage vor, um SQL-Injection zu verhindern
+    $stmt = $_database->prepare("SELECT * FROM `" . PREFIX . "navigation_dashboard_categories` WHERE name LIKE ?");
+    $searchTerm = '%' . $catname . '%';
+    $stmt->bind_param('s', $searchTerm);  // 's' für String
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    // Prüfen, ob eine Kategorie gefunden wurde
+    if ($ds = $result->fetch_assoc()) {
+        // Kategorie gefunden, nun Links überprüfen
+        $stmt2 = $_database->prepare("SELECT * FROM `" . PREFIX . "navigation_dashboard_links` WHERE catID = ?");
+        $stmt2->bind_param('i', $ds['catID']);  // 'i' für Integer
+        $stmt2->execute();
+        $result2 = $stmt2->get_result();
+
+        // Wenn Links vorhanden sind, zurückgeben, dass Links existieren
+        if ($result2->num_rows >= 1) {
+            return true;
+        } else {
+            return false; // Keine Links in der Kategorie
+        }
+    } else {
+        // Keine Kategorie mit diesem Namen gefunden
+        return false;
+    }
 }
+
 function dashnavi()
 {
-	global $userID;
-	$links = '';
-	$ergebnis = safe_query("SELECT * FROM " . PREFIX . "navigation_dashboard_categories ORDER BY sort");
-	while ($ds = mysqli_fetch_array($ergebnis)) {
-		$accesslevel = 'is' . $ds['accesslevel'] . 'admin';
+    global $userID;
+    $links = '';
 
-		$name = $ds['name'];
-		$fa_name = $ds['fa_name'];
-		$translate = new multiLanguage(detectCurrentLanguage());
-		$translate->detectLanguages($name);
-		$name = $translate->getTextByLanguage($name);
+    // Abfrage der Kategorien aus der Datenbank
+    $ergebnis = safe_query("SELECT * FROM " . PREFIX . "navigation_dashboard_categories ORDER BY sort");
 
-		$data_array = array();
-		$data_array['$name'] = $ds['name'];
-		$data_array['$fa_name'] = $ds['fa_name'];
-		$plugincheck = getplugincatID($name);
+    if (mysqli_num_rows($ergebnis) === 0) {
+        echo 'Keine Kategorien gefunden!';  // Debugging Hinweis
+    }
 
-		if ($accesslevel($userID) && $plugincheck == '1') {
-			$links .= '<li><a class=\'has-arrow\' aria-expanded=\'false\' href=\'#\'><i class=\'' . $fa_name . '\' style="font-size: 1rem;"></i>	 ' . $name . '</a><ul class=\'nav nav-third-level\'>';
+    while ($ds = mysqli_fetch_array($ergebnis)) {
+        // Übersetzungen und andere Daten
+        $name = $ds['name'];
+        $fa_name = $ds['fa_name'];
+        $translate = new multiLanguage(detectCurrentLanguage());
+        $translate->detectLanguages($name);
+        $name = $translate->getTextByLanguage($name);
 
-			$catlinks = safe_query("SELECT * FROM " . PREFIX . "navigation_dashboard_links WHERE catID='" . $ds['catID'] . "' ORDER BY sort");
-			while ($db = mysqli_fetch_array($catlinks)) {
-				$accesslevel = 'is' . $db['accesslevel'] . 'admin';
+        // Überprüfung des Zugriffs auf die Kategorie
+        if (checkAccessRights($userID, $ds['catID'])) {
+            $links .= '<li><a class=\'has-arrow\' aria-expanded=\'false\' href=\'#\'><i class=\'' . $fa_name . '\' style="font-size: 1rem;"></i> ' . $name . '</a><ul class=\'nav nav-third-level\'>';
 
-				$name = $db['name'];
-				$translate = new multiLanguage(detectCurrentLanguage());
-				$translate->detectLanguages($name);
-				$name = $translate->getTextByLanguage($name);
+            // Links der Kategorie abrufen
+            $catlinks = safe_query("SELECT * FROM " . PREFIX . "navigation_dashboard_links WHERE catID='" . $ds['catID'] . "' ORDER BY sort");
 
-				$data_array = array();
-				$data_array['$name'] = $db['name'];
+            if (mysqli_num_rows($catlinks) === 0) {
+                echo 'Keine Links in dieser Kategorie gefunden!';  // Debugging Hinweis
+            }
 
-				if ($accesslevel($userID)) {
-					$links .= '<li><a href=\'' . $db['url'] . '\'> <i class="bi bi-plus-lg ac-link"></i> ' . $name . '</a></li>';
-				}
-			}
-			$links .= '</ul></li>';
-		}
-	}
+            while ($db = mysqli_fetch_array($catlinks)) {
+            	$translate->detectLanguages($name);
+        		$name = $translate->getTextByLanguage($db['name']);
+                // Überprüfung des Zugriffs auf den Link
+                if (checkAccessRights($userID, null, $db['linkID'])) {
+                    $links .= '<li><a href=\'' . $db['url'] . '\'> <i class="bi bi-plus-lg ac-link"></i> ' . $name . '</a></li>';
+                }
+            }
+            $links .= '</ul></li>';
+        }
+    }
 
-	return $links;
+    // Rückgabe der Links oder eine leere Nachricht, wenn keine gefunden wurden
+    return $links ? $links : '<li>Keine Zugriffsberechtigten Links gefunden.</li>';
 }
+
+
+
+
+
 
 if ($userID && !isset($_GET['userID']) && !isset($_POST['userID'])) {
 	$ds = mysqli_fetch_array(safe_query("SELECT registerdate FROM `" . PREFIX . "user` WHERE userID='" . $userID . "'"));
