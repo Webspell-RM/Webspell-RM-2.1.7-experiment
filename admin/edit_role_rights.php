@@ -27,11 +27,6 @@ $moduleRights = [];
 if (isset($_GET['roleID'])) {
     $roleID = (int)$_GET['roleID'];
 
-    // Admin-Rollen abrufen (aus der Tabelle rm_216_user_roles)
-    echo "<pre>";
-    var_dump($roleID);  // Ausgabe der RoleID
-    echo "</pre>";
-
     // ✅ Modul-Liste abrufen (aus der Tabelle navigation_dashboard_links)
     $modules = [];
     $result = $_database->query("SELECT linkID, modulname, name FROM " . PREFIX . "navigation_dashboard_links ORDER BY sort ASC");
@@ -54,7 +49,7 @@ if (isset($_GET['roleID'])) {
 
     // ✅ Bestehende Rechte für die Rolle laden
     $stmt = $_database->prepare("SELECT type, modulname, accessID 
-                                 FROM " . PREFIX . "admin_access_rights 
+                                 FROM " . PREFIX . "user_admin_access_rights 
                                  WHERE roleID = ?");
     $stmt->bind_param('i', $roleID);
     $stmt->execute();
@@ -79,7 +74,7 @@ if (isset($_GET['roleID'])) {
         // Rechte für Module speichern
         $grantedModules = $_POST['modules'] ?? [];
         if (!empty($grantedModules)) {
-            $insertStmt = $_database->prepare("INSERT INTO " . PREFIX . "admin_access_rights (roleID, type, modulname, accessID) 
+            $insertStmt = $_database->prepare("INSERT INTO " . PREFIX . "user_admin_access_rights (roleID, type, modulname, accessID) 
                                                VALUES (?, 'link', ?, ?)
                                                ON DUPLICATE KEY UPDATE accessID = VALUES(accessID)");
             foreach ($grantedModules as $modulname) {
@@ -103,7 +98,7 @@ if (isset($_GET['roleID'])) {
         // Rechte für Kategorien speichern
         $grantedCategories = $_POST['category'] ?? [];
         if (!empty($grantedCategories)) {
-            $insertCat = $_database->prepare("INSERT INTO " . PREFIX . "admin_access_rights (roleID, type, modulname, accessID) 
+            $insertCat = $_database->prepare("INSERT INTO " . PREFIX . "user_admin_access_rights (roleID, type, modulname, accessID) 
                                               VALUES (?, 'category', ?, ?)
                                               ON DUPLICATE KEY UPDATE accessID = VALUES(accessID)"); // Update für Duplikate
             foreach ($grantedCategories as $modulname) {

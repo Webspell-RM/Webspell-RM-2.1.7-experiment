@@ -123,8 +123,21 @@ if ($loggedin) {
         }
     }
 
-    $dashboard = isanyadmin($_SESSION['ws_user']) ? 
-        '<li><a class="dropdown-item" href="admin/admincenter.php" target="_blank">' . $index_language['admincenter'] . '</a></li>' : '';
+    // Benutzer-ID aus der Sitzung erhalten
+    $userID = $_SESSION['userID'] ?? 0;
+    $roleID_to_check = 1; // Die zu überprüfende Rolle
+
+    // Überprüfen, ob der Benutzer die Rolle hat
+    if (!$userID || !checkUserRoleAssignment($userID, $roleID_to_check)) {
+        // Kein Zugriff oder keine Rolle zugewiesen
+        $dashboard = '';
+    } else {
+        // Zugriff gewährt, Dashboard-Link setzen
+        $dashboard = '<li><a class="dropdown-item" href="admin/admincenter.php" target="_blank">' . $index_language['admincenter'] . '</a></li>';
+    }
+
+    // Ausgabe des Dashboards (je nach Berechtigung)
+    echo $dashboard ? $dashboard : '';
 
     $_SESSION['ws_sessiontest'] = true;
 

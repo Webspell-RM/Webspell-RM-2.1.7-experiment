@@ -59,11 +59,11 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
 } else {    
     if (isset($id) && getnickname($id) != '' && deleteduser($id) == '0') {
 	    
-        if (isbanned($id)) {
-            $banned = isset($_language->module['is_banned']) ? $_language->module['is_banned'] : "Dieser Benutzer ist gesperrt.";
-        } else {
+        #if (isbanned($id)) {
+        #    $banned = isset($_language->module['is_banned']) ? $_language->module['is_banned'] : "Dieser Benutzer ist gesperrt.";
+        #} else {
             $banned = '';
-        }	
+        #}	
     
     
         //profil: last posts
@@ -568,15 +568,15 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
                 $member = '';
                 $squad_link = '';
             } else {
-                if (isclanmember($id)) {
+                #if (isclanmember($id)) {
                     $member = ' (<i class="bi bi-person" style="color: #5cb85c"></i> ' . $_language->module['clanmember'] . ') ';
                     $squad_link = '<li class="nav-item">
                                         <a class="nav-link" id="squad-tab" data-bs-toggle="tab" href="#squad" role="tab" aria-controls="squad" aria-selected="false">' . $_language->module['squad'] . '</a>
                                     </li>';
-                } else {
-                    $member = '';
-                    $squad_link = '';
-                }
+                #} else {
+                #    $member = '';
+                #    $squad_link = '';
+                #}
             }
 
     
@@ -788,13 +788,13 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
                 $specialrank = '';
             } else {
             
-            if (isforumadmin($ds[ 'userID' ])) {
+            /*if (isforumadmin($ds[ 'userID' ])) {
                 $usertype = $_language->module[ 'administrator' ];
                 $rang = '<img src="/includes/plugins/forum/images/icons/ranks/admin.png" alt="">';
             } elseif (isanymoderator($ds[ 'userID' ])) {
                 $usertype = $_language->module[ 'moderator' ];
                 $rang = '<img src="/includes/plugins/forum/images/icons/ranks/moderator.png" alt="">';
-            } else {
+            } else {*/
                 $posts = getuserforumposts($ds[ 'userID' ]);
                 
                 $ergebnis =
@@ -812,7 +812,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
                 $dt = mysqli_fetch_array($ergebnis);
                 $usertype = $dt[ 'rank' ];
                 $rang = '<img src="/includes/plugins/forum/images/icons/ranks/' . $dt[ 'pic' ] . '" alt="">';
-            }
+            #}
     
             $specialrank = '';
             $specialtype = "";
@@ -1288,7 +1288,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
                 $dy = mysqli_fetch_array($ergebnis);
 
                 // Prüfen, ob Nutzer-Galerien aktiviert sind
-                if ($dy && $dy['usergalleries'] == '1' && isclanmember($userID)) {
+                #if ($dy && $dy['usergalleries'] == '1' && isclanmember($userID)) {
                     $usergallery = '<a class="btn btn-warning btn-sm" href="index.php?site=usergallery">
                                         <i class="bi bi-images"></i> ' . $_language->module['usergalleries'] . '
                                     </a>';
@@ -1297,7 +1297,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
                                             ' . $_language->module['galleries'] . '
                                         </a>
                                      </li>';
-                }
+                #}
             }
 
             #--------------------------------------
@@ -1513,11 +1513,11 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
     
             $admincenterpic = '';
 
-            if (isset($userID) && isanyadmin($userID)) {
+            #if (isset($userID) && isanyadmin($userID)) {
                 $admincenterpic = '<a class="btn btn-dark btn-sm" href="admin/admincenter.php" target="_blank">
                     <i class="bi bi-gear"></i> ' . $_language->module['admin'] . '
                 </a>';
-            }
+            #}
     
             # Profil bearbeiten
             $edit_account = '<a class="btn btn-warning btn-sm" href="index.php?site=myprofile"><i class="bi bi-person-gear"></i>  '.$_language->module[ 'edit_account' ].'</a>';

@@ -278,7 +278,7 @@ if ($getavatar = getavatar($userID)) {
 		<!-- ckeditor -->
 		<?php
 		// Beispiel: CKEditor für Super-Admin (1) und Admin (2)
-		if (has_role($userID, [1, 2])) {
+		if (hasrole($userID, [1, 2])) {
 			echo '<script src="../components/ckeditor/ckeditor.js"></script><script src="../components/ckeditor/config.js"></script>';
 		} else {
 			echo '<script src="../components/ckeditor/ckeditor.js"></script><script src="../components/ckeditor/user_config.js"></script>';

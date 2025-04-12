@@ -43,7 +43,7 @@ if (isset($_GET['userID'])) {
 
     // Benutzername und Rolle abfragen
     $query = "
-        SELECT u.nickname, r.name AS role_name
+        SELECT u.nickname, r.role_name AS name
         FROM " . PREFIX . "user u
         JOIN " . PREFIX . "user_role_assignments ur ON u.userID = ur.adminID
         JOIN " . PREFIX . "user_roles r ON ur.roleID = r.roleID
@@ -53,12 +53,12 @@ if (isset($_GET['userID'])) {
     $result = safe_query($query);
     if ($row = mysqli_fetch_assoc($result)) {
         $nickname = htmlspecialchars($row['nickname'] ?? '');
-        $role_name = htmlspecialchars($row['role_name']);
+        $role_name = htmlspecialchars($row['name']);
 
         // Modul-/Kategorie-Rechte der Rolle abfragen + Anzeigename holen
         $rights_query = "
             SELECT ar.type, ar.modulname, ndl.name
-            FROM " . PREFIX . "admin_access_rights ar
+            FROM " . PREFIX . "user_admin_access_rights ar
             JOIN " . PREFIX . "user_role_assignments ur ON ar.roleID = ur.roleID
             JOIN " . PREFIX . "navigation_dashboard_links ndl ON ar.accessID = ndl.linkID
             WHERE ur.adminID = '$userID'

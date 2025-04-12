@@ -347,7 +347,7 @@ if(file_exists('func/datetime.php')) { systeminc('func/datetime'); } else { syst
 if(file_exists('func/user.php')) { systeminc('func/user'); } else { systeminc('../system/func/user'); }
 
 // -- ACCESS INFORMATION -- //
-if(file_exists('func/useraccess.php')) { systeminc('func/useraccess'); } else { systeminc('../system/func/useraccess'); }
+#if(file_exists('func/useraccess.php')) { systeminc('func/useraccess'); } else { systeminc('../system/func/useraccess'); }
 if(file_exists('func/access_control.php')) { systeminc('func/access_control'); } else { systeminc('../system/func/access_control'); }
 if(file_exists('func/check_access.php')) { systeminc('func/check_access'); } else { systeminc('../system/func/check_access'); }
 
