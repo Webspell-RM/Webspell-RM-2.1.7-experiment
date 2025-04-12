@@ -31,9 +31,8 @@
 $_language->readModule('plugin_manager', false, true);
 
 use webspell\AccessControl;
-
 // Den Admin-Zugriff für das Modul überprüfen
-checkAdminAccess('ac_plugin_manager');  // Modulname für diese Seite
+AccessControl::checkAdminAccess('ac_plugin_manager');
 
 if (isset($_GET['action'])) {
     $action = $_GET['action'];

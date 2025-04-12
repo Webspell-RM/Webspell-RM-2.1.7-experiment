@@ -31,10 +31,8 @@
 $_language->readModule('database', false, true);
 
 use webspell\AccessControl;
-
 // Den Admin-Zugriff für das Modul überprüfen
-checkAdminAccess('ac_database');  // Modulname für diese Seite
-
+AccessControl::checkAdminAccess('ac_database');
 
 if (isset($_POST['upload'])) {
 

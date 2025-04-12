@@ -31,9 +31,8 @@
 $_language->readModule('plugin_installer', false, true);
 
 use webspell\AccessControl;
-
 // Den Admin-Zugriff für das Modul überprüfen
-checkAdminAccess('ac_plugin_installer');  // Modulname für diese Seite
+AccessControl::checkAdminAccess('ac_plugin_installer');
 
 include('../system/func/installer.php');
 include('../system/func/update_base.php');

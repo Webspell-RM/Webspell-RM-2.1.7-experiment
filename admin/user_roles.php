@@ -1,8 +1,54 @@
 <?php
+/**
+ *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
+ *                  Webspell-RM      /                        /   /                                          *
+ *                  -----------__---/__---__------__----__---/---/-----__---- _  _ -                         *
+ *                   | /| /  /___) /   ) (_ `   /   ) /___) /   / __  /     /  /  /                          *
+ *                  _|/_|/__(___ _(___/_(__)___/___/_(___ _/___/_____/_____/__/__/_                          *
+ *                               Free Content / Management System                                            *
+ *                                           /                                                               *
+ *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
+ * @version         webspell-rm                                                                              *
+ *                                                                                                           *
+ * @copyright       2018-2025 by webspell-rm.de                                                              *
+ * @support         For Support, Plugins, Templates and the Full Script visit webspell-rm.de                 *
+ * @website         <https://www.webspell-rm.de>                                                             *
+ * @forum           <https://www.webspell-rm.de/forum.html>                                                  *
+ * @wiki            <https://www.webspell-rm.de/wiki.html>                                                   *
+ *                                                                                                           *
+ *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
+ * @license         Script runs under the GNU GENERAL PUBLIC LICENCE                                         *
+ *                  It's NOT allowed to remove this copyright-tag                                            *
+ *                  <http://www.fsf.org/licensing/licenses/gpl.html>                                         *
+ *                                                                                                           *
+ *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
+ * @author          Code based on WebSPELL Clanpackage (Michael Gruber - webspell.at)                        *
+ * @copyright       2005-2011 by webspell.org / webspell.info                                                *
+ *                                                                                                           *
+ *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
+*/
+
+// Sprachmodul laden
+#$_language->readModule('user_roles', false, true);
+
+use webspell\AccessControl;
+// Den Admin-Zugriff für das Modul überprüfen
+AccessControl::checkAdminAccess('ac_user_roles');
+
+// Überprüfe, ob die Sitzung bereits gestartet wurde, bevor session_start() aufgerufen wird
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 require_once("../system/sql.php");
 require_once("../system/functions.php");
 
-// Rollen und deren Rechte
+// CSRF-Token generieren und in der Session speichern
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+// Die Dropdown-Auswahl für Rollen aus der Datenbank erstellen
 $roles_and_rights = [
     'Super-Admin' => [
         'rights' => 'Vollzugriff auf alle Admin-Bereiche und -Funktionen. Kann Rollen und Benutzer verwalten. Kann Systemeinstellungen und andere sicherheitsrelevante Bereiche ändern. Kann alle Datenbanken und Daten im System bearbeiten.'
@@ -24,43 +70,61 @@ $roles_and_rights = [
     ]
 ];
 
-// Rollen erstellen und Rechte zuweisen
-if (isset($_POST['create_role']) && !empty($_POST['role_name'])) {
-    $roleName = escape($_POST['role_name']);
-    $roleRights = isset($roles_and_rights[$roleName]['rights']) ? $roles_and_rights[$roleName]['rights'] : ''; // Sicherstellen, dass Rechte gesetzt sind
-    
-    // Rolle in die Datenbank einfügen
-    safe_query("INSERT INTO " . PREFIX . "user_roles (name, rights) VALUES ('$roleName', '$roleRights')");
+// Dropdown-Liste für Rollen generieren
+$roles_dropdown = '';
+foreach ($roles_and_rights as $role_name => $data) {
+    $roles_dropdown .= "<option value='$role_name'>$role_name</option>";
 }
 
-// Rolle löschen
-if (isset($_GET['delete'])) {
-    $roleID = (int)$_GET['delete'];
-    safe_query("DELETE FROM " . PREFIX . "user_roles WHERE roleID = '$roleID'");
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // CSRF-Überprüfung
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        $_SESSION['csrf_error'] = "Ungültiges CSRF-Token. Anfrage abgelehnt.";
+        header("Location: admincenter.php?site=user_roles"); // Weiterleitung zur vorherigen Seite
+        exit();
+    }
+
+    // Rolle erstellen
+    if (isset($_POST['create_role']) && !empty($_POST['role_name'])) {
+        $roleName = escape($_POST['role_name']);
+
+        // Überprüfen, ob die Rolle bereits existiert
+        $existing_role = safe_query("SELECT * FROM " . PREFIX . "user_roles WHERE name = '$roleName'");
+        if (mysqli_num_rows($existing_role) > 0) {
+            $_SESSION['csrf_error'] = "Die Rolle '$roleName' existiert bereits.";
+            header("Location: admincenter.php?site=user_roles");
+            exit();
+        }
+
+        $roleRights = isset($roles_and_rights[$roleName]['rights']) ? $roles_and_rights[$roleName]['rights'] : ''; // Sicherstellen, dass Rechte gesetzt sind
+        safe_query("INSERT INTO " . PREFIX . "user_roles (name, rights) VALUES ('$roleName', '$roleRights')");
+    }
+
+    // Rolle zuweisen
+    if (isset($_POST['assign_role'])) {
+        $userID = (int)$_POST['user_id'];  // Benutzer-ID
+        $roleID = (int)$_POST['role_id'];  // Rollen-ID
+
+        // Überprüfen, ob die Rolle bereits zugewiesen wurde
+        $existing_assignment = safe_query("SELECT * FROM " . PREFIX . "user_role_assignments WHERE adminID = '$userID' AND roleID = '$roleID'");
+        if (mysqli_num_rows($existing_assignment) > 0) {
+            $_SESSION['csrf_error'] = "Der Benutzer hat bereits diese Rolle.";
+            header("Location: admincenter.php?site=user_roles");
+            exit();
+        }
+
+        // Zuweisung in der Tabelle speichern
+        safe_query("INSERT INTO " . PREFIX . "user_role_assignments (adminID, roleID) VALUES ('$userID', '$roleID')");
+    }
 }
 
-// Rollen abrufen
-$roles = safe_query("SELECT * FROM " . PREFIX . "user_roles ORDER BY name");
-
-// Benutzer abrufen
-$admins = safe_query("SELECT * FROM " . PREFIX . "user ORDER BY userID");
-
-// Rolle zuweisen
-if (isset($_POST['assign_role'])) {
-    $userID = (int)$_POST['user_id'];  // Benutzer-ID
-    $roleID = (int)$_POST['role_id'];  // Rollen-ID
-    
-    // Zuweisung in der Tabelle speichern
-    safe_query("INSERT INTO " . PREFIX . "user_role_assignments (adminID, roleID) VALUES ('$userID', '$roleID')");
-}
-
-// Zuweisungen abrufen
-$assignments = safe_query("SELECT ur.adminID, ur.roleID, u.nickname, r.name AS role_name
-                           FROM " . PREFIX . "user_role_assignments ur
-                           JOIN " . PREFIX . "user u ON ur.adminID = u.userID
-                           JOIN " . PREFIX . "user_roles r ON ur.roleID = r.roleID");
-
-?>
+// Fehler nach CSRF-Überprüfung anzeigen
+if (isset($_SESSION['csrf_error'])): ?>
+    <div class="alert alert-danger" role="alert">
+        <?= htmlspecialchars($_SESSION['csrf_error']) ?>
+    </div>
+    <?php unset($_SESSION['csrf_error']); ?> <!-- Fehlernachricht nach einmaligem Anzeigen entfernen -->
+<?php endif; ?>
 
 <div class="container py-5">
     <h2 class="mb-4">Admin-Rollen verwalten</h2>
@@ -70,44 +134,44 @@ $assignments = safe_query("SELECT ur.adminID, ur.roleID, u.nickname, r.name AS r
         <div class="col-auto">
             <label for="role_name" class="form-label">Rolle erstellen</label>
             <select name="role_name" class="form-select" required>
-                <?php foreach ($roles_and_rights as $role => $data) : ?>
-                    <option value="<?= $role ?>"><?= htmlspecialchars($role) ?></option>
-                <?php endforeach; ?>
+                <?php echo $roles_dropdown; ?>
             </select>
         </div>
         <div class="col-auto">
             <button type="submit" name="create_role" class="btn btn-primary">Hinzufügen</button>
         </div>
+        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
     </form>
 
     <!-- Rollenliste -->
-<h3 class="mb-4">Verfügbare Rollen</h3>
-<table class="table table-bordered bg-white shadow-sm">
-    <thead class="table-light">
-    <tr>
-        <th>Rollenname</th>
-        <th>Rechte</th>
-        <th style="width: 200px">Aktionen</th>
-    </tr>
-    </thead>
-    <tbody>
-    <?php while ($role = mysqli_fetch_assoc($roles)) : ?>
+    <h3 class="mb-4">Verfügbare Rollen</h3>
+    <table class="table table-bordered bg-white shadow-sm">
+        <thead class="table-light">
         <tr>
-            <td><?= htmlspecialchars($role['name']) ?></td>
-            <td><?= htmlspecialchars($role['rights'] ?? 'Keine Rechte definiert') ?></td>
-            <td>
-                <a href="admincenter.php?site=edit_role_rights&roleID=<?= (int)$role['roleID'] ?>" class="btn btn-sm btn-warning">
-                    Rechte bearbeiten
-                </a>
-                <a href="admincenter.php?site=user_roles&delete=<?= (int)$role['roleID'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Wirklich löschen?')">
-                    Löschen
-                </a>
-            </td>
+            <th>Rollenname</th>
+            <th>Rechte</th>
+            <th style="width: 250px">Aktionen</th>
         </tr>
-    <?php endwhile; ?>
-    </tbody>
-</table>
-
+        </thead>
+        <tbody>
+        <?php
+        $roles = safe_query("SELECT * FROM " . PREFIX . "user_roles ORDER BY name");
+        while ($role = mysqli_fetch_assoc($roles)) : ?>
+            <tr>
+                <td><?= htmlspecialchars($role['name']) ?></td>
+                <td><?= htmlspecialchars($role['rights'] ?? 'Keine Rechte definiert') ?></td>
+                <td>
+                    <a href="admincenter.php?site=edit_role_rights&roleID=<?= (int)$role['roleID'] ?>" class="btn btn-sm btn-warning">
+                        Rechte bearbeiten
+                    </a>
+                    <a href="admincenter.php?site=user_roles&delete=<?= (int)$role['roleID'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Wirklich löschen? Alle Zuweisungen dieser Rolle werden ebenfalls entfernt!')">
+                        Löschen
+                    </a>
+                </td>
+            </tr>
+        <?php endwhile; ?>
+        </tbody>
+    </table>
 
     <!-- Benutzerrolle zuweisen -->
     <h3 class="mb-4">Rolle einem Benutzer zuweisen</h3>
@@ -115,7 +179,9 @@ $assignments = safe_query("SELECT ur.adminID, ur.roleID, u.nickname, r.name AS r
         <div class="col-auto">
             <label for="user_id" class="form-label">Benutzer auswählen</label>
             <select name="user_id" class="form-select" required>
-                <?php while ($admin = mysqli_fetch_assoc($admins)) : ?>
+                <?php
+                $admins = safe_query("SELECT * FROM " . PREFIX . "user ORDER BY userID");
+                while ($admin = mysqli_fetch_assoc($admins)) : ?>
                     <option value="<?= $admin['userID'] ?>"><?= htmlspecialchars($admin['nickname']) ?></option>
                 <?php endwhile; ?>
             </select>
@@ -137,6 +203,7 @@ $assignments = safe_query("SELECT ur.adminID, ur.roleID, u.nickname, r.name AS r
         <div class="col-auto">
             <button type="submit" name="assign_role" class="btn btn-primary">Rolle zuweisen</button>
         </div>
+        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
     </form>
 
     <!-- Zuweisungen anzeigen -->
@@ -146,16 +213,26 @@ $assignments = safe_query("SELECT ur.adminID, ur.roleID, u.nickname, r.name AS r
             <tr>
                 <th>Benutzername</th>
                 <th>Rolle</th>
-                <th style="width: 150px">Aktionen</th>
+                <th style="width: 330px">Aktionen</th>
             </tr>
         </thead>
         <tbody>
-        <?php while ($assignment = mysqli_fetch_assoc($assignments)) : ?>
+        <?php
+        $assignments = safe_query("SELECT ur.adminID, ur.roleID, u.nickname, r.name AS role_name
+                                   FROM " . PREFIX . "user_role_assignments ur
+                                   JOIN " . PREFIX . "user u ON ur.adminID = u.userID
+                                   JOIN " . PREFIX . "user_roles r ON ur.roleID = r.roleID");
+        while ($assignment = mysqli_fetch_assoc($assignments)) : ?>
             <tr>
                 <td><?= htmlspecialchars($assignment['nickname']) ?></td>
                 <td><?= htmlspecialchars($assignment['role_name']) ?></td>
                 <td>
-                    <a href="admincenter.php?site=user_roles&delete_assignment=<?= $assignment['adminID'] ?>&roleID=<?= $assignment['roleID'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Rolle entfernen?')">Entfernen</a>
+                    <a href="admincenter.php?site=user_role_details&userID=<?= $assignment['roleID'] ?>" class="btn btn-sm btn-warning">
+                        Zugewiesene Rechte einsehen
+                    </a>
+                    <a href="admincenter.php?site=user_roles&delete_assignment=<?= $assignment['adminID'] ?>&roleID=<?= $assignment['roleID'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Rolle entfernen?')">
+                        Entfernen
+                    </a>
                 </td>
             </tr>
         <?php endwhile; ?>
@@ -169,7 +246,17 @@ if (isset($_GET['delete_assignment'])) {
     $adminID = (int)$_GET['delete_assignment'];
     $roleID = (int)$_GET['roleID'];
 
-    // Zuweisung löschen
     safe_query("DELETE FROM " . PREFIX . "user_role_assignments WHERE adminID = '$adminID' AND roleID = '$roleID'");
+    header("Location: admincenter.php?site=user_roles");
+    exit();
+}
+
+// Rolle löschen
+if (isset($_GET['delete'])) {
+    $roleID = (int)$_GET['delete'];
+    safe_query("DELETE FROM " . PREFIX . "user_roles WHERE roleID = '$roleID'");
+    safe_query("DELETE FROM " . PREFIX . "user_role_assignments WHERE roleID = '$roleID'"); // Zuweisungen löschen
+    header("Location: admincenter.php?site=user_roles");
+    exit();
 }
 ?>

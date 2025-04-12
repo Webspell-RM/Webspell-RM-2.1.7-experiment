@@ -54,22 +54,15 @@ $cookievalueadmin = 'false';
 if (isset($_COOKIE['ws_cookie'])) {
 	$cookievalueadmin = 'accepted';
 }
-/*// extra login
-$admin = isanyadmin($userID);
-if (!$loggedin) { // START
-	// include theme / content
-	include("login.php");
+
+// Beispiel: Benutzer-ID aus der Sitzung erhalten (falls vorhanden)
+$userID = $_SESSION['userID'] ?? 0; // Falls keine userID, dann 0
+
+// Überprüfen, ob der Benutzer eine Rolle zugewiesen hat
+if (!$userID || !checkUserRoleAssignment($userID)) {
+    die('<div style="background-color: red; color: white; padding: 10px; border-radius: 5px;">
+    Zugriff verweigert: Sie haben keine Rolle zugewiesen bekommen.</div>');
 }
-if (!$admin || !$cookievalueadmin) {
-	die($_language->module['access_denied']);
-}*/
-require_once '../system/session.php';
-use webspell\AccessControl;
-
-AccessControl::enforceLogin();
-AccessControl::enforce("admin");
-
-
 
 
 if (!isset($_SERVER['REQUEST_URI'])) {
@@ -108,42 +101,32 @@ function getplugincatID($catname)
     }
 }
 
-function dashnavi()
-{
-    global $userID;
-    $links = '';
+function dashnavi() {
+    global $userID;  // Stellen Sie sicher, dass $userID korrekt gesetzt ist
 
-    // Abfrage der Kategorien aus der Datenbank
+    $links = '';
     $ergebnis = safe_query("SELECT * FROM " . PREFIX . "navigation_dashboard_categories ORDER BY sort");
 
-    if (mysqli_num_rows($ergebnis) === 0) {
-        echo 'Keine Kategorien gefunden!';  // Debugging Hinweis
-    }
-
     while ($ds = mysqli_fetch_array($ergebnis)) {
-        // Übersetzungen und andere Daten
         $name = $ds['name'];
         $fa_name = $ds['fa_name'];
         $translate = new multiLanguage(detectCurrentLanguage());
         $translate->detectLanguages($name);
         $name = $translate->getTextByLanguage($name);
 
-        // Überprüfung des Zugriffs auf die Kategorie
-        if (checkAccessRights($userID, $ds['catID'])) {
+        // Überprüfe den Zugriff auf die Kategorie
+        if (checkAccessRights($userID, $ds['catID'])) {  // Übergebe $userID an die Funktion
             $links .= '<li><a class=\'has-arrow\' aria-expanded=\'false\' href=\'#\'><i class=\'' . $fa_name . '\' style="font-size: 1rem;"></i> ' . $name . '</a><ul class=\'nav nav-third-level\'>';
 
-            // Links der Kategorie abrufen
             $catlinks = safe_query("SELECT * FROM " . PREFIX . "navigation_dashboard_links WHERE catID='" . $ds['catID'] . "' ORDER BY sort");
 
-            if (mysqli_num_rows($catlinks) === 0) {
-                echo 'Keine Links in dieser Kategorie gefunden!';  // Debugging Hinweis
-            }
-
             while ($db = mysqli_fetch_array($catlinks)) {
-            	$translate->detectLanguages($name);
-        		$name = $translate->getTextByLanguage($db['name']);
-                // Überprüfung des Zugriffs auf den Link
-                if (checkAccessRights($userID, null, $db['linkID'])) {
+                $linkID = $db['linkID'];  // Setze die Link ID
+                $translate->detectLanguages($db['name']);
+                $name = $translate->getTextByLanguage($db['name']);
+
+                // Überprüfe den Zugriff auf den Link
+                if (checkAccessRights($userID, null, $linkID)) {  // Übergebe $userID an die Funktion
                     $links .= '<li><a href=\'' . $db['url'] . '\'> <i class="bi bi-plus-lg ac-link"></i> ' . $name . '</a></li>';
                 }
             }
@@ -151,14 +134,8 @@ function dashnavi()
         }
     }
 
-    // Rückgabe der Links oder eine leere Nachricht, wenn keine gefunden wurden
     return $links ? $links : '<li>Keine Zugriffsberechtigten Links gefunden.</li>';
 }
-
-
-
-
-
 
 if ($userID && !isset($_GET['userID']) && !isset($_POST['userID'])) {
 	$ds = mysqli_fetch_array(safe_query("SELECT registerdate FROM `" . PREFIX . "user` WHERE userID='" . $userID . "'"));
@@ -286,7 +263,7 @@ if ($getavatar = getavatar($userID)) {
 			        if (file_exists($plugin_path . "admin/" . $site . ".php")) {
 			            include($plugin_path . "admin/" . $site . ".php");
 			        } else {
-			            chdir("admin");
+			            #chdir("admin");
 			            echo '<div class="alert alert-danger" role="alert">' . $_language->module['plugin_not_found'] . '</div>';
 			            include('info.php');
 			        }
@@ -300,10 +277,11 @@ if ($getavatar = getavatar($userID)) {
 
 		<!-- ckeditor -->
 		<?php
-		if (issuperadmin($userID)) {
+		// Beispiel: CKEditor für Super-Admin (1) und Admin (2)
+		if (has_role($userID, [1, 2])) {
 			echo '<script src="../components/ckeditor/ckeditor.js"></script><script src="../components/ckeditor/config.js"></script>';
 		} else {
-			echo '<script src="../components/ckeditor/ckeditor.js"></script><script src="../components/ckeditor/config.js"></script>';
+			echo '<script src="../components/ckeditor/ckeditor.js"></script><script src="../components/ckeditor/user_config.js"></script>';
 		}
 		?>
 

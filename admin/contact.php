@@ -28,12 +28,12 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
 */
 
+// Sprachmodul laden
 $_language->readModule('contact', false, true);
 
 use webspell\AccessControl;
-
 // Den Admin-Zugriff für das Modul überprüfen
-checkAdminAccess('ac_contact');  // Modulname für diese Seite
+AccessControl::checkAdminAccess('ac_contact');
 
 if (isset($_GET[ 'delete' ])) {
     $contactID = $_GET[ 'contactID' ];

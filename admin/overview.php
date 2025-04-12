@@ -28,12 +28,12 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
 */
 
+// Sprachmodul laden
 $_language->readModule('overview', false, true);
 
 use webspell\AccessControl;
-
 // Den Admin-Zugriff für das Modul überprüfen
-checkAdminAccess('ac_overview');  // Modulname für diese Seite
+AccessControl::checkAdminAccess('ac_overview');
 
 $phpversion = phpversion() < '4.3' ? '<font color="#FF0000">' . phpversion() . '</font>' :
     '<font color="#008000">' . phpversion() . '</font>';

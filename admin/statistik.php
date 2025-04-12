@@ -29,46 +29,30 @@
 */
 
 // Sprachmodul laden
-$_language->readModule('banned_ips', false, true);
+#$_language->readModule('user_roles', false, true);
 
-use webspell\AccessControl;
+#use webspell\AccessControl;
 // Den Admin-Zugriff für das Modul überprüfen
-AccessControl::checkAdminAccess('ac_banned_ips');
+#AccessControl::checkAdminAccess('ac_statistik');
 
-// CSRF-Token erstellen und die Liste der Banns abrufen
-$CAPCLASS = new \webspell\Captcha;
-$CAPCLASS->createTransaction();
-$hash = $CAPCLASS->getHash();
+// Holen der Anzahl der Benutzer im letzten Monat
+$result = safe_query("SELECT COUNT(*) AS user_count FROM " . PREFIX . "user WHERE created_at >= NOW() - INTERVAL 1 MONTH");
+$row = mysqli_fetch_assoc($result);
+$user_count_last_month = $row['user_count'];
 
-echo '<div class="card">
-        <div class="card-header">' . $_language->module['bannedips'] . '</div>
-        <div class="card-body"><br>';
+// Holen der Benutzerregistrierungen nach Monat
+$monthly_users = safe_query("SELECT YEAR(created_at) AS year, MONTH(created_at) AS month, COUNT(*) AS user_count FROM " . PREFIX . "user GROUP BY year, month ORDER BY year DESC, month DESC");
 
-$row = safe_query("SELECT * FROM " . PREFIX . "banned_ips");
-$tmp = mysqli_fetch_assoc(safe_query("SELECT count(banID) AS cnt FROM " . PREFIX . "banned_ips"));
-$anzpartners = $tmp['cnt'];
+// Ausgabe der Statistik
+echo "<h2>Benutzerstatistiken</h2>";
+echo "<p>Benutzer im letzten Monat: " . $user_count_last_month . "</p>";
 
-echo '<table class="table table-striped">
-        <thead>
-            <th><b>' . $_language->module['id'] . '</b></th>
-            <th><b>' . $_language->module['ip'] . '</b></th>
-            <th><b>' . $_language->module['deltime'] . '</b></th>
-            <th><b>' . $_language->module['reason'] . '</b></th>
-            <th><b>' . $_language->module['actions'] . '</b></th>
-        </thead>';
-
-$i = 1;
-while ($db = mysqli_fetch_array($row)) {
-    echo '<tr>
-            <td>' . getinput($db['banID']) . '</td>
-            <td>' . getinput($db['ip']) . '</td>
-            <td>' . getformatdate($db['deltime']) . '</td>
-            <td>' . getinput($db['reason']) . '</td>
-            <td>
-                <input class="btn btn-danger" type="button" onclick="MM_confirm(\'' . $_language->module['really_delete'] . '\', \'admincenter.php?site=banned_ips&amp;delete=true&amp;banID=' . $db['banID'] . '&amp;captcha_hash=' . $hash . '\')" value="' . $_language->module['delete'] . '" />
-            </td>
-        </tr>';
+// Anzeigen der Registrierungen pro Monat
+echo "<h3>Registrierungen nach Monat</h3>";
+echo "<table border='1'>";
+echo "<tr><th>Jahr</th><th>Monat</th><th>Registrierungen</th></tr>";
+while ($row = mysqli_fetch_assoc($monthly_users)) {
+    echo "<tr><td>" . $row['year'] . "</td><td>" . $row['month'] . "</td><td>" . $row['user_count'] . "</td></tr>";
 }
-
-echo '</table></div></div>';
+echo "</table>";
 ?>

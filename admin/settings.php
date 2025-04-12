@@ -31,9 +31,8 @@
 $_language->readModule('settings', false, true);
 
 use webspell\AccessControl;
-
 // Den Admin-Zugriff für das Modul überprüfen
-checkAdminAccess('ac_settings');  // Modulname für diese Seite
+AccessControl::checkAdminAccess('ac_settings');
 
 if (isset($_GET[ 'action' ])) {
     $action = $_GET[ 'action' ];
@@ -487,7 +486,7 @@ $settings = safe_query("SELECT * FROM " . PREFIX . "settings_recaptcha");
             <div class="col-md-4">
                 <div class="mb-3 row">
                     <label class="col-md-12">
-                    <img src="/components/admin/images/recapcha.png" class="img-fluid" style="height:150px" alt="...">
+                    <img src="/admin/images/recapcha.png" class="img-fluid" style="height:150px" alt="...">
                     </label>
                 </div>
             </div>    

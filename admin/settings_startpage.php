@@ -32,15 +32,8 @@
 $_language->readModule('startpage', false, true);
 
 use webspell\AccessControl;
-
-// Überprüfen, ob der Benutzer die erforderliche Berechtigung hat
-$ergebnis = safe_query("SELECT * FROM " . PREFIX . "navigation_dashboard_links WHERE modulname='ac_startpage'");
-while ($db = mysqli_fetch_array($ergebnis)) {
-    $accesslevel = $db['accesslevel'];
-    if (!AccessControl::hasRole($userID, $accesslevel)) {
-        die($_language->module['access_denied']);
-    }
-}
+// Den Admin-Zugriff für das Modul überprüfen
+AccessControl::checkAdminAccess('ac_startpage');
 
 // Formulareingaben prüfen
 if (isset($_POST['submit'])) {

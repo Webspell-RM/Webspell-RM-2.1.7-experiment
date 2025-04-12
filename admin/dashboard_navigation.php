@@ -34,9 +34,8 @@ ini_set('display_errors', 1);
 $_language->readModule('dashnavi', false, true);
 
 use webspell\AccessControl;
-
 // Den Admin-Zugriff für das Modul überprüfen
-checkAdminAccess('ac_dashboard_navigation');  // Modulname für diese Seite
+AccessControl::checkAdminAccess('ac_dashboard_navigation');
 
 
 if (isset($_GET[ 'delete' ])) {
@@ -81,12 +80,11 @@ if (isset($_GET[ 'delete' ])) {
             safe_query("SELECT linkID FROM " . PREFIX . "navigation_dashboard_links WHERE catID='" . $_POST[ 'catID' ] . "'")
         );
         safe_query(
-            "INSERT INTO " . PREFIX . "navigation_dashboard_links ( catID, name, url, accesslevel, sort )
+            "INSERT INTO " . PREFIX . "navigation_dashboard_links ( catID, name, url, sort )
             values (
             '" . $_POST[ 'catID' ] . "',
             '" . $_POST[ 'name' ] . "',
             '" . $_POST[ 'url' ] . "',
-            '" . $_POST[ 'accesslevel' ] . "',
             '" . ($anz + 1) . "'
             )"
         );
@@ -99,8 +97,8 @@ if (isset($_GET[ 'delete' ])) {
     ) {
         $anz = mysqli_num_rows(safe_query("SELECT catID FROM " . PREFIX . "navigation_dashboard_categories"));
         safe_query(
-            "INSERT INTO " . PREFIX . "navigation_dashboard_categories ( fa_name, name, accesslevel, sort )
-            values( '" . $_POST[ 'fa_name' ] . "', '" . $_POST[ 'name' ] . "', '" . $_POST[ 'accesslevel' ] . "', '" . ($anz + 1) . "' )"
+            "INSERT INTO " . PREFIX . "navigation_dashboard_categories ( fa_name, name, sort )
+            values( '" . $_POST[ 'fa_name' ] . "', '" . $_POST[ 'name' ] . "', '" . ($anz + 1) . "' )"
         );
     } else {
         echo $_language->module[ 'transaction_invalid' ];
@@ -110,8 +108,7 @@ if (isset($_GET[ 'delete' ])) {
     if ($CAPCLASS->checkCaptcha(0, $_POST[ 'captcha_hash' ])) {
         safe_query(
             "UPDATE " . PREFIX . "navigation_dashboard_links
-            SET catID='" . $_POST[ 'catID' ] . "', name='" . $_POST[ 'name' ] . "', url='" . $_POST[ 'url' ] . "',
-                accesslevel='" . $_POST[ 'accesslevel' ] . "'
+            SET catID='" . $_POST[ 'catID' ] . "', name='" . $_POST[ 'name' ] . "', url='" . $_POST[ 'url' ] . "'
             WHERE linkID='" . $_POST[ 'linkID' ] . "'"
         );
     } else {
@@ -121,8 +118,7 @@ if (isset($_GET[ 'delete' ])) {
     $CAPCLASS = new \webspell\Captcha;
     if ($CAPCLASS->checkCaptcha(0, $_POST[ 'captcha_hash' ])) {
         safe_query(
-            "UPDATE " . PREFIX . "navigation_dashboard_categories SET fa_name='" . $_POST[ 'fa_name' ] . "', name='" . $_POST[ 'name' ] . "', 
-                accesslevel='" . $_POST[ 'accesslevel' ] . "'
+            "UPDATE " . PREFIX . "navigation_dashboard_categories SET fa_name='" . $_POST[ 'fa_name' ] . "', name='" . $_POST[ 'name' ] . "'
             WHERE catID='" . $_POST[ 'catID' ] . "' "
         );
     } else {
@@ -167,19 +163,6 @@ if ($action == "add") {
     }
     $cats .= '</select>';
 
-    $accesslevel = '<option value="any">' . $_language->module[ 'admin_any' ] . '</option>
-    <option value="super">' . $_language->module[ 'admin_super' ] . '</option>
-    <option value="forum">' . $_language->module[ 'admin_forum' ] . '</option>
-    <option value="files">' . $_language->module[ 'admin_files' ] . '</option>
-    <option value="page">' . $_language->module[ 'admin_page' ] . '</option>
-    <option value="feedback">' . $_language->module[ 'admin_feedback' ] . '</option>
-    <option value="news">' . $_language->module[ 'admin_news' ] . '</option>
-    <option value="polls">' . $_language->module[ 'admin_polls' ] . '</option>
-    <option value="clanwars">' . $_language->module[ 'admin_clanwars' ] . '</option>
-    <option value="user">' . $_language->module[ 'admin_user' ] . '</option>
-    <option value="cash">' . $_language->module[ 'admin_cash' ] . '</option>
-    <option value="gallery">' . $_language->module[ 'admin_gallery' ] . '</option>';
-
     $CAPCLASS = new \webspell\Captcha;
     $CAPCLASS->createTransaction();
     $hash = $CAPCLASS->getHash();
@@ -207,12 +190,6 @@ if ($action == "add") {
     <label class="col-md-2 control-label">'.$_language->module['url'].':</label>
     <div class="col-md-8"><span class="text-muted small"><em>
         <input class="form-control" type="text" name="url" size="60"></em></span>
-    </div>
-  </div>
-  <div class="mb-3 row">
-    <label class="col-md-2 control-label">'.$_language->module['accesslevel'].':</label>
-    <div class="col-md-8"><span class="text-muted small"><em>
-        <select class="form-select" name="accesslevel">' . $accesslevel . '</select></em></span>
     </div>
   </div>
   <div class="mb-3 row">
@@ -260,25 +237,6 @@ if ($action == "add") {
     }
     $cats .= '</select>';
 
-    $accesslevel = '<option value="any">' . $_language->module[ 'admin_any' ] . '</option>
-    <option value="super">' . $_language->module[ 'admin_super' ] . '</option>
-    <option value="forum">' . $_language->module[ 'admin_forum' ] . '</option>
-    <option value="files">' . $_language->module[ 'admin_files' ] . '</option>
-    <option value="page">' . $_language->module[ 'admin_page' ] . '</option>
-    <option value="feedback">' . $_language->module[ 'admin_feedback' ] . '</option>
-    <option value="news">' . $_language->module[ 'admin_news' ] . '</option>
-    <option value="polls">' . $_language->module[ 'admin_polls' ] . '</option>
-    <option value="clanwars">' . $_language->module[ 'admin_clanwars' ] . '</option>
-    <option value="user">' . $_language->module[ 'admin_user' ] . '</option>
-    <option value="cash">' . $_language->module[ 'admin_cash' ] . '</option>
-    <option value="gallery">' . $_language->module[ 'admin_gallery' ] . '</option>';
-    $accesslevel =
-        str_replace(
-            'value="' . $ds[ 'accesslevel' ] . '"',
-            'value="' . $ds[ 'accesslevel' ] . '" selected="selected"',
-            $accesslevel
-        );
-
     $CAPCLASS = new \webspell\Captcha;
     $CAPCLASS->createTransaction();
     $hash = $CAPCLASS->getHash();
@@ -308,12 +266,6 @@ if ($action == "add") {
     </div>
   </div>
   <div class="mb-3 row">
-    <label class="col-md-2 control-label">'.$_language->module['accesslevel'].':</label>
-    <div class="col-md-8"><span class="text-muted small"><em>
-      <select class="form-select" name="accesslevel">' . $accesslevel . '</select></em></span>
-    </div>
-  </div>
-<div class="mb-3 row">
     <div class="col-md-offset-2 col-md-10">
       <input type="hidden" name="captcha_hash" value="'.$hash.'" /><input type="hidden" name="linkID" value="' . $linkID . '">
       <button class="btn btn-warning" type="submit" name="saveedit"><i class="bi bi-box-arrow-down"></i> ' . $_language->module[ 'edit_link' ] . '</button>
@@ -340,19 +292,6 @@ if ($action == "add") {
     $CAPCLASS->createTransaction();
     $hash = $CAPCLASS->getHash();
 
-    $accesslevel = '<option value="any">' . $_language->module[ 'admin_any' ] . '</option>
-    <option value="super">' . $_language->module[ 'admin_super' ] . '</option>
-    <option value="forum">' . $_language->module[ 'admin_forum' ] . '</option>
-    <option value="files">' . $_language->module[ 'admin_files' ] . '</option>
-    <option value="page">' . $_language->module[ 'admin_page' ] . '</option>
-    <option value="feedback">' . $_language->module[ 'admin_feedback' ] . '</option>
-    <option value="news">' . $_language->module[ 'admin_news' ] . '</option>
-    <option value="polls">' . $_language->module[ 'admin_polls' ] . '</option>
-    <option value="clanwars">' . $_language->module[ 'admin_clanwars' ] . '</option>
-    <option value="user">' . $_language->module[ 'admin_user' ] . '</option>
-    <option value="cash">' . $_language->module[ 'admin_cash' ] . '</option>
-    <option value="gallery">' . $_language->module[ 'admin_gallery' ] . '</option>';
-
     echo '<form class="form-horizontal" method="post" action="admincenter.php?site=dashboard_navigation">
 
     <div class="mb-3 row">
@@ -368,12 +307,6 @@ if ($action == "add") {
     </div>
   </div>
   <div class="mb-3 row">
-    <label class="col-md-2 control-label">'.$_language->module['accesslevel'].':</label>
-    <div class="col-md-8"><span class="text-muted small"><em>
-      <select class="form-select" name="accesslevel">' . $accesslevel . '</select></em></span>
-    </div>
-  </div>
-<div class="mb-3 row">
     <div class="col-md-offset-2 col-md-10">
       <input type="hidden" name="captcha_hash" value="'.$hash.'" />
       <button class="btn btn-success" type="submit" name="savecat"><i class="bi bi-box-arrow-down"></i> ' . $_language->module[ 'add_category' ] . '</button>
@@ -400,25 +333,6 @@ if ($action == "add") {
     $ergebnis = safe_query("SELECT * FROM " . PREFIX . "navigation_dashboard_categories WHERE catID='$catID'");
     $ds = mysqli_fetch_array($ergebnis);
 
-    $accesslevel = '<option value="any">' . $_language->module[ 'admin_any' ] . '</option>
-    <option value="super">' . $_language->module[ 'admin_super' ] . '</option>
-    <option value="forum">' . $_language->module[ 'admin_forum' ] . '</option>
-    <option value="files">' . $_language->module[ 'admin_files' ] . '</option>
-    <option value="page">' . $_language->module[ 'admin_page' ] . '</option>
-    <option value="feedback">' . $_language->module[ 'admin_feedback' ] . '</option>
-    <option value="news">' . $_language->module[ 'admin_news' ] . '</option>
-    <option value="polls">' . $_language->module[ 'admin_polls' ] . '</option>
-    <option value="clanwars">' . $_language->module[ 'admin_clanwars' ] . '</option>
-    <option value="user">' . $_language->module[ 'admin_user' ] . '</option>
-    <option value="cash">' . $_language->module[ 'admin_cash' ] . '</option>
-    <option value="gallery">' . $_language->module[ 'admin_gallery' ] . '</option>';
-    $accesslevel =
-        str_replace(
-            'value="' . $ds[ 'accesslevel' ] . '"',
-            'value="' . $ds[ 'accesslevel' ] . '" selected="selected"',
-            $accesslevel
-        );
-
     $CAPCLASS = new \webspell\Captcha;
     $CAPCLASS->createTransaction();
     $hash = $CAPCLASS->getHash();
@@ -436,12 +350,6 @@ if ($action == "add") {
     <label class="col-md-2 control-label">' . $_language->module[ 'name' ] . ':</label>
     <div class="col-md-8"><span class="text-muted small"><em>
       <input class="form-control" type="text" name="name" value="' . getinput($ds[ 'name' ]) . '" size="60"></em></span>
-    </div>
-  </div>
-  <div class="mb-3 row">
-    <label class="col-md-2 control-label">'.$_language->module['accesslevel'].':</label>
-    <div class="col-md-8"><span class="text-muted small"><em>
-      <select class="form-select" name="accesslevel">' . $accesslevel . '</select></em></span>
     </div>
   </div>
   <div class="mb-3 row">
@@ -481,7 +389,6 @@ if ($action == "add") {
     <tr>
       <th width="25%" ><b>' . $_language->module[ 'name' ] . '</b></th>
       <th width="25%" ><b>Link</b></th>
-            <th width="17%" align="center"><b>' . $_language->module[ 'accesslevel' ] . '</b></th>
             <th width="20%" ><b>' . $_language->module[ 'actions' ] . '</b></th>
             <th width="8%" ><b>' . $_language->module[ 'sort' ] . '</b></th>
     </tr></thead>';
@@ -506,12 +413,7 @@ if ($action == "add") {
                     $list
                 );
 
-        if ($ds[ 'default' ] == 1) {
-            $sort = '<b>' . $ds[ 'sort' ] . '</b>';
-            $catactions = '';
-            @$name = getinput($ds[ 'name' ]);
-        } else {
-            $sort = $list;
+        $sort = $list;
             $catactions =
                 '<a class="btn btn-warning" href="admincenter.php?site=dashboard_navigation&amp;action=editcat&amp;catID=' . $ds[ 'catID' ] .
                 '" class="input"><i class="bi bi-pencil-square"></i> ' . $_language->module[ 'edit' ] . '</a>
@@ -551,13 +453,10 @@ if ($action == "add") {
                 
                 $data_array = array();
                 $data_array['$name'] = $ds['name']; 
-        }
-
+        
         echo '<tr class="table-secondary">
             <td width="25%" class="td_head admin-nav-modal"><b>' . $name . '</b></td>
             <td width="25%" class="td_head admin-nav-modal"></td>
-            <td width="17%" class="td_head admin-nav-modal"><b>' .
-                    $_language->module[ 'admin_' . getinput($ds[ 'accesslevel' ]) ] . '</b></small></td>
             <td width="20%" class="td_head">' . $catactions . '</td>
             <td width="8%" class="td_head">' . $sort . '</td>
         </tr>';
@@ -606,8 +505,6 @@ if ($action == "add") {
                 echo '<tr>
                     <td class="' . $td . '">&nbsp;-&nbsp;<b>' . $name . '</b></td>
                     <td class="' . $td . '"><small>' . $db[ 'url' ] . '</small></td>
-                    <td class="' . $td . '"><small><b>' .
-                    $_language->module[ 'admin_' . getinput($db[ 'accesslevel' ]) ] . '</b></small></td>
                     <td class="' . $td . '">
 <a href="admincenter.php?site=dashboard_navigation&amp;action=edit&amp;linkID=' . $db[ 'linkID' ] .'" class="btn btn-warning"><i class="bi bi-pencil-square"></i> ' . $_language->module[ 'edit' ] . '</a>
 

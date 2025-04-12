@@ -31,9 +31,8 @@
 $_language->readModule('page_statistic', false, true);
 
 use webspell\AccessControl;
-
 // Den Admin-Zugriff für das Modul überprüfen
-checkAdminAccess('ac_page_statistic');  // Modulname für diese Seite
+AccessControl::checkAdminAccess('ac_modrewrite');
 
 global $_database;
 $count_array = array();

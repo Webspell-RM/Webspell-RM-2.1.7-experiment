@@ -31,9 +31,8 @@
 $_language->readModule('editlang', false, true);
 
 use webspell\AccessControl;
-
 // Den Admin-Zugriff für das Modul überprüfen
-checkAdminAccess('ac_editlang');  // Modulname für diese Seite
+AccessControl::checkAdminAccess('ac_editlang');
 
 $baseDir = dirname(__DIR__);
 $languageDir = $baseDir . '/languages/';
