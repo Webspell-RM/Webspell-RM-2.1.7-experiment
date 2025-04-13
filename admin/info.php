@@ -173,9 +173,9 @@ if (!$getnew = @file_get_contents($updateserverurl.'/base/vupdate.php')) {
   }
  
 
-if (!isanyadmin($userID) || mb_substr(basename($_SERVER[ 'REQUEST_URI' ]), 0, 15) != "admincenter.php") {
-    die($_language->module[ 'access_denied' ]);
-}
+#if (!isanyadmin($userID) || mb_substr(basename($_SERVER[ 'REQUEST_URI' ]), 0, 15) != "admincenter.php") {
+#    die($_language->module[ 'access_denied' ]);
+#}
 
 $nickname = '' . getnickname($userID) . ',<br>';
 $lastlogin = getformatdatetime($_SESSION[ 'ws_lastlogin' ]);
@@ -300,6 +300,14 @@ echo'<div class="card">
             </div>
           </div>
         </div>';
+
+
+
+// Beispiel: CKEditor für Super-Admin (1) und Admin (2)
+    if (hasrole($userID, [1, 2])) {
+
+
+
 if (!$getnew = @file_get_contents($updateserverurl.'/base/vupdate.php')) {
   echo '';
 } else {
@@ -497,7 +505,13 @@ echo'<div class="card" style="margin-left: 50px; margin-right: 50px">
           </div>
         </div>
       </div>
-    </div>
+    </div>';
+
+    } else {
+      
+    }
+echo'
+
   </div>
 </div>
 

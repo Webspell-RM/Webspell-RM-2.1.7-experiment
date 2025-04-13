@@ -31,6 +31,7 @@
 // Sprachmodul laden
 #$_language->readModule('user_roles', false, true);
 $_language->readModule('access_rights', false, true);
+$_language->readModule('user_roles', false, true);
 
 use webspell\AccessControl;
 // Den Admin-Zugriff für das Modul überprüfen
@@ -45,255 +46,299 @@ if (isset($_GET[ 'action' ])) {
 if ($action == "edit_role_rights") {
 
 
-    // CSRF-Token generieren
-    if ($_SERVER['REQUEST_METHOD'] === 'GET' && !isset($_SESSION['csrf_token'])) {
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+ 
+// CSRF-Token generieren
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && !isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+// Überprüfen, ob der Benutzer berechtigt ist
+if (!$userID || !checkUserRoleAssignment($userID)) {
+    die('<div class="alert alert-danger" role="alert">' . $_language->module['no_role_assigned'] . '</div>');
+}
+
+// Initialisierung der Rechte-Arrays
+$categoryRights = [];
+$moduleRights = [];
+
+if (isset($_GET['roleID'])) {
+    $roleID = (int)$_GET['roleID'];
+
+    // Modul-Liste abrufen
+    $modules = [];
+    $result = $_database->query("SELECT linkID, modulname, name FROM " . PREFIX . "navigation_dashboard_links ORDER BY sort ASC");
+    if (!$result) {
+        die($_language->module['error_fetching_modules'] . ": " . $_database->error);
+    }
+    while ($row = $result->fetch_assoc()) {
+        $modules[] = $row;
     }
 
-    // Überprüfen, ob der Benutzer berechtigt ist
-    if (!$userID || !checkUserRoleAssignment($userID)) {
-        die('<div class="alert alert-danger" role="alert">
-    Zugriff verweigert: Sie haben keine Rolle zugewiesen bekommen.</div>');
+    // Kategorie-Liste abrufen
+    $categories = [];
+    $result = $_database->query("SELECT catID, name, modulname FROM " . PREFIX . "navigation_dashboard_categories ORDER BY sort ASC");
+    if (!$result) {
+        die($_language->module['error_fetching_categories'] . ": " . $_database->error);
+    }
+    while ($row = $result->fetch_assoc()) {
+        $categories[] = $row;
     }
 
-    // Initialisierung der Rechte-Arrays
-    $categoryRights = [];
-    $moduleRights = [];
-
-    if (isset($_GET['roleID'])) {
-        $roleID = (int)$_GET['roleID'];
-
-        // ✅ Modul-Liste abrufen (aus der Tabelle navigation_dashboard_links)
-        $modules = [];
-        $result = $_database->query("SELECT linkID, modulname, name FROM " . PREFIX . "navigation_dashboard_links ORDER BY sort ASC");
-        if (!$result) {
-            die("Fehler bei der Abfrage der Module: " . $_database->error);
+    // Bestehende Rechte laden
+    $stmt = $_database->prepare("SELECT type, modulname, accessID 
+                                 FROM " . PREFIX . "user_admin_access_rights 
+                                 WHERE roleID = ?");
+    $stmt->bind_param('i', $roleID);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_assoc()) {
+        if ($row['type'] === 'link') {
+            $moduleRights[] = $row['modulname'];
+        } elseif ($row['type'] === 'category') {
+            $categoryRights[] = $row['modulname'];
         }
-        while ($row = $result->fetch_assoc()) {
-            $modules[] = $row;
-        }
+    }
 
-        // ✅ Kategorie-Liste abrufen (aus der Tabelle navigation_dashboard_categories)
-        $categories = [];
-        $result = $_database->query("SELECT catID, name, modulname FROM " . PREFIX . "navigation_dashboard_categories ORDER BY sort ASC");
-        if (!$result) {
-            die("Fehler bei der Abfrage der Kategorien: " . $_database->error);
-        }
-        while ($row = $result->fetch_assoc()) {
-            $categories[] = $row;
+    // Rechte speichern
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['roleID']) && isset($_POST['save_rights'])) {
+        if ($_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            die('<div class="alert alert-danger" role="alert">' . $_language->module['invalid_csrf'] . '</div>');
         }
 
-        // ✅ Bestehende Rechte für die Rolle laden
-        $stmt = $_database->prepare("SELECT type, modulname, accessID 
-                                     FROM " . PREFIX . "user_admin_access_rights 
-                                     WHERE roleID = ?");
-        $stmt->bind_param('i', $roleID);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        while ($row = $result->fetch_assoc()) {
-            if ($row['type'] === 'link') {
-                $moduleRights[] = $row['modulname'];
-            } elseif ($row['type'] === 'category') {
-                $categoryRights[] = $row['modulname'];
-            }
-        }
+        $roleID = (int)$_POST['roleID'];
 
-        // 💾 Rechte speichern (nur wenn "Speichern"-Button gedrückt!)
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['roleID']) && isset($_POST['save_rights'])) {
-            // CSRF-Token überprüfen
-            if ($_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-                die('<div class="alert alert-danger" role="alert">Ungültiges CSRF-Token. Anfrage abgelehnt.</div>');
-            }
-
-            $roleID = (int)$_POST['roleID'];
-
-            // Rechte für Module speichern
-            $grantedModules = $_POST['modules'] ?? [];
-            if (!empty($grantedModules)) {
-                $insertStmt = $_database->prepare("INSERT INTO " . PREFIX . "user_admin_access_rights (roleID, type, modulname, accessID) 
-                                                   VALUES (?, 'link', ?, ?)
-                                                   ON DUPLICATE KEY UPDATE accessID = VALUES(accessID)");
-                foreach ($grantedModules as $modulname) {
-                    $linkID = null;
-                    foreach ($modules as $module) {
-                        if ($module['modulname'] === $modulname) {
-                            $linkID = $module['linkID'];
-                            break;
-                        }
+        // Module speichern
+        $grantedModules = $_POST['modules'] ?? [];
+        if (!empty($grantedModules)) {
+            $insertStmt = $_database->prepare("INSERT INTO " . PREFIX . "user_admin_access_rights (roleID, type, modulname, accessID) 
+                                               VALUES (?, 'link', ?, ?)
+                                               ON DUPLICATE KEY UPDATE accessID = VALUES(accessID)");
+            foreach ($grantedModules as $modulname) {
+                $linkID = null;
+                foreach ($modules as $module) {
+                    if ($module['modulname'] === $modulname) {
+                        $linkID = $module['linkID'];
+                        break;
                     }
+                }
 
-                    if ($linkID !== null) {
-                        $insertStmt->bind_param('ssi', $roleID, $modulname, $linkID);
-                        if (!$insertStmt->execute()) {
-                            die("Fehler beim Speichern der neuen Rechte für Modul: " . $insertStmt->error);
-                        }
+                if ($linkID !== null) {
+                    $insertStmt->bind_param('ssi', $roleID, $modulname, $linkID);
+                    if (!$insertStmt->execute()) {
+                        die($_language->module['error_saving_module'] . ": " . $insertStmt->error);
                     }
                 }
             }
+        }
 
-            // Rechte für Kategorien speichern
-            $grantedCategories = $_POST['category'] ?? [];
-            if (!empty($grantedCategories)) {
-                $insertCat = $_database->prepare("INSERT INTO " . PREFIX . "user_admin_access_rights (roleID, type, modulname, accessID) 
-                                                  VALUES (?, 'category', ?, ?)
-                                                  ON DUPLICATE KEY UPDATE accessID = VALUES(accessID)"); // Update für Duplikate
-                foreach ($grantedCategories as $modulname) {
-                    $catID = null;
-                    foreach ($categories as $category) {
-                        if ($category['modulname'] === $modulname) {
-                            $catID = $category['catID'];
-                            break;
-                        }
+        // Kategorien speichern
+        $grantedCategories = $_POST['category'] ?? [];
+        if (!empty($grantedCategories)) {
+            $insertCat = $_database->prepare("INSERT INTO " . PREFIX . "user_admin_access_rights (roleID, type, modulname, accessID) 
+                                              VALUES (?, 'category', ?, ?)
+                                              ON DUPLICATE KEY UPDATE accessID = VALUES(accessID)");
+            foreach ($grantedCategories as $modulname) {
+                $catID = null;
+                foreach ($categories as $category) {
+                    if ($category['modulname'] === $modulname) {
+                        $catID = $category['catID'];
+                        break;
                     }
+                }
 
-                    if ($catID !== null) {
-                        $insertCat->bind_param('isi', $roleID, $modulname, $catID);
-                        if (!$insertCat->execute()) {
-                            die("Fehler beim Speichern der Kategorien: " . $insertCat->error);
-                        }
+                if ($catID !== null) {
+                    $insertCat->bind_param('isi', $roleID, $modulname, $catID);
+                    if (!$insertCat->execute()) {
+                        die($_language->module['error_saving_category'] . ": " . $insertCat->error);
                     }
                 }
             }
-
-            // Erfolgsnachricht und Umleitung
-            $_SESSION['success_message'] = $_language->module['rights_updated'];
-            header("Location: /admin/admincenter.php?site=user_roles");
-            exit;
         }
+
+        $_SESSION['success_message'] = $_language->module['rights_updated'];
+        header("Location: /admin/admincenter.php?site=user_roles&action=roles");
+        exit;
     }
-    ?>
+}
+?>
 
-    <form method="post">
-        <input type="hidden" name="roleID" value="<?= $roleID ?>">
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-paragraph"></i> <?= $_language->module['regular_users'] ?>
+    </div>
 
-        <!-- CSRF-Token im Formular einfügen -->
-        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb t-5 p-2 bg-light">
+            <li class="breadcrumb-item"><a href="admincenter.php?site=user_roles"><?= $_language->module['regular_users'] ?></a></li>
+            <li class="breadcrumb-item active" aria-current="page"><?= $_language->module['edit_role_rights'] ?></li>
+        </ol>
+    </nav>
 
-        <h4><?= $_language->module['categories'] ?></h4>
-        <table class="table table-striped">
-            <thead><tr><th>Modul</th><th>Zugriff</th></tr></thead>
-            <tbody>
-            <?php foreach ($categories as $cat):
-                $translate = new multiLanguage(detectCurrentLanguage());
-                $translate->detectLanguages($cat['name']);
-                $cats = $translate->getTextByLanguage($cat['name']);
-                ?>
-                <tr>
-                    <td><?= htmlspecialchars($cats) ?></td>
-                    <td><input type="checkbox" name="category[]" value="<?= $cat['modulname'] ?>" <?= in_array($cat['modulname'], $categoryRights) ? 'checked' : '' ?>></td>
-                </tr>
-            <?php endforeach; ?>
-            </tbody>
-        </table>
+    <div class="card-body">
+        <div class="container py-5">
+            <h2 class="mb-4"><?= $_language->module['edit_role_rights'] ?></h2>
 
-        <h4><?= $_language->module['modules'] ?></h4>
-        <table class="table table-striped">
-            <thead><tr><th>Modul</th><th>Zugriff</th></tr></thead>
-            <tbody>
-            <?php foreach ($modules as $mod):
-                $translate->detectLanguages($mod['name']);
-                $title = $translate->getTextByLanguage($mod['name']);
-                ?>
-                <tr>
-                    <td><?= htmlspecialchars($title) ?></td>
-                    <td><input type="checkbox" name="modules[]" value="<?= $mod['modulname'] ?>" <?= in_array($mod['modulname'], $moduleRights) ? 'checked' : '' ?>></td>
-                </tr>
-            <?php endforeach; ?>
-            </tbody>
-        </table>
+            <form method="post">
+                <input type="hidden" name="roleID" value="<?= $roleID ?>">
+                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
 
-        <button type="submit" name="save_rights" class="btn btn-primary"><?= $_language->module['save_rights'] ?></button>
-    </form>
+                <h4><?= $_language->module['categories'] ?></h4>
+                <table class="table table-bordered table-striped bg-white shadow-sm">
+                    <thead class="table-light">
+                        <tr>
+                            <th><?= $_language->module['module'] ?></th>
+                            <th><?= $_language->module['access'] ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($categories as $cat):
+                        $translate = new multiLanguage(detectCurrentLanguage());
+                        $translate->detectLanguages($cat['name']);
+                        $cats = $translate->getTextByLanguage($cat['name']);
+                        ?>
+                        <tr>
+                            <td><?= htmlspecialchars($cats) ?></td>
+                            <td><input type="checkbox" name="category[]" value="<?= $cat['modulname'] ?>" <?= in_array($cat['modulname'], $categoryRights) ? 'checked' : '' ?>></td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+
+                <h4><?= $_language->module['modules'] ?></h4>
+                <table class="table table-bordered table-striped bg-white shadow-sm">
+                    <thead class="table-light">
+                        <tr>
+                            <th><?= $_language->module['module'] ?></th>
+                            <th><?= $_language->module['access'] ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($modules as $mod):
+                        $translate->detectLanguages($mod['name']);
+                        $title = $translate->getTextByLanguage($mod['name']);
+                        ?>
+                        <tr>
+                            <td><?= htmlspecialchars($title) ?></td>
+                            <td><input type="checkbox" name="modules[]" value="<?= $mod['modulname'] ?>" <?= in_array($mod['modulname'], $moduleRights) ? 'checked' : '' ?>></td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+
+                <button type="submit" name="save_rights" class="btn btn-warning"><?= $_language->module['save_rights'] ?></button>
+            </form>
+        </div>
+    </div>
+</div>
 
     <?php
 
 } elseif ($action == "user_role_details") {
 
 
-    require_once("../system/sql.php");
-    require_once("../system/functions.php");
 
-    if (isset($_GET['userID'])) {
-        $userID = (int)$_GET['userID'];
+require_once("../system/sql.php");
+require_once("../system/functions.php");
 
-        // Benutzername und Rolle abfragen
-        $query = "
-            SELECT u.nickname, r.role_name AS name
-            FROM " . PREFIX . "user u
-            JOIN " . PREFIX . "user_role_assignments ur ON u.userID = ur.adminID
-            JOIN " . PREFIX . "user_roles r ON ur.roleID = r.roleID
-            WHERE u.userID = '$userID'
+if (isset($_GET['userID'])) {
+    $userID = (int)$_GET['userID'];
+
+    // Benutzername und Rolle abfragen
+    $query = "
+        SELECT u.nickname, r.role_name AS name
+        FROM " . PREFIX . "user u
+        JOIN " . PREFIX . "user_role_assignments ur ON u.userID = ur.adminID
+        JOIN " . PREFIX . "user_roles r ON ur.roleID = r.roleID
+        WHERE u.userID = '$userID'
+    ";
+
+    $result = safe_query($query);
+    if ($row = mysqli_fetch_assoc($result)) {
+        $nickname = htmlspecialchars($row['nickname'] ?? '');
+        $role_name = htmlspecialchars($row['name']);
+
+        // Modul-/Kategorie-Rechte der Rolle abfragen + Anzeigename holen
+        $rights_query = "
+            SELECT ar.type, ar.modulname, ndl.name
+            FROM " . PREFIX . "user_admin_access_rights ar
+            JOIN " . PREFIX . "user_role_assignments ur ON ar.roleID = ur.roleID
+            JOIN " . PREFIX . "navigation_dashboard_links ndl ON ar.accessID = ndl.linkID
+            WHERE ur.adminID = '$userID'
+            ORDER BY ar.type, ar.modulname
         ";
+        $rights_result = safe_query($rights_query);
+        $role_rights_table = '';
 
-        $result = safe_query($query);
-        if ($row = mysqli_fetch_assoc($result)) {
-            $nickname = htmlspecialchars($row['nickname'] ?? '');
-            $role_name = htmlspecialchars($row['name']);
-
-            // Modul-/Kategorie-Rechte der Rolle abfragen + Anzeigename holen
-            $rights_query = "
-                SELECT ar.type, ar.modulname, ndl.name
-                FROM " . PREFIX . "user_admin_access_rights ar
-                JOIN " . PREFIX . "user_role_assignments ur ON ar.roleID = ur.roleID
-                JOIN " . PREFIX . "navigation_dashboard_links ndl ON ar.accessID = ndl.linkID
-                WHERE ur.adminID = '$userID'
-                ORDER BY ar.type, ar.modulname
-            ";
-            $rights_result = safe_query($rights_query);
-            $role_rights_table = '';
-
-            if (mysqli_num_rows($rights_result)) {
-                $role_rights_table .= '
-                    <table class="table table-bordered table-striped mt-3">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Typ</th>
-                                <th>Modulname</th>
-                                <th>Name</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                ';
-                while ($r = mysqli_fetch_assoc($rights_result)) {
-                    $type = $r['type'] === 'category' ? 'Kategorie' : 'Modul';
-                    $modulname = htmlspecialchars($r['modulname']);
-                    $name = htmlspecialchars($r['name']);
-                    $role_rights_table .= "
+        if (mysqli_num_rows($rights_result)) {
+            $role_rights_table .= '
+                <table class="table table-bordered table-striped bg-white shadow-sm">
+                    <thead class="table-light">
                         <tr>
-                            <td>$type</td>
-                            <td>$modulname</td>
-                            <td>$name</td>
+                            <th>' . $_language->module['type'] . '</th>
+                            <th>' . $_language->module['modulname'] . '</th>
+                            <th>' . $_language->module['side_name'] . '</th>
                         </tr>
-                    ";
-                }
-                $role_rights_table .= '</tbody></table>';
-            } else {
-                $role_rights_table = '<p class="text-muted">Keine Rechte für diese Rolle eingetragen.</p>';
+                    </thead>
+                    <tbody>
+            ';
+            while ($r = mysqli_fetch_assoc($rights_result)) {
+                $type = $r['type'] === 'category' ? $_language->module['category'] : $_language->module['module'];
+                $modulname = htmlspecialchars($r['modulname']);
+                $name = htmlspecialchars($r['name']);
+                $translate = new multiLanguage(detectCurrentLanguage());
+                $translate->detectLanguages($name);
+                $side_name = $translate->getTextByLanguage($name);
+                $role_rights_table .= "
+                    <tr>
+                        <td>$type</td>
+                        <td>$modulname</td>
+                        <td>$side_name</td>
+                    </tr>
+                ";
             }
-
+            $role_rights_table .= '</tbody></table>';
         } else {
-            $nickname = 'Unbekannter Benutzer';
-            $role_name = 'Keine Rolle zugewiesen';
-            $role_rights_table = '<p class="text-muted">Keine Rechte gefunden.</p>';
+            $role_rights_table = '<p class="text-muted">' . $_language->module['no_rights'] . '</p>';
         }
+
     } else {
-        echo "Kein Benutzer ausgewählt.";
-        exit;
+        $nickname = $_language->module['unknown_user'];
+        $role_name = $_language->module['no_role_assigned'];
+        $role_rights_table = '<p class="text-muted">' . $_language->module['no_rights_found'] . '</p>';
     }
-    ?>
+} else {
+    echo $_language->module['no_user_selected'];
+    exit;
+}
+?>
 
-    <div class="container py-5">
-        <h2 class="mb-4">Benutzerrechte und -rolle anzeigen</h2>
-
-        <h3>Benutzerinformationen</h3>
-        <p><strong>Benutzername:</strong> <?= $nickname ?></p>
-        <p><strong>Rolle:</strong> <?= $role_name ?></p>
-
-        <h4 class="mt-4">Zugewiesene Rechte</h4>
-        <?= $role_rights_table ?>
-
-        <a href="admincenter.php?site=user_roles&action=admins" class="btn btn-primary mt-3">Zurück zu den Rollen</a>
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-paragraph"></i> <?= $_language->module['regular_users'] ?>
     </div>
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb t-5 p-2 bg-light">
+            <li class="breadcrumb-item"><a href="admincenter.php?site=user_roles"><?= $_language->module['regular_users'] ?></a></li>
+            <li class="breadcrumb-item active" aria-current="page"><?= $_language->module['user_rights_and_roles'] ?></li>
+        </ol>
+    </nav>
+    <div class="card-body">
+        <div class="container py-5">
+            <h2 class="mb-4"><?= $_language->module['user_rights_and_roles'] ?></h2>
+
+            <h3><?= $_language->module['user_info'] ?></h3>
+            <p><strong><?= $_language->module['username'] ?>:</strong> <?= $nickname ?></p>
+            <p><strong><?= $_language->module['role'] ?>:</strong> <?= $role_name ?></p>
+
+            <h4 class="mt-4"><?= $_language->module['assigned_rights'] ?></h4>
+            <?= $role_rights_table ?>
+
+            <a href="admincenter.php?site=user_roles&action=admins" class="btn btn-primary mt-3"><?= $_language->module['back_to_roles'] ?></a>
+        </div>
+    </div>
+</div>
+
     <?php
 
 
@@ -302,98 +347,140 @@ if ($action == "edit_role_rights") {
       
 } elseif ($action == "admins") {
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // CSRF-Überprüfung
-        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-            $_SESSION['csrf_error'] = "Ungültiges CSRF-Token. Anfrage abgelehnt.";
-            header("Location: admincenter.php?site=user_roles&action=admins"); // Weiterleitung zur vorherigen Seite
+    // CSRF-Token generieren, wenn es nicht existiert
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // CSRF-Überprüfung
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        $_SESSION['csrf_error'] = $_language->module['csrf_error_message']; // Fehlernachricht aus dem Spracharray
+        header("Location: admincenter.php?site=user_roles&action=admins"); // Weiterleitung zur vorherigen Seite
+        exit();
+    }
+
+    // Rolle zuweisen
+    if (isset($_POST['assign_role'])) {
+        $userID = (int)$_POST['user_id'];  // Benutzer-ID
+        $roleID = (int)$_POST['role_id'];  // Rollen-ID
+
+        // Überprüfen, ob die Rolle bereits zugewiesen wurde
+        $existing_assignment = safe_query("SELECT * FROM " . PREFIX . "user_role_assignments WHERE adminID = '$userID' AND roleID = '$roleID'");
+        if (mysqli_num_rows($existing_assignment) > 0) {
+            $_SESSION['csrf_error'] = $_language->module['role_already_assigned']; // Rolle bereits zugewiesen
+            header("Location: admincenter.php?site=user_roles&action=admins");
             exit();
         }
 
-        // Rolle zuweisen
-        if (isset($_POST['assign_role'])) {
-            $userID = (int)$_POST['user_id'];  // Benutzer-ID
-            $roleID = (int)$_POST['role_id'];  // Rollen-ID
+        // Zuweisung in der Tabelle speichern
+        safe_query("INSERT INTO " . PREFIX . "user_role_assignments (adminID, roleID) VALUES ('$userID', '$roleID')");
 
-            // Überprüfen, ob die Rolle bereits zugewiesen wurde
-            $existing_assignment = safe_query("SELECT * FROM " . PREFIX . "user_role_assignments WHERE adminID = '$userID' AND roleID = '$roleID'");
-            if (mysqli_num_rows($existing_assignment) > 0) {
-                $_SESSION['csrf_error'] = "Der Benutzer hat bereits diese Rolle.";
-                header("Location: admincenter.php?site=user_roles&action=admins");
-                exit();
-            }
-
-            // Zuweisung in der Tabelle speichern
-            safe_query("INSERT INTO " . PREFIX . "user_role_assignments (adminID, roleID) VALUES ('$userID', '$roleID')");
-        }
+        // Erfolgreiche Zuweisung
+        $_SESSION['csrf_success'] = $_language->module['role_assigned_successfully']; // Erfolgsnachricht
+        header("Location: admincenter.php?site=user_roles&action=admins");
+        exit();
     }
-    ?>
-        <!-- Benutzerrolle zuweisen -->
-        <h3 class="mb-4">Rolle einem Benutzer zuweisen</h3>
-        <form method="post" class="row g-3 mb-5">
-            <div class="col-auto">
-                <label for="user_id" class="form-label">Benutzer auswählen</label>
-                <select name="user_id" class="form-select" required>
-                    <?php
-                    $admins = safe_query("SELECT * FROM " . PREFIX . "user ORDER BY userID");
-                    while ($admin = mysqli_fetch_assoc($admins)) : ?>
-                        <option value="<?= $admin['userID'] ?>"><?= htmlspecialchars($admin['nickname']) ?></option>
-                    <?php endwhile; ?>
-                </select>
-            </div>
+}
 
-            <div class="col-auto">
-                <label for="role_id" class="form-label">Rolle auswählen</label>
-                <select name="role_id" class="form-select" required>
-                    <?php
-                    // Hole alle Rollen
-                    $roles_for_assign = safe_query("SELECT * FROM " . PREFIX . "user_roles ORDER BY role_name");
-                    while ($role = mysqli_fetch_assoc($roles_for_assign)) :
-                    ?>
-                        <option value="<?= $role['roleID'] ?>"><?= htmlspecialchars($role['role_name']) ?></option>
-                    <?php endwhile; ?>
-                </select>
-            </div>
-
-            <div class="col-auto">
-                <button type="submit" name="assign_role" class="btn btn-primary">Rolle zuweisen</button>
-            </div>
-            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-        </form>
-
-        <!-- Zuweisungen anzeigen -->
-        <h3 class="mb-4">Zugewiesene Rollen</h3>
-        <table class="table table-bordered bg-white shadow-sm">
-            <thead class="table-light">
-                <tr>
-                    <th>Benutzername</th>
-                    <th>Rolle</th>
-                    <th style="width: 330px">Aktionen</th>
-                </tr>
-            </thead>
-            <tbody>
-            <?php
-            $assignments = safe_query("SELECT ur.adminID, ur.roleID, u.nickname, r.role_name AS role_name
-                                       FROM " . PREFIX . "user_role_assignments ur
-                                       JOIN " . PREFIX . "user u ON ur.adminID = u.userID
-                                       JOIN " . PREFIX . "user_roles r ON ur.roleID = r.roleID");
-            while ($assignment = mysqli_fetch_assoc($assignments)) : ?>
-                <tr>
-                    <td><?= htmlspecialchars($assignment['nickname']) ?></td>
-                    <td><?= htmlspecialchars($assignment['role_name']) ?></td>
-                    <td>
-                        <a href="admincenter.php?site=user_roles&action=user_role_details&userID=<?= $assignment['adminID'] ?>" class="btn btn-sm btn-warning">
-                            Zugewiesene Rechte einsehen
-                        </a>
-                        <a href="admincenter.php?site=user_roles&action=admins&delete_assignment=<?= $assignment['adminID'] ?>&roleID=<?= $assignment['roleID'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Rolle entfernen?')">
-                            Entfernen
-                        </a>
-                    </td>
-                </tr>
-            <?php endwhile; ?>
-            </tbody>
-        </table>
+// Fehlernachricht anzeigen
+if (isset($_SESSION['csrf_error'])): ?>
+    <div class="alert alert-danger" role="alert">
+        <?= htmlspecialchars($_SESSION['csrf_error']) ?>
     </div>
+    <?php unset($_SESSION['csrf_error']); ?> <!-- Fehlernachricht nach einmaligem Anzeigen entfernen -->
+<?php endif; 
+
+// Erfolgsnachricht anzeigen
+if (isset($_SESSION['csrf_success'])): ?>
+    <div class="alert alert-success" role="alert">
+        <?= htmlspecialchars($_SESSION['csrf_success']) ?>
+    </div>
+    <?php unset($_SESSION['csrf_success']); ?> <!-- Erfolgsnachricht nach einmaligem Anzeigen entfernen -->
+<?php endif; ?>
+
+ 
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-paragraph"></i> <?= $_language->module['regular_users'] ?>
+    </div>
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb t-5 p-2 bg-light">
+            <li class="breadcrumb-item"><a href="admincenter.php?site=user_roles"><?= $_language->module['regular_users'] ?></a></li>
+            <li class="breadcrumb-item active" aria-current="page"><?= $_language->module['assign_role_to_user'] ?></li>
+        </ol>
+    </nav>
+    <div class="card-body">
+        <div class="container py-5">
+            <!-- Benutzerrolle zuweisen -->
+            <h3 class="mb-4"><?= $_language->module['assign_role_to_user'] ?></h3>
+            <form method="post" class="row g-3 mb-5">
+                <div class="col-auto">
+                    <label for="user_id" class="form-label"><?= $_language->module['username'] ?></label>
+                    <select name="user_id" class="form-select" required>
+                        <?php
+                        $admins = safe_query("SELECT * FROM " . PREFIX . "user ORDER BY userID");
+                        while ($admin = mysqli_fetch_assoc($admins)) : ?>
+                            <option value="<?= $admin['userID'] ?>"><?= htmlspecialchars($admin['nickname']) ?></option>
+                        <?php endwhile; ?>
+                    </select>
+                </div>
+
+                <div class="col-auto">
+                    <label for="role_id" class="form-label"><?= $_language->module['role_name'] ?></label>
+                    <select name="role_id" class="form-select" required>
+                        <?php
+                        // Hole alle Rollen
+                        $roles_for_assign = safe_query("SELECT * FROM " . PREFIX . "user_roles ORDER BY role_name");
+                        while ($role = mysqli_fetch_assoc($roles_for_assign)) :
+                        ?>
+                            <option value="<?= $role['roleID'] ?>"><?= htmlspecialchars($role['role_name']) ?></option>
+                        <?php endwhile; ?>
+                    </select>
+                </div>
+
+                <div class="col-auto">
+                    <button type="submit" name="assign_role" class="btn btn-primary"><?= $_language->module['assign_role_to_user'] ?></button>
+                </div>
+                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+            </form>
+
+            <!-- Zuweisungen anzeigen -->
+            <h3 class="mb-4"><?= $_language->module['available_roles'] ?></h3>
+            <table class="table table-bordered table-striped bg-white shadow-sm">
+                <thead class="table-light">
+                    <tr>
+                        <th><?= $_language->module['username'] ?></th>
+                        <th><?= $_language->module['role_name'] ?></th>
+                        <th style="width: 330px"><?= $_language->module['actions'] ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php
+                $assignments = safe_query("SELECT ur.adminID, ur.roleID, u.nickname, r.role_name AS role_name
+                                           FROM " . PREFIX . "user_role_assignments ur
+                                           JOIN " . PREFIX . "user u ON ur.adminID = u.userID
+                                           JOIN " . PREFIX . "user_roles r ON ur.roleID = r.roleID");
+                while ($assignment = mysqli_fetch_assoc($assignments)) : ?>
+                    <tr>
+                        <td><?= htmlspecialchars($assignment['nickname']) ?></td>
+                        <td><?= htmlspecialchars($assignment['role_name']) ?></td>
+                        <td>
+                            <a href="admincenter.php?site=user_roles&action=user_role_details&userID=<?= $assignment['adminID'] ?>" class="btn btn-sm btn-warning">
+                                <?= $_language->module['view_assigned_rights'] ?>
+                            </a>
+                            <a href="admincenter.php?site=user_roles&action=admins&delete_assignment=<?= $assignment['adminID'] ?>&roleID=<?= $assignment['roleID'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('<?= $_language->module['remove_role_confirm'] ?>')">
+                                <?= $_language->module['remove'] ?>
+                            </a>
+                        </td>
+                    </tr>
+                <?php endwhile; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
     <?php
     // Überprüfen, ob die Parameter 'delete_assignment' und 'roleID' in der URL gesetzt sind
@@ -420,96 +507,111 @@ if (isset($_GET['delete_assignment']) && isset($_GET['roleID'])) {
 
 } elseif ($action == "roles") {
 
+require_once("../system/sql.php");
+require_once("../system/functions.php");
 
+// CSRF-Token generieren und in der Session speichern
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 
-
-   
-    // Überprüfe, ob die Sitzung bereits gestartet wurde
-    if (session_status() == PHP_SESSION_NONE) {
-        session_start();
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // CSRF-Überprüfung
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        $_SESSION['csrf_error'] = $_language->module['csrf_error_message'];
+        header("Location: admincenter.php?site=user_roles"); // Weiterleitung zur vorherigen Seite
+        exit();
     }
 
-    require_once("../system/sql.php");
-    require_once("../system/functions.php");
+    // Rolle zuweisen
+    if (isset($_POST['assign_role'])) {
+        $userID = (int)$_POST['user_id'];  // Benutzer-ID
+        $roleID = (int)$_POST['role_id'];  // Rollen-ID
 
-    // CSRF-Token generieren und in der Session speichern
-    if (!isset($_SESSION['csrf_token'])) {
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-    }
-
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // CSRF-Überprüfung
-        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-            $_SESSION['csrf_error'] = "Ungültiges CSRF-Token. Anfrage abgelehnt.";
-            header("Location: admincenter.php?site=user_roles"); // Weiterleitung zur vorherigen Seite
+        // Überprüfen, ob die Rolle bereits zugewiesen wurde
+        $existing_assignment = safe_query("SELECT * FROM " . PREFIX . "user_role_assignments WHERE adminID = '$userID' AND roleID = '$roleID'");
+        if (mysqli_num_rows($existing_assignment) > 0) {
+            $_SESSION['csrf_error'] = $_language->module['role_already_assigned'];
+            header("Location: admincenter.php?site=user_roles");
             exit();
         }
 
-        // Rolle zuweisen
-        if (isset($_POST['assign_role'])) {
-            $userID = (int)$_POST['user_id'];  // Benutzer-ID
-            $roleID = (int)$_POST['role_id'];  // Rollen-ID
+        // Zuweisung in der Tabelle speichern
+        safe_query("INSERT INTO " . PREFIX . "user_role_assignments (adminID, roleID) VALUES ('$userID', '$roleID')");
 
-            // Überprüfen, ob die Rolle bereits zugewiesen wurde
-            $existing_assignment = safe_query("SELECT * FROM " . PREFIX . "user_role_assignments WHERE adminID = '$userID' AND roleID = '$roleID'");
-            if (mysqli_num_rows($existing_assignment) > 0) {
-                $_SESSION['csrf_error'] = "Der Benutzer hat bereits diese Rolle.";
-                header("Location: admincenter.php?site=user_roles");
-                exit();
-            }
-
-            // Zuweisung in der Tabelle speichern
-            safe_query("INSERT INTO " . PREFIX . "user_role_assignments (adminID, roleID) VALUES ('$userID', '$roleID')");
-        }
+        // Erfolgsmeldung
+        $_SESSION['success_message'] = $_language->module['role_assigned_successfully'];
+        header("Location: admincenter.php?site=user_roles");
+        exit();
     }
-    #}
+}
 
-    // Fehler nach CSRF-Überprüfung anzeigen
-    if (isset($_SESSION['csrf_error'])): ?>
-        <div class="alert alert-danger" role="alert">
-            <?= htmlspecialchars($_SESSION['csrf_error']) ?>
-        </div>
-        <?php unset($_SESSION['csrf_error']); ?> <!-- Fehlernachricht nach einmaligem Anzeigen entfernen -->
-    <?php endif; ?>
-
-    <div class="container py-5">
-        <h2 class="mb-4">Admin-Rollen verwalten</h2>
-
-        <!-- Rollenliste -->
-        <h3 class="mb-4">Verfügbare Rollen</h3>
-        <table class="table table-bordered bg-white shadow-sm">
-            <thead class="table-light">
-                <tr>
-                    <th>Rollenname</th>
-                    <th>Rechte</th>
-                    <th style="width: 250px">Aktionen</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                $roles = safe_query("SELECT * FROM " . PREFIX . "user_roles ORDER BY role_name");
-                while ($role = mysqli_fetch_assoc($roles)) : ?>
-                    <tr>
-                        <td><?= htmlspecialchars($role['role_name']) ?></td>
-                        <td><?= htmlspecialchars($role['description'] ?? 'Keine Rechte definiert') ?></td>
-                        <td>
-                            <a href="admincenter.php?site=user_roles&action=edit_role_rights&roleID=<?= (int)$role['roleID'] ?>" class="btn btn-sm btn-warning">
-                                Rechte bearbeiten
-                            </a>
-                        </td>
-                    </tr>
-                <?php endwhile; ?>
-            </tbody>
-        </table>
-
-        
+// Fehler nach CSRF-Überprüfung anzeigen
+if (isset($_SESSION['csrf_error'])): ?>
+    <div class="alert alert-danger" role="alert">
+        <?= htmlspecialchars($_SESSION['csrf_error']) ?>
     </div>
+    <?php unset($_SESSION['csrf_error']); ?> <!-- Fehlernachricht nach einmaligem Anzeigen entfernen -->
+<?php endif; ?>
+
+<!-- Erfolgsnachricht anzeigen -->
+<?php if (isset($_SESSION['success_message'])): ?>
+    <div class="alert alert-success" role="alert">
+        <?= htmlspecialchars($_SESSION['success_message']) ?>
+    </div>
+    <?php unset($_SESSION['success_message']); ?> <!-- Erfolgsnachricht nach einmaligem Anzeigen entfernen -->
+<?php endif; ?>
+
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-paragraph"></i> <?= $_language->module['regular_users'] ?>
+    </div>
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb t-5 p-2 bg-light">
+            <li class="breadcrumb-item"><a href="admincenter.php?site=user_roles"><?= $_language->module['regular_users'] ?></a></li>
+            <li class="breadcrumb-item active" aria-current="page"><?= $_language->module['manage_admin_roles'] ?></li>
+        </ol>
+    </nav>
+
+    <div class="card-body">
+        <div class="container py-5">
+            <h2 class="mb-4"><?= $_language->module['manage_admin_roles'] ?></h2>
+
+            <!-- Rollenliste -->
+            <h3 class="mb-4"><?= $_language->module['available_roles'] ?></h3>
+            <table class="table table-bordered table-striped bg-white shadow-sm">
+                <thead class="table-light">
+                    <tr>
+                        <th><?= $_language->module['role_name'] ?></th>
+                        <th><?= $_language->module['permissions'] ?></th>
+                        <th style="width: 250px"><?= $_language->module['actions'] ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    $roles = safe_query("SELECT * FROM " . PREFIX . "user_roles ORDER BY role_name");
+                    while ($role = mysqli_fetch_assoc($roles)) : ?>
+                        <tr>
+                            <td><?= htmlspecialchars($role['role_name']) ?></td>
+                            <td><?= htmlspecialchars($role['description'] ?? $_language->module['no_permissions_defined']) ?></td>
+                            <td>
+                                <a href="admincenter.php?site=user_roles&action=edit_role_rights&roleID=<?= (int)$role['roleID'] ?>" class="btn btn-sm btn-warning">
+                                    <?= $_language->module['edit_rights'] ?>
+                                </a>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 <?php
 
 
 } elseif ($action == "edit_user") {
-// Verbindungsaufbau zur Datenbank und Sicherheitsprüfung
-#require_once 'config.php';
 
 if (isset($_GET['userID'])) {
     $userID = (int)$_GET['userID'];
@@ -520,7 +622,7 @@ if (isset($_GET['userID'])) {
 
     // Wenn der Benutzer nicht existiert
     if (!$user) {
-        echo "Benutzer nicht gefunden.";
+        echo $_language->module['unknown_user'];
         exit();
     }
 }
@@ -535,38 +637,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     safe_query("UPDATE " . PREFIX . "user SET nickname = '$nickname', email = '$email', password = '$password' WHERE userID = $userID");
 
     // Bestätigungsmeldung
-    $_SESSION['success_message'] = "Benutzerdaten wurden erfolgreich aktualisiert!";
-    header("Location: admincenter.php?site=user_roles"); // Zurück zur Benutzerübersicht
+    $_SESSION['success_message'] = $_language->module['user_created_successfully']; // oder eigener Key z. B. 'user_updated'
+    header("Location: admincenter.php?site=user_roles");
     exit();
 }
-
 ?>
 
 <!-- HTML für das Formular -->
-<div class="container py-5">
-    <h2 class="mb-4">Benutzer bearbeiten</h2>
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-paragraph"></i> <?= $_language->module['regular_users'] ?>
+    </div>
 
-    <form method="post" class="row g-3">
-        <div class="col-md-6">
-            <label for="nickname" class="form-label">Benutzername</label>
-            <input type="text" id="nickname" name="nickname" class="form-control" value="<?= htmlspecialchars($user['nickname']) ?>" required>
-        </div>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb t-5 p-2 bg-light">
+            <li class="breadcrumb-item">
+                <a href="admincenter.php?site=user_roles"><?= $_language->module['regular_users'] ?></a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page"><?= $_language->module['user_edit'] ?></li>
+        </ol>
+    </nav>
 
-        <div class="col-md-6">
-            <label for="email" class="form-label">E-Mail</label>
-            <input type="email" id="email" name="email" class="form-control" value="<?= htmlspecialchars($user['email']) ?>" required>
-        </div>
+    <div class="card-body">
+        <div class="container py-5">
+            <h2 class="mb-4"><?= $_language->module['user_edit'] ?></h2>
 
-        <div class="col-md-6">
-            <label for="password" class="form-label">Neues Passwort (optional)</label>
-            <input type="password" id="password" name="password" class="form-control">
-        </div>
+            <form method="post" class="row g-3">
+                <div class="col-md-6">
+                    <label for="nickname" class="form-label"><?= $_language->module['username'] ?></label>
+                    <input type="text" id="nickname" name="nickname" class="form-control" value="<?= htmlspecialchars($user['nickname']) ?>" required>
+                </div>
 
-        <div class="col-md-12">
-            <button type="submit" class="btn btn-warning">Speichern</button>
+                <div class="col-md-6">
+                    <label for="email" class="form-label"><?= $_language->module['email'] ?></label>
+                    <input type="email" id="email" name="email" class="form-control" value="<?= htmlspecialchars($user['email']) ?>" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="password" class="form-label"><?= $_language->module['password'] ?> (<?= $_language->module['optional'] ?? 'optional' ?>)</label>
+                    <input type="password" id="password" name="password" class="form-control">
+                </div>
+
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-warning"><?= $_language->module['save_user'] ?></button>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 </div>
+
 <?php
 
 
@@ -602,36 +721,50 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
               WHERE userID = '" . intval($userID) . "'";
     
     if (safe_query($query)) {
-        $_SESSION['success_message'] = "Benutzer wurde erfolgreich angelegt.";
+        $_SESSION['success_message'] = $_language->module['user_created_successfully'];
         header("Location: admincenter.php?site=user_roles");
         exit();
     } else {
-        $_SESSION['error_message'] = "Fehler beim Speichern der Passwortdaten.";
+        $_SESSION['error_message'] = $_language->module['user_creation_error'];
     }
 }
 ?>
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-paragraph"></i> <?= $_language->module['regular_users'] ?>
+    </div>
 
-<div class="container py-5">
-    <h2 class="mb-4">Neuen Benutzer anlegen</h2>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb t-5 p-2 bg-light">
+            <li class="breadcrumb-item"><a href="admincenter.php?site=user_roles"><?= $_language->module['regular_users'] ?></a></li>
+            <li class="breadcrumb-item active" aria-current="page"><?= $_language->module['add_user'] ?></li>
+        </ol>
+    </nav>
 
-    <form method="POST" action="">
-        <div class="mb-3">
-            <label for="nickname" class="form-label">Benutzername</label>
-            <input type="text" class="form-control" id="nickname" name="nickname" required>
+    <div class="card-body">
+
+        <div class="container py-5">
+            <h2 class="mb-4"><?= $_language->module['add_user'] ?></h2>
+
+            <form method="POST" action="">
+                <div class="mb-3">
+                    <label for="nickname" class="form-label"><?= $_language->module['username'] ?></label>
+                    <input type="text" class="form-control" id="nickname" name="nickname" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label"><?= $_language->module['email'] ?></label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label"><?= $_language->module['password'] ?></label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-success"><?= $_language->module['add_user'] ?></button>
+            </form>
         </div>
-        <div class="mb-3">
-            <label for="email" class="form-label">E-Mail</label>
-            <input type="email" class="form-control" id="email" name="email" required>
-        </div>
-        <div class="mb-3">
-            <label for="password" class="form-label">Passwort</label>
-            <input type="password" class="form-control" id="password" name="password" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Benutzer anlegen</button>
-    </form>
+
+    </div>
 </div>
-
-
 
 
 
@@ -715,94 +848,125 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['unban_user'])) {
 $users = safe_query("SELECT * FROM " . PREFIX . "user ORDER BY userID LIMIT $offset, $users_per_page");
 ?>
 
-<div class="container py-5">
-    <h2 class="mb-4">Reguläre Benutzer</h2>
-
-    <!-- Button zum Hinzufügen eines neuen Benutzers -->
-    <div class="mb-3">
-        <a href="admincenter.php?site=user_roles&action=user_create" class="btn btn-sm btn-success">
-            Neuen Benutzer anlegen
-        </a>
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-paragraph"></i> <?= $_language->module['regular_users'] ?>
     </div>
 
-    <!-- Benutzerliste -->
-    <table class="table table-bordered table-striped bg-white shadow-sm">
-        <thead class="table-light">
-            <tr>
-                <th>ID</th>
-                <th>Benutzername</th>
-                <th>Email</th>
-                <th>Registriert am</th>
-                <th width="350">Aktionen</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php while ($user = mysqli_fetch_assoc($users)) : ?>
-                <tr>
-                    <td><?= htmlspecialchars($user['userID']) ?></td>
-                    <td><?= htmlspecialchars($user['nickname'] . " - " . ($user['banned'] ? 'Gebannt' : 'Nicht gebannt') ) ?></td>
-                    <td><?= htmlspecialchars($user['email']) ?></td>
-                    <!-- Datum mit date() formatieren -->
-                    <td><?= date('d.m.Y H:i:s', $user['registerdate']) ?></td>
-                    <td>
-                        <?php    $banned = $user['banned']; // 1 = gebannt, 0 = nicht gebannt
-
-                        // Wenn der Benutzer gebannt ist, zeige den "Unban" Button, andernfalls den "Ban" Button
-                        if ($banned) {
-                            echo '<form method="POST" action="">
-                                    <input type="hidden" name="userID" value="'.$user['userID'].'">
-                                    <button type="submit" name="unban_user" class="btn btn-success">Benutzer unbannen</button>
-                                  </form>';
-                        } else {
-                            echo '<form method="POST" action="">
-                                    <input type="hidden" name="userID" value="'.$user['userID'].'">
-                                    <button type="submit" name="ban_user" class="btn btn-danger">Benutzer bannen</button>
-                                  </form>';
-                        }
-
-                        ?>
-                        <a href="admincenter.php?site=user_roles&action=edit_user&userID=<?= $user['userID'] ?>" class="btn btn-sm btn-warning">
-                            Bearbeiten
-                        </a>
-                        <a href="admincenter.php?site=user_roles&action=delete_user&userID=<?= $user['userID'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Möchten Sie diesen Benutzer wirklich löschen?')">
-                            Löschen
-                        </a>
-
-
-                    </td>
-                </tr>
-            <?php endwhile; ?>
-        </tbody>
-    </table>
-
-    <!-- Paginierung -->
-    <nav aria-label="Seiten-Navigation">
-        <ul class="pagination justify-content-center">
-            <li class="page-item <?= ($page == 1) ? 'disabled' : '' ?>">
-                <a class="page-link" href="admincenter.php?site=user_roles&page=1">Erste</a>
-            </li>
-            <li class="page-item <?= ($page == 1) ? 'disabled' : '' ?>">
-                <a class="page-link" href="admincenter.php?site=user_roles&page=<?= ($page - 1) ?>">Vorherige</a>
-            </li>
-
-            <!-- Dynamische Seitenzahlen -->
-            <?php for ($i = 1; $i <= $total_pages; $i++) : ?>
-                <li class="page-item <?= ($i == $page) ? 'active' : '' ?>">
-                    <a class="page-link" href="admincenter.php?site=user_roles&page=<?= $i ?>"><?= $i ?></a>
-                </li>
-            <?php endfor; ?>
-
-            <li class="page-item <?= ($page == $total_pages) ? 'disabled' : '' ?>">
-                <a class="page-link" href="admincenter.php?site=user_roles&page=<?= ($page + 1) ?>">Nächste</a>
-            </li>
-            <li class="page-item <?= ($page == $total_pages) ? 'disabled' : '' ?>">
-                <a class="page-link" href="admincenter.php?site=user_roles&page=<?= $total_pages ?>">Letzte</a>
-            </li>
-        </ul>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb t-5 p-2 bg-light">
+            <li class="breadcrumb-item"><a href="admincenter.php?site=user_roles"><?= $_language->module['regular_users'] ?></a></li>
+            <li class="breadcrumb-item active" aria-current="page">New / Edit</li>
+        </ol>
     </nav>
+
+    <div class="card-body">
+
+        <div class="form-group row">
+            <label class="col-md-1 control-label"><?= $_language->module['options'] ?>:</label>
+            <div class="col-md-8">
+                <a href="admincenter.php?site=user_roles&action=roles" class="btn btn-primary" type="button"><?= $_language->module['manage_admin_roles'] ?></a>      
+                <a href="admincenter.php?site=user_roles&action=admins" class="btn btn-primary" type="button"><?= $_language->module['assign_role_to_user'] ?></a>
+            </div>
+        </div>
+        <div class="container py-5">
+            <h2 class="mb-4"><?= $_language->module['regular_users'] ?></h2>
+        <!-- Button zum Hinzufügen eines neuen Benutzers -->
+        <div class="mb-3">
+            <a href="admincenter.php?site=user_roles&action=user_create" class="btn btn-sm btn-success">
+                <?= $_language->module['add_user'] ?>
+            </a>
+        </div>
+
+        <!-- Benutzerliste -->
+        <table class="table table-bordered table-striped bg-white shadow-sm">
+            <thead class="table-light">
+                <tr>
+                    <th><?= $_language->module['id'] ?></th>
+                    <th><?= $_language->module['username'] ?></th>
+                    <th><?= $_language->module['email'] ?></th>
+                    <th><?= $_language->module['registered_on'] ?></th>
+                    <th width="350"><?= $_language->module['actions'] ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php while ($user = mysqli_fetch_assoc($users)) : ?>
+                    <tr>
+                        <td><?= htmlspecialchars($user['userID']) ?></td>
+                        <td><?= htmlspecialchars($user['nickname']) ?> - <?= $user['banned'] ? $_language->module['banned'] : $_language->module['not_banned'] ?></td>
+                        <td><?= htmlspecialchars($user['email']) ?></td>
+                        <td><?= date('d.m.Y H:i:s', $user['registerdate']) ?></td>
+                        <td>
+                            <?php if ($user['banned']) : ?>
+                                <form method="POST" action="" class="d-inline">
+                                    <input type="hidden" name="userID" value="<?= $user['userID'] ?>">
+                                    <button type="submit" name="unban_user" class="btn btn-success btn-sm">
+                                        <?= $_language->module['unban_user'] ?>
+                                    </button>
+                                </form>
+                            <?php else : ?>
+                                <form method="POST" action="" class="d-inline">
+                                    <input type="hidden" name="userID" value="<?= $user['userID'] ?>">
+                                    <button type="submit" name="ban_user" class="btn btn-danger btn-sm">
+                                        <?= $_language->module['ban_user'] ?>
+                                    </button>
+                                </form>
+                            <?php endif; ?>
+
+                            <a href="admincenter.php?site=user_roles&action=edit_user&userID=<?= $user['userID'] ?>" class="btn btn-sm btn-warning">
+                                <?= $_language->module['edit'] ?>
+                            </a>
+
+                            <a href="admincenter.php?site=user_roles&action=delete_user&userID=<?= $user['userID'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('<?= $_language->module['confirm_delete'] ?>')">
+                                <?= $_language->module['delete'] ?>
+                            </a>
+                        </td>
+                    </tr>
+                <?php endwhile; ?>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 
+    <!-- Paginierung -->
+    <nav aria-label="Seiten-Navigation">
+    <ul class="pagination justify-content-center">
+        <li class="page-item <?= ($page == 1) ? 'disabled' : '' ?>">
+            <a class="page-link" href="admincenter.php?site=user_roles&page=1">
+                <?= $_language->module['first'] ?>
+            </a>
+        </li>
+        <li class="page-item <?= ($page == 1) ? 'disabled' : '' ?>">
+            <a class="page-link" href="admincenter.php?site=user_roles&page=<?= ($page - 1) ?>">
+                <?= $_language->module['previous'] ?>
+            </a>
+        </li>
+
+        <!-- Dynamische Seitenzahlen -->
+        <?php for ($i = 1; $i <= $total_pages; $i++) : ?>
+            <li class="page-item <?= ($i == $page) ? 'active' : '' ?>">
+                <a class="page-link" href="admincenter.php?site=user_roles&page=<?= $i ?>">
+                    <?= $i ?>
+                </a>
+            </li>
+        <?php endfor; ?>
+
+        <li class="page-item <?= ($page == $total_pages) ? 'disabled' : '' ?>">
+            <a class="page-link" href="admincenter.php?site=user_roles&page=<?= ($page + 1) ?>">
+                <?= $_language->module['next'] ?>
+            </a>
+        </li>
+        <li class="page-item <?= ($page == $total_pages) ? 'disabled' : '' ?>">
+            <a class="page-link" href="admincenter.php?site=user_roles&page=<?= $total_pages ?>">
+                <?= $_language->module['last'] ?>
+            </a>
+        </li>
+    </ul>
+</nav>
+</div>
+
+</div></div>
 <?php
 }
 
