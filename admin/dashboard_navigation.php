@@ -28,103 +28,73 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
 */
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// Sichere die Eingabewerte aus $_POST
+$name = $_POST['name'];
+$action = $_POST['action'];
+$catID = $_POST['catID'];
+$hash = $_POST['captcha_hash'];
 
-$_language->readModule('dashnavi', false, true);
+// Wenn keine Aktion ausgewählt wurde
+if ($action == '') {
+    // Zeige die Übersicht der Kategorien an
+    $anz = mysqli_num_rows(safe_query("SELECT catID FROM `navigation_dashboard_categories`"));
 
-use webspell\AccessControl;
-// Den Admin-Zugriff für das Modul überprüfen
-AccessControl::checkAdminAccess('ac_dashboard_navigation');
-
-
-if (isset($_GET[ 'delete' ])) {
-    $linkID = $_GET[ 'linkID' ];
-    $CAPCLASS = new \webspell\Captcha;
-    if ($CAPCLASS->checkCaptcha(0, $_GET[ 'captcha_hash' ])) {
-        safe_query("DELETE FROM " . PREFIX . "navigation_dashboard_links WHERE linkID='$linkID' ");
-    } else {
-        echo $_language->module[ 'transaction_invalid' ];
-        redirect("admincenter.php?site=dashboard_navigation",3);
-    return false;
-    }
-} elseif (isset($_GET[ 'delcat' ])) {
-    $catID = $_GET[ 'catID' ];
-    $CAPCLASS = new \webspell\Captcha;
-    if ($CAPCLASS->checkCaptcha(0, $_GET[ 'captcha_hash' ])) {
-        safe_query("UPDATE " . PREFIX . "navigation_dashboard_links SET catID='0' WHERE catID='$catID' ");
-        safe_query("DELETE FROM " . PREFIX . "navigation_dashboard_categories WHERE catID='$catID' ");
-    } else {
-        echo $_language->module[ 'transaction_invalid' ];
-    }
-} elseif (isset($_POST[ 'sortieren' ])) {
-    if(isset($_POST[ 'sortcat' ])) { $sortcat = $_POST[ 'sortcat' ]; } else { $sortcat="";}
-    $sortlinks = $_POST[ 'sortlinks' ];
-
-    if (is_array($sortcat) AND !empty($sortcat)) {
-        foreach ($sortcat as $sortstring) {
-            $sorter = explode("-", $sortstring);
-            safe_query("UPDATE " . PREFIX . "navigation_dashboard_categories SET sort='$sorter[1]' WHERE catID='$sorter[0]' ");
+    if ($anz > 0) {
+        $cats = safe_query("SELECT * FROM `navigation_dashboard_categories` ORDER BY `cat_name`");
+        while ($cat = mysqli_fetch_assoc($cats)) {
+            echo "<div>{$cat['cat_name']} - Kategorie ID: {$cat['catID']}</div>";
         }
-    }
-    if (is_array($sortlinks)) {
-        foreach ($sortlinks as $sortstring) {
-            $sorter = explode("-", $sortstring);
-            safe_query("UPDATE " . PREFIX . "navigation_dashboard_links SET sort='$sorter[1]' WHERE linkID='$sorter[0]' ");
-        }
-    }
-} elseif (isset($_POST[ 'save' ])) {
-    $CAPCLASS = new \webspell\Captcha;
-    if ($CAPCLASS->checkCaptcha(0, $_POST[ 'captcha_hash' ])) {
-        $anz = mysqli_num_rows(
-            safe_query("SELECT linkID FROM " . PREFIX . "navigation_dashboard_links WHERE catID='" . $_POST[ 'catID' ] . "'")
-        );
-        safe_query(
-            "INSERT INTO " . PREFIX . "navigation_dashboard_links ( catID, name, url, sort )
-            values (
-            '" . $_POST[ 'catID' ] . "',
-            '" . $_POST[ 'name' ] . "',
-            '" . $_POST[ 'url' ] . "',
-            '" . ($anz + 1) . "'
-            )"
-        );
     } else {
-        echo $_language->module[ 'transaction_invalid' ];
-    }
-} elseif (isset($_POST[ 'savecat' ])) {
-    $CAPCLASS = new \webspell\Captcha;
-    if ($CAPCLASS->checkCaptcha(0, $_POST[ 'captcha_hash' ])
-    ) {
-        $anz = mysqli_num_rows(safe_query("SELECT catID FROM "navigation_dashboard_categories"));
-        safe_query(
-            "INSERT INTO " . PREFIX . "navigation_dashboard_categories ( fa_name, name, sort )
-            values( '" . $_POST[ 'fa_name' ] . "', '" . $_POST[ 'name' ] . "', '" . ($anz + 1) . "' )"
-        );
-    } else {
-        echo $_language->module[ 'transaction_invalid' ];
-    }
-} elseif (isset($_POST[ 'saveedit' ])) {
-    $CAPCLASS = new \webspell\Captcha;
-    if ($CAPCLASS->checkCaptcha(0, $_POST[ 'captcha_hash' ])) {
-        safe_query(
-            "UPDATE " . PREFIX . "navigation_dashboard_links
-            SET catID='" . $_POST[ 'catID' ] . "', name='" . $_POST[ 'name' ] . "', url='" . $_POST[ 'url' ] . "'
-            WHERE linkID='" . $_POST[ 'linkID' ] . "'"
-        );
-    } else {
-        echo $_language->module[ 'transaction_invalid' ];
-    }
-} elseif (isset($_POST[ 'saveeditcat' ])) {
-    $CAPCLASS = new \webspell\Captcha;
-    if ($CAPCLASS->checkCaptcha(0, $_POST[ 'captcha_hash' ])) {
-        safe_query(
-            "UPDATE " . PREFIX . "navigation_dashboard_categories SET fa_name='" . $_POST[ 'fa_name' ] . "', name='" . $_POST[ 'name' ] . "'
-            WHERE catID='" . $_POST[ 'catID' ] . "' "
-        );
-    } else {
-        echo $_language->module[ 'transaction_invalid' ];
+        echo "Es sind keine Kategorien vorhanden.";
     }
 }
+
+// Wenn Aktion "save" durchgeführt wird
+elseif ($action == 'save') {
+    // Sicherstellen, dass der Captcha-Wert korrekt ist
+    $captcha = new \webspell\Captcha;
+    if ($captcha->checkCaptcha(0, $hash)) {
+        // Überprüfen, ob der Kategorie-Name angegeben wurde
+        if (!empty($name)) {
+            // Neue Kategorie speichern
+            $insertQuery = "INSERT INTO `navigation_dashboard_categories` (`cat_name`) VALUES ('" . escape($name, 'string') . "')";
+            safe_query($insertQuery);
+            echo "Kategorie wurde erfolgreich gespeichert.";
+        } else {
+            echo "Bitte einen Kategorienamen angeben.";
+        }
+    } else {
+        echo "Captcha-Überprüfung fehlgeschlagen.";
+    }
+}
+
+// Wenn Aktion "delete" durchgeführt wird
+elseif ($action == 'delete') {
+    // Sicherstellen, dass eine gültige Kategorie-ID angegeben wurde
+    if (is_numeric($catID) && $catID > 0) {
+        // Lösche die Kategorie
+        $deleteQuery = "DELETE FROM `navigation_dashboard_categories` WHERE `catID` = " . (int)$catID;
+        safe_query($deleteQuery);
+        echo "Kategorie wurde erfolgreich gelöscht.";
+    } else {
+        echo "Ungültige Kategorie-ID.";
+    }
+}
+
+// Wenn Aktion "edit" durchgeführt wird
+elseif ($action == 'edit') {
+    // Sicherstellen, dass eine gültige Kategorie-ID und ein Name angegeben wurde
+    if (is_numeric($catID) && $catID > 0 && !empty($name)) {
+        // Bearbeite die Kategorie
+        $updateQuery = "UPDATE `navigation_dashboard_categories` SET `cat_name` = '" . escape($name, 'string') . "' WHERE `catID` = " . (int)$catID;
+        safe_query($updateQuery);
+        echo "Kategorie wurde erfolgreich bearbeitet.";
+    } else {
+        echo "Bitte eine gültige Kategorie-ID und einen Namen angeben.";
+    }
+}
+
+
 
 if (isset($_GET[ 'action' ])) {
     $action = $_GET[ 'action' ];
@@ -133,9 +103,10 @@ if (isset($_GET[ 'action' ])) {
 }
 
 if ($action == "add") {
+    // Ausgabe der Karte mit Header und Breadcrumb-Navigation
     echo '<div class="card">
         <div class="card-header"><i class="bi bi-menu-app"></i> 
-            ' . $_language->module[ 'dashnavi' ] . '
+            ' . $_language->module['dashnavi'] . '
         </div>
             
 <nav aria-label="breadcrumb">
@@ -146,27 +117,34 @@ if ($action == "add") {
 </nav>
      <div class="card-body">';
 
-    $ergebnis = safe_query("SELECT * FROM " . PREFIX . "navigation_dashboard_categories ORDER BY sort");
+    // Abfrage der Kategorien aus der Tabelle `navigation_dashboard_categories`
+    $ergebnis = safe_query("SELECT * FROM `navigation_dashboard_categories` ORDER BY `sort`");
     $cats = '<select class="form-select" name="catID">';
+    
+    // Schleife über alle Kategorien
     while ($ds = mysqli_fetch_array($ergebnis)) {
          $name = $ds['name'];
-    $translate = new multiLanguage(detectCurrentLanguage());
-    $translate->detectLanguages($name);
-    $name = $translate->getTextByLanguage($name);
-    
-    $data_array = array();
-    $data_array['$name'] = $ds['name'];
 
-
+        // Übersetzung der Kategoriebezeichnung
+        $translate = new multiLanguage(detectCurrentLanguage());
+        $translate->detectLanguages($name);
+        $name = $translate->getTextByLanguage($name);
         
-        $cats .= '<option value="' . $ds[ 'catID' ] . '">' . $name . '</option>';
+        // Datenarray zur späteren Verwendung
+        $data_array = array();
+        $data_array['$name'] = $ds['name'];
+
+        // Optionen im Dropdown-Menü hinzufügen
+        $cats .= '<option value="' . $ds['catID'] . '">' . $name . '</option>';
     }
     $cats .= '</select>';
 
+    // Captcha-Objekt zur Generierung eines Hashes
     $CAPCLASS = new \webspell\Captcha;
     $CAPCLASS->createTransaction();
     $hash = $CAPCLASS->getHash();
 
+    // Ausgabe des Formulars zur Hinzufügung eines neuen Links
     echo '<form class="form-horizontal" method="post" action="admincenter.php?site=dashboard_navigation">
     <div class="mb-3 row">
     <label class="col-md-2 control-label">'.$_language->module['category'].':</label>
@@ -194,15 +172,17 @@ if ($action == "add") {
   </div>
   <div class="mb-3 row">
     <div class="col-md-offset-2 col-md-10">
-      <input type="hidden" name="captcha_hash" value="' . $hash . '"><button class="btn btn-success" type="submit" name="save"><i class="bi bi-box-arrow-down"></i> ' . $_language->module[ 'add_link' ] . '</button>
+      <input type="hidden" name="captcha_hash" value="' . $hash . '"><button class="btn btn-success" type="submit" name="save"><i class="bi bi-box-arrow-down"></i> ' . $_language->module['add_link'] . '</button>
     </div>
   </div>
    
           </form></div></div>';
-} elseif ($action == "edit") {
+
+}elseif ($action == "edit") {
+    // Ausgabe der Karte mit Header und Breadcrumb-Navigation
     echo '<div class="card">
         <div class="card-header"><i class="bi bi-menu-app"></i> 
-            ' . $_language->module[ 'dashnavi' ] . '
+            ' . $_language->module['dashnavi'] . '
         </div>
             
 <nav aria-label="breadcrumb">
@@ -213,36 +193,45 @@ if ($action == "add") {
 </nav>
      <div class="card-body">';
 
-    $linkID = $_GET[ 'linkID' ];
-    $ergebnis = safe_query("SELECT * FROM " . PREFIX . "navigation_dashboard_links WHERE linkID='$linkID'");
+    // Holen des linkID aus der URL
+    $linkID = $_GET['linkID'];
+    
+    // Abfrage des Links aus der Tabelle `navigation_dashboard_links`
+    $ergebnis = safe_query("SELECT * FROM `navigation_dashboard_links` WHERE `linkID` = '$linkID'");
     $ds = mysqli_fetch_array($ergebnis);
 
-    $category = safe_query("SELECT * FROM " . PREFIX . "navigation_dashboard_categories ORDER BY sort");
+    // Abfrage der Kategorien aus der Tabelle `navigation_dashboard_categories`
+    $category = safe_query("SELECT * FROM `navigation_dashboard_categories` ORDER BY `sort`");
     $cats = '<select class="form-select" name="catID">';
+    
+    // Schleife über alle Kategorien
     while ($dc = mysqli_fetch_array($category)) {
         $name = $dc['name'];
-    $translate = new multiLanguage(detectCurrentLanguage());
-    $translate->detectLanguages($name);
-    $name = $translate->getTextByLanguage($name);
-    
-    $data_array = array();
-    $data_array['$name'] = $dc['name'];
+
+        // Übersetzung der Kategoriebezeichnung
+        $translate = new multiLanguage(detectCurrentLanguage());
+        $translate->detectLanguages($name);
+        $name = $translate->getTextByLanguage($name);
         
-        if ($ds[ 'catID' ] == $dc[ 'catID' ]) {
+        // Überprüfen, ob die Kategorie des Links mit der aktuellen Kategorie übereinstimmt
+        if ($ds['catID'] == $dc['catID']) {
             $selected = " selected=\"selected\"";
         } else {
             $selected = "";
         }
-        $cats .= '<option value="' . $dc[ 'catID' ] . '"' . $selected . '>' . $name . '</option>';
+        
+        // Hinzufügen der Option zur Auswahl
+        $cats .= '<option value="' . $dc['catID'] . '"' . $selected . '>' . $name . '</option>';
     }
     $cats .= '</select>';
 
+    // Captcha-Objekt zur Generierung eines Hashes
     $CAPCLASS = new \webspell\Captcha;
     $CAPCLASS->createTransaction();
     $hash = $CAPCLASS->getHash();
 
+    // Ausgabe des Formulars zur Bearbeitung des Links
     echo '<form class="form-horizontal" method="post" action="admincenter.php?site=dashboard_navigation">
-
     <div class="mb-3 row">
     <label class="col-md-2 control-label">'.$_language->module['category'].':</label>
     <div class="col-md-8"><span class="text-muted small"><em>
@@ -251,33 +240,34 @@ if ($action == "add") {
   </div>
   
   <div class="mb-3 row">
-
-       
     <label class="col-md-2 control-label">'.$_language->module['name'].':</label>
     <div class="col-md-8"> '.$_language->module['info'].' <span class="text-muted small"><em>
-      <input class="form-control" type="text" name="name" value="' . getinput($ds[ 'name' ]) . '" size="60"></em></span>
+      <input class="form-control" type="text" name="name" value="' . getinput($ds['name']) . '" size="60"></em></span>
     </div>
   </div>
   
   <div class="mb-3 row">
     <label class="col-md-2 control-label">'.$_language->module['url'].':</label>
     <div class="col-md-8"><span class="text-muted small"><em>
-      <input class="form-control" type="text" name="url" value="' . getinput($ds[ 'url' ]) . '" size="60"></em></span>
+      <input class="form-control" type="text" name="url" value="' . getinput($ds['url']) . '" size="60"></em></span>
     </div>
   </div>
+  
   <div class="mb-3 row">
     <div class="col-md-offset-2 col-md-10">
-      <input type="hidden" name="captcha_hash" value="'.$hash.'" /><input type="hidden" name="linkID" value="' . $linkID . '">
-      <button class="btn btn-warning" type="submit" name="saveedit"><i class="bi bi-box-arrow-down"></i> ' . $_language->module[ 'edit_link' ] . '</button>
+      <input type="hidden" name="captcha_hash" value="'.$hash.'" />
+      <input type="hidden" name="linkID" value="' . $linkID . '">
+      <button class="btn btn-warning" type="submit" name="saveedit"><i class="bi bi-box-arrow-down"></i> ' . $_language->module['edit_link'] . '</button>
     </div>
   </div>
+</form>
+</div></div>';
 
-    </form>
-    </div></div>';
-} elseif ($action == "addcat") {
+}elseif ($action == "addcat") {
+    // Ausgabe der Karte mit Header und Breadcrumb-Navigation
     echo '<div class="card">
         <div class="card-header"><i class="bi bi-menu-app"></i> 
-            ' . $_language->module[ 'dashnavi' ] . '
+            ' . $_language->module['dashnavi'] . '
         </div>
             
 <nav aria-label="breadcrumb">
@@ -288,37 +278,43 @@ if ($action == "add") {
 </nav>
      <div class="card-body">';
 
+    // Erstelle eine neue Captcha-Transaktion
     $CAPCLASS = new \webspell\Captcha;
     $CAPCLASS->createTransaction();
     $hash = $CAPCLASS->getHash();
 
+    // Formular zur Hinzufügung einer neuen Kategorie
     echo '<form class="form-horizontal" method="post" action="admincenter.php?site=dashboard_navigation">
-
+    
     <div class="mb-3 row">
     <label class="col-md-2 control-label">'.$_language->module['fa_name'].':</label>
     <div class="col-md-8"><span class="text-muted small"><em>
       <input class="form-control" type="text" name="fa_name" size="60"></em></span>
     </div>
   </div>
+  
   <div class="mb-3 row">
     <label class="col-md-2 control-label">'.$_language->module['name'].':</label>
     <div class="col-md-8"><span class="text-muted small"><em>
       <input class="form-control" type="text" name="name" size="60"></em></span>
     </div>
   </div>
+  
   <div class="mb-3 row">
     <div class="col-md-offset-2 col-md-10">
       <input type="hidden" name="captcha_hash" value="'.$hash.'" />
-      <button class="btn btn-success" type="submit" name="savecat"><i class="bi bi-box-arrow-down"></i> ' . $_language->module[ 'add_category' ] . '</button>
+      <button class="btn btn-success" type="submit" name="savecat"><i class="bi bi-box-arrow-down"></i> ' . $_language->module['add_category'] . '</button>
     </div>
   </div>
 
     </form>
     </div></div>';
-} elseif ($action == "editcat") {
+
+}elseif ($action == "editcat") {
+    // Ausgabe der Karte mit Header und Breadcrumb-Navigation
     echo '<div class="card">
         <div class="card-header"><i class="bi bi-menu-app"></i> 
-            ' . $_language->module[ 'dashnavi' ] . '
+            ' . $_language->module['dashnavi'] . '
         </div>
             
 <nav aria-label="breadcrumb">
@@ -329,242 +325,216 @@ if ($action == "add") {
 </nav>
      <div class="card-body">';
 
-    $catID = $_GET[ 'catID' ];
-    $ergebnis = safe_query("SELECT * FROM " . PREFIX . "navigation_dashboard_categories WHERE catID='$catID'");
+    // Hole die catID aus der URL
+    $catID = $_GET['catID'];
+
+    // SQL-Abfrage, um die Kategorie-Daten zu holen
+    $ergebnis = safe_query("SELECT * FROM `navigation_dashboard_categories` WHERE `catID`='$catID'");
     $ds = mysqli_fetch_array($ergebnis);
 
+    // Erstelle eine neue Captcha-Transaktion
     $CAPCLASS = new \webspell\Captcha;
     $CAPCLASS->createTransaction();
     $hash = $CAPCLASS->getHash();
 
+    // Formular zur Bearbeitung der Kategorie
     echo '<form class="form-horizontal" method="post" action="admincenter.php?site=dashboard_navigation">
-
+    
     <div class="mb-3 row">
     <label class="col-md-2 control-label">'.$_language->module['fa_name'].':</label>
     <div class="col-md-8"><span class="text-muted small"><em>
-      <input class="form-control" type="text" name="fa_name" value="' . getinput($ds[ 'fa_name' ]) . '" size="60"></em></span>
+      <input class="form-control" type="text" name="fa_name" value="' . getinput($ds['fa_name']) . '" size="60"></em></span>
     </div>
   </div>
 
   <div class="mb-3 row">
-    <label class="col-md-2 control-label">' . $_language->module[ 'name' ] . ':</label>
+    <label class="col-md-2 control-label">' . $_language->module['name'] . ':</label>
     <div class="col-md-8"><span class="text-muted small"><em>
-      <input class="form-control" type="text" name="name" value="' . getinput($ds[ 'name' ]) . '" size="60"></em></span>
+      <input class="form-control" type="text" name="name" value="' . getinput($ds['name']) . '" size="60"></em></span>
     </div>
   </div>
+
   <div class="mb-3 row">
     <div class="col-md-offset-2 col-md-10">
-      <input type="hidden" name="captcha_hash" value="'.$hash.'" /><input type="hidden" name="catID" value="' . $catID . '">
-      <button class="btn btn-warning" type="submit" name="saveeditcat"><i class="bi bi-box-arrow-down"></i> ' . $_language->module[ 'edit_category' ] . '</button>
+      <input type="hidden" name="captcha_hash" value="'.$hash.'" />
+      <input type="hidden" name="catID" value="' . $catID . '">
+      <button class="btn btn-warning" type="submit" name="saveeditcat"><i class="bi bi-box-arrow-down"></i> ' . $_language->module['edit_category'] . '</button>
     </div>
   </div>
+
     </form></div></div>';
+
 } else {
-    echo '<div class="card">
-        <div class="card-header"><i class="bi bi-menu-app"></i>
-            ' . $_language->module[ 'dashnavi' ] . '
-        </div>
-           <nav aria-label="breadcrumb">
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item active" aria-current="page">' . $_language->module[ 'dashnavi' ] . '</li>
-  </ol>
-</nav>
 
-<div class="card-body">
-
-<div class="mb-3 row">
-    <label class="col-md-1 control-label">' . $_language->module['options'] . ':</label>
-    <div class="col-md-8">
-
-<a class="btn btn-primary" href="admincenter.php?site=dashboard_navigation&amp;action=addcat" class="input"><i class="bi bi-plus-circle"></i> ' .
-        $_language->module[ 'new_category' ] . '</a>
-        <a class="btn btn-primary" href="admincenter.php?site=dashboard_navigation&amp;action=add" class="input"><i class="bi bi-plus-circle"></i> ' .
-        $_language->module[ 'new_link' ] . '</a>
+echo '<div class="card">
+    <div class="card-header"><i class="bi bi-menu-app"></i>
+        ' . $_language->module['dashnavi'] . '
     </div>
-  </div>';
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active" aria-current="page">' . $_language->module['dashnavi'] . '</li>
+        </ol>
+    </nav>
 
-   echo '<form method="post" action="admincenter.php?site=dashboard_navigation">
+    <div class="card-body">
+        <div class="mb-3 row">
+            <label class="col-md-1 control-label">' . $_language->module['options'] . ':</label>
+            <div class="col-md-8">
+                <a class="btn btn-primary" href="admincenter.php?site=dashboard_navigation&amp;action=addcat" class="input"><i class="bi bi-plus-circle"></i> ' .
+                    $_language->module['new_category'] . '</a>
+                <a class="btn btn-primary" href="admincenter.php?site=dashboard_navigation&amp;action=add" class="input"><i class="bi bi-plus-circle"></i> ' .
+                    $_language->module['new_link'] . '</a>
+            </div>
+        </div>';
+
+echo '<form method="post" action="admincenter.php?site=dashboard_navigation">
     <table class="table">
-<thead>
-    <tr>
-      <th width="25%" ><b>' . $_language->module[ 'name' ] . '</b></th>
-      <th width="25%" ><b>Link</b></th>
-            <th width="20%" ><b>' . $_language->module[ 'actions' ] . '</b></th>
-            <th width="8%" ><b>' . $_language->module[ 'sort' ] . '</b></th>
-    </tr></thead>';
-
-    $ergebnis = safe_query("SELECT * FROM " . PREFIX . "navigation_dashboard_categories ORDER BY sort");
-    $tmp = mysqli_fetch_assoc(safe_query("SELECT count(catID) as cnt FROM "navigation_dashboard_categories"));
-    $anz = $tmp[ 'cnt' ];
-
-    $CAPCLASS = new \webspell\Captcha;
-    $CAPCLASS->createTransaction();
-    $hash = $CAPCLASS->getHash();
-    while ($ds = mysqli_fetch_array($ergebnis)) {
-
-        $list = '<select name="sortcat[]">';
-                for ($n = 1; $n <= $anz; $n++) {
-                    $list .= '<option value="' . $ds[ 'catID' ] . '-' . $n . '">' . $n . '</option>';
-                }
-                $list .= '</select>';
-                $list = str_replace(
-                    'value="' . $ds[ 'catID' ] . '-' . $ds[ 'sort' ] . '"',
-                    'value="' . $ds[ 'catID' ] . '-' . $ds[ 'sort' ] . '" selected="selected"',
-                    $list
-                );
-
-        $sort = $list;
-            $catactions =
-                '<a class="btn btn-warning" href="admincenter.php?site=dashboard_navigation&amp;action=editcat&amp;catID=' . $ds[ 'catID' ] .
-                '" class="input"><i class="bi bi-pencil-square"></i> ' . $_language->module[ 'edit' ] . '</a>
-                
-                <!-- Button trigger modal -->
-    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirm-delete" data-href="admincenter.php?site=dashboard_navigation&amp;delcat=true&amp;catID=' . $ds[ 'catID' ] .
-                '&amp;captcha_hash=' . $hash . '"><i class="bi bi-trash3"></i> 
-    ' . $_language->module['delete'] . '
-    </button>
-    <!-- Button trigger modal END-->
-
-     <!-- Modal -->
-<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><i class="bi bi-menu-app"></i> ' . $_language->module[ 'dashnavi' ] . '</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="' . $_language->module[ 'close' ] . '"></button>
-      </div>
-      <div class="modal-body"><p><i class="bi bi-trash3"></i> ' . $_language->module['really_delete_category'] . '</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> ' . $_language->module[ 'close' ] . '</button>
-        <a class="btn btn-danger btn-ok"><i class="bi bi-trash3"></i> ' . $_language->module['delete'] . '</a>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- Modal END -->
-
-';
-
-            $name = $ds['name'];
-                $translate = new multiLanguage(detectCurrentLanguage());
-                $translate->detectLanguages($name);
-                $name = $translate->getTextByLanguage($name);
-                
-                $data_array = array();
-                $data_array['$name'] = $ds['name']; 
-        
-        echo '<tr class="table-secondary">
-            <td width="25%" class="td_head admin-nav-modal"><b>' . $name . '</b></td>
-            <td width="25%" class="td_head admin-nav-modal"></td>
-            <td width="20%" class="td_head">' . $catactions . '</td>
-            <td width="8%" class="td_head">' . $sort . '</td>
-        </tr>';
-
-        $links =
-            safe_query("SELECT * FROM " . PREFIX . "navigation_dashboard_links WHERE catID='" . $ds[ 'catID' ] . "' ORDER BY sort");
-        $tmp = mysqli_fetch_assoc(
-            safe_query(
-                "SELECT count(linkID) as cnt
-                  FROM " . PREFIX . "navigation_dashboard_links WHERE catID='" . $ds[ 'catID' ] . "'"
-            )
-        );
-        $anzlinks = $tmp[ 'cnt' ];
-
-        $i = 1;
-        $CAPCLASS = new \webspell\Captcha;
-        $CAPCLASS->createTransaction();
-        $hash = $CAPCLASS->getHash();
-        if (mysqli_num_rows($links)) {
-            while ($db = mysqli_fetch_array($links)) {
-                if ($i % 2) {
-                    $td = 'td1';
-                } else {
-                    $td = 'td2';
-                }
-
-                $name = $db['name'];
-                $translate = new multiLanguage(detectCurrentLanguage());
-                $translate->detectLanguages($name);
-                $name = $translate->getTextByLanguage($name);
-                
-                $data_array = array();
-                $data_array['$name'] = $db['name'];
-
-                $linklist = '<select name="sortlinks[]">';
-                for ($n = 1; $n <= $anzlinks; $n++) {
-                    $linklist .= '<option value="' . $db[ 'linkID' ] . '-' . $n . '">' . $n . '</option>';
-                }
-                $linklist .= '</select>';
-                $linklist = str_replace(
-                    'value="' . $db[ 'linkID' ] . '-' . $db[ 'sort' ] . '"',
-                    'value="' . $db[ 'linkID' ] . '-' . $db[ 'sort' ] . '" selected="selected"',
-                    $linklist
-                );
-
-                echo '<tr>
-                    <td class="' . $td . '">&nbsp;-&nbsp;<b>' . $name . '</b></td>
-                    <td class="' . $td . '"><small>' . $db[ 'url' ] . '</small></td>
-                    <td class="' . $td . '">
-<a href="admincenter.php?site=dashboard_navigation&amp;action=edit&amp;linkID=' . $db[ 'linkID' ] .'" class="btn btn-warning"><i class="bi bi-pencil-square"></i> ' . $_language->module[ 'edit' ] . '</a>
-
- <!-- Button trigger modal -->
-    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirm-delete-link" data-href="admincenter.php?site=dashboard_navigation&delete=true&linkID=' . $db[ 'linkID' ] . '&captcha_hash=' . $hash . '"><i class="bi bi-trash3"></i> 
-    ' . $_language->module['delete'] . '
-    </button>
-	
-	
-    <!-- Button trigger modal END-->
-	
-	
-     <!-- Modal -->
-<div class="modal fade" id="confirm-delete-link" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><i class="bi bi-menu-app"></i> ' . $_language->module[ 'dashnavi' ] . '</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="' . $_language->module[ 'close' ] . '"></button>
-      </div>
-      <div class="modal-body"><p><i class="bi bi-trash3"></i> ' . $_language->module['really_delete_link'] . '</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> ' . $_language->module[ 'close' ] . '</button>
-        <a class="btn btn-danger btn-ok"><i class="bi bi-trash3"></i> ' . $_language->module['delete'] . '</a>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- Modal END -->
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    var confirmDeleteModal = document.getElementById("confirm-delete-link");
-    confirmDeleteModal.addEventListener("show.bs.modal", function (event) {
-      var button = event.relatedTarget; // Bottone che ha attivato il modal
-      var href = button.getAttribute("data-href"); // Ottiene il link di eliminazione
-      var deleteButton = confirmDeleteModal.querySelector(".btn-ok");
-      deleteButton.setAttribute("href", href); // Imposta il link corretto nel modal
-    });
-  });
-</script>
-
- </td>
-                    <td class="' . $td . '">' . $linklist . '</td>
-                </tr>';
-                $i++;
-            }
-        } else {
-            echo '<tr>'.
-                    '<td class="td1" colspan="5">' . $_language->module[ 'no_additional_links_available' ] . '</td>'.
-                 '</tr>';
-        }
-    }
-    
-    echo '	<tr>
-                <td class="td_head" colspan="6" align="right">
-				<button class="btn btn-primary" type="submit" name="sortieren"><i class="bi bi-sort-numeric-up"></i>  ' . $_language->module[ 'to_sort' ] . '</button>
-		
-		</td>
+        <thead>
+            <tr>
+                <th width="25%"><b>' . $_language->module['name'] . '</b></th>
+                <th width="25%"><b>Link</b></th>
+                <th width="20%"><b>' . $_language->module['actions'] . '</b></th>
+                <th width="8%"><b>' . $_language->module['sort'] . '</b></th>
             </tr>
-        </table>
-    </form></div></div>';
+        </thead>';
+
+$ergebnis = safe_query("SELECT * FROM `navigation_dashboard_categories` ORDER BY `sort`");
+$tmp = mysqli_fetch_assoc(safe_query("SELECT count(`catID`) AS `cnt` FROM `navigation_dashboard_categories`"));
+$anz = $tmp['cnt'];
+
+$CAPCLASS = new \webspell\Captcha;
+$CAPCLASS->createTransaction();
+$hash = $CAPCLASS->getHash();
+
+while ($ds = mysqli_fetch_array($ergebnis)) {
+    // Sortierung der Kategorien
+    $list = '<select name="sortcat[]">';
+    for ($n = 1; $n <= $anz; $n++) {
+        $list .= '<option value="' . $ds['catID'] . '-' . $n . '">' . $n . '</option>';
+    }
+    $list .= '</select>';
+    $list = str_replace(
+        'value="' . $ds['catID'] . '-' . $ds['sort'] . '"',
+        'value="' . $ds['catID'] . '-' . $ds['sort'] . '" selected="selected"',
+        $list
+    );
+
+    $sort = $list;
+
+    // Aktionen für jede Kategorie
+    $catactions =
+        '<a class="btn btn-warning" href="admincenter.php?site=dashboard_navigation&amp;action=editcat&amp;catID=' . $ds['catID'] .
+        '" class="input"><i class="bi bi-pencil-square"></i> ' . $_language->module['edit'] . '</a>
+        
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirm-delete" data-href="admincenter.php?site=dashboard_navigation&amp;delcat=true&amp;catID=' . $ds['catID'] .
+        '&amp;captcha_hash=' . $hash . '"><i class="bi bi-trash3"></i> ' . $_language->module['delete'] . '</button>
+        
+        <!-- Modal -->
+        <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel"><i class="bi bi-menu-app"></i> ' . $_language->module['dashnavi'] . '</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="' . $_language->module['close'] . '"></button>
+                    </div>
+                    <div class="modal-body"><p><i class="bi bi-trash3"></i> ' . $_language->module['really_delete_category'] . '</p></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> ' . $_language->module['close'] . '</button>
+                        <a class="btn btn-danger btn-ok"><i class="bi bi-trash3"></i> ' . $_language->module['delete'] . '</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal END -->';
+
+    $name = $ds['name'];
+    $translate = new multiLanguage(detectCurrentLanguage());
+    $translate->detectLanguages($name);
+    $name = $translate->getTextByLanguage($name);
+    
+    echo '<tr class="table-secondary">
+        <td width="25%" class="td_head admin-nav-modal"><b>' . $name . '</b></td>
+        <td width="25%" class="td_head admin-nav-modal"></td>
+        <td width="20%" class="td_head">' . $catactions . '</td>
+        <td width="8%" class="td_head">' . $sort . '</td>
+    </tr>';
+
+    // Links zu der Kategorie
+    $links = safe_query("SELECT * FROM `navigation_dashboard_links` WHERE `catID`='" . $ds['catID'] . "' ORDER BY `sort`");
+    $tmp = mysqli_fetch_assoc(
+        safe_query(
+            "SELECT count(`linkID`) AS `cnt`
+            FROM `navigation_dashboard_links` WHERE `catID`='" . $ds['catID'] . "'"
+        )
+    );
+    $anzlinks = $tmp['cnt'];
+
+    $i = 1;
+    if (mysqli_num_rows($links)) {
+        while ($db = mysqli_fetch_array($links)) {
+            $td = ($i % 2) ? 'td1' : 'td2';
+
+            $name = $db['name'];
+            $translate = new multiLanguage(detectCurrentLanguage());
+            $translate->detectLanguages($name);
+            $name = $translate->getTextByLanguage($name);
+            
+            $linklist = '<select name="sortlinks[]">';
+            for ($n = 1; $n <= $anzlinks; $n++) {
+                $linklist .= '<option value="' . $db['linkID'] . '-' . $n . '">' . $n . '</option>';
+            }
+            $linklist .= '</select>';
+            $linklist = str_replace(
+                'value="' . $db['linkID'] . '-' . $db['sort'] . '"',
+                'value="' . $db['linkID'] . '-' . $db['sort'] . '" selected="selected"',
+                $linklist
+            );
+
+            echo '<tr>
+                <td class="' . $td . '">&nbsp;-&nbsp;<b>' . $name . '</b></td>
+                <td class="' . $td . '"><small>' . $db['url'] . '</small></td>
+                <td class="' . $td . '">
+                    <a href="admincenter.php?site=dashboard_navigation&amp;action=edit&amp;linkID=' . $db['linkID'] . '" class="btn btn-warning"><i class="bi bi-pencil-square"></i> ' . $_language->module['edit'] . '</a>
+
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirm-delete-link" data-href="admincenter.php?site=dashboard_navigation&delete=true&linkID=' . $db['linkID'] . '&captcha_hash=' . $hash . '"><i class="bi bi-trash3"></i> ' . $_language->module['delete'] . '</button>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="confirm-delete-link" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel"><i class="bi bi-menu-app"></i> ' . $_language->module['dashnavi'] . '</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="' . $_language->module['close'] . '"></button>
+                                </div>
+                                <div class="modal-body"><p><i class="bi bi-trash3"></i> ' . $_language->module['really_delete_link'] . '</p></div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> ' . $_language->module['close'] . '</button>
+                                    <a class="btn btn-danger btn-ok"><i class="bi bi-trash3"></i> ' . $_language->module['delete'] . '</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal END -->
+                </td>
+                <td class="' . $td . '">' . $linklist . '</td>
+            </tr>';
+            $i++;
+        }
+    } else {
+        echo '<tr>
+            <td class="td1" colspan="5">' . $_language->module['no_additional_links_available'] . '</td>
+        </tr>';
+    }
+}
+
+echo '<tr>
+        <td class="td_head" colspan="6" align="right">
+            <button class="btn btn-primary" type="submit" name="sortieren"><i class="bi bi-sort-numeric-up"></i>  ' . $_language->module['to_sort'] . '</button>
+        </td>
+    </tr>
+</table>
+</form></div></div>';
+
 }

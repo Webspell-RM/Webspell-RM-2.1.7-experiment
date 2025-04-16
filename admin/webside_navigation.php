@@ -35,7 +35,7 @@ use webspell\AccessControl;
 // Den Admin-Zugriff für das Modul überprüfen
 AccessControl::checkAdminAccess('ac_webside_navigation');
 
-$theme_active = safe_query("SELECT * FROM " . PREFIX . "settings_themes WHERE active = '1'");
+$theme_active = safe_query("SELECT * FROM settings_themes WHERE active = '1'");
     $db = mysqli_fetch_array($theme_active);
 
 if(!empty(@$db['active'] == 1) !== false) {
@@ -44,7 +44,7 @@ if (isset($_GET[ 'delete' ])) {
     $snavID = $_GET[ 'snavID' ];
     $CAPCLASS = new \webspell\Captcha;
     if ($CAPCLASS->checkCaptcha(0, $_GET[ 'captcha_hash' ])) {
-        safe_query("DELETE FROM " . PREFIX . "navigation_website_sub WHERE snavID='$snavID' ");
+        safe_query("DELETE FROM navigation_website_sub WHERE snavID='$snavID' ");
     } else {
         echo $_language->module[ 'transaction_invalid' ];
         redirect("admincenter.php?site=webside_navigation",3);
@@ -54,8 +54,8 @@ if (isset($_GET[ 'delete' ])) {
     $mnavID = $_GET[ 'mnavID' ];
     $CAPCLASS = new \webspell\Captcha;
     if ($CAPCLASS->checkCaptcha(0, $_GET[ 'captcha_hash' ])) {
-        safe_query("UPDATE " . PREFIX . "navigation_website_sub SET mnavID='0' WHERE mnavID='$mnavID' ");
-        safe_query("DELETE FROM " . PREFIX . "navigation_website_main WHERE mnavID='$mnavID' ");
+        safe_query("UPDATE navigation_website_sub SET mnavID='0' WHERE mnavID='$mnavID' ");
+        safe_query("DELETE FROM navigation_website_main WHERE mnavID='$mnavID' ");
     } else {
         echo $_language->module[ 'transaction_invalid' ];
     }
@@ -66,13 +66,13 @@ if (isset($_GET[ 'delete' ])) {
     if (is_array($sortcat) AND !empty($sortcat)) {
         foreach ($sortcat as $sortstring) {
             $catsorter = explode("-", $sortstring);
-            safe_query("UPDATE " . PREFIX . "navigation_website_main SET sort='$catsorter[1]' WHERE mnavID='$catsorter[0]' ");
+            safe_query("UPDATE navigation_website_main SET sort='$catsorter[1]' WHERE mnavID='$catsorter[0]' ");
         }
     }
     if (is_array($sortlinks)) {
         foreach ($sortlinks as $sortstring) {
             $sorter = explode("-", $sortstring);
-            safe_query("UPDATE " . PREFIX . "navigation_website_sub SET sort='$sorter[1]' WHERE snavID='$sorter[0]' ");
+            safe_query("UPDATE navigation_website_sub SET sort='$sorter[1]' WHERE snavID='$sorter[0]' ");
         }
     }
 } elseif (isset($_POST[ 'save' ])) {
@@ -82,11 +82,11 @@ if (isset($_GET[ 'delete' ])) {
 
     if ($CAPCLASS->checkCaptcha(0, $_POST[ 'captcha_hash' ])) {
         $anz = mysqli_num_rows(
-            safe_query("SELECT snavID FROM " . PREFIX . "navigation_website_sub WHERE mnavID='" . $_POST[ 'mnavID' ] . "'")
+            safe_query("SELECT snavID FROM navigation_website_sub WHERE mnavID='" . $_POST[ 'mnavID' ] . "'")
         );
         $url = $_POST[ 'link' ];
         safe_query(
-            "INSERT INTO " . PREFIX . "navigation_website_sub ( mnavID, name, url, themes_modulname, sort )
+            "INSERT INTO navigation_website_sub ( mnavID, name, url, themes_modulname, sort )
             values (
             '" . $_POST[ 'mnavID' ] . "',
             '" . $_POST[ 'name' ] . "',
@@ -117,9 +117,9 @@ if (isset($_GET[ 'delete' ])) {
     if (!$isdropdown) {
         $isdropdown = 0;
     }
-        $anz = mysqli_num_rows(safe_query("SELECT mnavID FROM "navigation_website_main"));
+        $anz = mysqli_num_rows(safe_query("SELECT mnavID FROM navigation_website_main"));
         safe_query(
-            "INSERT INTO " . PREFIX . "navigation_website_main ( mnavID, name, url, windows, isdropdown, sort )
+            "INSERT INTO navigation_website_main ( mnavID, name, url, windows, isdropdown, sort )
             values( '', '" . $_POST[ 'name' ] . "', '" . $url . "', '" . $windows . "', '" . $isdropdown . "', '1' )"
         );
         $id = mysqli_insert_id($_database);
@@ -134,7 +134,7 @@ if (isset($_GET[ 'delete' ])) {
     
     if ($CAPCLASS->checkCaptcha(0, $_POST[ 'captcha_hash' ])) {
         safe_query(
-            "UPDATE " . PREFIX . "navigation_website_sub
+            "UPDATE navigation_website_sub
             SET mnavID='" . $_POST[ 'mnavID' ] . "', name='" . $_POST[ 'name' ] . "', url= '" . $url . "', themes_modulname='" . $themes_modulname . "' 
             WHERE snavID='" . $_POST[ 'snavID' ] . "'"
         );
@@ -157,7 +157,7 @@ if (isset($_GET[ 'delete' ])) {
     
 
         safe_query(
-            "UPDATE " . PREFIX . "navigation_website_main SET name='" . $_POST[ 'name' ] . "', url='" . $url . "', windows='" . $_POST[ "windows" ] . "', isdropdown='" . $isdropdown . "' WHERE mnavID='" . $_POST[ 'mnavID' ] . "' "
+            "UPDATE navigation_website_main SET name='" . $_POST[ 'name' ] . "', url='" . $url . "', windows='" . $_POST[ "windows" ] . "', isdropdown='" . $isdropdown . "' WHERE mnavID='" . $_POST[ 'mnavID' ] . "' "
         );
 
         $id = $_POST[ 'mnavID' ];
@@ -186,7 +186,7 @@ if ($action == "add") {
 </nav>
      <div class="card-body">';
 
-    $ergebnis = safe_query("SELECT * FROM " . PREFIX . "navigation_website_main ORDER BY sort");
+    $ergebnis = safe_query("SELECT * FROM navigation_website_main ORDER BY sort");
     $cats = '<select class="form-select" name="mnavID">';
     while ($ds = mysqli_fetch_array($ergebnis)) {
         if ($ds[ 'default' ] == 0) {
@@ -249,10 +249,10 @@ if ($action == "add") {
      <div class="card-body">';
 
     $snavID = $_GET[ 'snavID' ];
-    $ergebnis = safe_query("SELECT * FROM " . PREFIX . "navigation_website_sub WHERE snavID='$snavID'");
+    $ergebnis = safe_query("SELECT * FROM navigation_website_sub WHERE snavID='$snavID'");
     $ds = mysqli_fetch_array($ergebnis);
 
-    $category = safe_query("SELECT * FROM " . PREFIX . "navigation_website_main ORDER BY sort");
+    $category = safe_query("SELECT * FROM navigation_website_main ORDER BY sort");
     $cats = '<select class="form-select" name="mnavID">';
     while ($dc = mysqli_fetch_array($category)) {
         if ($dc[ 'default' ] == 1) {
@@ -376,7 +376,7 @@ if ($action == "add") {
      <div class="card-body">';
 
     $mnavID = $_GET[ 'mnavID' ];
-    $ergebnis = safe_query("SELECT * FROM " . PREFIX . "navigation_website_main WHERE mnavID='$mnavID'");
+    $ergebnis = safe_query("SELECT * FROM navigation_website_main WHERE mnavID='$mnavID'");
     $ds = mysqli_fetch_array($ergebnis);
 
     $CAPCLASS = new \webspell\Captcha;
@@ -444,7 +444,7 @@ if ($action == "add") {
 
 <div class="card-body">';
 
-$thergebnis = safe_query("SELECT * FROM " . PREFIX . "settings_themes WHERE active = '1'");
+$thergebnis = safe_query("SELECT * FROM settings_themes WHERE active = '1'");
     $db = mysqli_fetch_array($thergebnis);
   echo'<div class="mb-12 row">
     <label class="col-md-1 control-label"><h4>Template:</h4></label>
@@ -474,8 +474,8 @@ $thergebnis = safe_query("SELECT * FROM " . PREFIX . "settings_themes WHERE acti
             <th width="8%" ><b>' . $_language->module[ 'sort' ] . '</b></th>
     </tr></thead>';
 
-    $ergebnis = safe_query("SELECT * FROM " . PREFIX . "navigation_website_main ORDER BY sort");
-    $tmp = mysqli_fetch_assoc(safe_query("SELECT count(mnavID) as cnt FROM "navigation_website_main"));
+    $ergebnis = safe_query("SELECT * FROM navigation_website_main ORDER BY sort");
+    $tmp = mysqli_fetch_assoc(safe_query("SELECT count(mnavID) as cnt FROM navigation_website_main"));
     $anz = $tmp[ 'cnt' ];
 $CAPCLASS = new \webspell\Captcha;
     $CAPCLASS->createTransaction();
@@ -547,11 +547,11 @@ $CAPCLASS = new \webspell\Captcha;
             <td width="15%" td_head">' . $sort . '</td>
         </tr>';
         
-       $themeergebnis = safe_query("SELECT * FROM " . PREFIX . "settings_themes WHERE active = '1'");
+       $themeergebnis = safe_query("SELECT * FROM settings_themes WHERE active = '1'");
     $db = mysqli_fetch_array($themeergebnis);
         
-        $links = safe_query("SELECT * FROM " . PREFIX . "navigation_website_sub WHERE mnavID='" . $ds[ 'mnavID' ] . "'  AND themes_modulname='".$db['modulname']."' ORDER BY sort");
-        $tmp = mysqli_fetch_assoc(safe_query("SELECT count(snavID) as cnt FROM " . PREFIX . "navigation_website_sub WHERE mnavID='" . $ds[ 'mnavID' ] . "'"));
+        $links = safe_query("SELECT * FROM navigation_website_sub WHERE mnavID='" . $ds[ 'mnavID' ] . "'  AND themes_modulname='".$db['modulname']."' ORDER BY sort");
+        $tmp = mysqli_fetch_assoc(safe_query("SELECT count(snavID) as cnt FROM navigation_website_sub WHERE mnavID='" . $ds[ 'mnavID' ] . "'"));
         $anzlinks = $tmp[ 'cnt' ];
 
         $i = 1;

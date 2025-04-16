@@ -76,7 +76,7 @@ function DeleteTable($table) {
 	#$transaction .= addfield('settings_themes', 'agency', 'int(1)', 'NOT NULL DEFAULT 0 AFTER `headlines`'); nach headlines
 
 function checknewfield($table,$newfield) {
-  $res = safe_query("SHOW COLUMNS from `".PREFIX."$table`");
+  $res = safe_query("SHOW COLUMNS from `$table`");
   $_tablespecs = array();   
   $_record = array();
   $existfield = '1'; 
@@ -298,7 +298,7 @@ function add_insert_plugins_widget($table) {
 function add_insert_navi_dashboard($table) {
   global $_database,$modulname,$version,$str;
 
-    if(mysqli_num_rows(safe_query("SELECT * FROM `".PREFIX."navigation_dashboard_links` WHERE modulname ='".$modulname."'"))>0) {
+    if(mysqli_num_rows(safe_query("SELECT * FROM `navigation_dashboard_links` WHERE modulname ='".$modulname."'"))>0) {
       echo "<div class='alert alert-warning'><b>Dashboard Navigation:</b><br>".$str." Dashboard Navigation entry already exists <br />";
       echo "".$str." Dashboard Navigationseintrag schon vorhanden <br />";
       echo "".$str." La voce di Navigazione della Dashboard esiste già <br /></div>";
@@ -327,7 +327,7 @@ function add_insert_navi_dashboard($table) {
 function add_insert_navi_dashboard_2($table) {
   global $_database,$modulname_2,$version,$str;
 
-    if(mysqli_num_rows(safe_query("SELECT * FROM `".PREFIX."navigation_dashboard_links` WHERE modulname ='".$modulname_2."'"))>0) {
+    if(mysqli_num_rows(safe_query("SELECT * FROM `navigation_dashboard_links` WHERE modulname ='".$modulname_2."'"))>0) {
       echo "<div class='alert alert-warning'><b>Dashboard Navigation:</b><br>".$str." Dashboard Navigation entry already exists <br />";
       echo "".$str." Dashboard Navigationseintrag schon vorhanden <br />";
       echo "".$str." La voce di Navigazione della Dashboard esiste già <br /></div>";
@@ -358,7 +358,7 @@ function add_insert_navi_dashboard_2($table) {
 function add_insert_navigation($table) {
   global $_database,$modulname,$version,$str;
 
-    if(mysqli_num_rows(safe_query("SELECT * FROM `".PREFIX."navigation_website_sub` WHERE modulname ='".$modulname."'"))>0) {
+    if(mysqli_num_rows(safe_query("SELECT * FROM `navigation_website_sub` WHERE modulname ='".$modulname."'"))>0) {
       echo "<div class='alert alert-warning'><b>Website Navigation:</b><br>".$str." Navigation entry already exists <br />";
       echo "".$str." Navigationseintrag schon vorhanden <br />";
       echo "".$str." La voce di navigazione esiste già <br /></div>";
@@ -387,7 +387,7 @@ function add_insert_navigation($table) {
 function add_insert_navigation_2($table) {
   global $_database,$modulname_2,$version,$str;
 
-    if(mysqli_num_rows(safe_query("SELECT * FROM `".PREFIX."navigation_website_sub` WHERE modulname ='".$modulname_2."'"))>0) {
+    if(mysqli_num_rows(safe_query("SELECT * FROM `navigation_website_sub` WHERE modulname ='".$modulname_2."'"))>0) {
       echo "<div class='alert alert-warning'><b>Website Navigation:</b><br>".$str." Navigation entry already exists <br />";
       echo "".$str." Navigationseintrag schon vorhanden <br />";
       echo "".$str." La voce di navigazione esiste già <br /></div>";

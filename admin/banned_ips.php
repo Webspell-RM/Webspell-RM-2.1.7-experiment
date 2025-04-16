@@ -32,32 +32,40 @@
 $_language->readModule('banned_ips', false, true);
 
 use webspell\AccessControl;
-// Den Admin-Zugriff für das Modul überprüfen
+
+// Admin-Zugriff für dieses Modul überprüfen
 AccessControl::checkAdminAccess('ac_banned_ips');
 
-// CSRF-Token erstellen und die Liste der Banns abrufen
+// CSRF-Token erstellen
 $CAPCLASS = new \webspell\Captcha;
 $CAPCLASS->createTransaction();
 $hash = $CAPCLASS->getHash();
 
+// HTML-Ausgabe beginnen
 echo '<div class="card">
         <div class="card-header">' . $_language->module['bannedips'] . '</div>
         <div class="card-body"><br>';
 
-$row = safe_query("SELECT * FROM "banned_ips");
-$tmp = mysqli_fetch_assoc(safe_query("SELECT count(banID) AS cnt FROM "banned_ips"));
+// Alle Bann-Einträge abfragen
+$row = safe_query("SELECT * FROM `banned_ips`");
+
+// Anzahl der Bans zählen
+$tmp = mysqli_fetch_assoc(safe_query("SELECT COUNT(`banID`) AS cnt FROM `banned_ips`"));
 $anzpartners = $tmp['cnt'];
 
+// Tabelle anzeigen
 echo '<table class="table table-striped">
         <thead>
-            <th><b>' . $_language->module['id'] . '</b></th>
-            <th><b>' . $_language->module['ip'] . '</b></th>
-            <th><b>' . $_language->module['deltime'] . '</b></th>
-            <th><b>' . $_language->module['reason'] . '</b></th>
-            <th><b>' . $_language->module['actions'] . '</b></th>
-        </thead>';
+            <tr>
+                <th><b>' . $_language->module['id'] . '</b></th>
+                <th><b>' . $_language->module['ip'] . '</b></th>
+                <th><b>' . $_language->module['deltime'] . '</b></th>
+                <th><b>' . $_language->module['reason'] . '</b></th>
+                <th><b>' . $_language->module['actions'] . '</b></th>
+            </tr>
+        </thead>
+        <tbody>';
 
-$i = 1;
 while ($db = mysqli_fetch_array($row)) {
     echo '<tr>
             <td>' . getinput($db['banID']) . '</td>
@@ -70,5 +78,7 @@ while ($db = mysqli_fetch_array($row)) {
         </tr>';
 }
 
-echo '</table></div></div>';
-?>
+echo '  </tbody>
+      </table>
+    </div>
+</div>';

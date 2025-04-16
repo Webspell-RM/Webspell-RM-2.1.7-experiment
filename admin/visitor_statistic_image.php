@@ -28,7 +28,6 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
 */
 
-
 chdir("../");
 $err=0;
 if(file_exists("system/sql.php")) { include("system/sql.php"); } else { $err++; }
@@ -139,7 +138,7 @@ if (isset($_GET[ 'month' ])) {
 
     for ($i = 1; $i <= $date_end; $i++) {
         $tmp = mysqli_fetch_array(safe_query(
-            "SELECT count FROM " . PREFIX . "counter_stats WHERE dates LIKE '%" . $i .
+            "SELECT count FROM counter_stats WHERE dates LIKE '%" . $i .
             $datemonth . "'"
         ));
         $array[ ] = $tmp[ 'count' ] ? $tmp[ 'count' ] : 0;
@@ -149,7 +148,7 @@ if (isset($_GET[ 'month' ])) {
         $datemonth = date(".m.Y", mktime(0, 0, 0, $i, 1, $_GET[ 'year' ] ? $_GET[ 'year' ] : date("Y")));
         $month = 0;
         $monthquery =
-            safe_query("SELECT count FROM " . PREFIX . "counter_stats WHERE dates LIKE '%" . $datemonth . "'");
+            safe_query("SELECT count FROM counter_stats WHERE dates LIKE '%" . $datemonth . "'");
         while ($dm = mysqli_fetch_array($monthquery)) {
             $month += $dm[ 'count' ];
         }
@@ -171,7 +170,7 @@ if (isset($_GET[ 'month' ])) {
         for ($i = $count; $i > 0; $i--) {
             $day = getformatdate(mktime(0, 0, 0, date("m"), date("d") - $i, date("Y")));
             $tmp = mysqli_fetch_array(safe_query(
-                "SELECT count FROM " . PREFIX . "counter_stats WHERE dates LIKE '%" .
+                "SELECT count FROM counter_stats WHERE dates LIKE '%" .
                 $day . "'"
             ));
             $array[ ] = isset($tmp[ 'count' ]) ? $tmp[ 'count' ] : 0;
@@ -191,7 +190,7 @@ if (isset($_GET[ 'month' ])) {
         for ($i = $count; $i > 0; $i--) {
             $month = 0;
             $monthquery = safe_query(
-                "SELECT count FROM " . PREFIX . "counter_stats WHERE dates LIKE '%" .
+                "SELECT count FROM counter_stats WHERE dates LIKE '%" .
                 date(".m.Y", mktime(0, 0, 0, date("m") - $i, 1, date("Y"))) . "'"
             );
             while ($dm = mysqli_fetch_array($monthquery)) {
@@ -229,10 +228,7 @@ if ($max_y >= $size_y) {
 }
 ksort($array);
 
-# Grafik wird nur bedinkt angezeigt / Einstellungen noch nicht möglich
-#$max_x = $size_x / (count($array) - 1);
-#$max_x = $size_x / (2 - 1);
-#end
+# Grafik wird nur bedingt angezeigt / Fehler wurde behoben
 // old
 //$max_x = $size_x / (count($array) - 1);
 //new

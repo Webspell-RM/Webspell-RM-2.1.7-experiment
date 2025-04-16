@@ -32,7 +32,8 @@
 $_language->readModule('visitor_statistic', false, true);
 
 use webspell\AccessControl;
-// Den Admin-Zugriff für das Modul überprüfen
+
+// Admin-Zugriff für das Modul prüfen
 AccessControl::checkAdminAccess('ac_visitor_statistic');
 
 $time = time();
@@ -40,19 +41,19 @@ $date = getformatdate($time);
 $dateyesterday = getformatdate($time - (24 * 3600));
 $datemonth = date(".m.Y", time());
 
-$ergebnis = safe_query("SELECT hits FROM "counter");
+$ergebnis = safe_query("SELECT hits FROM counter");
 $ds = mysqli_fetch_array($ergebnis);
-$us = mysqli_num_rows(safe_query("SELECT userID FROM "user"));
+$us = mysqli_num_rows(safe_query("SELECT userID FROM users"));
 
 $total = $ds[ 'hits' ];
-$dt = mysqli_fetch_array(safe_query("SELECT count FROM " . PREFIX . "counter_stats WHERE dates='$date'"));
+$dt = mysqli_fetch_array(safe_query("SELECT count FROM counter_stats WHERE dates='$date'"));
 if (isset($dt[ 'count' ])) {
     $today = $dt[ 'count' ];
 } else {
     $today = 0;
 }
 
-$dy = safe_query("SELECT count FROM " . PREFIX . "counter_stats WHERE dates='$dateyesterday'");
+$dy = safe_query("SELECT count FROM counter_stats WHERE dates='$dateyesterday'");
 $yesterday = 0;
 if(mysqli_num_rows($dy) > 0 ){
   $dy = mysqli_fetch_array($dy);
@@ -61,7 +62,7 @@ if(mysqli_num_rows($dy) > 0 ){
   }
 }
 $month = 0;
-$monthquery = safe_query("SELECT count FROM " . PREFIX . "counter_stats WHERE dates LIKE '%$datemonth'");
+$monthquery = safe_query("SELECT count FROM counter_stats WHERE dates LIKE '%$datemonth'");
 while ($dm = mysqli_fetch_array($monthquery)) {
     $month = $month + $dm[ 'count' ];
 }
@@ -70,7 +71,7 @@ if ($month == 0) {
 }
 $monatsstat = '';
 
-$tmp = mysqli_fetch_array(safe_query("SELECT online FROM "counter"));
+$tmp = mysqli_fetch_array(safe_query("SELECT online FROM counter"));
 $days_online = round((time() - $tmp[ 'online' ]) / (3600 * 24));
 
 if (!$days_online) {
@@ -81,17 +82,17 @@ $perday = round($total / $days_online, 2);
 $perhour = round($total / $days_online / 24, 2);
 $permonth = round($total / $days_online * 24, 2);
 
-$tmp = mysqli_fetch_array(safe_query("SELECT max(count) as MAXIMUM FROM "counter_stats"));
+$tmp = mysqli_fetch_array(safe_query("SELECT max(count) as MAXIMUM FROM counter_stats"));
 $maxvisits = $tmp[ 'MAXIMUM' ];
-$tmp2 = mysqli_fetch_array(safe_query("SELECT dates FROM " . PREFIX . "counter_stats WHERE count='$maxvisits'"));
+$tmp2 = mysqli_fetch_array(safe_query("SELECT dates FROM counter_stats WHERE count='$maxvisits'"));
 $maxvisits_date = $tmp2[ 'dates' ];
 
-$online = mysqli_num_rows(safe_query("SELECT time FROM "whoisonline"));
-$dm = mysqli_fetch_array(safe_query("SELECT maxonline FROM "counter"));
+$online = mysqli_num_rows(safe_query("SELECT time FROM whoisonline"));
+$dm = mysqli_fetch_array(safe_query("SELECT maxonline FROM counter"));
 $maxonline = $dm[ 'maxonline' ];
 
-$guests = mysqli_num_rows(safe_query("SELECT ip FROM " . PREFIX . "whoisonline WHERE userID=''"));
-$user = mysqli_num_rows(safe_query("SELECT userID FROM " . PREFIX . "whoisonline WHERE ip=''"));
+$guests = mysqli_num_rows(safe_query("SELECT ip FROM whoisonline WHERE userID=''"));
+$user = mysqli_num_rows(safe_query("SELECT userID FROM whoisonline WHERE ip=''"));
 $useronline = $guests + $user;
 
 if ($user == 1) {

@@ -51,7 +51,7 @@ if(isset($_POST['submit'])) {
     if (isset($_POST['onoff'])) {
         $chk = 1;
     } else { $chk = 0; }
-    $run = safe_query("UPDATE ".PREFIX."settings_recaptcha SET activated='".$chk."', webkey='".$web_key."', seckey='".$sec_key."'");
+    $run = safe_query("UPDATE settings_recaptcha SET activated='".$chk."', webkey='".$web_key."', seckey='".$sec_key."'");
 
 
     if($run) { 
@@ -62,7 +62,7 @@ if(isset($_POST['submit'])) {
 
 } else {
     
-    $get = mysqli_fetch_assoc(safe_query("SELECT * FROM `".PREFIX."settings_recaptcha`"));
+    $get = mysqli_fetch_assoc(safe_query("SELECT * FROM `settings_recaptcha`"));
     $webkey = $get['webkey'];
     $seckey = $get['seckey'];
     if ($get['activated']=="1") { $chk = 'checked="checked"'; } else { $chk = ''; }
@@ -73,7 +73,7 @@ if(isset($_POST['submit'])) {
     if ($CAPCLASS->checkCaptcha(0, $_POST[ 'captcha_hash' ])) {
         safe_query(
             "UPDATE
-                " . PREFIX . "settings
+                settings
             SET
                 title='" . $_POST[ 'title' ] . "',
                 hpurl='" . $_POST[ 'url' ] . "',
@@ -113,7 +113,7 @@ if(isset($_POST['submit'])) {
 } else {
 
 
-    $settings = safe_query("SELECT * FROM "settings");
+    $settings = safe_query("SELECT * FROM settings");
     $ds = mysqli_fetch_array($settings);
 
         
@@ -357,7 +357,7 @@ echo'<div class="">
                             </div>
                         </div><hr>';
 
-                        $db = mysqli_fetch_array(safe_query("SELECT * FROM "settings"));
+                        $db = mysqli_fetch_array(safe_query("SELECT * FROM settings"));
 
                         if($db['closed']=='1'){
                             $lock='success';
@@ -380,42 +380,42 @@ echo'<div class="">
 
 
 
-        $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='news_manager'"));
+        $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='news_manager'"));
         if (@$dx[ 'modulname' ] != 'news_manager') {
         
         } else {
         $news = "<option value='news_manager'>News Manager</option>";
         }
 
-        $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='about_us'"));
+        $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='about_us'"));
         if (@$dx[ 'modulname' ] != 'about_us') {
         
         } else {
         $about = "<option value='about_us'>About us</option>";
         }
 
-        $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='history'"));
+        $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='history'"));
         if (@$dx[ 'modulname' ] != 'history') {
         
         } else {
         $history = "<option value='history'>History</option>";
         }
 
-        $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='calendar'"));
+        $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='calendar'"));
         if (@$dx[ 'modulname' ] != 'calendar') {
         
         } else {
         $calendar = "<option value='calendar'>Calendar</option>";
         }
 
-        $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='blog'"));
+        $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='blog'"));
         if (@$dx[ 'modulname' ] != 'blog') {
         
         } else {
         $blog = "<option value='blog'>Blog</option>";
         }
 
-        $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='forum'"));
+        $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='forum'"));
         if (@$dx[ 'modulname' ] != 'forum') {
         
         } else {
@@ -465,7 +465,23 @@ echo'<div class="">
 ';
 
 
-$settings = safe_query("SELECT * FROM "settings_recaptcha");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$settings = safe_query("SELECT * FROM settings_recaptcha");
     $dx = mysqli_fetch_array($settings);
     echo'      
       
@@ -676,7 +692,7 @@ $settings = safe_query("SELECT * FROM "settings_recaptcha");
                             </div>
                         </div>';
                                     
-                                    $ergebnis = safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='forum'"); 
+                                    $ergebnis = safe_query("SELECT * FROM settings_plugins WHERE modulname='forum'"); 
                                     if(mysqli_num_rows($ergebnis) == '1') { 
 
                                     echo'<div class="mb-3 row">
@@ -815,7 +831,7 @@ if (isset($_POST[ "saveedit" ])) {
         
             safe_query(
                 "UPDATE
-                    `" . PREFIX . "settings_social_media`
+                    `settings_social_media`
                 SET
                     `twitch` = '" . $twitch . "',
                     `facebook` = '" . $facebook . "',
@@ -853,7 +869,7 @@ echo'
 
   $ds =
         mysqli_fetch_array(safe_query(
-            "SELECT * FROM "settings_social_media"));
+            "SELECT * FROM settings_social_media"));
 
     $CAPCLASS = new \webspell\Captcha;
     $CAPCLASS->createTransaction();
@@ -1038,7 +1054,7 @@ if (isset($_POST[ 'submit_members' ])) {
     #$users = $_POST[ "users" ];
     $CAPCLASS = new \webspell\Captcha;
     if ($CAPCLASS->checkCaptcha(0, $_POST[ 'captcha_hash' ])) {
-        safe_query("UPDATE `" . PREFIX . "plugins_memberslist` SET users='" . $_POST[ 'users' ] . "'");
+        safe_query("UPDATE `plugins_memberslist` SET users='" . $_POST[ 'users' ] . "'");
         
         
         redirect("admincenter.php?site=settings&action=plugin_setting", $_language->module[ 'updated_successfully' ], 2);

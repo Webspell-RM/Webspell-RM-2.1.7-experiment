@@ -29,20 +29,20 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
  */
 
-#session_start(); // Session starten
+session_start(); // Session starten
 
-#if (isset($_SESSION['userID']) && isset($_SESSION['role'])) {
+if (isset($_SESSION['userID']) && isset($_SESSION['role'])) {
     // Wenn der Benutzer bereits eingeloggt ist, Weiterleitung zum Admincenter
-#    header('Location: admin/admincenter.php');
-#    exit;
-#}
+    header('Location: admin/admincenter.php');
+    exit;
+}
 
 
 
 // Fehlernachricht anzeigen, falls aus admincheck.php weitergeleitet wurde
-#if (isset($_GET['error']) && $_GET['error'] === 'login_required') {
-#    echo "<div class='alert alert-warning'>Bitte melde dich zuerst an.</div>";
-#}
+if (isset($_GET['error']) && $_GET['error'] === 'login_required') {
+    echo "<div class='alert alert-warning'>Bitte melde dich zuerst an.</div>";
+}
 
 chdir('../');
 include('system/sql.php');
@@ -60,19 +60,35 @@ if (isset($_GET['site'])) {
 } elseif (isset($site)) {
 	unset($site);
 }
-#$cookievalueadmin = 'false';
-#if (isset($_COOKIE['ws_cookie'])) {
-#	$cookievalueadmin = 'accepted';
-#}
+$cookievalueadmin = 'false';
+if (isset($_COOKIE['ws_cookie'])) {
+	$cookievalueadmin = 'accepted';
+}
 
 // Beispiel: Benutzer-ID aus der Sitzung erhalten (falls vorhanden)
 $userID = $_SESSION['userID'] ?? 0; // Falls keine userID, dann 0
 
 // Überprüfen, ob der Benutzer eine Rolle zugewiesen hat
-#if (!$userID || !checkUserRoleAssignment($userID)) {
-#    die('<div style="background-color: red; color: white; padding: 10px; border-radius: 5px;">
-#    Zugriff verweigert: Sie haben keine Rolle zugewiesen bekommen.</div>');
-#}
+/*if (!$userID || !checkUserRoleAssignment($userID)) {
+    die('<div style="background-color: red; color: white; padding: 10px; border-radius: 5px;">
+    Zugriff verweigert: Sie haben keine Rolle zugewiesen bekommen.<br>Sie werden in 3 Sekunden weitergeleitet...</div>');
+    // Setze einen Header für die Umleitung, aber mit einem Timeout von 3 Sekunden
+header('Location: admin/login.php');
+
+// Gib eine Nachricht aus, um dem Benutzer mitzuteilen, dass er weitergeleitet wird
+echo "Sie werden in 3 Sekunden weitergeleitet...";
+exit;
+}*/
+
+if (!$userID || !checkUserRoleAssignment($userID)) {
+    // Gib eine Fehlermeldung aus
+    echo '<div style="background-color: red; color: white; padding: 10px; border-radius: 5px;">
+    Zugriff verweigert: Sie haben keine Rolle zugewiesen bekommen.<br>Sie werden in 3 Sekunden weitergeleitet...</div>';
+    
+    // Verwende ein Meta-Tag für die Umleitung nach 3 Sekunden
+    echo '<meta http-equiv="refresh" content="3;url=login.php">';
+    exit;
+}
 
 
 if (!isset($_SERVER['REQUEST_URI'])) {
@@ -280,7 +296,7 @@ if ($getavatar = getavatar($userID)) {
 			        if (file_exists($plugin_path . "admin/" . $site . ".php")) {
 			            include($plugin_path . "admin/" . $site . ".php");
 			        } else {
-			            #chdir("admin");
+			            chdir("admin");
 			            echo '<div class="alert alert-danger" role="alert">' . $_language->module['plugin_not_found'] . '</div>';
 			            include('info.php');
 			        }

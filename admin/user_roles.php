@@ -66,7 +66,7 @@ if (isset($_GET['roleID'])) {
 
     // Modul-Liste abrufen
     $modules = [];
-    $result = $_database->query("SELECT linkID, modulname, name FROM " . PREFIX . "navigation_dashboard_links ORDER BY sort ASC");
+    $result = $_database->query("SELECT linkID, modulname, name FROM navigation_dashboard_links ORDER BY sort ASC");
     if (!$result) {
         die($_language->module['error_fetching_modules'] . ": " . $_database->error);
     }
@@ -76,7 +76,7 @@ if (isset($_GET['roleID'])) {
 
     // Kategorie-Liste abrufen
     $categories = [];
-    $result = $_database->query("SELECT catID, name, modulname FROM " . PREFIX . "navigation_dashboard_categories ORDER BY sort ASC");
+    $result = $_database->query("SELECT catID, name, modulname FROM navigation_dashboard_categories ORDER BY sort ASC");
     if (!$result) {
         die($_language->module['error_fetching_categories'] . ": " . $_database->error);
     }
@@ -86,7 +86,7 @@ if (isset($_GET['roleID'])) {
 
     // Bestehende Rechte laden
     $stmt = $_database->prepare("SELECT type, modulname, accessID 
-                                 FROM " . PREFIX . "user_admin_access_rights 
+                                 FROM user_admin_access_rights 
                                  WHERE roleID = ?");
     $stmt->bind_param('i', $roleID);
     $stmt->execute();
@@ -110,7 +110,7 @@ if (isset($_GET['roleID'])) {
         // Module speichern
         $grantedModules = $_POST['modules'] ?? [];
         if (!empty($grantedModules)) {
-            $insertStmt = $_database->prepare("INSERT INTO " . PREFIX . "user_admin_access_rights (roleID, type, modulname, accessID) 
+            $insertStmt = $_database->prepare("INSERT INTO user_admin_access_rights (roleID, type, modulname, accessID) 
                                                VALUES (?, 'link', ?, ?)
                                                ON DUPLICATE KEY UPDATE accessID = VALUES(accessID)");
             foreach ($grantedModules as $modulname) {
@@ -134,7 +134,7 @@ if (isset($_GET['roleID'])) {
         // Kategorien speichern
         $grantedCategories = $_POST['category'] ?? [];
         if (!empty($grantedCategories)) {
-            $insertCat = $_database->prepare("INSERT INTO " . PREFIX . "user_admin_access_rights (roleID, type, modulname, accessID) 
+            $insertCat = $_database->prepare("INSERT INTO user_admin_access_rights (roleID, type, modulname, accessID) 
                                               VALUES (?, 'category', ?, ?)
                                               ON DUPLICATE KEY UPDATE accessID = VALUES(accessID)");
             foreach ($grantedCategories as $modulname) {
@@ -245,24 +245,24 @@ if (isset($_GET['userID'])) {
 
     // Benutzername und Rolle abfragen
     $query = "
-        SELECT u.nickname, r.role_name AS name
-        FROM " . PREFIX . "user u
-        JOIN " . PREFIX . "user_role_assignments ur ON u.userID = ur.adminID
-        JOIN " . PREFIX . "user_roles r ON ur.roleID = r.roleID
+        SELECT u.username, r.role_name AS name
+        FROM users u
+        JOIN user_role_assignments ur ON u.userID = ur.adminID
+        JOIN user_roles r ON ur.roleID = r.roleID
         WHERE u.userID = '$userID'
     ";
 
     $result = safe_query($query);
     if ($row = mysqli_fetch_assoc($result)) {
-        $nickname = htmlspecialchars($row['nickname'] ?? '');
+        $username = htmlspecialchars($row['username'] ?? '');
         $role_name = htmlspecialchars($row['name']);
 
         // Modul-/Kategorie-Rechte der Rolle abfragen + Anzeigename holen
         $rights_query = "
             SELECT ar.type, ar.modulname, ndl.name
-            FROM " . PREFIX . "user_admin_access_rights ar
-            JOIN " . PREFIX . "user_role_assignments ur ON ar.roleID = ur.roleID
-            JOIN " . PREFIX . "navigation_dashboard_links ndl ON ar.accessID = ndl.linkID
+            FROM user_admin_access_rights ar
+            JOIN user_role_assignments ur ON ar.roleID = ur.roleID
+            JOIN navigation_dashboard_links ndl ON ar.accessID = ndl.linkID
             WHERE ur.adminID = '$userID'
             ORDER BY ar.type, ar.modulname
         ";
@@ -302,7 +302,7 @@ if (isset($_GET['userID'])) {
         }
 
     } else {
-        $nickname = $_language->module['unknown_user'];
+        $username = $_language->module['unknown_user'];
         $role_name = $_language->module['no_role_assigned'];
         $role_rights_table = '<p class="text-muted">' . $_language->module['no_rights_found'] . '</p>';
     }
@@ -328,7 +328,7 @@ if (isset($_GET['userID'])) {
             <h2 class="mb-4"><?= $_language->module['user_rights_and_roles'] ?></h2>
 
             <h3><?= $_language->module['user_info'] ?></h3>
-            <p><strong><?= $_language->module['username'] ?>:</strong> <?= $nickname ?></p>
+            <p><strong><?= $_language->module['username'] ?>:</strong> <?= $username ?></p>
             <p><strong><?= $_language->module['role'] ?>:</strong> <?= $role_name ?></p>
 
             <h4 class="mt-4"><?= $_language->module['assigned_rights'] ?></h4>
@@ -366,7 +366,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $roleID = (int)$_POST['role_id'];  // Rollen-ID
 
         // Überprüfen, ob die Rolle bereits zugewiesen wurde
-        $existing_assignment = safe_query("SELECT * FROM " . PREFIX . "user_role_assignments WHERE adminID = '$userID' AND roleID = '$roleID'");
+        $existing_assignment = safe_query("SELECT * FROM user_role_assignments WHERE adminID = '$userID' AND roleID = '$roleID'");
         if (mysqli_num_rows($existing_assignment) > 0) {
             $_SESSION['csrf_error'] = $_language->module['role_already_assigned']; // Rolle bereits zugewiesen
             header("Location: admincenter.php?site=user_roles&action=admins");
@@ -374,7 +374,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Zuweisung in der Tabelle speichern
-        safe_query("INSERT INTO " . PREFIX . "user_role_assignments (adminID, roleID) VALUES ('$userID', '$roleID')");
+        safe_query("INSERT INTO user_role_assignments (adminID, roleID) VALUES ('$userID', '$roleID')");
 
         // Erfolgreiche Zuweisung
         $_SESSION['csrf_success'] = $_language->module['role_assigned_successfully']; // Erfolgsnachricht
@@ -420,9 +420,9 @@ if (isset($_SESSION['csrf_success'])): ?>
                     <label for="user_id" class="form-label"><?= $_language->module['username'] ?></label>
                     <select name="user_id" class="form-select" required>
                         <?php
-                        $admins = safe_query("SELECT * FROM " . PREFIX . "user ORDER BY userID");
+                        $admins = safe_query("SELECT * FROM users ORDER BY userID");
                         while ($admin = mysqli_fetch_assoc($admins)) : ?>
-                            <option value="<?= $admin['userID'] ?>"><?= htmlspecialchars($admin['nickname']) ?></option>
+                            <option value="<?= $admin['userID'] ?>"><?= htmlspecialchars($admin['username']) ?></option>
                         <?php endwhile; ?>
                     </select>
                 </div>
@@ -432,7 +432,7 @@ if (isset($_SESSION['csrf_success'])): ?>
                     <select name="role_id" class="form-select" required>
                         <?php
                         // Hole alle Rollen
-                        $roles_for_assign = safe_query("SELECT * FROM " . PREFIX . "user_roles ORDER BY role_name");
+                        $roles_for_assign = safe_query("SELECT * FROM user_roles ORDER BY role_name");
                         while ($role = mysqli_fetch_assoc($roles_for_assign)) :
                         ?>
                             <option value="<?= $role['roleID'] ?>"><?= htmlspecialchars($role['role_name']) ?></option>
@@ -458,13 +458,13 @@ if (isset($_SESSION['csrf_success'])): ?>
                 </thead>
                 <tbody>
                 <?php
-                $assignments = safe_query("SELECT ur.adminID, ur.roleID, u.nickname, r.role_name AS role_name
-                                           FROM " . PREFIX . "user_role_assignments ur
-                                           JOIN " . PREFIX . "user u ON ur.adminID = u.userID
-                                           JOIN " . PREFIX . "user_roles r ON ur.roleID = r.roleID");
+                $assignments = safe_query("SELECT ur.adminID, ur.roleID, u.username, r.role_name AS role_name
+                                           FROM user_role_assignments ur
+                                           JOIN users u ON ur.adminID = u.userID
+                                           JOIN user_roles r ON ur.roleID = r.roleID");
                 while ($assignment = mysqli_fetch_assoc($assignments)) : ?>
                     <tr>
-                        <td><?= htmlspecialchars($assignment['nickname']) ?></td>
+                        <td><?= htmlspecialchars($assignment['username']) ?></td>
                         <td><?= htmlspecialchars($assignment['role_name']) ?></td>
                         <td>
                             <a href="admincenter.php?site=user_roles&action=user_role_details&userID=<?= $assignment['adminID'] ?>" class="btn btn-sm btn-warning">
@@ -490,7 +490,7 @@ if (isset($_GET['delete_assignment']) && isset($_GET['roleID'])) {
     $roleID = (int)$_GET['roleID'];
 
     // SQL-Abfrage ausführen, um die Zuweisung zu entfernen
-    $result = safe_query("DELETE FROM " . PREFIX . "user_role_assignments WHERE adminID = '$adminID' AND roleID = '$roleID'");
+    $result = safe_query("DELETE FROM user_role_assignments WHERE adminID = '$adminID' AND roleID = '$roleID'");
 
     // Erfolgreiche Löschung und Weiterleitung
     if ($result) {
@@ -529,7 +529,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $roleID = (int)$_POST['role_id'];  // Rollen-ID
 
         // Überprüfen, ob die Rolle bereits zugewiesen wurde
-        $existing_assignment = safe_query("SELECT * FROM " . PREFIX . "user_role_assignments WHERE adminID = '$userID' AND roleID = '$roleID'");
+        $existing_assignment = safe_query("SELECT * FROM user_role_assignments WHERE adminID = '$userID' AND roleID = '$roleID'");
         if (mysqli_num_rows($existing_assignment) > 0) {
             $_SESSION['csrf_error'] = $_language->module['role_already_assigned'];
             header("Location: admincenter.php?site=user_roles");
@@ -537,7 +537,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Zuweisung in der Tabelle speichern
-        safe_query("INSERT INTO " . PREFIX . "user_role_assignments (adminID, roleID) VALUES ('$userID', '$roleID')");
+        safe_query("INSERT INTO user_role_assignments (adminID, roleID) VALUES ('$userID', '$roleID')");
 
         // Erfolgsmeldung
         $_SESSION['success_message'] = $_language->module['role_assigned_successfully'];
@@ -590,7 +590,7 @@ if (isset($_SESSION['csrf_error'])): ?>
                 </thead>
                 <tbody>
                     <?php
-                    $roles = safe_query("SELECT * FROM " . PREFIX . "user_roles ORDER BY role_name");
+                    $roles = safe_query("SELECT * FROM user_roles ORDER BY role_name");
                     while ($role = mysqli_fetch_assoc($roles)) : ?>
                         <tr>
                             <td><?= htmlspecialchars($role['role_name']) ?></td>
@@ -617,7 +617,7 @@ if (isset($_GET['userID'])) {
     $userID = (int)$_GET['userID'];
 
     // Abfrage des Benutzers anhand der userID
-    $user_query = safe_query("SELECT * FROM " . PREFIX . "user WHERE userID = $userID");
+    $user_query = safe_query("SELECT * FROM users WHERE userID = $userID");
     $user = mysqli_fetch_assoc($user_query);
 
     // Wenn der Benutzer nicht existiert
@@ -629,12 +629,12 @@ if (isset($_GET['userID'])) {
 
 // Wenn das Formular abgeschickt wurde
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nickname = mysqli_real_escape_string($connection, $_POST['nickname']);
+    $username = mysqli_real_escape_string($connection, $_POST['username']);
     $email = mysqli_real_escape_string($connection, $_POST['email']);
     $password = $_POST['password'] ? mysqli_real_escape_string($connection, $_POST['password']) : $user['password']; // Optionales Passwort
 
     // Update-Query, um die Benutzerdaten zu aktualisieren
-    safe_query("UPDATE " . PREFIX . "user SET nickname = '$nickname', email = '$email', password = '$password' WHERE userID = $userID");
+    safe_query("UPDATE users SET username = '$username', email = '$email', password = '$password' WHERE userID = $userID");
 
     // Bestätigungsmeldung
     $_SESSION['success_message'] = $_language->module['user_created_successfully']; // oder eigener Key z. B. 'user_updated'
@@ -664,8 +664,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <form method="post" class="row g-3">
                 <div class="col-md-6">
-                    <label for="nickname" class="form-label"><?= $_language->module['username'] ?></label>
-                    <input type="text" id="nickname" name="nickname" class="form-control" value="<?= htmlspecialchars($user['nickname']) ?>" required>
+                    <label for="username" class="form-label"><?= $_language->module['username'] ?></label>
+                    <input type="text" id="username" name="username" class="form-control" value="<?= htmlspecialchars($user['username']) ?>" required>
                 </div>
 
                 <div class="col-md-6">
@@ -697,13 +697,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $nickname = mysqli_real_escape_string($_database, $_POST['nickname']);
+    $username = mysqli_real_escape_string($_database, $_POST['username']);
     $email = mysqli_real_escape_string($_database, $_POST['email']);
     $password = mysqli_real_escape_string($_database, $_POST['password']);
 
     // Benutzer einfügen, um userID zu erhalten
-    safe_query("INSERT INTO " . PREFIX . "user (nickname, email, registerdate) 
-                VALUES ('$nickname', '$email', UNIX_TIMESTAMP())");
+    safe_query("INSERT INTO users (username, email, registerdate) 
+                VALUES ('$username', '$email', UNIX_TIMESTAMP())");
 
     $userID = mysqli_insert_id($_database);
 
@@ -715,7 +715,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password_hash = password_hash($password . $pepper_plain, PASSWORD_BCRYPT);
 
     // Passwort und verschlüsselten Pepper speichern
-    $query = "UPDATE " . PREFIX . "user 
+    $query = "UPDATE users 
               SET password_hash = '$password_hash', 
                   password_pepper = '$pepper_hash' 
               WHERE userID = '" . intval($userID) . "'";
@@ -748,8 +748,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             <form method="POST" action="">
                 <div class="mb-3">
-                    <label for="nickname" class="form-label"><?= $_language->module['username'] ?></label>
-                    <input type="text" class="form-control" id="nickname" name="nickname" required>
+                    <label for="username" class="form-label"><?= $_language->module['username'] ?></label>
+                    <input type="text" class="form-control" id="username" name="username" required>
                 </div>
                 <div class="mb-3">
                     <label for="email" class="form-label"><?= $_language->module['email'] ?></label>
@@ -782,7 +782,7 @@ $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $users_per_page;
 
 // Anzahl der Benutzer ermitteln (für die Paginierung)
-$total_users_query = safe_query("SELECT COUNT(*) as total FROM "user");
+$total_users_query = safe_query("SELECT COUNT(*) as total FROM users");
 $total_users = mysqli_fetch_assoc($total_users_query)['total'];
 $total_pages = ceil($total_users / $users_per_page);
 
@@ -790,13 +790,13 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete_user' && isset($_GET['u
     $userID = (int)$_GET['userID'];
 
     // Überprüfe, ob der Benutzer existiert
-    $user_check = safe_query("SELECT * FROM " . PREFIX . "user WHERE userID = '$userID'");
+    $user_check = safe_query("SELECT * FROM users WHERE userID = '$userID'");
     if (mysqli_num_rows($user_check) > 0) {
         // Zuerst die zugehörigen Einträge aus der rm_216_user_role_assignments Tabelle löschen
-        safe_query("DELETE FROM " . PREFIX . "user_role_assignments WHERE adminID = '$userID'");
+        safe_query("DELETE FROM user_role_assignments WHERE adminID = '$userID'");
 
         // Jetzt den Benutzer aus der user Tabelle löschen
-        safe_query("DELETE FROM " . PREFIX . "user WHERE userID = '$userID'");
+        safe_query("DELETE FROM users WHERE userID = '$userID'");
 
         $_SESSION['success_message'] = "Benutzer wurde erfolgreich gelöscht.";
     } else {
@@ -813,7 +813,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ban_user'])) {
     $userID = intval($userID);  // Sicherheit: Umwandlung in eine ganze Zahl
 
     // Bann den Benutzer (Setze das Feld 'banned' auf 1)
-    $query = "UPDATE " . PREFIX . "user SET banned = 1 WHERE userID = $userID";
+    $query = "UPDATE users SET banned = 1 WHERE userID = $userID";
     if (safe_query($query)) {
         $_SESSION['success_message'] = "Benutzer wurde erfolgreich gebannt.";
     } else {
@@ -831,7 +831,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['unban_user'])) {
     $userID = intval($userID);  // Sicherheit: Umwandlung in eine ganze Zahl
 
     // Hebe den Bann des Benutzers auf (Setze das Feld 'banned' auf 0)
-    $query = "UPDATE " . PREFIX . "user SET banned = 0 WHERE userID = $userID";
+    $query = "UPDATE users SET banned = 0 WHERE userID = $userID";
     if (safe_query($query)) {
         $_SESSION['success_message'] = "Benutzer wurde erfolgreich entbannt.";
     } else {
@@ -845,7 +845,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['unban_user'])) {
 
 
 // Abfrage der Benutzer für die aktuelle Seite
-$users = safe_query("SELECT * FROM " . PREFIX . "user ORDER BY userID LIMIT $offset, $users_per_page");
+$users = safe_query("SELECT * FROM users ORDER BY userID LIMIT $offset, $users_per_page");
 ?>
 
 <div class="card">
@@ -893,7 +893,7 @@ $users = safe_query("SELECT * FROM " . PREFIX . "user ORDER BY userID LIMIT $off
                 <?php while ($user = mysqli_fetch_assoc($users)) : ?>
                     <tr>
                         <td><?= htmlspecialchars($user['userID']) ?></td>
-                        <td><?= htmlspecialchars($user['nickname']) ?> - <?= $user['banned'] ? $_language->module['banned'] : $_language->module['not_banned'] ?></td>
+                        <td><?= htmlspecialchars($user['username']) ?> - <?= $user['banned'] ? $_language->module['banned'] : $_language->module['not_banned'] ?></td>
                         <td><?= htmlspecialchars($user['email']) ?></td>
                         <td><?= date('d.m.Y H:i:s', $user['registerdate']) ?></td>
                         <td>

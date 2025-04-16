@@ -109,7 +109,7 @@ if (!$getnew = $plugin) {
     $dir = $_GET['dir'];
     $modulname = trim($dir, '/');
     // Recupera il plugin dal database
-    $plugin_name_query = safe_query("SELECT modulname FROM " . PREFIX . "settings_plugins WHERE modulname = '" . $modulname . "'");
+    $plugin_name_query = safe_query("SELECT modulname FROM settings_plugins WHERE modulname = '" . $modulname . "'");
 
     if (mysqli_num_rows($plugin_name_query) > 0) {
       $plugin_name = mysqli_fetch_assoc($plugin_name_query)['modulname'];
@@ -117,10 +117,10 @@ if (!$getnew = $plugin) {
       echo '<div class="alert alert-info"><strong><i class="bi bi-trash3"></i> ' . $_language->module['delete_plugin'] . ':</strong> ' . htmlspecialchars($plugin_name, ENT_QUOTES, 'UTF-8') . '</div>';
 
       // 1️ Remove widgets from the general table
-      $delete_widgets = safe_query("DELETE FROM `" . PREFIX . "settings_plugins_widget` WHERE `modulname` = '$plugin_name'");
+      $delete_widgets = safe_query("DELETE FROM `settings_plugins_widget` WHERE `modulname` = '$plugin_name'");
 
       // 2 Find and clean tables `PREFIX.plugins_*_settings_widgets`
-      $tables_query = safe_query("SHOW TABLES LIKE '" . PREFIX . "plugins\_%\_settings_widgets'");
+      $tables_query = safe_query("SHOW TABLES LIKE 'plugins\_%\_settings_widgets'");
       while ($table = mysqli_fetch_array($tables_query)) {
         $table_name = $table[0];
 
@@ -134,7 +134,7 @@ if (!$getnew = $plugin) {
     }
 
     // 3 Remove the plugin from the main table
-    $delete_plugin = safe_query("DELETE FROM `" . PREFIX . "settings_plugins` WHERE `modulname` = '$plugin_name'");
+    $delete_plugin = safe_query("DELETE FROM `settings_plugins` WHERE `modulname` = '$plugin_name'");
 
     // Fine Pulitura di widget  e plugin dal database
 
@@ -254,7 +254,7 @@ if (!$getnew = $plugin) {
         $translate->detectLanguages($result['item' . $plug]['plus_plugin']);
         $result['item' . $plug]['plus_plugin'] = $translate->getTextByLanguage($result['item' . $plug]['plus_plugin']);
 
-        $ergebnis = safe_query("SELECT * FROM `" . PREFIX . "settings_plugins` WHERE `modulname`='" . $result['item' . $plug]['modulname'] . "'");
+        $ergebnis = safe_query("SELECT * FROM `settings_plugins` WHERE `modulname`='" . $result['item' . $plug]['modulname'] . "'");
         if (mysqli_num_rows($ergebnis) == '1') {
           $row = mysqli_fetch_assoc($ergebnis);
           if ($row['version'] !== '') {
@@ -310,14 +310,14 @@ if (!$getnew = $plugin) {
             $output .= '<div class="d-grid gap-2"><a class="btn btn-warning mb-3" data-toggle="tooltip" data-html="true" title="' . $_language->module['tooltip_4'] . ' " href="?site=plugin_installer&id=' . $plug . '&up=install&dir=' . $result['item' . $plug]['path'] . '"><i class="bi bi-cloud-arrow-down"></i> ' . $_language->module['update'] . ' to Ver. ' . $result['item' . $plug]['version'] . '</a></div>';
           }
 
-          if (
-            @$row['modulname'] == 'footer'
-            || @$row['modulname'] == 'navigation'
-          ) {
+          #if (
+            #@$row['modulname'] == 'footer'
+            #|| @$row['modulname'] == 'navigation'
+          #) {
 
 
-            $output .= '';
-          } else {
+            #$output .= '';
+          #} else {
 
             $output .= ' 
               <!-- Button trigger modal -->
@@ -344,7 +344,7 @@ if (!$getnew = $plugin) {
                       </div>
                   </div>
               </div>';
-          }
+          #}
         } else {
 
           if ($result['item' . $plug]['req'] == $version) {

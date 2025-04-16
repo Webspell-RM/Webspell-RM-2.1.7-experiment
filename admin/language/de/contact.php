@@ -16,7 +16,8 @@ $language_array = Array(
     'information_incomplete' => 'Unvollständige Informationen',
     'sort' => 'Sortieren',
     'to_sort' => 'Sortieren',
-    'close' => 'Schließen'
+    'close' => 'Schließen',
+    'actions' => 'Aktionen'
 );
 
 ?>
