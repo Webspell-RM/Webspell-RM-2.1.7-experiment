@@ -782,7 +782,7 @@ $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $users_per_page;
 
 // Anzahl der Benutzer ermitteln (für die Paginierung)
-$total_users_query = safe_query("SELECT COUNT(*) as total FROM " . PREFIX . "user");
+$total_users_query = safe_query("SELECT COUNT(*) as total FROM "user");
 $total_users = mysqli_fetch_assoc($total_users_query)['total'];
 $total_pages = ceil($total_users / $users_per_page);
 

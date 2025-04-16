@@ -253,7 +253,7 @@ function update_base_2($_database) {
   $transaction = new Transaction($_database);
 
   //Nicknametabelle erstellen
-  $transaction->addQuery("DROP TABLE IF EXISTS ".PREFIX."nickname");
+  $transaction->addQuery("DROP TABLE IF EXISTS "nickname");
   $transaction->addQuery("CREATE TABLE ".PREFIX."nickname (
   userID int(11) NOT NULL,
   nickname varchar(255) NOT NULL

@@ -43,7 +43,7 @@ if (isset($_GET[ 'action' ])) {
     $action = '';
 }
 
-$pq = mysqli_fetch_assoc(safe_query("SELECT profile_visibility FROM " . PREFIX . "user WHERE userID='" . $id . "'"));
+$pq = mysqli_fetch_assoc(safe_query("SELECT profile_visibility FROM users WHERE userID='" . $id . "'"));
 
 // Check if the query returned any result
 if ($pq === null) {
@@ -57,7 +57,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
     redirect('index.php',$_language->module[ 'you_have_to_be_logged_in'], 3);
     exit;
 } else {    
-    if (isset($id) && getnickname($id) != '' && deleteduser($id) == '0') {
+    if (isset($id) && getusername($id) != '' && deleteduser($id) == '0') {
 	    
         #if (isbanned($id)) {
         #    $banned = isset($_language->module['is_banned']) ? $_language->module['is_banned'] : "Dieser Benutzer ist gesperrt.";
@@ -72,13 +72,13 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
               <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title fs-5" id="exampleModalLabel">' . $_language->module[ 'last' ] . ' ' . $profilelast . '  ' . $_language->module[ 'posts' ] . '   ' . $_language->module[ 'from' ] . ' '.getnickname($id).'</h5>
+                    <h5 class="modal-title fs-5" id="exampleModalLabel">' . $_language->module[ 'last' ] . ' ' . $profilelast . '  ' . $_language->module[ 'posts' ] . '   ' . $_language->module[ 'from' ] . ' '.getusername($id).'</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="' . $_language->module[ 'close' ] . '"></button>
                   </div>
                   <div class="modal-body">
             ';
     
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='forum'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='forum'"));
             if (@$dx[ 'modulname' ] != 'forum') {
             
             } else { 
@@ -88,7 +88,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
                 "SELECT
                     *
                 FROM
-                    " . PREFIX . "plugins_forum_topics
+                    plugins_forum_topics
                 WHERE
                     userID = '" . $id . "' AND
                     moveID = 0
@@ -140,18 +140,18 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             $posts =
                 safe_query(
                     "SELECT
-                        " . PREFIX . "plugins_forum_topics.boardID,
-                        " . PREFIX . "plugins_forum_topics.readgrps,
-                        " . PREFIX . "plugins_forum_topics.topicID,
-                        " . PREFIX . "plugins_forum_topics.topic,
-                        " . PREFIX . "plugins_forum_posts.date,
-                        " . PREFIX . "plugins_forum_posts.message
+                        plugins_forum_topics.boardID,
+                        plugins_forum_topics.readgrps,
+                        plugins_forum_topics.topicID,
+                        plugins_forum_topics.topic,
+                        plugins_forum_posts.date,
+                        plugins_forum_posts.message
                     FROM
-                        " . PREFIX . "plugins_forum_posts,
-                        " . PREFIX . "plugins_forum_topics
+                        plugins_forum_posts,
+                        plugins_forum_topics
                     WHERE
-                        " . PREFIX . "plugins_forum_posts.poster = '" . $id . "' AND
-                        " . PREFIX . "plugins_forum_posts.topicID = " . PREFIX . "plugins_forum_topics.topicID
+                        plugins_forum_posts.poster = '" . $id . "' AND
+                        plugins_forum_posts.topicID = plugins_forum_topics.topicID
                     ORDER BY date DESC"
                 );
             if (mysqli_num_rows($posts)) {
@@ -247,14 +247,14 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
               <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title fs-5" id="exampleModalLabel">' . $_language->module[ 'last' ] . ' ' . $profilelast . '  ' . $_language->module[ 'posts' ] . '   ' . $_language->module[ 'from' ] . ' '.getnickname($id).'</h5>
+                    <h5 class="modal-title fs-5" id="exampleModalLabel">' . $_language->module[ 'last' ] . ' ' . $profilelast . '  ' . $_language->module[ 'posts' ] . '   ' . $_language->module[ 'from' ] . ' '.getusername($id).'</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="' . $_language->module[ 'close' ] . '"></button>
                   </div>
                   <div class="modal-body">
     
             '; 
     
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='gallery'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='gallery'"));
             if (@$dx[ 'modulname' ] != 'gallery') {
             
             } else {       
@@ -264,7 +264,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
     
             $galclass = new \webspell\Gallery;
     
-            $galleries = safe_query("SELECT * FROM " . PREFIX . "plugins_gallery WHERE userID='" . $id . "'");
+            $galleries = safe_query("SELECT * FROM plugins_gallery WHERE userID='" . $id . "'");
     
             
             
@@ -278,7 +278,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
                             "SELECT
                                 *
                             FROM
-                                " . PREFIX . "plugins_gallery_pictures
+                                plugins_gallery_pictures
                             WHERE
                                 galleryID='" . (int)$ds[ 'galleryID' ]."'"
                         )
@@ -289,7 +289,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
                             "SELECT
                                 `picID`
                             FROM
-                                `" . PREFIX . "plugins_gallery_pictures`
+                                `plugins_gallery_pictures`
                             WHERE
                                 `galleryID` = '" . (int)$ds[ 'galleryID' ] . "'"
                         )
@@ -355,22 +355,22 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
                   <div class="modal-body">
             ';    
             
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='useraward'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='useraward'"));
             if (@$dx[ 'modulname' ] != 'useraward') {
             
             } else { 
     
-            $us = mysqli_num_rows(safe_query("SELECT userID FROM ".PREFIX."user"));
-            $pm3 = mysqli_num_rows(safe_query("SELECT userID FROM ".PREFIX."user WHERE pmsent>='500'"));
-            $pm2 = mysqli_num_rows(safe_query("SELECT userID FROM ".PREFIX."user WHERE pmsent>='250'"));
-            $pm1 = mysqli_num_rows(safe_query("SELECT userID FROM ".PREFIX."user WHERE pmsent>='100'"));
+            $us = mysqli_num_rows(safe_query("SELECT userID FROM users"));
+            $pm3 = mysqli_num_rows(safe_query("SELECT userID FROM users WHERE pmsent>='500'"));
+            $pm2 = mysqli_num_rows(safe_query("SELECT userID FROM users WHERE pmsent>='250'"));
+            $pm1 = mysqli_num_rows(safe_query("SELECT userID FROM users WHERE pmsent>='100'"));
             $percpm3 = round($pm3/$us*100, 4);
             $percpm2 = round($pm2/$us*100, 4);
             $percpm1 = round($pm1/$us*100, 4);
     
     
             function getawtime($id) {
-                $ds1 = mysqli_fetch_array(safe_query("SELECT * FROM ".PREFIX."plugins_useraward_list WHERE uawardID = '$id'"));
+                $ds1 = mysqli_fetch_array(safe_query("SELECT * FROM plugins_useraward_list WHERE uawardID = '$id'"));
                 return $ds1['awardrequire'];
             }
             $translate = new multiLanguage(detectCurrentLanguage());
@@ -384,10 +384,10 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
     
     
     
-            $member4 = mysqli_num_rows(safe_query("SELECT userID FROM ".PREFIX."user WHERE registerdate<='".$membertime4."'"));
-            $member3 = mysqli_num_rows(safe_query("SELECT userID FROM ".PREFIX."user WHERE registerdate<='".$membertime3."'"));
-            $member2 = mysqli_num_rows(safe_query("SELECT userID FROM ".PREFIX."user WHERE registerdate<='".$membertime2."'"));
-            $member1 = mysqli_num_rows(safe_query("SELECT userID FROM ".PREFIX."user WHERE registerdate<='".$membertime1."'"));
+            $member4 = mysqli_num_rows(safe_query("SELECT userID FROM users WHERE registerdate<='".$membertime4."'"));
+            $member3 = mysqli_num_rows(safe_query("SELECT userID FROM users WHERE registerdate<='".$membertime3."'"));
+            $member2 = mysqli_num_rows(safe_query("SELECT userID FROM users WHERE registerdate<='".$membertime2."'"));
+            $member1 = mysqli_num_rows(safe_query("SELECT userID FROM users WHERE registerdate<='".$membertime1."'"));
             $percmember4 = round($member4/$us*100, 4);
             $percmember3 = round($member3/$us*100, 4);
             $percmember2 = round($member2/$us*100, 4);
@@ -400,9 +400,9 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             ';
 		    
 		    
-            $awardselect=safe_query("SELECT * FROM ".PREFIX."plugins_useraward_list ORDER BY uawardID");
+            $awardselect=safe_query("SELECT * FROM plugins_useraward_list ORDER BY uawardID");
             while($df=mysqli_fetch_array($awardselect)){
-                $anz= mysqli_num_rows(safe_query("SELECT uwID FROM ".PREFIX."plugins_useraward WHERE awardID='".$df['uawardID']."'"));
+                $anz= mysqli_num_rows(safe_query("SELECT uwID FROM plugins_useraward WHERE awardID='".$df['uawardID']."'"));
                 $perc=$anz/$us*100;
                 $percentage=round($perc, 4);
                 $pfad = '';
@@ -461,7 +461,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             $settings = [];
 
             // Datenbankabfrage für alle Module auf einmal
-            $query = "SELECT modulname FROM " . PREFIX . "settings_plugins WHERE modulname IN ('forum', 'gallery', 'useraward')";
+            $query = "SELECT modulname FROM settings_plugins WHERE modulname IN ('forum', 'gallery', 'useraward')";
             $result = safe_query($query);
 
             // Ergebnisse in einem assoziativen Array speichern
@@ -506,18 +506,18 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
  
         
             $date = time();
-            $ergebnis = safe_query("SELECT * FROM " . PREFIX . "user WHERE userID='" . $id . "'");
+            $ergebnis = safe_query("SELECT * FROM users WHERE userID='" . $id . "'");
             $anz = mysqli_num_rows($ergebnis);
             $ds = mysqli_fetch_array($ergebnis);
     
             if ($userID != $id && $userID != 0) {
-                safe_query("UPDATE " . PREFIX . "user SET visits=visits+1 WHERE userID='" . $id . "'");
+                safe_query("UPDATE users SET visits=visits+1 WHERE userID='" . $id . "'");
                 if (mysqli_num_rows(
                     safe_query(
                         "SELECT
                                 visitID
                             FROM
-                                " . PREFIX . "user_visitors
+                                user_visitors
                             WHERE
                                 userID='" . $id . "' AND
                                 visitor='" . $userID."'"
@@ -526,7 +526,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
                 ) {
                     safe_query(
                         "UPDATE
-                            " . PREFIX . "user_visitors
+                            user_visitors
                             SET
                                 date='" . $date . "'
                             WHERE
@@ -536,7 +536,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
                 } else {
                     safe_query(
                         "INSERT INTO
-                            " . PREFIX . "user_visitors (
+                            user_visitors (
                                 userID,
                                 visitor,
                                 date
@@ -560,9 +560,9 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             }
     
             
-            $nickname = $ds[ 'nickname' ];
+            $username = $ds[ 'username' ];
     
-            $dx = mysqli_fetch_assoc(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='squads'"));
+            $dx = mysqli_fetch_assoc(safe_query("SELECT * FROM settings_plugins WHERE modulname='squads'"));
 
             if (!$dx || $dx['modulname'] != 'squads') {    
                 $member = '';
@@ -628,7 +628,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             #$sem = '/[0-9]{4,11}/si';
     
             // Überprüfen, ob das Messenger-Plugin aktiv ist
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='messenger'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='messenger'"));
             if ($dx && $dx['modulname'] == 'messenger') {
                 // Wenn der Benutzer eingeloggt ist und es sich nicht um denselben Benutzer handelt
                 if ($loggedin && $ds['userID'] != $userID) {
@@ -692,7 +692,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
 
             // SQL-Statement vorbereiten
             $query = "SELECT TIMESTAMPDIFF(YEAR, birthday, NOW()) AS `age`
-                      FROM " . PREFIX . "user
+                      FROM users
                       WHERE userID = ?";
 
             // Prepared Statement erstellen
@@ -759,20 +759,20 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             #----forumposts ----
             function getuserforumposts($userID)
             {
-                $dx = mysqli_fetch_array(safe_query("SELECT modulname FROM " . PREFIX . "settings_plugins WHERE modulname='forum'"));
+                $dx = mysqli_fetch_array(safe_query("SELECT modulname FROM settings_plugins WHERE modulname='forum'"));
 
                 if (empty($dx['modulname']) || $dx['modulname'] !== 'forum') {
                     return 0; // Statt `''` besser `0` zurückgeben, da die Funktion eine Anzahl erwartet.
                 }
 
-                $query = safe_query("SELECT COUNT(*) AS post_count FROM `" . PREFIX . "plugins_forum_posts` WHERE `poster` = " . (int)$userID);
+                $query = safe_query("SELECT COUNT(*) AS post_count FROM `plugins_forum_posts` WHERE `poster` = " . (int)$userID);
                 $result = mysqli_fetch_array($query);
 
                 return (int) $result['post_count'];
             }
 
             // Überprüfung, ob das Forum-Plugin aktiv ist
-            $dx = mysqli_fetch_array(safe_query("SELECT modulname FROM " . PREFIX . "settings_plugins WHERE modulname='forum'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT modulname FROM settings_plugins WHERE modulname='forum'"));
 
             if (empty($dx['modulname']) || $dx['modulname'] !== 'forum') {
                 $new_forum_posts = 0;
@@ -780,7 +780,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
                 $new_forum_posts = getuserforumposts($ds['userID']);
             }    
     
-            $dx = mysqli_fetch_assoc(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='forum'"));
+            $dx = mysqli_fetch_assoc(safe_query("SELECT * FROM settings_plugins WHERE modulname='forum'"));
 
             if (!isset($dx['modulname']) || $dx['modulname'] !== 'forum') {
                 $usertype = '';
@@ -802,7 +802,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
                         "SELECT
                             *
                         FROM
-                            " . PREFIX . "plugins_forum_ranks
+                            plugins_forum_ranks
                         WHERE
                             " . $posts . " >= postmin AND
                             " . $posts . " <= postmax AND
@@ -821,7 +821,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
                 "SELECT IF
                     (u.special_rank = 0, 0, CONCAT_WS('__', r.rank, r.pic)) as `RANK`
                 FROM
-                    `" . PREFIX . "user` u LEFT JOIN `" . PREFIX . "plugins_forum_ranks` r ON u.special_rank = r.rankID
+                    `users` u LEFT JOIN `plugins_forum_ranks` r ON u.special_rank = r.rankID
                 WHERE
                     userID='" . $ds[ 'userID' ] . "'"
             );
@@ -844,7 +844,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             }
             /*-----------game images --------------*/
     
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='squads'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='squads'"));
 
             if (!isset($dx['modulname']) || $dx['modulname'] !== 'squads') {
                 $games = '';
@@ -873,19 +873,19 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             /*-----------squad images --------------*/
     
             $banner = "";
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='squads'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='squads'"));
 
             if (!isset($dx['modulname']) || $dx['modulname'] !== 'squads') {    
                 return;
             }
 
-            $ergebnis = safe_query("SELECT * FROM " . PREFIX . "plugins_squads_members WHERE userID='" . (int)$ds['userID'] . "' ORDER BY sort");
+            $ergebnis = safe_query("SELECT * FROM plugins_squads_members WHERE userID='" . (int)$ds['userID'] . "' ORDER BY sort");
 
             while ($dd = mysqli_fetch_array($ergebnis)) {
                 $team = (int)$dd['squadID'];
                 $position = htmlspecialchars($dd['position']);
 
-                $settings = safe_query("SELECT * FROM " . PREFIX . "plugins_squads WHERE squadID='$team' ORDER BY sort");
+                $settings = safe_query("SELECT * FROM plugins_squads WHERE squadID='$team' ORDER BY sort");
                 
                 while ($df = mysqli_fetch_array($settings)) {
                     $pic = !empty($df['icon']) ? htmlspecialchars($df['icon']) : 'no-image.jpg';
@@ -927,15 +927,15 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             #----news ----
             function getusernewsposts($userID)
             {
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='news_manager'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='news_manager'"));
             if (@$dx[ 'modulname' ] != 'news_manager') {
             $new_posts = '';
             } else {
-            return mysqli_num_rows(safe_query("SELECT newsID FROM `" . PREFIX . "plugins_news_manager` WHERE `poster` = " . (int)$userID));
+            return mysqli_num_rows(safe_query("SELECT newsID FROM `plugins_news_manager` WHERE `poster` = " . (int)$userID));
             } 
             }
     
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='news_manager'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='news_manager'"));
             if (@$dx[ 'modulname' ] != 'news_manager') {
             $new_posts = '';
             } else {
@@ -945,15 +945,15 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             #----news_comments ----
             function getusernewscomments($userID)
             {
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='news_manager'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='news_manager'"));
             if (@$dx[ 'modulname' ] != 'news_manager') {
             '';
             } else {
-            return mysqli_num_rows(safe_query("SELECT commentID FROM `" . PREFIX . "plugins_news_manager_comments` WHERE `userID` = " . (int)$userID . " AND `type` = 'ne'"));
+            return mysqli_num_rows(safe_query("SELECT commentID FROM `plugins_news_manager_comments` WHERE `userID` = " . (int)$userID . " AND `type` = 'ne'"));
             }
             }
     
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='news_manager'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='news_manager'"));
             if (@$dx[ 'modulname' ] != 'news_manager') {
             $news_comments = '';
             } else {
@@ -963,15 +963,15 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             #----articles_comments ----
             function getuserarticlescomments($userID)
             {
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='articles'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='articles'"));
             if (@$dx[ 'modulname' ] != 'articles') {
             '';
             } else {
-            return mysqli_num_rows(safe_query("SELECT commentID FROM `" . PREFIX . "plugins_articles_comments` WHERE `userID` = " . (int)$userID . " AND `type` = 'ar'"));
+            return mysqli_num_rows(safe_query("SELECT commentID FROM `plugins_articles_comments` WHERE `userID` = " . (int)$userID . " AND `type` = 'ar'"));
             }
             }
     
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='articles'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='articles'"));
             if (@$dx[ 'modulname' ] != 'articles') {
             $articles_comments = '';
             } else {
@@ -981,15 +981,15 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             #----blog_comments ----
             function getuserblogcomments($userID)
             {
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='blog'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='blog'"));
             if (@$dx[ 'modulname' ] != 'blog') {
             '';
             } else {
-            return mysqli_num_rows(safe_query("SELECT commentID FROM `" . PREFIX . "plugins_blog_comments` WHERE `userID` = " . (int)$userID . " AND `type` = 'bl'"));
+            return mysqli_num_rows(safe_query("SELECT commentID FROM `plugins_blog_comments` WHERE `userID` = " . (int)$userID . " AND `type` = 'bl'"));
             }
             }
     
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='blog'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='blog'"));
             if (@$dx[ 'modulname' ] != 'blog') {
             $blog_comments = '';
             } else {
@@ -999,15 +999,15 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             #----polls_comments ----
             function getuserpollscomments($userID)
             {
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='polls'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='polls'"));
             if (@$dx[ 'modulname' ] != 'polls') {
             '';
             } else {
-            return mysqli_num_rows(safe_query("SELECT commentID FROM `" . PREFIX . "plugins_polls_comments` WHERE `userID` = " . (int)$userID . " AND `type` = 'po'"));
+            return mysqli_num_rows(safe_query("SELECT commentID FROM `plugins_polls_comments` WHERE `userID` = " . (int)$userID . " AND `type` = 'po'"));
             }
             }
     
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='polls'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='polls'"));
             if (@$dx[ 'modulname' ] != 'polls') {
             $polls_comments = '';
             } else {
@@ -1017,15 +1017,15 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             #----gallery_comments ----
             function getusergallerycomments($userID)
             {
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='gallery'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='gallery'"));
             if (@$dx[ 'modulname' ] != 'gallery') {
             '';
             } else {
-            return mysqli_num_rows(safe_query("SELECT commentID FROM `" . PREFIX . "plugins_gallery_comments` WHERE `userID` = " . (int)$userID . " AND `type` = 'ga'"));
+            return mysqli_num_rows(safe_query("SELECT commentID FROM `plugins_gallery_comments` WHERE `userID` = " . (int)$userID . " AND `type` = 'ga'"));
             }
             }
     
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='gallery'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='gallery'"));
             if (@$dx[ 'modulname' ] != 'gallery') {
             $gallery_comments = '';
             } else {
@@ -1035,15 +1035,15 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             #----videos_comments ----
             function getuservideoscomments($userID)
             {
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='videos'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='videos'"));
             if (@$dx[ 'modulname' ] != 'videos') {
             '';
             } else {
-            return mysqli_num_rows(safe_query("SELECT commentID FROM `" . PREFIX . "plugins_videos_comments` WHERE `userID` = " . (int)$userID . " AND `type` = 'vi'"));
+            return mysqli_num_rows(safe_query("SELECT commentID FROM `plugins_videos_comments` WHERE `userID` = " . (int)$userID . " AND `type` = 'vi'"));
             }
             }
     
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='videos'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='videos'"));
             if (@$dx[ 'modulname' ] != 'videos') {
             $videos_comments = '';
             } else {
@@ -1053,15 +1053,15 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             #----blogtopics ----
             function getuserblogtopics($userID)
             {
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='blog'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='blog'"));
             if (@$dx[ 'modulname' ] != 'blog') {
             '';
             } else {
-            return mysqli_num_rows(safe_query("SELECT `blogID` FROM `" . PREFIX . "plugins_blog` WHERE `userID` = " . (int)$userID));
+            return mysqli_num_rows(safe_query("SELECT `blogID` FROM `plugins_blog` WHERE `userID` = " . (int)$userID));
             }
             }
     
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='blog'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='blog'"));
             if (@$dx[ 'modulname' ] != 'blog') {
             $new_blog_topics = '';
             } else {
@@ -1071,15 +1071,15 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             #----pollstopics ----
             function getuserpollstopics($userID)
             {
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='polls'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='polls'"));
             if (@$dx[ 'modulname' ] != 'polls') {
             '';
             } else {
-            return mysqli_num_rows(safe_query("SELECT `pollID` FROM `" . PREFIX . "plugins_polls` WHERE `userIDs` = " . (int)$userID));
+            return mysqli_num_rows(safe_query("SELECT `pollID` FROM `plugins_polls` WHERE `userIDs` = " . (int)$userID));
             }
             }
     
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='polls'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='polls'"));
             if (@$dx[ 'modulname' ] != 'polls') {
             $new_polls = '';
             } else {
@@ -1089,15 +1089,15 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             #----forumtopics ----
             function getuserforumtopics($userID)
             {
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='forum'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='forum'"));
             if (@$dx[ 'modulname' ] != 'forum') {
             '';
             } else {
-            return mysqli_num_rows(safe_query("SELECT `topicID` FROM `" . PREFIX . "plugins_forum_topics` WHERE `userID` = " . (int)$userID));
+            return mysqli_num_rows(safe_query("SELECT `topicID` FROM `plugins_forum_topics` WHERE `userID` = " . (int)$userID));
             }
             }
     
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='forum'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='forum'"));
             if (@$dx[ 'modulname' ] != 'forum') {
             $new_forum_topics = '';
             } else {
@@ -1106,14 +1106,14 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             
     
             #----messenger ----
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='messenger'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='messenger'"));
             if (@$dx[ 'modulname' ] != 'messenger') {
             $pm_got = '';
             } else {
             $pm_got = $ds[ 'pmgot' ];
             }
     
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='messenger'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='messenger'"));
             if (@$dx[ 'modulname' ] != 'messenger') {
             $pm_sent = '';
             } else {
@@ -1125,10 +1125,10 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             $visitors = safe_query(
                 "SELECT
                     v.*,
-                    u.nickname
+                    u.username
                 FROM
-                    " . PREFIX . "user_visitors v
-                JOIN " . PREFIX . "user u ON
+                    user_visitors v
+                JOIN user u ON
                     u.userID = v.visitor
                 WHERE
                     v.userID='" . $id . "'
@@ -1141,7 +1141,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
                 $n = 1;
                 while ($dv = mysqli_fetch_array($visitors)) {
                     
-                    $nicknamevisitor = $dv[ 'nickname' ];
+                    $usernamevisitor = $dv[ 'username' ];
     
                     if(isonline($dv[ 'visitor' ])=="offline") {
                         $statuspic = '<span class="badge bg-danger">offline</span>';
@@ -1191,7 +1191,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
     
                     $lastvisits .= '<tr>
                     <td><a href="index.php?site=profile&amp;id=' . $dv[ 'visitor' ] . '">' .
-                        $nicknamevisitor . '</a></td>
+                        $usernamevisitor . '</a></td>
                     <td class="text-end">'.$now.$days.$hours.$minutes.' '. $statuspic . '</td>
                 </tr>';
     
@@ -1201,21 +1201,21 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
                 $lastvisits = '<tr><td colspan="2">' . $_language->module[ 'no_visits' ] . '</td></tr>';
             }
     
-            $ergebnis = safe_query("SELECT * FROM " . PREFIX . "user WHERE userID='" . $userID . "'");
+            $ergebnis = safe_query("SELECT * FROM users WHERE userID='" . $userID . "'");
             $anz = mysqli_num_rows($ergebnis);
             if ($id == $userID) {
     
             
     
             //messages?
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='messenger'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='messenger'"));
             if (@$dx[ 'modulname' ] != 'messenger') {
                 $newmessages = '';
             } else {
                 $newmessages = $newmessages = getnewmessages($userID);
             }
     
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='messenger'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='messenger'"));
             if (@$dx[ 'modulname' ] != 'messenger') {
                 $button_newmessages = '';
             } else {
@@ -1238,14 +1238,14 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
                 $button_newmessages = $_language->module[ 'button_no_new_messages' ];
             }
     
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='messenger'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='messenger'"));
             if (@$dx[ 'modulname' ] != 'messenger') {
                 $new_messages = '';
             } else {
                 $new_messages = '<a href="index.php?site=messenger">'.$newmessages.'</a>';
             }
     
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='messenger'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='messenger'"));
                 if (@$dx[ 'modulname' ] != 'messenger') {
                 $new_messages_button = '';
                 } else {
@@ -1256,12 +1256,12 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             $cash_box = ''; // Standardwert setzen
 
             // Prüfen, ob das Plugin "cashbox" existiert
-            $result = safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='cashbox'");
+            $result = safe_query("SELECT * FROM settings_plugins WHERE modulname='cashbox'");
             $dx = mysqli_fetch_array($result);
 
             if ($dx && $dx['modulname'] === 'cashbox') {
                 // Prüfen, ob das Plugin "squads" existiert
-                $result = safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='squads'");
+                $result = safe_query("SELECT * FROM settings_plugins WHERE modulname='squads'");
                 $da = mysqli_fetch_array($result);
 
                 if ($da && $da['modulname'] === 'squads') {
@@ -1279,12 +1279,12 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             $gallery_link = '';
 
             // Prüfen, ob das Plugin "gallery" existiert
-            $result = safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='gallery'");
+            $result = safe_query("SELECT * FROM settings_plugins WHERE modulname='gallery'");
             $dx = mysqli_fetch_array($result);
 
             if ($dx && $dx['modulname'] === 'gallery') {
                 // Galerie-Einstellungen abrufen
-                $ergebnis = safe_query("SELECT * FROM " . PREFIX . "plugins_gallery_settings");
+                $ergebnis = safe_query("SELECT * FROM plugins_gallery_settings");
                 $dy = mysqli_fetch_array($ergebnis);
 
                 // Prüfen, ob Nutzer-Galerien aktiviert sind
@@ -1302,7 +1302,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
 
             #--------------------------------------
     
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='calendar'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='calendar'"));
                 if (@$dx[ 'modulname' ] != 'calendar') {
                     $upcoming = '';
                     $calendar_link = '';
@@ -1311,19 +1311,19 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
                     $upcoming = 
             //upcoming
     
-                    $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='clanwars'"));
+                    $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='clanwars'"));
                     if (@$dx[ 'modulname' ] != 'clanwars') {    
                     $clanwars = '';
     
                     } else {
-                        $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='squads'"));
+                        $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='squads'"));
                         if (@$dx[ 'modulname' ] != 'squads') {    
                 
                         } else {  
                         if (isclanmember($userID)) {
                             @$clanwars .= "<hr><h5>" . $_language->module[ 'upcoming_clanwars' ] . "</h5>";
     
-                            $squads = safe_query("SELECT squadID FROM `" . PREFIX . "plugins_squads_members` WHERE userID='" . $userID . "'");
+                            $squads = safe_query("SELECT squadID FROM `plugins_squads_members` WHERE userID='" . $userID . "'");
                             while ($squad = mysqli_fetch_array($squads)) {
                                 if (isgamesquad($squad[ 'squadID' ])) {
                                     $dn = mysqli_fetch_array(
@@ -1331,7 +1331,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
                                             "SELECT
                                                 name
                                             FROM
-                                                `" . PREFIX . "plugins_squads`
+                                                `plugins_squads`
                                             WHERE
                                                 squadID='" . $squad[ 'squadID' ] . "'
                                             AND
@@ -1344,7 +1344,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
                                         "SELECT
                                             *
                                         FROM
-                                            `" . PREFIX . "plugins_calendar`
+                                            `plugins_calendar`
                                         WHERE
                                             type='c'
                                         AND
@@ -1376,7 +1376,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
                                                     "SELECT
                                                         *
                                                     FROM
-                                                        " . PREFIX . "plugins_calendar_announce
+                                                        plugins_calendar_announce
                                                     WHERE
                                                         upID='" . $ds[ 'upID' ] . "'"
                                                 );
@@ -1395,11 +1395,11 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
                                                     if ($i > 1) {
                                                         $players .= ', <a href="index.php?site=profile&amp;id=' . $da[ 'userID' ] .
                                                             '"><span class="label ' . $fontcolor . '">' .
-                                                            strip_tags(stripslashes(getnickname($da[ 'userID' ]))) . '</span></a>';
+                                                            strip_tags(stripslashes(getusername($da[ 'userID' ]))) . '</span></a>';
                                                     } else {
                                                         $players .= '<a href="index.php?site=profile&amp;id=' . $da[ 'userID' ] .
                                                             '"><span class="label ' . $fontcolor . '">' .
-                                                            strip_tags(stripslashes(getnickname($da[ 'userID' ]))) . '</span></a>';
+                                                            strip_tags(stripslashes(getusername($da[ 'userID' ]))) . '</span></a>';
                                                     }
                                                     $i++;
                                                 }
@@ -1443,12 +1443,12 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             $events = '';
 
             // Prüfen, ob das Plugin "calendar" existiert
-            $result = safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='calendar'");
+            $result = safe_query("SELECT * FROM settings_plugins WHERE modulname='calendar'");
             $dx = mysqli_fetch_array($result);
 
             if ($dx && $dx['modulname'] === 'calendar') {
                 // Events abrufen
-                $ergebnis = safe_query("SELECT * FROM `" . PREFIX . "plugins_calendar` WHERE type='d' AND date > " . time() . " ORDER BY date");
+                $ergebnis = safe_query("SELECT * FROM `plugins_calendar` WHERE type='d' AND date > " . time() . " ORDER BY date");
                 $anz = mysqli_num_rows($ergebnis);
 
                 if ($anz > 0) {
@@ -1485,7 +1485,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
                            
             $kalender = '';
 
-            $result = safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='calendar'");
+            $result = safe_query("SELECT * FROM settings_plugins WHERE modulname='calendar'");
             $dx = mysqli_fetch_array($result);
 
             if ($dx && $dx['modulname'] === 'calendar') {
@@ -1538,7 +1538,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             $data_array = [
                 'id' => $id,
                 'userpic' => $userpic,
-                'nickname' => $nickname,
+                'username' => $username,
                 'member' => $member,
                 'firstname' => $firstname,
                 'lastname' => $lastname,
@@ -1618,7 +1618,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
 
                 'personal_info' => $_language->module['personal_info'],
                 'real_name' => $_language->module['real_name'],
-                'nick_name' => $_language->module['nickname'],
+                'nick_name' => $_language->module['username'],
                 'lang_age' => $_language->module['age'],
                 'lang_birthday' => $_language->module['birthday'],
                 'lang_gender' => $_language->module['gender'],
@@ -1653,7 +1653,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             ];
 
     
-            $dy = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='useraward'"));
+            $dy = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='useraward'"));
             if (@$dy[ 'modulname' ] != 'useraward') {
                 $awards = '';    
             } else {
@@ -1663,13 +1663,13 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
     
     
             function getawardimage($awardID) {
-                $ds = mysqli_fetch_array(safe_query("SELECT * FROM ".PREFIX."plugins_useraward_list WHERE uawardID='".$awardID."'"));
+                $ds = mysqli_fetch_array(safe_query("SELECT * FROM plugins_useraward_list WHERE uawardID='".$awardID."'"));
                 return $ds['image'];
             }
     
             function getawardname($awardID) {
                 $translate = new multiLanguage(detectCurrentLanguage());
-                $ds = mysqli_fetch_array(safe_query("SELECT * FROM ".PREFIX."plugins_useraward_list WHERE uawardID='".$awardID."'"));
+                $ds = mysqli_fetch_array(safe_query("SELECT * FROM plugins_useraward_list WHERE uawardID='".$awardID."'"));
                 $translate->detectLanguages($ds['info']);
                 $lg2 = $translate->getTextByLanguage($ds['info']);
                 return $lg2;
@@ -1679,7 +1679,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             function getawardpoints($name,$value) {
                 $translate = new multiLanguage(detectCurrentLanguage());
                 $test = '';
-                $erg = safe_query("SELECT * FROM ".PREFIX."plugins_useraward_list WHERE name='".$name."'");
+                $erg = safe_query("SELECT * FROM plugins_useraward_list WHERE name='".$name."'");
                 while($ds = mysqli_fetch_array($erg)) {
                     $translate->detectLanguages($ds['info']);
                     $lg = $translate->getTextByLanguage($ds['info']);
@@ -1689,10 +1689,10 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             }
     
             function saveaward($userid,$awardid) {
-                $dz = mysqli_num_rows(safe_query("SELECT * FROM ".PREFIX."plugins_useraward WHERE awardID = '" . $awardid . "' AND userID = '" . $userid . "'"));
+                $dz = mysqli_num_rows(safe_query("SELECT * FROM plugins_useraward WHERE awardID = '" . $awardid . "' AND userID = '" . $userid . "'"));
                 if($dz == '0') {
                     safe_query("
-                        INSERT INTO ".PREFIX."plugins_useraward 
+                        INSERT INTO plugins_useraward 
                         ( userID, awardID )
                         values
                         ( '" . $userid. "', '" . $awardid . "' )
@@ -1715,21 +1715,21 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             $communityribbon = '';
             $awards = '';
     
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='forum'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='forum'"));
             if (@$dx[ 'modulname' ] != 'forum') {
             $anzforumposts = '';
             } else {
-            $anzforumposts = mysqli_num_rows(safe_query("SELECT poster FROM ".PREFIX."plugins_forum_posts WHERE poster='" . $id . "'"));
+            $anzforumposts = mysqli_num_rows(safe_query("SELECT poster FROM plugins_forum_posts WHERE poster='" . $id . "'"));
             }
     
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='news_manager'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='news_manager'"));
             if (@$dx[ 'modulname' ] != 'news_manager') {
                 $anznewsposts = '';
                 #$awcomments = '';
             } else {
-                $anznewsposts = mysqli_num_rows(safe_query("SELECT poster FROM ".PREFIX."plugins_news_manager WHERE poster='" . $id . "'"));
-                $comments[0] = mysqli_num_rows(safe_query("SELECT userID FROM ".PREFIX."plugins_news_manager_comments WHERE userID='" . $id . "'"));
-                $comments[1] = mysqli_num_rows(safe_query("SELECT user_id FROM ".PREFIX."plugins_news_manager_comments_recomment WHERE user_id='" . $id . "'"));
+                $anznewsposts = mysqli_num_rows(safe_query("SELECT poster FROM plugins_news_manager WHERE poster='" . $id . "'"));
+                $comments[0] = mysqli_num_rows(safe_query("SELECT userID FROM plugins_news_manager_comments WHERE userID='" . $id . "'"));
+                $comments[1] = mysqli_num_rows(safe_query("SELECT user_id FROM plugins_news_manager_comments_recomment WHERE user_id='" . $id . "'"));
                 $comments[2] = 0;
                 $comments[3] = 0;
                 $awcomments = $comments[0]+$comments[1]+$comments[2]+$comments[3];
@@ -1740,11 +1740,11 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             $membertime = $aktuell - $alt;
             $membertime = $membertime / 86400;
     
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='useraward'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='useraward'"));
             if (@$dx[ 'modulname' ] != 'useraward') {
                 $status = '';
             } else {
-                $ds1 = mysqli_fetch_array(safe_query("SELECT * FROM ".PREFIX."plugins_useraward_settings"));
+                $ds1 = mysqli_fetch_array(safe_query("SELECT * FROM plugins_useraward_settings"));
                 if($ds1['allaward'] == '0'){
                     $status = '0';
                 } else {
@@ -1826,7 +1826,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
                 } 
             }
     
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='news_manager'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='news_manager'"));
     
             if (@$dx[ 'modulname' ] != 'news_manager') {
     
@@ -1854,7 +1854,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
             }
             
     
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='forum'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='forum'"));
             if (@$dx[ 'modulname' ] != 'forum') {
             #$communityribbon='1';
             } else {
@@ -1863,7 +1863,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
                 }
             }
     
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='news_manager'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='news_manager'"));
             if (@$dx[ 'modulname' ] != 'news_manager') {
             #$communityribbon='1';
             } else {
@@ -1872,11 +1872,11 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
                 }
             }    
             
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='clanwars'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='clanwars'"));
             if (@$dx[ 'modulname' ] != 'clanwars') {
                 $playercws = '';
             } else {
-                $playercws=safe_query("SELECT hometeam FROM ".PREFIX."plugins_clanwars");
+                $playercws=safe_query("SELECT hometeam FROM plugins_clanwars");
                 $wars=0;
                 while($roster=mysqli_fetch_array($playercws)) {
                   $hometeam=$roster['hometeam'];
@@ -1891,7 +1891,7 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
                 }
             }
             
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='clanwars'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='clanwars'"));
             if (@$dx[ 'modulname' ] != 'clanwars') {
             $playercws = '';
             } else {
@@ -1925,20 +1925,20 @@ if ($pq['profile_visibility'] == '0' && $userID != $id) {
               $awards.='<img src="includes/plugins/useraward/images/userawards/awards_right.png" width="40" height="100" border="0" />'; 
             }
             
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='useraward'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='useraward'"));
             if (@$dx[ 'modulname' ] != 'useraward') {
             
             } else {
             $specialaward = '0';
             $spawards ='';
-            $awardselect=safe_query("SELECT * FROM ".PREFIX."plugins_useraward WHERE userID='".$waruserID."'");
+            $awardselect=safe_query("SELECT * FROM plugins_useraward WHERE userID='".$waruserID."'");
             $awardanz=mysqli_num_rows($awardselect);
             if($awardanz!=0 OR $communityribbon) {
               $spawards.='<br /><img src="includes/plugins/useraward/images/userawards/awards_left.png" width="40" height="100" border="0" />';
               if($communityribbon) { $awards.=$communityribbon; $k=2; }
               else $k=1;
               while($df=mysqli_fetch_array($awardselect)){
-                $special = mysqli_num_rows(safe_query("SELECT * FROM ".PREFIX."plugins_useraward_list WHERE awardrequirepoints = '-1' AND uawardID = '".$df['awardID']."'"));
+                $special = mysqli_num_rows(safe_query("SELECT * FROM plugins_useraward_list WHERE awardrequirepoints = '-1' AND uawardID = '".$df['awardID']."'"));
                 if($special > 0) { 
                     $specialaward = '1';
                     $awardpfad = '/special';

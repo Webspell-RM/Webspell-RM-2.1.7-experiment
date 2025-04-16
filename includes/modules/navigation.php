@@ -41,7 +41,7 @@ function navigation_nodropdown($default_url) {
     $newurl = $default_url;
     
     // Prüfe, ob mod_Rewrite aktiviert ist
-    $mr_res = mysqli_fetch_array(safe_query("SELECT * FROM `".PREFIX."settings` WHERE 1"));
+    $mr_res = mysqli_fetch_array(safe_query("SELECT * FROM `settings` WHERE 1"));
     if ($mr_res['modRewrite'] == 1) {
         $urlParts = explode("/", trim($_SERVER["REQUEST_URI"], "/"));
         if (!empty($urlParts[0]) && strpos($urlParts[0], '.') !== false) {
@@ -53,12 +53,12 @@ function navigation_nodropdown($default_url) {
     
     try {
         // Überprüfung, ob die URL in der Navigation existiert
-        $rex = safe_query("SELECT * FROM `".PREFIX."navigation_website_sub` WHERE `url`='" . $newurl . "'");
+        $rex = safe_query("SELECT * FROM `navigation_website_sub` WHERE `url`='" . $newurl . "'");
         if (mysqli_num_rows($rex)) {
             $output = "";
             $rox = mysqli_fetch_array($rex);
             // Untermenüs abrufen
-            $res = safe_query("SELECT * FROM `".PREFIX."navigation_website_sub` WHERE `mnavID`='".intval($rox['mnavID'])."' AND `indropdown`='0' ORDER BY `sort`");
+            $res = safe_query("SELECT * FROM `navigation_website_sub` WHERE `mnavID`='".intval($rox['mnavID'])."' AND `indropdown`='0' ORDER BY `sort`");
             while ($row = mysqli_fetch_array($res)) {
                 $name = $_language->module[strtolower($row['name'])] ?? $row['name'];
                 $output .= '<li class="nav-item"><a class="dropdown-item" href="' . $row['url'] . '">' . $name . '</a></li>';
@@ -74,7 +74,7 @@ function navigation_nodropdown($default_url) {
 
 try {
     // Hauptnavigation abrufen
-    $res = safe_query("SELECT * FROM `".PREFIX."navigation_website_main` ORDER BY `sort`");
+    $res = safe_query("SELECT * FROM `navigation_website_main` ORDER BY `sort`");
     $lo = 0;
     
     while ($row = mysqli_fetch_array($res)) {
@@ -102,7 +102,7 @@ try {
             $lo++;
             
             // Untermenüs abrufen
-            $rex = safe_query("SELECT * FROM `".PREFIX."navigation_website_sub` WHERE `mnavID`='" . $row['mnavID'] . "' AND `indropdown`='1' ORDER BY `sort`");
+            $rex = safe_query("SELECT * FROM `navigation_website_sub` WHERE `mnavID`='" . $row['mnavID'] . "' AND `indropdown`='1' ORDER BY `sort`");
             if (mysqli_num_rows($rex)) {
                 // Template-Daten für Dropdown-Menü
                 $data_array = [

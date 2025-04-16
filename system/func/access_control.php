@@ -2,48 +2,45 @@
 
 namespace webspell;
 
-class AccessControl {
-
-    
-
-    public static function checkAdminAccess($modulname) {
+class AccessControl
+{
+    public static function checkAdminAccess($modulname)
+    {
         global $userID;
 
         // Überprüfen, ob der Benutzer angemeldet ist
         if (!$userID) {
-            // Benutzer ist nicht angemeldet, Zugriff verweigern
             header('Location: login.php'); // Umleitung zur Login-Seite
             exit;
         }
 
-        // Prüfen, ob der Benutzer Zugriff auf das Modul hat und den Namen der Rolle holen
+        // Prüfen, ob der Benutzer Zugriff auf das Modul hat und den Rollennamen holen
         $query = "
-            SELECT r.role_name AS role_name, ar.modulname, COUNT(*) AS access_count
-            FROM " . PREFIX . "user_admin_access_rights ar
-            JOIN " . PREFIX . "user_role_assignments ur ON ar.roleID = ur.roleID
-            JOIN " . PREFIX . "user_roles r ON ur.roleID = r.roleID
-            WHERE ur.adminID = '$userID'
-            AND ar.modulname = '$modulname'
-            GROUP BY r.role_name, ar.modulname
+            SELECT r.`role_name`, ar.`modulname`, COUNT(*) AS access_count
+            FROM `user_admin_access_rights` ar
+            JOIN `user_role_assignments` ur ON ar.`roleID` = ur.`roleID`
+            JOIN `user_roles` r ON ur.`roleID` = r.`roleID`
+            WHERE ur.`adminID` = '" . (int)$userID . "'
+            AND ar.`modulname` = '" . escape($modulname) . "'
+            GROUP BY r.`role_name`, ar.`modulname`
         ";
 
         $result = safe_query($query);
         $row = mysqli_fetch_assoc($result);
 
-        // Wenn keine Zeilen zurückgegeben werden oder keine Berechtigung für das Modul, Zugriff verweigern
+        // Wenn keine Zeilen zurückgegeben werden oder keine Berechtigung für das Modul besteht
         if ($row === null || $row['access_count'] == 0) {
-            // Modulname ausgeben, falls vorhanden
             $modulnameDisplay = $row ? htmlspecialchars($row['modulname']) : 'Unbekanntes Modul';
-            $errorMessage = "<b>Zugriff verweigert:</b> Keine Berechtigung für das Modul '$modulname'.<br>";
+            $errorMessage = "<b>Zugriff verweigert:</b> Keine Berechtigung für das Modul '<i>$modulnameDisplay</i>'.<br>";
 
-            // Protokolliere den Wert von $modulname, um den Fehler zu diagnostizieren
-            error_log("Fehler in AccessControl: Modul '$modulnameDisplay' nicht gefunden für BenutzerID $userID");
+            // Protokolliere zur Fehlerdiagnose
+            error_log("AccessControl Fehler: Modul '$modulnameDisplay' nicht erlaubt für userID $userID");
 
-            // Holen des Linknamens aus der Tabelle `navigation_dashboard_links`, falls linkID vorhanden
+            // Versuche, den Linknamen aus der Navigations-Tabelle zu laden
             $linkQuery = "
-                SELECT name
-                FROM " . PREFIX . "navigation_dashboard_links
-                WHERE modulname = '$modulname'
+                SELECT `name`
+                FROM `navigation_dashboard_links`
+                WHERE `modulname` = '" . escape($modulname) . "'
             ";
             $linkResult = safe_query($linkQuery);
             $linkRow = mysqli_fetch_assoc($linkResult);
@@ -51,76 +48,63 @@ class AccessControl {
 
             $translate = new multiLanguage(detectCurrentLanguage());
             $translate->detectLanguages($linkName);
-            $name = $translate->getTextByLanguage($linkName);
+            $translatedName = $translate->getTextByLanguage($linkName);
 
-            // Ausgabe des Linknamens
-            $errorMessage .= "<b>Linkname:</b> $name<br>";
+            $errorMessage .= "<b>Linkname:</b> $translatedName<br>";
 
-            // Optional: Rolle ausgeben, wenn vorhanden
-            if (isset($row['role_name'])) {
+            if (!empty($row['role_name'])) {
                 $errorMessage .= "<b>Ihre Rolle:</b> " . htmlspecialchars($row['role_name']);
             }
 
-            // Fehlermeldung in Bootstrap Alert-Box ausgeben
             echo "<div class='alert alert-danger' role='alert'>$errorMessage</div>";
-
             exit;
         }
     }
 }
 
-
-
-class multiLanguage {
-
+class multiLanguage
+{
     public $language;
-    public $availableLanguages = array();
+    public $availableLanguages = [];
 
-    // Konstruktor
-    public function __construct($lang) {
+    public function __construct($lang)
+    {
         $this->language = $lang;
     }
 
-    // Ermittelt alle verfügbaren Sprachen im Text
-    public function detectLanguages($text) {
-        // Trennen des Textes nach den Sprach-Tags
-        $sox = explode('{[', $text);
-        
-        // Iteriere durch alle Teile und prüfe, ob es ein neues Sprach-Tag gibt
-        foreach ($sox as $part) {
-            $eox = explode(']}', $part);
-            if (isset($eox[0]) && !in_array($eox[0], $this->availableLanguages) && !empty($eox[0])) {
-                $this->availableLanguages[] = $eox[0];
+    // Extrahiert alle verfügbaren Sprachen aus dem Text
+    public function detectLanguages($text)
+    {
+        $parts = explode('{[', $text);
+        foreach ($parts as $part) {
+            $langPart = explode(']}', $part);
+            if (isset($langPart[0]) && !in_array($langPart[0], $this->availableLanguages) && !empty($langPart[0])) {
+                $this->availableLanguages[] = $langPart[0];
             }
         }
     }
 
-    // Gibt den Text für die ausgewählte Sprache zurück
-    public function getTextByLanguage($text) {
-        // Prüfen, ob die angeforderte Sprache verfügbar ist
+    // Gibt den passenden Text zur eingestellten Sprache zurück
+    public function getTextByLanguage($text)
+    {
         if (in_array($this->language, $this->availableLanguages)) {
             return $this->getTextByTag($this->language, $text);
         } elseif (!empty($this->availableLanguages)) {
-            // Falls die ausgewählte Sprache nicht vorhanden ist, nutze eine andere verfügbare Sprache
             return $this->getTextByTag($this->availableLanguages[0], $text);
         } else {
-            // Gibt den Originaltext zurück, wenn keine Sprachen gefunden wurden
             return $text;
         }
     }
 
-    // Hilfsmethode, um den Text für ein bestimmtes Sprach-Tag zu extrahieren
-    private function getTextByTag($language, $text) {
-        // Extrahiere den Text basierend auf der angegebenen Sprache
+    // Extrahiert den Inhalt eines bestimmten Sprach-Tags
+    private function getTextByTag($language, $text)
+    {
         $output = '';
-        $fix = explode('{[' . $language . ']}', $text);
-
-        foreach ($fix as $part) {
-            $tmp = explode('{[', $part);
-            $output .= $tmp[0];  // Füge den Text ohne Sprach-Tag hinzu
+        $segments = explode('{[' . $language . ']}', $text);
+        foreach ($segments as $segment) {
+            $tmp = explode('{[', $segment);
+            $output .= $tmp[0];
         }
-
         return $output;
     }
 }
-

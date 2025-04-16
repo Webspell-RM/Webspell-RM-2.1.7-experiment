@@ -28,6 +28,8 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
 */
 
-#Adresse vom Update-Server / Base / Plugins / Templates
+// Basis-URL des Update-Servers
 $updateserverurl = "https://update.webspell-rm.de";
+
+// Basis-URL des Update-Servers
 $dangerupdateserverurl = "https://update.webspell-rm.de";

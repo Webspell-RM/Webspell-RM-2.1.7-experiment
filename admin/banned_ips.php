@@ -44,8 +44,8 @@ echo '<div class="card">
         <div class="card-header">' . $_language->module['bannedips'] . '</div>
         <div class="card-body"><br>';
 
-$row = safe_query("SELECT * FROM " . PREFIX . "banned_ips");
-$tmp = mysqli_fetch_assoc(safe_query("SELECT count(banID) AS cnt FROM " . PREFIX . "banned_ips"));
+$row = safe_query("SELECT * FROM "banned_ips");
+$tmp = mysqli_fetch_assoc(safe_query("SELECT count(banID) AS cnt FROM "banned_ips"));
 $anzpartners = $tmp['cnt'];
 
 echo '<table class="table table-striped">

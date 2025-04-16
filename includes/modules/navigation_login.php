@@ -37,16 +37,16 @@ echo $template;
 
 if ($loggedin) {
 
-    $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='forum' AND activate=1"));
+    $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='forum' AND activate=1"));
     if (!isset($dx['modulname']) || $dx['modulname'] != 'forum') {
         $new_forum_posts = '';
         $icon = '';
     } else {
-        $boards = safe_query("SELECT * FROM " . PREFIX . "plugins_forum_boards");
+        $boards = safe_query("SELECT * FROM plugins_forum_boards");
         while ($db = mysqli_fetch_array($boards)) {
 
             $board_topics = [];
-            $q = safe_query("SELECT * FROM " . PREFIX . "plugins_forum_topics");
+            $q = safe_query("SELECT * FROM plugins_forum_topics");
 
             while ($lp = mysqli_fetch_assoc($q)) {
                 if ($userID) {
@@ -57,7 +57,7 @@ if ($loggedin) {
             }
 
             if ($userID) {
-                $ergebnisz = safe_query("SELECT topics FROM " . PREFIX . "user WHERE userID='$userID'");
+                $ergebnisz = safe_query("SELECT topics FROM user WHERE userID='$userID'");
                 $gv = mysqli_fetch_array($ergebnisz);
 
                 $icon = '<a data-toggle="tooltip" data-placement="bottom" title="' . $index_language['no_forum_post'] . '" href="index.php?site=forum">
@@ -95,7 +95,7 @@ if ($loggedin) {
 
     $l_avatar = getavatar($userID) ?: "noavatar.png";
 
-    $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='messenger' AND activate=1"));
+    $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='messenger' AND activate=1"));
     if (!isset($dx['modulname']) || $dx['modulname'] != 'messenger') {
         $newmessages = '';
     } else {
@@ -147,7 +147,7 @@ if ($loggedin) {
         'newmessages' => $newmessages,
         'userID' => $userID,
         'l_avatar' => $l_avatar,
-        'nickname' => getnickname($userID),
+        'nickname' => getusername($userID),
         'dashboard' => $dashboard,
         'lang_log_off' => $_language->module['log_off'],
         'lang_overview' => $index_language['overview'],

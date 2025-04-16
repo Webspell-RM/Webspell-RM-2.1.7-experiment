@@ -28,11 +28,13 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
 */
 
+// Wechseln in das übergeordnete Verzeichnis
 chdir("../../");
 
 // Wichtige Dateien einbinden
 $files = ["system/sql.php", "system/settings.php", "system/functions.php"];
 foreach ($files as $file) {
+    // Überprüfen, ob die Datei existiert, andernfalls Fehlermeldung
     if (!file_exists($file)) {
         die("Fehlende Datei: $file");
     }
@@ -53,11 +55,13 @@ $commentID = filter_input(INPUT_GET, 'commentID', FILTER_VALIDATE_INT);
 // Prüfen, ob Spam-API verfügbar ist
 if (!empty($spamapikey) && !empty($type) && in_array($type, ["spam", "ham"])) {
 
+    // Wenn `postID` vorhanden ist, Spam-API für den Beitrag verwenden
     if ($postID) {
-        $get = safe_query("SELECT * FROM " . PREFIX . "forum_posts WHERE postID='" . $postID . "'");
+        $get = safe_query("SELECT * FROM `forum_posts` WHERE `postID`='" . $postID . "'");
         if (mysqli_num_rows($get) > 0) {
             $ds = mysqli_fetch_array($get);
 
+            // Prüfen, ob der Benutzer Administrator oder Moderator des Boards ist
             if (isset($userID) && (ispageadmin($userID) || ismoderator($userID, $ds['boardID']))) {
                 $spamApi = \webspell\SpamApi::getInstance();
                 $spamApi->learn($ds['message'], $type);
@@ -65,9 +69,10 @@ if (!empty($spamapikey) && !empty($type) && in_array($type, ["spam", "ham"])) {
         }
     }
 
+    // Wenn `commentID` vorhanden ist, Spam-API für den Kommentar verwenden
     if ($commentID) {
         if (isset($userID) && (ispageadmin($userID) || isfeedbackadmin($userID))) {
-            $get = safe_query("SELECT * FROM " . PREFIX . "comments WHERE commentID='" . $commentID . "'");
+            $get = safe_query("SELECT * FROM `comments` WHERE `commentID`='" . $commentID . "'");
             if (mysqli_num_rows($get) > 0) {
                 $ds = mysqli_fetch_array($get);
                 $spamApi = \webspell\SpamApi::getInstance();
@@ -76,5 +81,3 @@ if (!empty($spamapikey) && !empty($type) && in_array($type, ["spam", "ham"])) {
         }
     }
 }
-
-?>

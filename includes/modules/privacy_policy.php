@@ -52,7 +52,7 @@ echo $template;
 
 // Funktion zum Abrufen der Datenschutzrichtlinie aus der Datenbank
 function getPrivacyPolicy() {
-    return safe_query("SELECT * FROM " . PREFIX . "settings_privacy_policy LIMIT 1");
+    return safe_query("SELECT * FROM settings_privacy_policy LIMIT 1");
 }
 
 $ergebnis = getPrivacyPolicy();

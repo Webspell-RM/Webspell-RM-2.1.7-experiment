@@ -30,55 +30,77 @@
 
 class multiLanguage {
 
+    // Aktuelle Sprache, die verwendet wird
     public $language;
+
+    // Liste der verfügbaren Sprachen im Text
     public $availableLanguages = array();
 
-    // Konstruktor
+    // Konstruktor der Klasse, initialisiert mit der gewünschten Sprache
     public function __construct($lang) {
         $this->language = $lang;
     }
 
-    // Ermittelt alle verfügbaren Sprachen im Text
+    /**
+     * Ermittelt alle verfügbaren Sprachen im gegebenen Text.
+     * Extrahiert Sprach-Tags aus dem Text und speichert sie in der `availableLanguages`-Liste.
+     * 
+     * @param string $text Der zu untersuchende Text, der Sprach-Tags enthält.
+     */
     public function detectLanguages($text) {
-        // Trennen des Textes nach den Sprach-Tags
+        // Trenne den Text an den Sprach-Tags '{[' und ']}'
         $sox = explode('{[', $text);
-        
-        // Iteriere durch alle Teile und prüfe, ob es ein neues Sprach-Tag gibt
+
+        // Iteriere durch alle Textteile und prüfe, ob es ein neues Sprach-Tag gibt
         foreach ($sox as $part) {
+            // Extrahiere den Text nach ']}', um das Sprach-Tag zu isolieren
             $eox = explode(']}', $part);
+            
+            // Füge die Sprache zur Liste der verfügbaren Sprachen hinzu, falls sie noch nicht existiert
             if (isset($eox[0]) && !in_array($eox[0], $this->availableLanguages) && !empty($eox[0])) {
                 $this->availableLanguages[] = $eox[0];
             }
         }
     }
 
-    // Gibt den Text für die ausgewählte Sprache zurück
+    /**
+     * Gibt den Text in der ausgewählten Sprache zurück.
+     * Falls die gewünschte Sprache nicht verfügbar ist, wird eine andere verfügbare Sprache verwendet.
+     * 
+     * @param string $text Der Text, der übersetzt werden soll.
+     * @return string Der übersetzte Text in der gewünschten Sprache.
+     */
     public function getTextByLanguage($text) {
         // Prüfen, ob die angeforderte Sprache verfügbar ist
         if (in_array($this->language, $this->availableLanguages)) {
             return $this->getTextByTag($this->language, $text);
         } elseif (!empty($this->availableLanguages)) {
-            // Falls die ausgewählte Sprache nicht vorhanden ist, nutze eine andere verfügbare Sprache
+            // Wenn die ausgewählte Sprache nicht vorhanden ist, verwende eine andere verfügbare Sprache
             return $this->getTextByTag($this->availableLanguages[0], $text);
         } else {
-            // Gibt den Originaltext zurück, wenn keine Sprachen gefunden wurden
+            // Wenn keine Sprachen gefunden wurden, gebe den Originaltext zurück
             return $text;
         }
     }
 
-    // Hilfsmethode, um den Text für ein bestimmtes Sprach-Tag zu extrahieren
+    /**
+     * Hilfsmethode zum Extrahieren des Texts für ein bestimmtes Sprach-Tag.
+     * 
+     * @param string $language Die gewünschte Sprache, für die der Text extrahiert werden soll.
+     * @param string $text Der Text, der das Sprach-Tag enthält.
+     * @return string Der extrahierte Text für die angegebene Sprache.
+     */
     private function getTextByTag($language, $text) {
-        // Extrahiere den Text basierend auf der angegebenen Sprache
+        // Extrahiere den Text für die angegebene Sprache
         $output = '';
         $fix = explode('{[' . $language . ']}', $text);
 
+        // Füge den Text ohne Sprach-Tag hinzu
         foreach ($fix as $part) {
             $tmp = explode('{[', $part);
-            $output .= $tmp[0];  // Füge den Text ohne Sprach-Tag hinzu
+            $output .= $tmp[0];
         }
 
         return $output;
     }
 }
-
-?>

@@ -42,7 +42,15 @@ $language_array = array(
    'no_plugin'           => 'Kein Plugin',
    'edit_save'           => 'Save Changes',
    'success_edit'        => '<div class="alert alert-success" role="alert">Footer erfolgreich aktualisiert.</div>',
-   'transaction_invalid' => '<div class="alert alert-danger" role="alert">Transaktions ID ungültig</div>'
+   'transaction_invalid' => '<div class="alert alert-danger" role="alert">Transaktions ID ungültig</div>',
+   'aboutus' => 'Über uns',
+'phone' => 'Telefon',
+'address' => 'Adresse',
+'name' => 'Name',
+'navigation' => 'Navigation',
+'links' => 'Links',
+'contact' => 'Kontakt',
+'date' => 'Date'
      
     );
 

@@ -68,12 +68,12 @@ $return->state = "failed";
 $return->message = "";
 $reenter = false;
 
-$get = safe_query("SELECT * FROM " . PREFIX . "banned_ips WHERE ip='" . $GLOBALS['ip'] . "'");
+$get = safe_query("SELECT * FROM banned_ips WHERE ip='" . $GLOBALS['ip'] . "'");
 if (mysqli_num_rows($get) == 0) {
     $ws_user = $_POST['ws_user'];
 
     // Überprüfen, ob der Benutzer existiert
-    $check = safe_query("SELECT * FROM " . PREFIX . "user WHERE email='" . $ws_user . "'");
+    $check = safe_query("SELECT * FROM users WHERE email='" . $ws_user . "'");
     if (!$check) {
         die('Fehler in der SQL-Abfrage: ' . mysqli_error($mysqli));
     }
@@ -86,7 +86,7 @@ if (mysqli_num_rows($get) == 0) {
     } else {
         if ($anz) {
             // Benutzer ist aktiv
-            $check = safe_query("SELECT * FROM " . PREFIX . "user WHERE email='" . $ws_user . "' AND activated='1'");
+            $check = safe_query("SELECT * FROM users WHERE email='" . $ws_user . "' AND activated='1'");
             if (mysqli_num_rows($check)) {
                 $ds = mysqli_fetch_array($check);
                 $login = 0;
@@ -106,31 +106,31 @@ if (mysqli_num_rows($get) == 0) {
                         }
 
                         $get = safe_query(
-                            "SELECT `wrong` FROM `" . PREFIX . "failed_login_attempts` WHERE `ip` = '" . $GLOBALS['ip'] . "'"
+                            "SELECT `wrong` FROM `failed_login_attempts` WHERE `ip` = '" . $GLOBALS['ip'] . "'"
                         );
                         if (mysqli_num_rows($get)) {
                             safe_query(
-                                "UPDATE `" . PREFIX . "failed_login_attempts` SET `wrong` = wrong+1 WHERE ip = '" . $GLOBALS['ip'] . "'"
+                                "UPDATE `failed_login_attempts` SET `wrong` = wrong+1 WHERE ip = '" . $GLOBALS['ip'] . "'"
                             );
                         } else {
                             safe_query(
-                                "INSERT INTO `" . PREFIX . "failed_login_attempts` (`ip`, `wrong`) VALUES ('" . $GLOBALS['ip'] . "', 1)"
+                                "INSERT INTO `failed_login_attempts` (`ip`, `wrong`) VALUES ('" . $GLOBALS['ip'] . "', 1)"
                             );
                         }
 
                         // Überprüfen, ob das IP gebannt wird
                         $get = safe_query(
-                            "SELECT `wrong` FROM `" . PREFIX . "failed_login_attempts` WHERE `ip` = '" . $GLOBALS['ip'] . "'"
+                            "SELECT `wrong` FROM `failed_login_attempts` WHERE `ip` = '" . $GLOBALS['ip'] . "'"
                         );
                         if (mysqli_num_rows($get)) {
                             $ban = mysqli_fetch_assoc($get);
                             if ($ban['wrong'] == $max_wrong_pw) {
                                 $bantime = time() + (60 * 60 * 3); // 3 Stunden
                                 safe_query(
-                                    "INSERT INTO `" . PREFIX . "banned_ips` (`ip`, `deltime`, `reason`) VALUES ('" . $GLOBALS['ip'] . "', " . $bantime . ", 'Possible brute force attack')"
+                                    "INSERT INTO `banned_ips` (`ip`, `deltime`, `reason`) VALUES ('" . $GLOBALS['ip'] . "', " . $bantime . ", 'Possible brute force attack')"
                                 );
                                 safe_query(
-                                    "DELETE FROM `" . PREFIX . "failed_login_attempts` WHERE `ip` = '" . $GLOBALS['ip'] . "'"
+                                    "DELETE FROM `failed_login_attempts` WHERE `ip` = '" . $GLOBALS['ip'] . "'"
                                 );
                             }
                         }
@@ -155,10 +155,10 @@ if (mysqli_num_rows($get) == 0) {
                     \webspell\LoginCookie::set('ws_auth', $ds['userID'], $sessionduration * 60 * 60);
 
                     // Besucher mit derselben IP aus "whoisonline" löschen
-                    safe_query("DELETE FROM " . PREFIX . "whoisonline WHERE ip='" . $GLOBALS['ip'] . "'");
+                    safe_query("DELETE FROM whoisonline WHERE ip='" . $GLOBALS['ip'] . "'");
 
                     // IP aus fehlgeschlagenen Login-Versuchen löschen
-                    safe_query("DELETE FROM " . PREFIX . "failed_login_attempts WHERE ip = '" . $GLOBALS['ip'] . "'");
+                    safe_query("DELETE FROM failed_login_attempts WHERE ip = '" . $GLOBALS['ip'] . "'");
 
                     $return->state = "success";
                     $return->message = $_language->module['login_successful'];
@@ -169,30 +169,30 @@ if (mysqli_num_rows($get) == 0) {
                     }
 
                     $get = safe_query(
-                        "SELECT `wrong` FROM `" . PREFIX . "failed_login_attempts` WHERE `ip` = '" . $GLOBALS['ip'] . "'"
+                        "SELECT `wrong` FROM `failed_login_attempts` WHERE `ip` = '" . $GLOBALS['ip'] . "'"
                     );
                     if (mysqli_num_rows($get)) {
                         safe_query(
-                            "UPDATE `" . PREFIX . "failed_login_attempts` SET `wrong` = wrong+1 WHERE ip = '" . $GLOBALS['ip'] . "'"
+                            "UPDATE `failed_login_attempts` SET `wrong` = wrong+1 WHERE ip = '" . $GLOBALS['ip'] . "'"
                         );
                     } else {
                         safe_query(
-                            "INSERT INTO `" . PREFIX . "failed_login_attempts` (`ip`, `wrong`) VALUES ('" . $GLOBALS['ip'] . "', 1)"
+                            "INSERT INTO `failed_login_attempts` (`ip`, `wrong`) VALUES ('" . $GLOBALS['ip'] . "', 1)"
                         );
                     }
 
                     $get = safe_query(
-                        "SELECT `wrong` FROM `" . PREFIX . "failed_login_attempts` WHERE `ip` = '" . $GLOBALS['ip'] . "'"
+                        "SELECT `wrong` FROM `failed_login_attempts` WHERE `ip` = '" . $GLOBALS['ip'] . "'"
                     );
                     if (mysqli_num_rows($get)) {
                         $ban = mysqli_fetch_assoc($get);
                         if ($ban['wrong'] == $max_wrong_pw) {
                             $bantime = time() + (60 * 60 * 3); // 3 Stunden
                             safe_query(
-                                "INSERT INTO `" . PREFIX . "banned_ips` (`ip`, `deltime`, `reason`) VALUES ('" . $GLOBALS['ip'] . "', " . $bantime . ", 'Possible brute force attack')"
+                                "INSERT INTO `banned_ips` (`ip`, `deltime`, `reason`) VALUES ('" . $GLOBALS['ip'] . "', " . $bantime . ", 'Possible brute force attack')"
                             );
                             safe_query(
-                                "DELETE FROM `" . PREFIX . "failed_login_attempts` WHERE `ip` = '" . $GLOBALS['ip'] . "'"
+                                "DELETE FROM `failed_login_attempts` WHERE `ip` = '" . $GLOBALS['ip'] . "'"
                             );
                         }
                     }

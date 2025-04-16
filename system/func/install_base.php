@@ -32,14 +32,14 @@
 ######################################################################
 // Löscht in der Mysqli Datenbank eine Definierte Tabelle
 function table_exist($table){ 
-  safe_query("DROP TABLE IF EXISTS`" . PREFIX . "$table`");   // Tabelle Löschen
+  safe_query("DROP TABLE IF EXISTS`$table`");   // Tabelle Löschen
 } 
 
 
 // Loescht in der Mysqli Datenbank eine Definierte Spalte
 function DeleteData($name,$where,$data) {
-  if (mysqli_num_rows(safe_query("SELECT * FROM `" . PREFIX . "$name` WHERE $where='".$data."'")) >= 1 ) { 
-    safe_query("DELETE FROM `" . PREFIX . "$name` WHERE $where = '$data'");    // Tabelle Loeschen
+  if (mysqli_num_rows(safe_query("SELECT * FROM `$name` WHERE $where='".$data."'")) >= 1 ) { 
+    safe_query("DELETE FROM `$name` WHERE $where = '$data'");    // Tabelle Loeschen
   } else {
     #echo "Keine Spalte vorhanden mit den Namen $name."; // Meldung soll nicht angezeigt werden
     echo "";
@@ -48,8 +48,8 @@ function DeleteData($name,$where,$data) {
 
 // Loescht in der Mysqli Datenbank eine Definierte Spalte
 function DeleteThemeData($name,$where,$data,$theme,$themedate) {
-  if (mysqli_num_rows(safe_query("SELECT * FROM `" . PREFIX . "$name` WHERE $where='".$data."' AND $theme='".$themedate."'")) >= 1 ) { 
-    safe_query("DELETE FROM `" . PREFIX . "$name` WHERE $where = '$data' AND $theme='$themedate'");    // Tabelle Loeschen
+  if (mysqli_num_rows(safe_query("SELECT * FROM `$name` WHERE $where='".$data."' AND $theme='".$themedate."'")) >= 1 ) { 
+    safe_query("DELETE FROM `$name` WHERE $where = '$data' AND $theme='$themedate'");    // Tabelle Loeschen
   } else {
     #echo "Keine Spalte vorhanden mit den Namen $name."; // Meldung soll nicht angezeigt werden
     echo "";
@@ -59,13 +59,13 @@ function DeleteThemeData($name,$where,$data,$theme,$themedate) {
 // Loescht die Mysqli Datenbank xyz
 function DeleteTable($table) {
   global $_database;
-	if (safe_query("DROP TABLE IF EXISTS`" . PREFIX . "$table`")) {
+	if (safe_query("DROP TABLE IF EXISTS`$table`")) {
 	  //echo "<div class='alert alert-success'>String ausgef&uuml;hrt! <br />";
 	  //return true;
 	} else {
 	  echo "<div class='alert alert-danger'>String failed <br />";
 	  echo "String ausf&uuml;hren fehlgeschlagen!<br /></div>";
-	  return "<pre>DROP TABLE IF EXISTS `" . PREFIX . "".$table."</pre>";
+	  return "<pre>DROP TABLE IF EXISTS `".$table."</pre>";
 	  //
 	}
 }
@@ -93,48 +93,40 @@ function addfield($table,$newfield,$typ,$standart) {
 
   $checked = checknewfield($table,$newfield);
   if($checked == '1') {
-    mysqli_query($_database,"ALTER TABLE `" . PREFIX . "$table` ADD `".$newfield."` ".$typ." ".$standart."");
+    mysqli_query($_database,"ALTER TABLE `$table` ADD `".$newfield."` ".$typ." ".$standart."");
   }
 }
 
 #### addtable #####################
 
 function addtable($table) {
-    global $_database, $modulname, $version, $str;
+  global $_database,$modulname,$version,$str;
 
-    if (!isset($_database)) {
-        echo "<div class='alert alert-danger'><b>Fehler:</b> Keine Datenbankverbindung vorhanden!</div>";
-        return false;
-    }
-
-    // Modulname und Version absichern
-    $modulname_safe = mysqli_real_escape_string($_database, $modulname);
-    $version_safe = mysqli_real_escape_string($_database, $version);
-
-    // Prüfen, ob das Plugin bereits eingetragen ist
-    $query = "SELECT * FROM `" . PREFIX . "settings_plugins` WHERE modulname = '$modulname_safe' AND version = '$version_safe'";
-    $result = safe_query($query);
-
-    if (mysqli_num_rows($result) > 0) {
-        echo "<div class='alert alert-warning'><b>Database $str:</b><br>
-                $str Database entry already exists <br>
-                $str Datenbank Eintrag schon vorhanden <br>
-                $str La voce del database esiste già <br>
-              </div><hr>";
+    if(mysqli_num_rows(safe_query("SELECT * FROM `settings_plugins` WHERE modulname ='".$modulname."' AND version = '".$version."'"))>0) {
+      echo "<div class='alert alert-warning'><b>Database ".$str.":</b><br>".$str." Database entry already exists <br />";
+      echo "".$str." Datenbank Eintrag schon vorhanden <br />";
+      echo "".$str." La voce del database esiste già <br /></div>";
+      echo "<hr>";
     } else {
-        // Tabelle/Eintrag erstellen
-        if (safe_query($table)) {
-            echo "<div class='alert alert-success'><b>Database $str:</b><br>
-                    All database entries for the plugin $str have been successfully installed <br>
-                    Alle Datenbankeinträge für das Plugin $str wurden erfolgreich installiert <br>
-                    Tutte le voci del database per il plugin $str sono state installate con successo <br>
-                  </div><hr>";
+      try {
+        if(safe_query("".$table."")) {
+          echo "<div class='alert alert-success'><b>Database ".$str.":</b><br>All database entries for the plugin ".$str." have been successfully installed <br />";
+          echo "Alle Datenbankeinträge für das Plugin ".$str." wurden  erfolgreich installiert <br />";
+          echo "Tutte le voci del database per il plugin ".$str." sono state installate con successo <br /></div>";
+          echo "<hr>";
         } else {
-            echo "<div class='alert alert-danger'><b>Database $str:</b><br>
-                    Database $str installation failed! <br>
-                    Fehler: " . mysqli_error($_database) . "
-                  </div>";
-        }
+          echo "<div class='alert alert-warning'><b>Database ".$str.":</b><br>Database ".$str." entry already exists <br />";
+          echo "Datenbank ".$str." Eintrag schon vorhanden <br />";
+          echo "Database ".$str." La voce esiste già <br /></div>";
+          echo "<hr>";
+        }   
+      } CATCH (EXCEPTION $x) {
+        echo "<div class='alert alert-danger'><b>Database ".$str.":</b><br>Database ".$str." installation failed <br />";
+        echo "Send the following line to the support team:<br />";
+        echo "Invia la seguente riga al team di supporto:<br /><br /><br />";
+        echo "<pre>".$x->message()."</pre>";     
+        echo"</div>";
+      }
     }
 }
 
@@ -143,7 +135,7 @@ function addtable($table) {
 function add_insert_table($table) {
   global $_database,$modulname,$version,$str;
 
-    if(mysqli_num_rows(safe_query("SELECT * FROM `" . PREFIX . "settings_plugins` WHERE modulname ='".$modulname."' AND version = '".$version."'"))>0) {
+    if(mysqli_num_rows(safe_query("SELECT * FROM `settings_plugins` WHERE modulname ='".$modulname."' AND version = '".$version."'"))>0) {
       echo "<div class='alert alert-warning'><b>Database ".$str.":</b><br>".$str." Database entry already exists <br />";
       echo "".$str." Datenbank Eintrag schon vorhanden <br />";
       echo "".$str." La voce del database esiste già <br /></div>";
@@ -176,7 +168,7 @@ function add_insert_table($table) {
 function add_insert_plugin($table) {
   global $_database,$modulname,$version,$str;
 
-    if(mysqli_num_rows(safe_query("SELECT * FROM `" . PREFIX . "settings_plugins` WHERE modulname ='".$modulname."'"))>0) {
+    if(mysqli_num_rows(safe_query("SELECT * FROM `settings_plugins` WHERE modulname ='".$modulname."'"))>0) {
       echo "<div class='alert alert-warning'><b>Plugineinträge:</b><br>".$str." Database entry already exists <br />";
       echo "".$str." Datenbank Eintrag schon vorhanden <br />";
       echo "".$str." La voce del database esiste già <br /></div>";
@@ -207,7 +199,7 @@ function add_insert_plugin($table) {
 function add_insert_plugin_2($table) {
   global $_database,$modulname_2,$version,$str;
 
-    if(mysqli_num_rows(safe_query("SELECT * FROM `" . PREFIX . "settings_plugins` WHERE modulname ='".$modulname_2."'"))>0) {
+    if(mysqli_num_rows(safe_query("SELECT * FROM `settings_plugins` WHERE modulname ='".$modulname_2."'"))>0) {
       echo "<div class='alert alert-warning'><b>Plugineinträge:</b><br>".$str." Database entry already exists <br />";
       echo "".$str." Datenbank Eintrag schon vorhanden <br />";
       echo "".$str." La voce del database esiste già <br /></div>";
@@ -238,7 +230,7 @@ function add_insert_plugin_2($table) {
 function add_insert_plugin_3($table) {
   global $_database,$modulname_2,$version,$str;
 
-    if(mysqli_num_rows(safe_query("SELECT * FROM `" . PREFIX . "settings_plugins` WHERE modulname ='".$modulname_3."'"))>0) {
+    if(mysqli_num_rows(safe_query("SELECT * FROM `settings_plugins` WHERE modulname ='".$modulname_3."'"))>0) {
       echo "<div class='alert alert-warning'><b>Plugineinträge:</b><br>".$str." Database entry already exists <br />";
       echo "".$str." Datenbank Eintrag schon vorhanden <br />";
       echo "".$str." La voce del database esiste già <br /></div>";
@@ -271,7 +263,7 @@ function add_insert_plugin_3($table) {
 function add_insert_plugins_widget($table) {
   global $_database,$modulname,$version,$str;
 
-    if(mysqli_num_rows(safe_query("SELECT * FROM `" . PREFIX . "settings_plugins` WHERE modulname ='".$modulname."'"))>0) {
+    if(mysqli_num_rows(safe_query("SELECT * FROM `settings_plugins_widget` WHERE modulname ='".$modulname."'"))>0) {
       echo "<div class='alert alert-warning'><b>Plugin Widget Einträge:</b><br>".$str." Database entry already exists <br />";
       echo "".$str." Datenbank Eintrag schon vorhanden <br />";
       echo "".$str." La voce del database esiste già <br /></div>";

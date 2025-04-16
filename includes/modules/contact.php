@@ -29,7 +29,8 @@
 */
 
 try {
-    $result = safe_query("SELECT * FROM `" . PREFIX . "settings_recaptcha`");
+    // Daten aus der Tabelle `settings_recaptcha` abrufen
+    $result = safe_query("SELECT * FROM `settings_recaptcha`");
     if (!$result) {
         // Fehlerbehandlung bei Datenbankabfrage
         die("Datenbankabfrage fehlgeschlagen: " . mysqli_error($_database));
@@ -39,6 +40,7 @@ try {
     $seckey = $get['seckey'];
     $recaptcha = ($get['activated'] == "1") ? 1 : 0;
 } catch (Exception $e) {
+    // Fehlerbehandlung im Fall einer Exception
     $recaptcha = 0;
 }
 
@@ -46,17 +48,21 @@ try {
 $_language->readModule('contact');
 $_language->readModule('formvalidation', true);
 
+// Array mit Daten für das Template
 $data_array = [
     'title' => $_language->module['title'],
     'subtitle' => 'Contact Us'
 ];
 
+// Template laden und ausgeben
 $template = $tpl->loadTemplate("contact", "head", $data_array);
 echo $template;
 
+// Überprüfen, ob der Benutzer das Formular absenden möchte
 $action = isset($_POST["action"]) ? $_POST["action"] : '';
 
 if ($action == "send") {
+    // Formular-Eingaben validieren
     $getemail = $_POST['getemail'];
     $subject = $_POST['subject'];
     $text = str_replace('\r\n', "\n", $_POST['text']);
@@ -65,6 +71,8 @@ if ($action == "send") {
     $run = 0;
     
     $fehler = array();
+    
+    // Fehlerprüfung für Name, E-Mail, Betreff und Text
     if (!mb_strlen(trim($name))) {
         $fehler[] = $_language->module['enter_name'];
     }
@@ -81,19 +89,22 @@ if ($action == "send") {
         $fehler[] = $_language->module['enter_message'];
     }
 
-    // Sicherstellen, dass das E-Mail-Format validiert ist
-    $stmt = $_database->prepare("SELECT * FROM " . PREFIX . "contact WHERE email = ?");
+    // Überprüfen, ob die E-Mail-Adresse im System bekannt ist
+    $stmt = $_database->prepare("SELECT * FROM `contact` WHERE `email` = ?");
     $stmt->bind_param("s", $getemail);
     $stmt->execute();
     $result = $stmt->get_result();
 
+    // Wenn der Kontakt nicht existiert
     if ($result->num_rows == 0) {
         $fehler[] = $_language->module['unknown_receiver'];
     }
 
+    // Wenn der Benutzer eingeloggt ist, direkt weiter
     if ($userID) {
         $run = 1;
     } else {
+        // Wenn reCAPTCHA nicht aktiviert ist
         if ($recaptcha != 1) {
             $CAPCLASS = new \webspell\Captcha;
             if (!$CAPCLASS->checkCaptcha($_POST['captcha'], $_POST['captcha_hash'])) {
@@ -106,6 +117,7 @@ if ($action == "send") {
         } else {
             $runregister = false;
             if ($_SERVER["REQUEST_METHOD"] == "POST") {
+                // Überprüfung des reCAPTCHA
                 $recaptcha = $_POST['g-recaptcha-response'];
                 if (!empty($recaptcha)) {
                     include("system/curl_recaptcha.php");
@@ -131,7 +143,9 @@ if ($action == "send") {
         }
     }
 
+    // Wenn keine Fehler und alle Prüfungen bestanden sind
     if (!count($fehler) && $run) {
+        // Nachricht formatieren
         $message = stripslashes(
             'This mail was sent over your Webspell-RM - Website (IP ' . $GLOBALS['ip'] . '): ' . $hp_url .
             '<br><br><strong>' . htmlspecialchars(getinput($name)) . ' writes:</strong><br>' . htmlspecialchars($text)
@@ -140,10 +154,12 @@ if ($action == "send") {
         // E-Mail senden
         $sendmail = \webspell\Email::sendEmail($from, 'Contact', $getemail, stripslashes($subject), $message);
 
+        // Überprüfen, ob die E-Mail gesendet wurde
         if ($sendmail['result'] == 'fail') {
             $fehler[] = isset($sendmail['debug']) ? $sendmail['error'] . ' ' . $sendmail['debug'] : $sendmail['error'];
             $showerror = generateErrorBoxFromArray($_language->module['errors_there'], $fehler);
         } else {
+            // Erfolgreiches Senden, weiterleiten
             redirect('index.php?site=contact', $_language->module['send_successfull'], 3);
             unset($_POST['name'], $_POST['from'], $_POST['text'], $_POST['subject']);
         }
@@ -152,8 +168,9 @@ if ($action == "send") {
     }
 }
 
+// E-Mail-Adressen aus der `contact` Tabelle laden
 $getemail = '';
-$ergebnis = safe_query("SELECT * FROM `" . PREFIX . "contact` ORDER BY `sort`");
+$ergebnis = safe_query("SELECT * FROM `contact` ORDER BY `sort`");
 if (mysqli_num_rows($ergebnis) < 1) {
     $data_array = array();
     $data_array['$showerror'] = generateErrorBoxFromArray($_language->module['errors_there'], array($_language->module['no_contact_setup']));
@@ -161,6 +178,7 @@ if (mysqli_num_rows($ergebnis) < 1) {
     echo $template;
     return false;
 } else {
+    // E-Mail-Adressen als Optionen im Dropdown einfügen
     while ($ds = mysqli_fetch_array($ergebnis)) {
         $selected = ($getemail === $ds['email']) ? 'selected="selected"' : '';
         $getemail .= '<option value="' . htmlspecialchars($ds['email']) . '" ' . $selected . '>' . htmlspecialchars($ds['name']) . '</option>';
@@ -196,60 +214,3 @@ function getCommonTemplateData($showerror, $getemail, $name, $from, $subject, $t
 
     return $data_array;
 }
-
-if ($loggedin) {
-    // Benutzer ist eingeloggt
-    if (!isset($showerror)) {
-        $showerror = ''; // Falls keine Fehler vorhanden sind, leere Fehleranzeige
-    }
-
-    // Benutzerinformationen holen
-    $name = getinput(stripslashes(getnickname($userID)));
-    $from = getinput(getemail($userID));
-    $subject = isset($_POST['subject']) ? getforminput($_POST['subject']) : '';
-    $text = isset($_POST['text']) ? getforminput($_POST['text']) : '';
-
-    // Gemeinsame Template-Daten für eingeloggt
-    $data_array = getCommonTemplateData($showerror, $getemail, $name, $from, $subject, $text);
-
-    // Template laden und ausgeben
-    $template = $tpl->loadTemplate("contact", "loggedin", $data_array);
-    echo $template;
-
-} else {
-    // Benutzer ist nicht eingeloggt
-
-    // Captcha-Instanz erstellen
-    $CAPCLASS = new \webspell\Captcha;
-    $captcha = $CAPCLASS->createCaptcha();
-    $hash = $CAPCLASS->getHash();
-    $CAPCLASS->clearOldCaptcha();
-    
-    if (!isset($showerror)) {
-        $showerror = ''; // Falls keine Fehler vorhanden sind, leere Fehleranzeige
-    }
-
-    // Formulareingaben (sicherstellen, dass sie gesetzt sind)
-    $name = isset($_POST['name']) ? getforminput($_POST['name']) : '';
-    $from = isset($_POST['from']) ? getforminput($_POST['from']) : '';
-    $subject = isset($_POST['subject']) ? getforminput($_POST['subject']) : '';
-    $text = isset($_POST['text']) ? getforminput($_POST['text']) : '';
-
-    // CAPTCHA handling based on recaptcha setting
-    if ($recaptcha == "0") { 
-        $info_captcha = '<span class="input-group-addon captcha-img">'.$captcha.'</span>
-                     <input type="number" name="captcha" class="form-control" id="input-security-code" required>
-                     <input name="captcha_hash" type="hidden" value="'.$hash.'">';
-    } else {
-        $info_captcha = '<div class="g-recaptcha" style="width: 70%; float: left;" data-sitekey="'.$webkey.'"></div>';
-    }
-    
-    // Gemeinsame Template-Daten für nicht eingeloggt
-    $data_array = getCommonTemplateData($showerror, $getemail, $name, $from, $subject, $text, $captcha, $info_captcha, $hash);
-
-    // Template laden und ausgeben
-    $template = $tpl->loadTemplate("contact", "notloggedin", $data_array);
-    echo $template;
-}
-?>
-

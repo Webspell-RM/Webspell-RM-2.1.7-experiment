@@ -32,14 +32,14 @@
 $_language->readModule('startpage');
 
 // Datenbankabfrage, um die Startseiten-Einstellungen zu holen
-$ergebnis = safe_query("SELECT * FROM " . PREFIX . "settings_startpage");
+$ergebnis = safe_query("SELECT * FROM `settings_startpage`");
 if (mysqli_num_rows($ergebnis)) {
-    // Wenn Ergebnisse vorhanden sind, hol dir die Daten aus der Datenbank
+    // Wenn Ergebnisse vorhanden sind, hole dir die Daten aus der Datenbank
     $ds = mysqli_fetch_array($ergebnis);
 
     // Den Titel der Startseite aus der Datenbank holen
     $title = $ds['title'];
-    
+
     // Übersetzungs-Objekt für mehrsprachige Unterstützung erstellen
     $translate = new multiLanguage(detectCurrentLanguage());
     $translate->detectLanguages($title);  // Die Sprachen für den Titel erkennen
@@ -57,7 +57,7 @@ if (mysqli_num_rows($ergebnis)) {
 
     // Den Text der Startseite aus der Datenbank holen
     $startpage_text = $ds['startpage_text'];
-    
+
     // Den Startseitentext für Übersetzungen vorbereiten
     $translate->detectLanguages($startpage_text);
     $startpage_text = $translate->getTextByLanguage($startpage_text);  // Den Startseitentext in der aktuellen Sprache setzen
@@ -80,3 +80,4 @@ if (mysqli_num_rows($ergebnis)) {
     // Falls keine Daten für die Startseite in der Datenbank gefunden wurden, eine Alert-Nachricht anzeigen
     echo generateAlert($_language->module['no_startpage'], 'alert-info');
 }
+

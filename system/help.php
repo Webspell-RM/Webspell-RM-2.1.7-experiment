@@ -28,18 +28,25 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
 */
 
+// Debug-Hilfsfunktionen (nur aktiv, wenn DEBUG auf "ON" gesetzt ist)
 if (defined('DEBUG') && DEBUG === "ON") {
+
+    // Prüfe, ob ein "help"-Parameter übergeben wurde
     if (isset($_GET['help'])) {
         switch ($_GET['help']) {
+
             case "phpinfoplease":
+                // Sicherheitsmaßnahme: phpinfo() im Produktionsmodus nicht erlauben
                 die("phpinfo() ist im Produktionsmodus deaktiviert.");
-                // Falls unbedingt nötig:
+                // Optional zur Aktivierung im lokalen Umfeld:
                 // die(phpinfo());
                 break;
 
             case "versionplease":
+                // Version auslesen, wenn Datei vorhanden ist
                 if (file_exists('version.php')) {
                     include 'version.php';
+                    // Sicher ausgeben
                     die(htmlspecialchars($version));
                 } else {
                     die("Version konnte nicht geladen werden.");
@@ -47,7 +54,10 @@ if (defined('DEBUG') && DEBUG === "ON") {
                 break;
 
             default:
+                // Ungültiger Parameter
                 die("Ungültiger Parameter.");
         }
     }
+
 }
+

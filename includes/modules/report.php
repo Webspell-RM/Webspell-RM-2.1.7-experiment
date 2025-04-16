@@ -35,13 +35,14 @@ function goBack() {
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
 */
 
+
 // Modul 'report' laden, um Sprachressourcen zu verwenden
 $_language->readModule('report');
 
 // Versuchen, die reCAPTCHA-Einstellungen aus der Datenbank zu laden
 try {
     // Abrufen der reCAPTCHA-Schlüssel aus der Datenbank
-    $get = mysqli_fetch_assoc(safe_query("SELECT * FROM `".PREFIX."settings_recaptcha`"));
+    $get = mysqli_fetch_assoc(safe_query("SELECT * FROM `settings_recaptcha`"));
     $webkey = $get['webkey'];  // öffentlicher Schlüssel
     $seckey = $get['seckey'];  // geheimer Schlüssel
 
@@ -69,7 +70,6 @@ if ($userID) {
     $run = 1;
 } else {
     // Wenn der Benutzer nicht eingeloggt ist, CAPTCHA oder reCAPTCHA verwenden
-
     if ($recaptcha != 1) {
         // Standard CAPTCHA verwenden
         $CAPCLASS = new \webspell\Captcha;
@@ -144,7 +144,7 @@ if (@$_POST['mode'] && $run) {
 
     // Nachricht an alle Dateimoderatoren senden
     $dead_link = $_language->module['dead_link_file'];  // Text für die Moderatoren
-    $ergebnis = safe_query("SELECT userID FROM " . PREFIX . "user_groups WHERE files='1'");  // Alle Benutzer mit Datei-Rechten abfragen
+    $ergebnis = safe_query("SELECT userID FROM `user_groups` WHERE files='1'");  // Alle Benutzer mit Datei-Rechten abfragen
     while ($ds = mysqli_fetch_array($ergebnis)) {
         sendmessage($ds['userID'], $dead_link, $message);  // Nachricht an die Benutzer senden
     }
@@ -155,4 +155,3 @@ if (@$_POST['mode'] && $run) {
     // Falls eine der Prüfungen fehlschlägt, Fehlermeldung anzeigen
     echo $_language->module['wrong_securitycode'];
 }
-?>

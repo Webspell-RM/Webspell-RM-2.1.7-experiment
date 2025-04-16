@@ -1,39 +1,26 @@
 <?php
-/**
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- *                  Webspell-RM      /                        /   /                                          *
- *                  -----------__---/__---__------__----__---/---/-----__---- _  _ -                         *
- *                   | /| /  /___) /   ) (_ `   /   ) /___) /   / __  /     /  /  /                          *
- *                  _|/_|/__(___ _(___/_(__)___/___/_(___ _/___/_____/_____/__/__/_                          *
- *                               Free Content / Management System                                            *
- *                                           /                                                               *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @version         webspell-rm                                                                              *
- *                                                                                                           *
- * @copyright       2018-2023 by webspell-rm.de                                                              *
- * @support         For Support, Plugins, Templates and the Full Script visit webspell-rm.de                 *
- * @website         <https://www.webspell-rm.de>                                                             *
- * @forum           <https://www.webspell-rm.de/forum.html>                                                  *
- * @wiki            <https://www.webspell-rm.de/wiki.html>                                                   *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @license         Script runs under the GNU GENERAL PUBLIC LICENCE                                         *
- *                  It's NOT allowed to remove this copyright-tag                                            *
- *                  <http://www.fsf.org/licensing/licenses/gpl.html>                                         *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @author          Code based on WebSPELL Clanpackage (Michael Gruber - webspell.at)                        *
- * @copyright       2005-2011 by webspell.org / webspell.info                                                *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
-*/
+<?php
+// Datenbankverbindungsdetails
+$host = "localhost";  // Hostname der Datenbank (in der Regel 'localhost')
+$user = "";           // Benutzername für die Datenbankverbindung
+$pwd  = "";           // Passwort für die Datenbankverbindung
+$db   = "";           // Name der Datenbank, mit der verbunden werden soll
 
-$host = getenv('DB_HOST');
-$user = getenv('DB_USER');
-$pwd  = getenv('DB_PASS');
-$db   = getenv('DB_NAME');
+// Verbindungsaufbau zur MySQL-Datenbank
+// Die Verbindung wird über den MySQLi-Treiber hergestellt.
+$conn = new mysqli($host, $user, $pwd, $db);
 
-if (!defined("PREFIX") || PREFIX === null) {
-    define("PREFIX", '');
+// Überprüfen, ob die Verbindung erfolgreich war
+if ($conn->connect_error) {
+    // Falls die Verbindung fehlschlägt, eine Fehlermeldung ausgeben und die Verbindung abbrechen
+    die("Verbindung zur Datenbank fehlgeschlagen: " . $conn->connect_error);
 }
+
+// Setze den Zeichensatz auf UTF-8, um Zeichencodierungsprobleme zu vermeiden
+$conn->set_charset("utf8");
+
+// Weitere Datenbankoperationen können hier durchgeführt werden
+
+?>
+
 ?>

@@ -38,7 +38,7 @@ if (isset($_GET['staticID'])) {
 }
 
 // Eine Abfrage ausführen, um die statischen Einstellungen aus der Datenbank zu holen, basierend auf der 'staticID'
-$ds = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_static WHERE staticID='" . $staticID . "'"));
+$ds = mysqli_fetch_array(safe_query("SELECT * FROM `settings_static` WHERE `staticID`='" . $staticID . "'"));
 
 // Sprachmodul 'static' laden, um Übersetzungen für die statische Seite zu ermöglichen
 $_language->readModule("static");
@@ -80,9 +80,10 @@ if ($allowed) {
     $title = $translate->getTextByLanguage($title);  // Den Titel in der richtigen Sprache setzen
 
     // Ein Array mit den Template-Daten für den Kopfbereich der Seite erstellen
-    $data_array = array();
-    $data_array['$title'] = $title;  // Den Titel in das Array setzen
-    $data_array['$subtitle'] = $title;  // Den Titel auch als Untertitel setzen
+    $data_array = [
+        '$title' => $title,  // Den Titel in das Array setzen
+        '$subtitle' => $title  // Den Titel auch als Untertitel setzen
+    ];
     
     // Template für den Kopfbereich der statischen Seite laden und ausgeben
     $template = $tpl->loadTemplate("static", "head", $data_array);
@@ -96,8 +97,9 @@ if ($allowed) {
     $content = $translate->getTextByLanguage($content);  // Den Inhalt in der richtigen Sprache setzen
 
     // Ein Array mit den Template-Daten für den Inhalt der Seite erstellen
-    $data_array = array();
-    $data_array['$content'] = $content;  // Den übersetzten Inhalt in das Array setzen
+    $data_array = [
+        '$content' => $content  // Den übersetzten Inhalt in das Array setzen
+    ];
     
     // Template für den Inhalt der statischen Seite laden und ausgeben
     $template = $tpl->loadTemplate("static", "content", $data_array);

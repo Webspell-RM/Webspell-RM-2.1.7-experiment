@@ -241,7 +241,7 @@ if(isset($_GET[ 'delete' ])) {
         );
 
 
-        $ergebnis = safe_query("SELECT * FROM " . PREFIX . "settings_buttons");
+        $ergebnis = safe_query("SELECT * FROM "settings_buttons");
         $dy = mysqli_fetch_array($ergebnis);
         safe_query(
             "UPDATE
@@ -2380,8 +2380,8 @@ echo'<div class="card">
   </div>-->';
 
 
-    $row = safe_query("SELECT * FROM " . PREFIX . "settings_expansion");
-    $tmp = mysqli_fetch_assoc(safe_query("SELECT count(themeID) as cnt FROM " . PREFIX . "settings_expansion"));
+    $row = safe_query("SELECT * FROM "settings_expansion");
+    $tmp = mysqli_fetch_assoc(safe_query("SELECT count(themeID) as cnt FROM "settings_expansion"));
     $anzpartners = $tmp[ 'cnt' ];
     $CAPCLASS = new \webspell\Captcha;
     $CAPCLASS->createTransaction();

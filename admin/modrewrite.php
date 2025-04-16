@@ -186,7 +186,7 @@ if ($action == "add") {
     </table>
     </form></div></div>';
 } elseif ($action == 'rebuild') {
-    $ds = safe_query("SELECT * FROM " . PREFIX . "modrewrite");
+    $ds = safe_query("SELECT * FROM "modrewrite");
     $anz = mysqli_num_rows($ds);
     while ($flags = mysqli_fetch_array($ds)) {
         $data = unserialize($flags['fields']);

@@ -322,9 +322,9 @@ if (!empty(@$db['active'] == 1) !== false) {
             if (isset($_POST['header_on'])) {
                 foreach ($_POST['header_on'] as $k => $v) {
                     if ($v == "header_widget") {
-                        safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET position = 'header_widget' where widgetname = '" . $k . "'");
+                        safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET position = 'header_widget' where widgetname = '" . $k . "'");
                     } else if ($v == "deactivated") {
-                        safe_query("DELETE FROM " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets WHERE widgetname = '" . $k . "'");
+                        safe_query("DELETE FROM "plugins_" . $_POST['modulname'] . "_settings_widgets WHERE widgetname = '" . $k . "'");
                     }
                 }
             } else {
@@ -347,7 +347,7 @@ if (!empty(@$db['active'] == 1) !== false) {
                     if ($v == "header_widget") {
                         safe_query(
                             "INSERT INTO
-                        `" . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets` (                        
+                        `"plugins_" . $_POST['modulname'] . "_settings_widgets` (                        
                         `position`, 
                         `modulname`, 
                         `themes_modulname`,                        
@@ -367,10 +367,10 @@ if (!empty(@$db['active'] == 1) !== false) {
                         );
 
                         foreach ($_POST['header_off_2'] as $k => $a) {
-                            safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET widgetdatei = '" . $a . "' WHERE widgetname='" . $k . "' ");
+                            safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET widgetdatei = '" . $a . "' WHERE widgetname='" . $k . "' ");
                         }
                         foreach ($_POST['header_off_3'] as $k => $d) {
-                            safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET modulname = '" . $d . "' WHERE widgetname='" . $k . "' ");
+                            safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET modulname = '" . $d . "' WHERE widgetname='" . $k . "' ");
                         }
                     } elseif ($v == "") {
                         $name = $k;
@@ -397,9 +397,9 @@ if (!empty(@$db['active'] == 1) !== false) {
             if (isset($_POST['navigation_on'])) {
                 foreach ($_POST['navigation_on'] as $k => $v) {
                     if ($v == "navigation_widget") {
-                        safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET position = 'navigation_widget' where widgetname = '" . $k . "'");
+                        safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET position = 'navigation_widget' where widgetname = '" . $k . "'");
                     } else if ($v == "deactivated") {
-                        safe_query("DELETE FROM " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets WHERE widgetname = '" . $k . "'");
+                        safe_query("DELETE FROM "plugins_" . $_POST['modulname'] . "_settings_widgets WHERE widgetname = '" . $k . "'");
                     }
                 }
             } else {
@@ -422,7 +422,7 @@ if (!empty(@$db['active'] == 1) !== false) {
                     if ($v == "navigation_widget") {
                         safe_query(
                             "INSERT INTO
-                        `" . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets` (                        
+                        `"plugins_" . $_POST['modulname'] . "_settings_widgets` (                        
                         `position`, 
                         `modulname`, 
                         `themes_modulname`,                        
@@ -442,10 +442,10 @@ if (!empty(@$db['active'] == 1) !== false) {
                         );
 
                         foreach ($_POST['navigation_off_2'] as $k => $a) {
-                            safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET widgetdatei = '" . $a . "' WHERE widgetname='" . $k . "' ");
+                            safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET widgetdatei = '" . $a . "' WHERE widgetname='" . $k . "' ");
                         }
                         foreach ($_POST['navigation_off_3'] as $k => $d) {
-                            safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET modulname = '" . $d . "' WHERE widgetname='" . $k . "' ");
+                            safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET modulname = '" . $d . "' WHERE widgetname='" . $k . "' ");
                         }
                     } elseif ($v == "") {
                         $name = $k;
@@ -472,9 +472,9 @@ if (!empty(@$db['active'] == 1) !== false) {
             if (isset($_POST['content_head_on'])) {
                 foreach ($_POST['content_head_on'] as $k => $v) {
                     if ($v == "content_head_widget") {
-                        safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET position = 'content_head_widget' where widgetname = '" . $k . "'");
+                        safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET position = 'content_head_widget' where widgetname = '" . $k . "'");
                     } else if ($v == "deactivated") {
-                        safe_query("DELETE FROM " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets WHERE widgetname = '" . $k . "'");
+                        safe_query("DELETE FROM "plugins_" . $_POST['modulname'] . "_settings_widgets WHERE widgetname = '" . $k . "'");
                     }
                 }
             } else {
@@ -497,7 +497,7 @@ if (!empty(@$db['active'] == 1) !== false) {
                     if ($v == "content_head_widget") {
                         safe_query(
                             "INSERT INTO
-                        `" . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets` (                        
+                        `"plugins_" . $_POST['modulname'] . "_settings_widgets` (                        
                         `position`, 
                         `modulname`, 
                         `themes_modulname`,                        
@@ -517,10 +517,10 @@ if (!empty(@$db['active'] == 1) !== false) {
                         );
 
                         foreach ($_POST['content_head_off_2'] as $k => $a) {
-                            safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET widgetdatei = '" . $a . "' WHERE widgetname='" . $k . "' ");
+                            safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET widgetdatei = '" . $a . "' WHERE widgetname='" . $k . "' ");
                         }
                         foreach ($_POST['content_head_off_3'] as $k => $d) {
-                            safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET modulname = '" . $d . "' WHERE widgetname='" . $k . "' ");
+                            safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET modulname = '" . $d . "' WHERE widgetname='" . $k . "' ");
                         }
                     } elseif ($v == "") {
                         $name = $k;
@@ -547,9 +547,9 @@ if (!empty(@$db['active'] == 1) !== false) {
             if (isset($_POST['content_up_on'])) {
                 foreach ($_POST['content_up_on'] as $k => $v) {
                     if ($v == "content_up_widget") {
-                        safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET position = 'content_up_widget' where widgetname = '" . $k . "'");
+                        safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET position = 'content_up_widget' where widgetname = '" . $k . "'");
                     } else if ($v == "deactivated") {
-                        safe_query("DELETE FROM " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets WHERE widgetname = '" . $k . "'");
+                        safe_query("DELETE FROM "plugins_" . $_POST['modulname'] . "_settings_widgets WHERE widgetname = '" . $k . "'");
                     }
                 }
             } else {
@@ -572,7 +572,7 @@ if (!empty(@$db['active'] == 1) !== false) {
                     if ($v == "content_up_widget") {
                         safe_query(
                             "INSERT INTO
-                        `" . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets` (                        
+                        `"plugins_" . $_POST['modulname'] . "_settings_widgets` (                        
                         `position`, 
                         `modulname`, 
                         `themes_modulname`,                        
@@ -592,10 +592,10 @@ if (!empty(@$db['active'] == 1) !== false) {
                         );
 
                         foreach ($_POST['content_up_off_2'] as $k => $a) {
-                            safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET widgetdatei = '" . $a . "' WHERE widgetname='" . $k . "' ");
+                            safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET widgetdatei = '" . $a . "' WHERE widgetname='" . $k . "' ");
                         }
                         foreach ($_POST['content_up_off_3'] as $k => $d) {
-                            safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET modulname = '" . $d . "' WHERE widgetname='" . $k . "' ");
+                            safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET modulname = '" . $d . "' WHERE widgetname='" . $k . "' ");
                         }
                     } elseif ($v == "") {
                         $name = $k;
@@ -622,9 +622,9 @@ if (!empty(@$db['active'] == 1) !== false) {
             if (isset($_POST['content_down_on'])) {
                 foreach ($_POST['content_down_on'] as $k => $v) {
                     if ($v == "content_down_widget") {
-                        safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET position = 'content_down_widget' where widgetname = '" . $k . "'");
+                        safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET position = 'content_down_widget' where widgetname = '" . $k . "'");
                     } else if ($v == "deactivated") {
-                        safe_query("DELETE FROM " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets WHERE widgetname = '" . $k . "'");
+                        safe_query("DELETE FROM "plugins_" . $_POST['modulname'] . "_settings_widgets WHERE widgetname = '" . $k . "'");
                     }
                 }
             } else {
@@ -647,7 +647,7 @@ if (!empty(@$db['active'] == 1) !== false) {
                     if ($v == "content_down_widget") {
                         safe_query(
                             "INSERT INTO
-                        `" . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets` (                        
+                        `"plugins_" . $_POST['modulname'] . "_settings_widgets` (                        
                         `position`, 
                         `modulname`, 
                         `themes_modulname`,                        
@@ -667,10 +667,10 @@ if (!empty(@$db['active'] == 1) !== false) {
                         );
 
                         foreach ($_POST['content_down_off_2'] as $k => $a) {
-                            safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET widgetdatei = '" . $a . "' WHERE widgetname='" . $k . "' ");
+                            safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET widgetdatei = '" . $a . "' WHERE widgetname='" . $k . "' ");
                         }
                         foreach ($_POST['content_down_off_3'] as $k => $d) {
-                            safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET modulname = '" . $d . "' WHERE widgetname='" . $k . "' ");
+                            safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET modulname = '" . $d . "' WHERE widgetname='" . $k . "' ");
                         }
                     } elseif ($v == "") {
                         $name = $k;
@@ -697,9 +697,9 @@ if (!empty(@$db['active'] == 1) !== false) {
             if (isset($_POST['sidebar_left_on'])) {
                 foreach ($_POST['sidebar_left_on'] as $k => $v) {
                     if ($v == "left_side_widget") {
-                        safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET position = 'left_side_widget' where widgetname = '" . $k . "'");
+                        safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET position = 'left_side_widget' where widgetname = '" . $k . "'");
                     } else if ($v == "deactivated") {
-                        safe_query("DELETE FROM " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets WHERE widgetname = '" . $k . "'");
+                        safe_query("DELETE FROM "plugins_" . $_POST['modulname'] . "_settings_widgets WHERE widgetname = '" . $k . "'");
                     }
                 }
             } else {
@@ -722,7 +722,7 @@ if (!empty(@$db['active'] == 1) !== false) {
                     if ($v == "left_side_widget") {
                         safe_query(
                             "INSERT INTO
-                        `" . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets` (                        
+                        `"plugins_" . $_POST['modulname'] . "_settings_widgets` (                        
                         `position`, 
                         `modulname`, 
                         `themes_modulname`,                        
@@ -742,10 +742,10 @@ if (!empty(@$db['active'] == 1) !== false) {
                         );
 
                         foreach ($_POST['sidebar_left_off_2'] as $k => $a) {
-                            safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET widgetdatei = '" . $a . "' WHERE widgetname='" . $k . "' ");
+                            safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET widgetdatei = '" . $a . "' WHERE widgetname='" . $k . "' ");
                         }
                         foreach ($_POST['sidebar_left_off_3'] as $k => $d) {
-                            safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET modulname = '" . $d . "' WHERE widgetname='" . $k . "' ");
+                            safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET modulname = '" . $d . "' WHERE widgetname='" . $k . "' ");
                         }
                     } elseif ($v == "") {
                         $name = $k;
@@ -772,9 +772,9 @@ if (!empty(@$db['active'] == 1) !== false) {
             if (isset($_POST['sidebar_right_on'])) {
                 foreach ($_POST['sidebar_right_on'] as $k => $v) {
                     if ($v == "right_side_widget") {
-                        safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET position = 'right_side_widget' where widgetname = '" . $k . "'");
+                        safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET position = 'right_side_widget' where widgetname = '" . $k . "'");
                     } else if ($v == "deactivated") {
-                        safe_query("DELETE FROM " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets WHERE widgetname = '" . $k . "'");
+                        safe_query("DELETE FROM "plugins_" . $_POST['modulname'] . "_settings_widgets WHERE widgetname = '" . $k . "'");
                     }
                 }
             } else {
@@ -797,7 +797,7 @@ if (!empty(@$db['active'] == 1) !== false) {
                     if ($v == "right_side_widget") {
                         safe_query(
                             "INSERT INTO
-                        `" . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets` (                        
+                        `"plugins_" . $_POST['modulname'] . "_settings_widgets` (                        
                         `position`, 
                         `modulname`, 
                         `themes_modulname`,                        
@@ -817,10 +817,10 @@ if (!empty(@$db['active'] == 1) !== false) {
                         );
 
                         foreach ($_POST['sidebar_right_off_2'] as $k => $a) {
-                            safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET widgetdatei = '" . $a . "' WHERE widgetname='" . $k . "' ");
+                            safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET widgetdatei = '" . $a . "' WHERE widgetname='" . $k . "' ");
                         }
                         foreach ($_POST['sidebar_right_off_3'] as $k => $d) {
-                            safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET modulname = '" . $d . "' WHERE widgetname='" . $k . "' ");
+                            safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET modulname = '" . $d . "' WHERE widgetname='" . $k . "' ");
                         }
                     } elseif ($v == "") {
                         $name = $k;
@@ -847,11 +847,11 @@ if (!empty(@$db['active'] == 1) !== false) {
             if (isset($_POST['sidebar_on'])) {
                 foreach ($_POST['sidebar_on'] as $k => $v) {
                     if ($v == "left_side_widget") {
-                        safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET position = 'left_side_widget' where widgetname = '" . $k . "'");
+                        safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET position = 'left_side_widget' where widgetname = '" . $k . "'");
                     } else if ($v == "right_side_widget") {
-                        safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET position = 'right_side_widget' where widgetname = '" . $k . "'");
+                        safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET position = 'right_side_widget' where widgetname = '" . $k . "'");
                     } else if ($v == "deactivated") {
-                        safe_query("DELETE FROM " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets WHERE widgetname = '" . $k . "'");
+                        safe_query("DELETE FROM "plugins_" . $_POST['modulname'] . "_settings_widgets WHERE widgetname = '" . $k . "'");
                     }
                 }
             } else {
@@ -876,7 +876,7 @@ if (!empty(@$db['active'] == 1) !== false) {
                     if ($v == "left_side_widget") {
                         safe_query(
                             "INSERT INTO
-                        `" . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets` (                        
+                        `"plugins_" . $_POST['modulname'] . "_settings_widgets` (                        
                         `position`, 
                         `modulname`, 
                         `themes_modulname`,                        
@@ -896,10 +896,10 @@ if (!empty(@$db['active'] == 1) !== false) {
                         );
 
                         foreach ($_POST['sidebar_left_off_2'] as $k => $a) {
-                            safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET widgetdatei = '" . $a . "' WHERE widgetname='" . $k . "' ");
+                            safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET widgetdatei = '" . $a . "' WHERE widgetname='" . $k . "' ");
                         }
                         foreach ($_POST['sidebar_left_off_3'] as $k => $d) {
-                            safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET modulname = '" . $d . "' WHERE widgetname='" . $k . "' ");
+                            safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET modulname = '" . $d . "' WHERE widgetname='" . $k . "' ");
                         }
                     } elseif ($v == "") {
                         $name = $k;
@@ -926,9 +926,9 @@ if (!empty(@$db['active'] == 1) !== false) {
             if (isset($_POST['content_foot_on'])) {
                 foreach ($_POST['content_foot_on'] as $k => $v) {
                     if ($v == "content_foot_widget") {
-                        safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET position = 'content_foot_widget' where widgetname = '" . $k . "'");
+                        safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET position = 'content_foot_widget' where widgetname = '" . $k . "'");
                     } else if ($v == "deactivated") {
-                        safe_query("DELETE FROM " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets WHERE widgetname = '" . $k . "'");
+                        safe_query("DELETE FROM "plugins_" . $_POST['modulname'] . "_settings_widgets WHERE widgetname = '" . $k . "'");
                     }
                 }
             } else {
@@ -951,7 +951,7 @@ if (!empty(@$db['active'] == 1) !== false) {
                     if ($v == "content_foot_widget") {
                         safe_query(
                             "INSERT INTO
-                        `" . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets` (                        
+                        `"plugins_" . $_POST['modulname'] . "_settings_widgets` (                        
                         `position`, 
                         `modulname`, 
                         `themes_modulname`,                        
@@ -971,10 +971,10 @@ if (!empty(@$db['active'] == 1) !== false) {
                         );
 
                         foreach ($_POST['content_foot_off_2'] as $k => $a) {
-                            safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET widgetdatei = '" . $a . "' WHERE widgetname='" . $k . "' ");
+                            safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET widgetdatei = '" . $a . "' WHERE widgetname='" . $k . "' ");
                         }
                         foreach ($_POST['content_foot_off_3'] as $k => $d) {
-                            safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET modulname = '" . $d . "' WHERE widgetname='" . $k . "' ");
+                            safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET modulname = '" . $d . "' WHERE widgetname='" . $k . "' ");
                         }
                     } elseif ($v == "") {
                         $name = $k;
@@ -1001,9 +1001,9 @@ if (!empty(@$db['active'] == 1) !== false) {
             if (isset($_POST['footer_on'])) {
                 foreach ($_POST['footer_on'] as $k => $v) {
                     if ($v == "footer_widget") {
-                        safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET position = 'footer_widget' where widgetname = '" . $k . "'");
+                        safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET position = 'footer_widget' where widgetname = '" . $k . "'");
                     } else if ($v == "deactivated") {
-                        safe_query("DELETE FROM " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets WHERE widgetname = '" . $k . "'");
+                        safe_query("DELETE FROM "plugins_" . $_POST['modulname'] . "_settings_widgets WHERE widgetname = '" . $k . "'");
                     }
                 }
             } else {
@@ -1026,7 +1026,7 @@ if (!empty(@$db['active'] == 1) !== false) {
                     if ($v == "footer_widget") {
                         safe_query(
                             "INSERT INTO
-                        `" . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets` (                        
+                        `"plugins_" . $_POST['modulname'] . "_settings_widgets` (                        
                         `position`, 
                         `modulname`, 
                         `themes_modulname`,                        
@@ -1046,10 +1046,10 @@ if (!empty(@$db['active'] == 1) !== false) {
                         );
 
                         foreach ($_POST['footer_off_2'] as $k => $a) {
-                            safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET widgetdatei = '" . $a . "' WHERE widgetname='" . $k . "' ");
+                            safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET widgetdatei = '" . $a . "' WHERE widgetname='" . $k . "' ");
                         }
                         foreach ($_POST['footer_off_3'] as $k => $d) {
-                            safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET modulname = '" . $d . "' WHERE widgetname='" . $k . "' ");
+                            safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET modulname = '" . $d . "' WHERE widgetname='" . $k . "' ");
                         }
                     } elseif ($v == "") {
                         $name = $k;
@@ -1073,7 +1073,7 @@ if (!empty(@$db['active'] == 1) !== false) {
             $sort = $_POST['sort'];
             foreach ($sort as $sortstring) {
                 $sorter = explode("-", $sortstring);
-                safe_query("UPDATE " . PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets SET sort='" . $sorter[1] . "' WHERE id='" . $sorter[0] . "' ");
+                safe_query("UPDATE "plugins_" . $_POST['modulname'] . "_settings_widgets SET sort='" . $sorter[1] . "' WHERE id='" . $sorter[0] . "' ");
             }
         } else {
             echo $_language->module['transaction_invalid'];
@@ -1160,7 +1160,7 @@ if (!empty(@$db['active'] == 1) !== false) {
         $thergebnis = safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE pluginID = '" . $id . "'");
         $dw = mysqli_fetch_array($thergebnis);
 
-        $result = safe_query("SELECT * FROM " . PREFIX . "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND modulname='" . $dw['modulname'] . "'");
+        $result = safe_query("SELECT * FROM "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND modulname='" . $dw['modulname'] . "'");
         $ds = mysqli_fetch_array($result);
 
         $xergebnis = safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE name= '" . $dw['name'] . "'");
@@ -1190,7 +1190,7 @@ if (!empty(@$db['active'] == 1) !== false) {
             $widgetname = $header_off['widgetname'];
             $widgetdatei = $header_off['widgetdatei'];
             $id = $header_off['id'];
-            $yheader_ergebnis = safe_query("SELECT * FROM " . PREFIX . "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND widgetname='" . $widgetname . "' ORDER BY sort");
+            $yheader_ergebnis = safe_query("SELECT * FROM "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND widgetname='" . $widgetname . "' ORDER BY sort");
             $yheader = mysqli_fetch_array($yheader_ergebnis);
             if (@$yheader['activated'] == '1') {
             } else {
@@ -1206,8 +1206,8 @@ if (!empty(@$db['active'] == 1) !== false) {
                 <td class=" text-center"  style="align-content: center;">     
                     ' . $_language->module['header'] . '
                     <div class="alert alert-success text-center" style="padding: 5px"><div class="border border-danger container text-center mt-3 alert alert-secondary">';
-        $xheader_ergebnis = safe_query("SELECT * FROM " . PREFIX . "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND  position='header_widget' ORDER BY sort");
-        $tmp = mysqli_fetch_assoc(safe_query("SELECT count(id) as cnt FROM " . PREFIX . "plugins_" . $dw['modulname'] . "_settings_widgets"));
+        $xheader_ergebnis = safe_query("SELECT * FROM "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND  position='header_widget' ORDER BY sort");
+        $tmp = mysqli_fetch_assoc(safe_query("SELECT count(id) as cnt FROM "plugins_" . $dw['modulname'] . "_settings_widgets"));
         $anzheader = $tmp['cnt'];
         $i = 1;
         while ($xheader = mysqli_fetch_array($xheader_ergebnis)) {
@@ -1247,7 +1247,7 @@ if (!empty(@$db['active'] == 1) !== false) {
             $widgetname = $navigation_off['widgetname'];
             $widgetdatei = $navigation_off['widgetdatei'];
             $id = $navigation_off['id'];
-            $ynavigation_ergebnis = safe_query("SELECT * FROM " . PREFIX . "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND widgetname='" . $widgetname . "'");
+            $ynavigation_ergebnis = safe_query("SELECT * FROM "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND widgetname='" . $widgetname . "'");
             $ynavigation = mysqli_fetch_array($ynavigation_ergebnis);
             if (@$ynavigation['activated'] == '1') {
             } else {
@@ -1263,8 +1263,8 @@ if (!empty(@$db['active'] == 1) !== false) {
                 <td class=" text-center"  style="align-content: center;">
                     ' . $_language->module['navigation'] . '
                     <div class="alert alert-success text-center" style="padding: 5px"><div class="border border-danger container text-center mt-3 alert alert-secondary">';
-        $xnavigation_ergebnis = safe_query("SELECT * FROM " . PREFIX . "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND  position='navigation_widget' ORDER BY sort");
-        $tmp = mysqli_fetch_assoc(safe_query("SELECT count(id) as cnt FROM " . PREFIX . "plugins_" . $dw['modulname'] . "_settings_widgets"));
+        $xnavigation_ergebnis = safe_query("SELECT * FROM "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND  position='navigation_widget' ORDER BY sort");
+        $tmp = mysqli_fetch_assoc(safe_query("SELECT count(id) as cnt FROM "plugins_" . $dw['modulname'] . "_settings_widgets"));
         $anznavigation = $tmp['cnt'];
         $i = 1;
         while ($xnavigation = mysqli_fetch_array($xnavigation_ergebnis)) {
@@ -1304,7 +1304,7 @@ if (!empty(@$db['active'] == 1) !== false) {
             $widgetname = $content_head_off['widgetname'];
             $widgetdatei = $content_head_off['widgetdatei'];
             $id = $content_head_off['id'];
-            $ycontent_head_ergebnis = safe_query("SELECT * FROM " . PREFIX . "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND widgetname='" . $widgetname . "'");
+            $ycontent_head_ergebnis = safe_query("SELECT * FROM "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND widgetname='" . $widgetname . "'");
             $ycontent_head = mysqli_fetch_array($ycontent_head_ergebnis);
             if (@$ycontent_head['activated'] == '1') {
             } else {
@@ -1320,8 +1320,8 @@ if (!empty(@$db['active'] == 1) !== false) {
                 <td class=" text-center" style="align-content: center;">
                     ' . $_language->module['content_head'] . '
                     <div class="alert alert-success text-center" style="padding: 5px"><div class="border border-danger container text-center mt-3 alert alert-secondary">';
-        $xcontent_head_ergebnis = safe_query("SELECT * FROM " . PREFIX . "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND  position='content_head_widget' ORDER BY sort");
-        $tmp = mysqli_fetch_assoc(safe_query("SELECT count(id) as cnt FROM " . PREFIX . "plugins_" . $dw['modulname'] . "_settings_widgets"));
+        $xcontent_head_ergebnis = safe_query("SELECT * FROM "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND  position='content_head_widget' ORDER BY sort");
+        $tmp = mysqli_fetch_assoc(safe_query("SELECT count(id) as cnt FROM "plugins_" . $dw['modulname'] . "_settings_widgets"));
         $anzcontent_head = $tmp['cnt'];
         $i = 1;
         while ($xcontent_head = mysqli_fetch_array($xcontent_head_ergebnis)) {
@@ -1361,7 +1361,7 @@ if (!empty(@$db['active'] == 1) !== false) {
             $widgetname = $content_up_off['widgetname'];
             $widgetdatei = $content_up_off['widgetdatei'];
             $id = $content_up_off['id'];
-            $ycontent_up_ergebnis = safe_query("SELECT * FROM " . PREFIX . "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND widgetname='" . $widgetname . "'");
+            $ycontent_up_ergebnis = safe_query("SELECT * FROM "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND widgetname='" . $widgetname . "'");
             $ycontent_up = mysqli_fetch_array($ycontent_up_ergebnis);
             if (@$ycontent_up['activated'] == '1') {
             } else {
@@ -1387,8 +1387,8 @@ if (!empty(@$db['active'] == 1) !== false) {
 
 
 
-        $xcontent_up_ergebnis = safe_query("SELECT * FROM " . PREFIX . "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND  position='content_up_widget' ORDER BY sort");
-        $tmp = mysqli_fetch_assoc(safe_query("SELECT count(id) as cnt FROM " . PREFIX . "plugins_" . $dw['modulname'] . "_settings_widgets"));
+        $xcontent_up_ergebnis = safe_query("SELECT * FROM "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND  position='content_up_widget' ORDER BY sort");
+        $tmp = mysqli_fetch_assoc(safe_query("SELECT count(id) as cnt FROM "plugins_" . $dw['modulname'] . "_settings_widgets"));
         $anzcontent_up = $tmp['cnt'];
         $i = 1;
         while ($xcontent_up = mysqli_fetch_array($xcontent_up_ergebnis)) {
@@ -1433,7 +1433,7 @@ if (!empty(@$db['active'] == 1) !== false) {
             $widgetname = $sidebar_left_off['widgetname'];
             $widgetdatei = $sidebar_left_off['widgetdatei'];
             $id = $sidebar_left_off['id'];
-            $ysidebar_left_ergebnis = safe_query("SELECT * FROM " . PREFIX . "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND widgetname='" . $widgetname . "'");
+            $ysidebar_left_ergebnis = safe_query("SELECT * FROM "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND widgetname='" . $widgetname . "'");
             $ysidebar_left = mysqli_fetch_array($ysidebar_left_ergebnis);
             if (@$ysidebar_left['activated'] == '1') {
             } else {
@@ -1454,7 +1454,7 @@ if (!empty(@$db['active'] == 1) !== false) {
             $widgetname = $sidebar_right_off['widgetname'];
             $widgetdatei = $sidebar_right_off['widgetdatei'];
             $id = $sidebar_right_off['id'];
-            $ysidebar_right_ergebnis = safe_query("SELECT * FROM " . PREFIX . "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND widgetname='" . $widgetname . "'");
+            $ysidebar_right_ergebnis = safe_query("SELECT * FROM "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND widgetname='" . $widgetname . "'");
             $ysidebar_right = mysqli_fetch_array($ysidebar_right_ergebnis);
             if (@$ysidebar_right['activated'] == '1') {
                 continue;
@@ -1477,8 +1477,8 @@ if (!empty(@$db['active'] == 1) !== false) {
                             <div class="col-3 text-start" style="padding: 5px">
                                 ' . $_language->module['left'] . '
                                 <div class="border border-danger alert alert-success text-center" style="height: 90%;padding: 5px">';
-        $xsidebar_left_ergebnis = safe_query("SELECT * FROM " . PREFIX . "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND  position='left_side_widget' ORDER BY sort");
-        $tmp = mysqli_fetch_assoc(safe_query("SELECT count(id) as cnt FROM " . PREFIX . "plugins_" . $dw['modulname'] . "_settings_widgets"));
+        $xsidebar_left_ergebnis = safe_query("SELECT * FROM "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND  position='left_side_widget' ORDER BY sort");
+        $tmp = mysqli_fetch_assoc(safe_query("SELECT count(id) as cnt FROM "plugins_" . $dw['modulname'] . "_settings_widgets"));
         $anzsidebar_left = $tmp['cnt'];
         $i = 1;
         while ($xsidebar_left = mysqli_fetch_array($xsidebar_left_ergebnis)) {
@@ -1515,8 +1515,8 @@ if (!empty(@$db['active'] == 1) !== false) {
                             <div class="col-3 text-end" style="padding: 5px">
                                 ' . $_language->module['right'] . '
                                 <div class="border border-danger alert alert-success text-center" style="height: 90%;padding: 5px">';
-        $xsidebar_right_ergebnis = safe_query("SELECT * FROM " . PREFIX . "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND  position='right_side_widget' ORDER BY sort");
-        $tmp = mysqli_fetch_assoc(safe_query("SELECT count(id) as cnt FROM " . PREFIX . "plugins_" . $dw['modulname'] . "_settings_widgets"));
+        $xsidebar_right_ergebnis = safe_query("SELECT * FROM "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND  position='right_side_widget' ORDER BY sort");
+        $tmp = mysqli_fetch_assoc(safe_query("SELECT count(id) as cnt FROM "plugins_" . $dw['modulname'] . "_settings_widgets"));
         $anzsidebar_right = $tmp['cnt'];
         $i = 1;
         while ($xsidebar_right = mysqli_fetch_array($xsidebar_right_ergebnis)) {
@@ -1561,7 +1561,7 @@ if (!empty(@$db['active'] == 1) !== false) {
             $widgetname = $content_down_off['widgetname'];
             $widgetdatei = $content_down_off['widgetdatei'];
             $id = $content_down_off['id'];
-            $ycontent_down_ergebnis = safe_query("SELECT * FROM " . PREFIX . "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND widgetname='" . $widgetname . "'");
+            $ycontent_down_ergebnis = safe_query("SELECT * FROM "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND widgetname='" . $widgetname . "'");
             $ycontent_down = mysqli_fetch_array($ycontent_down_ergebnis);
             if (@$ycontent_down['activated'] == '1') {
             } else {
@@ -1587,8 +1587,8 @@ if (!empty(@$db['active'] == 1) !== false) {
 				
                     
                     ';
-        $xcontent_down_ergebnis = safe_query("SELECT * FROM " . PREFIX . "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND  position='content_down_widget' ORDER BY sort");
-        $tmp = mysqli_fetch_assoc(safe_query("SELECT count(id) as cnt FROM " . PREFIX . "plugins_" . $dw['modulname'] . "_settings_widgets"));
+        $xcontent_down_ergebnis = safe_query("SELECT * FROM "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND  position='content_down_widget' ORDER BY sort");
+        $tmp = mysqli_fetch_assoc(safe_query("SELECT count(id) as cnt FROM "plugins_" . $dw['modulname'] . "_settings_widgets"));
         $anzcontent_down = $tmp['cnt'];
         $i = 1;
         while ($xcontent_down = mysqli_fetch_array($xcontent_down_ergebnis)) {
@@ -1631,7 +1631,7 @@ if (!empty(@$db['active'] == 1) !== false) {
             $widgetname = $content_foot_off['widgetname'];
             $widgetdatei = $content_foot_off['widgetdatei'];
             $id = $content_foot_off['id'];
-            $ycontent_foot_ergebnis = safe_query("SELECT * FROM " . PREFIX . "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND widgetname='" . $widgetname . "'");
+            $ycontent_foot_ergebnis = safe_query("SELECT * FROM "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND widgetname='" . $widgetname . "'");
             $ycontent_foot = mysqli_fetch_array($ycontent_foot_ergebnis);
             if (@$ycontent_foot['activated'] == '1') {
             } else {
@@ -1647,8 +1647,8 @@ if (!empty(@$db['active'] == 1) !== false) {
                 <td class=" text-center"  style="align-content: center;">
                     ' . $_language->module['content_foot'] . '
                     <div class="alert alert-success text-center" style="padding: 5px"><div class="border border-danger container text-center mt-3 alert alert-secondary">';
-        $xcontent_foot_ergebnis = safe_query("SELECT * FROM " . PREFIX . "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND  position='content_foot_widget' ORDER BY sort");
-        $tmp = mysqli_fetch_assoc(safe_query("SELECT count(id) as cnt FROM " . PREFIX . "plugins_" . $dw['modulname'] . "_settings_widgets"));
+        $xcontent_foot_ergebnis = safe_query("SELECT * FROM "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND  position='content_foot_widget' ORDER BY sort");
+        $tmp = mysqli_fetch_assoc(safe_query("SELECT count(id) as cnt FROM "plugins_" . $dw['modulname'] . "_settings_widgets"));
         $anzcontent_foot = $tmp['cnt'];
         $i = 1;
         while ($xcontent_foot = mysqli_fetch_array($xcontent_foot_ergebnis)) {
@@ -1688,7 +1688,7 @@ if (!empty(@$db['active'] == 1) !== false) {
             $widgetname = $footer_off['widgetname'];
             $widgetdatei = $footer_off['widgetdatei'];
             $id = $footer_off['id'];
-            $yfooter_ergebnis = safe_query("SELECT * FROM " . PREFIX . "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND widgetname='" . $widgetname . "'");
+            $yfooter_ergebnis = safe_query("SELECT * FROM "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND widgetname='" . $widgetname . "'");
             $yfooter = mysqli_fetch_array($yfooter_ergebnis);
             if (@$yfooter['activated'] == '1') {
             } else {
@@ -1704,8 +1704,8 @@ if (!empty(@$db['active'] == 1) !== false) {
                 <td class=" text-center" style="align-content: center;">     
                     ' . $_language->module['footer'] . '
                     <div class="alert alert-success text-center" style="padding: 5px"><div class="border border-danger container text-center mt-3 alert alert-secondary">';
-        $xfooter_ergebnis = safe_query("SELECT * FROM " . PREFIX . "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND  position='footer_widget' ORDER BY sort");
-        $tmp = mysqli_fetch_assoc(safe_query("SELECT count(id) as cnt FROM " . PREFIX . "plugins_" . $dw['modulname'] . "_settings_widgets"));
+        $xfooter_ergebnis = safe_query("SELECT * FROM "plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND  position='footer_widget' ORDER BY sort");
+        $tmp = mysqli_fetch_assoc(safe_query("SELECT count(id) as cnt FROM "plugins_" . $dw['modulname'] . "_settings_widgets"));
         $anzfooter = $tmp['cnt'];
         $i = 1;
         while ($xfooter = mysqli_fetch_array($xfooter_ergebnis)) {
@@ -2290,7 +2290,7 @@ if (!empty(@$db['active'] == 1) !== false) {
             <th class="text-center" width="12%"><strong>' . $_language->module['action'] . '</strong></th>
 
         </thead>';
-                    $ergebnis = safe_query("SELECT * FROM " . PREFIX . "settings_plugins");
+                    $ergebnis = safe_query("SELECT * FROM "settings_plugins");
                     while ($ds = mysqli_fetch_array($ergebnis)) {
 
                         $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE pluginID='" . $ds['pluginID'] . "'"));

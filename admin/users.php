@@ -968,7 +968,7 @@ $id = $ds['userID'];
         $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='forum'"));
         if (@$dx[ 'modulname' ] != 'forum') {
         }else{
-            $ergebnis = safe_query("SELECT * FROM " . PREFIX . "plugins_forum_groups");
+            $ergebnis = safe_query("SELECT * FROM "plugins_forum_groups");
             while ($db = mysqli_fetch_array($ergebnis)) {
                 $name = $db[ 'name' ];
                 $fgrID = $db[ 'fgrID' ];
@@ -1023,7 +1023,7 @@ $id = $ds['userID'];
         if (@$dx[ 'modulname' ] != 'forum') {
         }else{
             echo'<td class="'.$td.'"><center>';
-            $sql = safe_query("SELECT * FROM " . PREFIX . "plugins_forum_groups");
+            $sql = safe_query("SELECT * FROM "plugins_forum_groups");
             
             $i = 1;
             while ($df = mysqli_fetch_array($sql)) {
@@ -1127,7 +1127,7 @@ $referer = "admincenter.php?site=users&action=user_rights";
         }
     }
 
-    $alle = safe_query("SELECT userID FROM " . PREFIX . "user");
+    $alle = safe_query("SELECT userID FROM "user");
     $gesamt = mysqli_num_rows($alle);
     $pages = 1;
 

@@ -28,9 +28,10 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
 */
 
-    $_language->readModule('error');
+// Sprachmodul für Fehler laden
+$_language->readModule('error');
 
-// Daten für das Template
+// Daten für das Template vorbereiten
 $data_array = [
     'error_404' => $_language->module['error_404'],
     'message_404' => $_language->module['message_404'],
@@ -38,10 +39,8 @@ $data_array = [
     'back' => $_language->module['back']
 ];
 
-// Template laden und Platzhalter ersetzen
+// Template mit Platzhalterersetzungen laden
 $errorpage = $tpl->loadTemplate("error_404", "content", $data_array);
 
-// Ausgabe der Seite
+// Seite ausgeben
 echo $errorpage;
-    
-?>

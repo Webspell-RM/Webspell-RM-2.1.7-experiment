@@ -35,70 +35,63 @@ include("../system/func/user.php");
 include("../system/template.php");
 include("../system/version.php");
 
-$_language = new \webspell\Language();
-
-// Setzen der Standardsprache, wenn sie noch nicht gesetzt ist
-if (!isset($_SESSION['language'])) {
-    $_SESSION['language'] = "de"; // Standard-Sprache auf Deutsch setzen
+if (version_compare(PHP_VERSION, '5.3.7', '>') && version_compare(PHP_VERSION, '5.5.0', '<')) {
+    include('../system/func/password.php');
 }
 
-// Überprüfen, ob eine andere Sprache über GET gesetzt wurde
+$_language = new \webspell\Language();
+
+if (!isset($_SESSION['language'])) {
+    $_SESSION['language'] = "de";
+}
+
 if (isset($_GET['lang'])) {
-    $available_languages = ['de', 'en', 'fr']; // Liste der unterstützten Sprachen
-    if (in_array($_GET['lang'], $available_languages)) {
-        $_language->setLanguage($_GET['lang']);
+    if ($_language->setLanguage($_GET['lang'])) {
         $_SESSION['language'] = $_GET['lang'];
-    } else {
-        $_SESSION['language'] = 'de';  // Standard auf Deutsch setzen, falls ungültige Sprache
     }
-    header("Location: index.php"); // Seite nach Sprachänderung neu laden
+    header("Location: index.php");
     exit();
 }
 
-// Setze die Sprache basierend auf der Sitzung
 $_language->setLanguage($_SESSION['language']);
 $_language->readModule('index');
 
 $_template = new template('', 'templates/');
 
-// Schritt aus der URL auslesen
 if (isset($_GET['step'])) {
     $step = (int)$_GET['step'];
 } else {
     $step = 0;
 }
 
-$calcstep = ($step > 0) ? $step + 1 : 1;
+$calcstep = ($step > 0) ?
+    $step + 1 : 1;
 
-// Lade die Sprachmodule für den entsprechenden Schritt
 if ($step >= 0 && $step <= 4) {
     $_language->readModule('step' . $step, true);
 } else {
     $_language->readModule('step0', true);
 }
 
-// Setze die Anzeige für abgeschlossene Schritte
 $doneArray = array();
 for ($x = 0; $x < 5; $x++) {
-    $doneArray[$x] = ($step > $x) ? '<i class="bi bi-check-circle green"></i>' : '';
+    $doneArray[$x] = ($step > $x) ?
+        '<i class="bi bi-check-circle green"></i>' : '';
 }
 
-// Funktion zur Ermittlung der aktuellen URL
 function CurrentUrl() {
     return ((empty($_SERVER['HTTPS'])) ? 'http://' : 'https://') . $_SERVER['HTTP_HOST'];
 }
 
-// Funktion zur Überprüfung von Session-Werten
 function checksession($value) {
   if(isset($_SESSION[$value])) {
     $vari = $_SESSION[$value];
-  } else {    
-    $vari = '';     
+  }else{	
+    $vari = ''; 	
   }
   return $vari;
 }
 
-// Funktion zur Überprüfung von Funktionen (z.B. MySQL-Verbindung)
 function checkfunc($value) {
     global $_language;
     if (function_exists('mysqli_connect')) {
@@ -109,8 +102,6 @@ function checkfunc($value) {
     }
     return $value;
 }
-
-// Initialisierung der Variablen und Template-Daten
 $data_array = array();
 $data_array['$lang_welcome'] = $_language->module['welcome'];
 $data_array['$lang_license_agreement'] = $_language->module['license_agreement'];
@@ -125,9 +116,6 @@ $data_array['$done2'] = $doneArray[2];
 $data_array['$done3'] = $doneArray[3];
 $data_array['$done4'] = $doneArray[4];
 $data_array['$calcstep'] = $calcstep;
-
-// Laden des Template-Headers
 $installhead = $_template->loadTemplate('install', 'head', $data_array);
 echo $installhead;
-
 ?>

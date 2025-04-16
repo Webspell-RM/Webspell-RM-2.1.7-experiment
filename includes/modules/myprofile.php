@@ -114,7 +114,7 @@ if (!$userID) {
             if (file_exists($filepath . $id . '.png')) {
                 @unlink($filepath . $id . '.png');
             }
-            safe_query("UPDATE " . PREFIX . "user SET avatar='' WHERE userID='" . $id . "'");
+            safe_query("UPDATE users SET avatar='' WHERE userID='" . $id . "'");
         }
         if (isset($_POST['deluserpic'])) {
             $filepath = "./images/userpics/";
@@ -127,7 +127,7 @@ if (!$userID) {
             if (file_exists($filepath . $id . '.png')) {
                 @unlink($filepath . $id . '.png');
             }
-            safe_query("UPDATE " . PREFIX . "user SET userpic='' WHERE userID='" . $id . "'");
+            safe_query("UPDATE users SET userpic='' WHERE userID='" . $id . "'");
         }
 
         //avatar
@@ -174,8 +174,8 @@ if (!$userID) {
                             if ($upload->saveAs($filepath.$file)) {
                                 @chmod($filepath.$file, $new_chmod);
                                 safe_query(
-                                    "UPDATE "
-                                    . PREFIX . "user
+                                    "UPDATE 
+                                        users
                                     SET
                                         avatar='" . $file .
                                     "' WHERE
@@ -239,8 +239,8 @@ if (!$userID) {
                             if ($upload->saveAs($filepath.$file)) {
                                 @chmod($filepath.$file, $new_chmod);
                                 safe_query(
-                                    "UPDATE "
-                                    . PREFIX . "user
+                                    "UPDATE 
+                                        users
                                     SET
                                         userpic='" . $file .
                                     "' WHERE userID='" . $id . "'"
@@ -264,7 +264,7 @@ if (!$userID) {
             $error_array[] = $_language->module['you_have_to_nickname'];
         }
 
-        $qry = "SELECT userID FROM " . PREFIX . "user WHERE nickname = '" . $nickname . "' AND userID!=" . $userID .
+        $qry = "SELECT userID FROM users WHERE nickname = '" . $nickname . "' AND userID!=" . $userID .
             " LIMIT 0,1";
         if (mysqli_num_rows(safe_query($qry))) {
             $error_array[] = $_language->module['nickname_already_in_use'];
@@ -284,7 +284,7 @@ if (!$userID) {
             $showerror = generateErrorBoxFromArray($_language->module['errors_there'], $error_array);
         } else {
             safe_query(
-                "UPDATE `" . PREFIX . "user`
+                "UPDATE `users`
                     SET
                         nickname='" . $nickname . "',
                         email_hide='" . $email_hide . "',
@@ -341,7 +341,7 @@ if (!$userID) {
 
         $error = "";
 
-        $ergebnis = safe_query("SELECT password_hash, password_pepper FROM " . PREFIX . "user WHERE userID='" . intval($id) . "'");
+        $ergebnis = safe_query("SELECT password_hash, password_pepper FROM users WHERE userID='" . intval($id) . "'");
         $ds = mysqli_fetch_array($ergebnis);
 
         $valid = password_verify($oldpwd.$ds['password_pepper'], $ds['password_hash']);
@@ -375,7 +375,7 @@ if (!$userID) {
             $pass = Gen_PasswordHash($pwd1, $userID);
             
             // set new password into the database
-            safe_query("UPDATE " . PREFIX . "user SET password_hash='" . $pass . "' WHERE userID='" . intval($userID) . "'");
+            safe_query("UPDATE users SET password_hash='" . $pass . "' WHERE userID='" . intval($userID) . "'");
             //logout
             unset($_SESSION['ws_user']);
             unset($_SESSION['ws_lastlogin']);
@@ -409,7 +409,7 @@ if (!$userID) {
         $mail1 = $_POST['mail1'];
         $mail2 = $_POST['mail2'];
 
-        $ergebnis = safe_query("SELECT password_hash, password_pepper, password, nickname FROM " . PREFIX . "user WHERE userID='" . $userID . "'");
+        $ergebnis = safe_query("SELECT password_hash, password_pepper, password, nickname FROM users WHERE userID='" . $userID . "'");
         $ds = mysqli_fetch_array($ergebnis);
         $error = "";
         $nickname = $ds['nickname'];
@@ -437,7 +437,7 @@ if (!$userID) {
         if (empty($error)) {
             safe_query(
                 "UPDATE
-                    " . PREFIX . "user
+                    users
                 SET
                     email_change = '" . $mail1 . "', email_activate = '" . $activationkey . "'
                 WHERE
@@ -495,7 +495,7 @@ if (!$userID) {
     	
     } elseif(isset($_POST['deleteAccount'])) {
 	    $pwd = $_POST['pwd'];
-	    $ergebnis = safe_query("SELECT password_hash, password_pepper, password, userID FROM " . PREFIX . "user WHERE userID='" . $userID . "'");
+	    $ergebnis = safe_query("SELECT password_hash, password_pepper, password, userID FROM users WHERE userID='" . $userID . "'");
         $ds = mysqli_fetch_array($ergebnis);
         
         $valid = password_verify($pwd.$ds['password_pepper'], $ds['password_hash']);
@@ -507,9 +507,9 @@ if (!$userID) {
         }
         
         if(empty($error)) {
-	        safe_query("DELETE FROM ".PREFIX."plugins_squads_members WHERE userID='" .$ds['userID']. "'");
-			safe_query("DELETE FROM ".PREFIX."user WHERE userID='" .$ds['userID']. "'");
-			safe_query("DELETE FROM ".PREFIX."user_groups WHERE userID='" .$ds['userID']. "'");
+	        safe_query("DELETE FROM plugins_squads_members WHERE userID='" .$ds['userID']. "'");
+			safe_query("DELETE FROM users WHERE userID='" .$ds['userID']. "'");
+			safe_query("DELETE FROM user_groups WHERE userID='" .$ds['userID']. "'");
 			
 			$userfiles = array('images/avatars/' . $ds['userID'] . '.jpg', 'images/avatars/' . $ds['userID'] . '.png', 'images/avatars/' . $ds['userID'] . '.gif', 'images/userpics/' . $ds['userID'] . '.jpg', 'images/userpics/' . $ds['userID'] . '.gif', 'images/userpics/' . $ds['userID'] . '.png');
 			foreach($userfiles as $file) {
@@ -533,7 +533,7 @@ if (!$userID) {
     $CAPCLASS->createTransaction();
     $hash = $CAPCLASS->getHash();
 
-        $ergebnis = safe_query("SELECT * FROM " . PREFIX . "user WHERE userID='" . $userID . "'");
+        $ergebnis = safe_query("SELECT * FROM users WHERE userID='" . $userID . "'");
         $anz = mysqli_num_rows($ergebnis);
         if ($anz) {
             $ds = mysqli_fetch_array($ergebnis);
@@ -570,7 +570,7 @@ if (!$userID) {
                     '</option><option value="0" selected="selected">' . $_language->module['no'] . '</option>';
             };
 
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='newsletter'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='newsletter'"));
                 if (@$dx[ 'modulname' ] != 'newsletter') {
                     $newsletter = '';
                 } else {
@@ -658,7 +658,7 @@ if (!$userID) {
             $filepath = "./languages/";
 
             $mysql_langs = array();
-            $query = safe_query("SELECT lang, language FROM " . PREFIX . "settings_languages");
+            $query = safe_query("SELECT lang, language FROM "settings_languages");
             while ($sql_lang = mysqli_fetch_assoc($query)) {
                 $mysql_langs[$sql_lang['lang']] = $sql_lang['language'];
             }
@@ -698,12 +698,12 @@ if (!$userID) {
                     );
             }
 
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='squads'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='squads'"));
             if (@$dx[ 'modulname' ] != 'squads') {
                 $games = '';
             }else{
                 $games = '';
-                $gamesa = safe_query("SELECT tag, name FROM " . PREFIX . "plugins_games_pic ORDER BY name");
+                $gamesa = safe_query("SELECT tag, name FROM plugins_games_pic ORDER BY name");
                 while ($dv = mysqli_fetch_array($gamesa)) {
                     $games .= '<option value="' . $dv[ 'tag' ] . '">' . getinput($dv[ 'name' ]) . '</option>';
                 }

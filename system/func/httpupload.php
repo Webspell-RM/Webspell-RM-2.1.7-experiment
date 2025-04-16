@@ -30,51 +30,98 @@
 
 namespace webspell;
 
+/**
+ * Klasse zum Hochladen von Dateien
+ */
 class HttpUpload extends Upload
 {
+    // Das Feld, das die Datei enthält
     private $field;
 
+    /**
+     * Konstruktor der Klasse
+     * Initialisiert das Feld und Fehlerbehandlung
+     *
+     * @param string $field_name - Der Name des Formularfeldes
+     */
     public function __construct($field_name)
     {
         parent::__construct();
         $this->field = $field_name;
-        $this->error = $_FILES[ $this->field ][ 'error' ];
+        $this->error = $_FILES[$this->field]['error'];
     }
 
+    /**
+     * Überprüft, ob eine Datei hochgeladen wurde
+     *
+     * @return bool - True, wenn eine Datei hochgeladen wurde, sonst False
+     */
     public function hasFile()
     {
-        return (isset($_FILES[ $this->field ]) && $_FILES[ $this->field ][ 'error' ] != UPLOAD_ERR_NO_FILE);
+        return (isset($_FILES[$this->field]) && $_FILES[$this->field]['error'] != UPLOAD_ERR_NO_FILE);
     }
 
+    /**
+     * Überprüft, ob beim Hochladen der Datei ein Fehler aufgetreten ist
+     *
+     * @return bool - True, wenn ein Fehler aufgetreten ist, sonst False
+     */
     public function hasError()
     {
-        return $_FILES[ $this->field ][ 'error' ] !== UPLOAD_ERR_OK;
+        return $_FILES[$this->field]['error'] !== UPLOAD_ERR_OK;
     }
 
+    /**
+     * Gibt den Fehlercode zurück, falls ein Fehler aufgetreten ist
+     *
+     * @return int|null - Der Fehlercode oder null, wenn kein Fehler vorliegt
+     */
     public function getError()
     {
         if ($this->hasFile()) {
-            return $_FILES[ $this->field ][ 'error' ];
+            return $_FILES[$this->field]['error'];
         } else {
             return null;
         }
     }
 
+    /**
+     * Gibt den temporären Dateipfad der hochgeladenen Datei zurück
+     *
+     * @return string - Der Pfad zur temporären Datei
+     */
     public function getTempFile()
     {
-        return $_FILES[ $this->field ][ 'tmp_name' ];
+        return $_FILES[$this->field]['tmp_name'];
     }
 
+    /**
+     * Gibt den Dateinamen der hochgeladenen Datei zurück
+     *
+     * @return string - Der Name der Datei
+     */
     public function getFileName()
     {
-        return basename($_FILES[ $this->field ][ 'name' ]);
+        return basename($_FILES[$this->field]['name']);
     }
 
+    /**
+     * Gibt die Größe der hochgeladenen Datei zurück
+     *
+     * @return int - Die Größe der Datei in Bytes
+     */
     public function getSize()
     {
-        return $_FILES[ $this->field ]['size'];
+        return $_FILES[$this->field]['size'];
     }
 
+    /**
+     * Speichert die hochgeladene Datei an einem neuen Ort
+     *
+     * @param string $newFilePath - Der Zielpfad, an dem die Datei gespeichert werden soll
+     * @param bool $override - Gibt an, ob die Datei überschrieben werden soll, falls sie bereits existiert
+     * @return bool - True, wenn die Datei erfolgreich gespeichert wurde, sonst False
+     */
     public function saveAs($newFilePath, $override = true)
     {
         if (!file_exists($newFilePath) || $override) {
@@ -84,8 +131,14 @@ class HttpUpload extends Upload
         }
     }
 
+    /**
+     * Gibt den MIME-Typ der Datei zurück
+     * Falls der MIME-Typ nicht festgelegt wurde, gibt die Methode den Standard-Typ der Datei zurück
+     *
+     * @return string - Der MIME-Typ der Datei
+     */
     protected function getFallbackMimeType()
     {
-        return $_FILES[ $this->field ][ 'type' ];
+        return $_FILES[$this->field]['type'];
     }
 }

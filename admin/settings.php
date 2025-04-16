@@ -113,7 +113,7 @@ if(isset($_POST['submit'])) {
 } else {
 
 
-    $settings = safe_query("SELECT * FROM " . PREFIX . "settings");
+    $settings = safe_query("SELECT * FROM "settings");
     $ds = mysqli_fetch_array($settings);
 
         
@@ -357,7 +357,7 @@ echo'<div class="">
                             </div>
                         </div><hr>';
 
-                        $db = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings"));
+                        $db = mysqli_fetch_array(safe_query("SELECT * FROM "settings"));
 
                         if($db['closed']=='1'){
                             $lock='success';
@@ -465,7 +465,7 @@ echo'<div class="">
 ';
 
 
-$settings = safe_query("SELECT * FROM " . PREFIX . "settings_recaptcha");
+$settings = safe_query("SELECT * FROM "settings_recaptcha");
     $dx = mysqli_fetch_array($settings);
     echo'      
       
@@ -853,7 +853,7 @@ echo'
 
   $ds =
         mysqli_fetch_array(safe_query(
-            "SELECT * FROM " . PREFIX . "settings_social_media"));
+            "SELECT * FROM "settings_social_media"));
 
     $CAPCLASS = new \webspell\Captcha;
     $CAPCLASS->createTransaction();

@@ -585,7 +585,7 @@ function update_org_rm208_3($_database)
 {
     $transaction = new Transaction($_database);
 
-$transaction->addQuery("DROP TABLE IF EXISTS ".PREFIX ."modrewrite");
+$transaction->addQuery("DROP TABLE IF EXISTS "modrewrite");
 $transaction->addQuery("CREATE TABLE ".PREFIX ."modrewrite (
   ruleID int(11) NOT NULL,
   regex text COLLATE utf8_unicode_ci NOT NULL,

@@ -34,37 +34,40 @@ if (isset($_GET['type'])) {
     $type = null;
 }
 
+// Sprache laden
 $_language->readModule('error');
 
-// Default error message
+// Standardfehlernachricht
 $error_header = "Error";
 $error_message = "An error occurred.";
 
+// Fehlerbehandlung für 404
 if ($type == 404) {
     $error_header = $_language->module['error_404'];
     $error_message = $_language->module['message_404'];
 }
 
-// Load template with direct replacement for placeholders
+// Template mit direkten Platzhalterersetzungen laden
 $template = $GLOBALS['_template']->loadTemplate("error_template", [
     'error_header' => $error_header,
     'error_message' => $error_message
 ]);
 echo $template;
 
-// Check if 'url' is set in GET request
+// Überprüfen, ob 'url' im GET-Request gesetzt ist
 if (isset($_GET['url']) && !empty($_GET['url'])) {
     $urlparts = preg_split('/[\s.,-\/]+/si', $_GET['url']);
     $results = array();
 
-    // Loop through each tag from the URL parts and fetch data
+    // Schleife durch jedes Tag aus den URL-Teilen und Daten abrufen
     foreach ($urlparts as $tag) {
-        $sql = safe_query("SELECT * FROM " . PREFIX . "tags WHERE tag='" . mysqli_real_escape_string($GLOBALS['$_database'], $tag) . "'");
+        // SQL-Abfrage für das Tag
+        $sql = safe_query("SELECT * FROM `tags` WHERE `tag`='" . mysqli_real_escape_string($GLOBALS['$_database'], $tag) . "'");
         if ($sql->num_rows) {
             while ($ds = mysqli_fetch_assoc($sql)) {
                 $data_check = null;
 
-                // Check for related content based on the tag
+                // Überprüfen, welches zugehörige Content basierend auf dem Tag vorhanden ist
                 switch ($ds['rel']) {
                     case "news":
                         $data_check = \webspell\Tags::getNews($ds['ID']);
@@ -80,6 +83,7 @@ if (isset($_GET['url']) && !empty($_GET['url'])) {
                         break;
                 }
 
+                // Wenn relevante Daten gefunden wurden, zum Ergebnis hinzufügen
                 if (is_array($data_check)) {
                     $results[] = $data_check;
                 }
@@ -87,15 +91,16 @@ if (isset($_GET['url']) && !empty($_GET['url'])) {
         }
     }
 
-    // Display search results
+    // Anzeige der Suchergebnisse
     if (count($results) > 0) {
+        // Template für Suchergebnisse laden
         $template = $GLOBALS['_template']->loadTemplate("search_results_template", [
             'results_count' => count($results),
             'results_found' => $_language->module['results_found']
         ]);
         echo $template;
 
-        // Display each result
+        // Anzeige jedes einzelnen Ergebnisses
         foreach ($results as $entry) {
             $date = getformatdate($entry['date']);
             $type = $entry['type'];
@@ -103,7 +108,7 @@ if (isset($_GET['url']) && !empty($_GET['url'])) {
             $link = $entry['link'];
             $title = $entry['title'];
 
-            // Directly replace placeholders in the template
+            // Template mit Platzhalterersetzungen für jedes Ergebnis laden
             $template = $GLOBALS['_template']->loadTemplate("search_entry_template", [
                 'date' => $date,
                 'link' => $link,
@@ -113,14 +118,14 @@ if (isset($_GET['url']) && !empty($_GET['url'])) {
             echo $template;
         }
     } else {
-        // No results found
+        // Falls keine Ergebnisse gefunden wurden
         $template = $GLOBALS['_template']->loadTemplate("no_results_template", [
             'no_results_found' => $_language->module['no_results_found']
         ]);
         echo $template;
     }
 } else {
-    // No URL provided
+    // Keine URL angegeben
     $template = $GLOBALS['_template']->loadTemplate("no_url_template", [
         'no_url_provided' => $_language->module['no_url_provided']
     ]);

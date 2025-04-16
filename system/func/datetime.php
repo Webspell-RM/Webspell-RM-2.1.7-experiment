@@ -28,50 +28,64 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
 */
 
-function getuserformatdate($userID)
+/**
+ * Gibt das vom Benutzer bevorzugte Datumsformat zurück.
+ */
+function getUserFormatDate($userID)
 {
-    $ds = mysqli_fetch_array(safe_query("SELECT date_format FROM " . PREFIX . "user WHERE `userID` = " . (int)$userID));
+    $query = "SELECT `date_format` FROM `users` WHERE `userID` = " . (int)$userID;
+    $ds = mysqli_fetch_array(safe_query($query));
     return $ds['date_format'];
 }
 
-function getuserformattime($userID)
+/**
+ * Gibt das vom Benutzer bevorzugte Zeitformat zurück.
+ */
+function getUserFormatTime($userID)
 {
-    $ds = mysqli_fetch_array(safe_query("SELECT time_format FROM " . PREFIX . "user WHERE `userID` = " . (int)$userID));
+    $query = "SELECT `time_format` FROM `users` WHERE `userID` = " . (int)$userID;
+    $ds = mysqli_fetch_array(safe_query($query));
     return $ds['time_format'];
 }
 
-function getformatdate($date)
+/**
+ * Formatiert ein Datum anhand des Benutzerformats oder des Standardformats.
+ */
+function getFormatDate($timestamp)
 {
     global $userID, $default_format_date;
 
     if ($userID && !isset($_GET['userID']) && !isset($_POST['userID'])) {
-        $DateFormat = date(getuserformatdate($userID), $date);
-    } else {
-        $DateFormat = date($default_format_date, $date);
+        return date(getUserFormatDate($userID), $timestamp);
     }
-    return $DateFormat;
+
+    return date($default_format_date, $timestamp);
 }
 
-function getformattime($time)
+/**
+ * Formatiert eine Zeitangabe anhand des Benutzerformats oder des Standardformats.
+ */
+function getFormatTime($timestamp)
 {
     global $userID, $default_format_time;
 
     if ($userID && !isset($_GET['userID']) && !isset($_POST['userID'])) {
-        $timeFormat = date(getuserformattime($userID), $time);
-    } else {
-        $timeFormat = date($default_format_time, $time);
+        return date(getUserFormatTime($userID), $timestamp);
     }
-    return $timeFormat;
+
+    return date($default_format_time, $timestamp);
 }
 
-function getformatdatetime($date_time)
+/**
+ * Formatiert Datum und Zeit zusammen anhand der Benutzereinstellungen oder Standardformate.
+ */
+function getFormatDateTime($timestamp)
 {
     global $userID, $default_format_date, $default_format_time;
 
     if ($userID && !isset($_GET['userID']) && !isset($_POST['userID'])) {
-        $datetimeFormat = date((getuserformatdate($userID) . " - " . getuserformattime($userID)), $date_time);
-    } else {
-        $datetimeFormat = date(($default_format_date . " - " . $default_format_time), $date_time);
+        return date(getUserFormatDate($userID) . ' - ' . getUserFormatTime($userID), $timestamp);
     }
-    return $datetimeFormat;
+
+    return date($default_format_date . ' - ' . $default_format_time, $timestamp);
 }

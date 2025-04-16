@@ -23,7 +23,7 @@ header('Content-type: text/css');
 
     
 
-    $ergebnis = safe_query("SELECT * FROM ".PREFIX."settings_expansion WHERE active = '1'");
+    $ergebnis = safe_query("SELECT * FROM settings_expansion WHERE active = '1'");
     $ds = mysqli_fetch_array($ergebnis);
 
     if(@$ds["background_pic"] == $ds["pfad"].'_background_bg.jpg') {
@@ -98,7 +98,7 @@ $reg_1 = substr($ds['reg1'], 4, -1);
 
 $reg_2 = substr($ds['reg2'], 4, -1);
 
-$buttons = safe_query("SELECT * FROM ".PREFIX."settings_buttons WHERE modulname= '".$ds["modulname"]."'");
+$buttons = safe_query("SELECT * FROM settings_buttons WHERE modulname= '".$ds["modulname"]."'");
 $dx = mysqli_fetch_array($buttons);
 
 /*Button Radius*/
@@ -210,7 +210,7 @@ background-image: url(/includes/themes/'.$theme_name.'/images/'.$ds['reg_pic'].'
 ';
 
 
-$button = safe_query("SELECT * FROM ".PREFIX."settings_buttons WHERE modulname='".getinput($ds['modulname'])."'");
+$button = safe_query("SELECT * FROM settings_buttons WHERE modulname='".getinput($ds['modulname'])."'");
     $db = mysqli_fetch_array($button);
 echo'
 

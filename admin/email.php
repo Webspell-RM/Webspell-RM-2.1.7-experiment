@@ -121,7 +121,7 @@ if (isset($_POST[ 'submit' ])) {
     $CAPCLASS->createTransaction();
     $hash = $CAPCLASS->getHash();
 
-    $settings = safe_query("SELECT * FROM " . PREFIX . "email");
+    $settings = safe_query("SELECT * FROM "email");
     $ds = mysqli_fetch_array($settings);
 
     if ($ds[ 'smtp' ] == '0') {

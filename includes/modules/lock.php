@@ -31,7 +31,7 @@
 global $myclanname;
 
 // Datenbank-Abfrage für Social Media Links
-$ergebnis = safe_query("SELECT * FROM `" . PREFIX . "settings_social_media`");
+$ergebnis = safe_query("SELECT * FROM `settings_social_media`");
 $socialLinks = [];
 
 while ($row = mysqli_fetch_assoc($ergebnis)) {
@@ -44,9 +44,9 @@ while ($row = mysqli_fetch_assoc($ergebnis)) {
 $icons = '';
 foreach ($socialLinks as $platform => $link) {
     if (!empty($link)) {
-        $icons .= '<a href="{{ link }}" target="_blank" class="social-media-circle {{ platform }}">
-                     <i class="bi bi-{{ platform }}"></i>
-                  </a> ';
+        $icons .= '<a href="' . htmlspecialchars($link) . '" target="_blank" class="social-media-circle ' . htmlspecialchars($platform) . '">
+                      <i class="bi bi-' . htmlspecialchars($platform) . '"></i>
+                   </a> ';
     }
 }
 
@@ -54,11 +54,11 @@ foreach ($socialLinks as $platform => $link) {
 $pagetitle = $pagetitle ?? 'Website';
 $rewriteBase = $rewriteBase ?? '/';
 $reason = $reason ?? 'Coming Soon!';
-$since = $since ?? date("Y"); // Setze das Jahr, falls $since nicht gesetzt ist
-$myclanname = $myclname ?? 'DefaultClan'; // Standardwert für den Clanname, falls nicht gesetzt
+$since = $since ?? date("Y"); // Standardjahr setzen, falls nicht vorhanden
+$myclanname = $myclanname ?? 'DefaultClan'; // Standardname, falls nicht vorhanden
 $copy = date("Y") . ' ' . $myclanname . ' | ' . $since;
 
-// Array für Platzhalter
+// Platzhalter-Daten für das Template
 $data_array = [
     'pagetitle' => $pagetitle,
     'rewriteBase' => $rewriteBase,
@@ -69,7 +69,7 @@ $data_array = [
     'copy' => $copy,
 ];
 
-// HTML-Inhalt
+// HTML-Grundgerüst der Seite
 $html = '
 <!DOCTYPE html>
 <html lang="de">
@@ -143,11 +143,10 @@ $html = '
 </body>
 </html>';
 
-// Platzhalter durch die tatsächlichen Werte ersetzen
+// Platzhalter ersetzen
 foreach ($data_array as $key => $value) {
     $html = str_replace("{{ $key }}", $value, $html);
 }
 
-// Das finale HTML ausgeben
+// Ausgabe der finalen HTML-Seite
 echo $html;
-?>

@@ -28,16 +28,35 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
 */
 
-class template {
-    public $themes_path = "../../includes/themes/default/"; // TODO: not default here, get the current activated theme
-    public $template_path = "templates/";
+class Template
+{
+    public string $themes_path;
+    public string $template_path;
 
-    public function __construct($themes_path = "includes/themes/default/", $template_path = "templates/") {
+    /**
+     * Konstruktor zur Initialisierung der Theme- und Template-Pfade.
+     */
+    public function __construct(
+        string $themes_path = "includes/themes/default/",
+        string $template_path = "templates/"
+    ) {
         $this->themes_path = $themes_path;
         $this->template_path = $template_path;
     }
 
-    public function loadTemplate($file, $content, $replaces = []) {
+    /**
+     * Lädt einen bestimmten Block aus einer Template-Datei und ersetzt Platzhalter.
+     *
+     * @param string $file     Dateiname ohne Endung
+     * @param string $content  Blockname im HTML-Kommentar (z. B. <!-- datei_block -->)
+     * @param array  $replaces Platzhalter-Ersetzungen im Format ['name' => 'Wert']
+     *
+     * @return string Inhalt des Template-Blocks mit Ersetzungen
+     *
+     * @throws \Exception Wenn Datei oder Block nicht gefunden wird
+     */
+    public function loadTemplate(string $file, string $content, array $replaces = []): string
+    {
         $html_file_path = $this->themes_path . $this->template_path . $file . ".html";
 
         if (!file_exists($html_file_path)) {
@@ -45,28 +64,27 @@ class template {
         }
 
         $file_content = file_get_contents($html_file_path);
-        $start_marker = "<!-- " . $file . "_" . $content . " -->";
-        $a = explode($start_marker, $file_content);
 
-        if (!isset($a[1])) {
+        // Template-Block anhand von Kommentaren extrahieren
+        $start_marker = "<!-- " . $file . "_" . $content . " -->";
+        $parts = explode($start_marker, $file_content);
+
+        if (!isset($parts[1])) {
             throw new \Exception("Blockmarker '$start_marker' nicht gefunden!");
         }
 
-        $b = explode("<!-- END -->", $a[1]);
-        $temp = $b[0];
+        $block_parts = explode("<!-- END -->", $parts[1]);
+        $template_block = $block_parts[0];
 
-        // Platzhalter ersetzen
+        // Platzhalter ersetzen: {{ name }} → Wert
         if (!empty($replaces)) {
             $converted = [];
             foreach ($replaces as $key => $value) {
                 $converted["{{ " . $key . " }}"] = $value;
             }
-            $temp = strtr($temp, $converted);
+            $template_block = strtr($template_block, $converted);
         }
 
-        return $temp;
+        return $template_block;
     }
 }
-
-
-

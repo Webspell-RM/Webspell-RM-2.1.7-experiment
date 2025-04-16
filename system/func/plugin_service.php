@@ -1,64 +1,46 @@
 <?php
-/**
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- *                  Webspell-RM      /                        /   /                                          *
- *                  -----------__---/__---__------__----__---/---/-----__---- _  _ -                         *
- *                   | /| /  /___) /   ) (_ `   /   ) /___) /   / __  /     /  /  /                          *
- *                  _|/_|/__(___ _(___/_(__)___/___/_(___ _/___/_____/_____/__/__/_                          *
- *                               Free Content / Management System                                            *
- *                                           /                                                               *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @version         webspell-rm                                                                              *
- *                                                                                                           *
- * @copyright       2018-2025 by webspell-rm.de                                                              *
- * @support         For Support, Plugins, Templates and the Full Script visit webspell-rm.de                 *
- * @website         <https://www.webspell-rm.de>                                                             *
- * @forum           <https://www.webspell-rm.de/forum.html>                                                  *
- * @wiki            <https://www.webspell-rm.de/wiki.html>                                                   *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @license         Script runs under the GNU GENERAL PUBLIC LICENCE                                         *
- *                  It's NOT allowed to remove this copyright-tag                                            *
- *                  <http://www.fsf.org/licensing/licenses/gpl.html>                                         *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @author          Code based on WebSPELL Clanpackage (Michael Gruber - webspell.at)                        *
- * @copyright       2005-2011 by webspell.org / webspell.info                                                *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
-*/
-
 namespace webspell;
 
-use plugin_manager;  // Hier importieren wir die plugin_manager Klasse
-
-//Sprachdateien Laden
-//Die Sprachdateien enthalten die Übersetzungen für dein Plugin. Um eine Sprachdatei für ein Plugin zu laden, verwendest du in diesem Beispiel eine getPluginLanguage Methode aus einer PluginService-Klasse.
-
-//Templates Laden
-//Templates sind HTML-Dateien, die mit Platzhaltern gefüllt sind und durch dynamische Daten ersetzt werden können. Die Template-Klasse stellt Methoden zur Verfügung, um Templates zu laden und mit Daten zu ersetzen.
+use plugin_manager;  // Importiert die Klasse plugin_manager, um Sprachdateien zu laden
 
 class PluginService
 {
+    // Statische Variable zur Speicherung der Template-Engine
     private static $templateEngine;
+    
+    // Statische Variable zur Speicherung der geladenen Sprachdateien
     private static $pluginLanguages = [];
 
-    // Template-Engine einmal laden
+    /**
+     * Lädt die Template-Engine für ein Plugin. Die Engine wird nur einmalig geladen.
+     *
+     * @param string $pluginPath Der Pfad zum Plugin
+     * @return Template Die Template-Engine des Plugins
+     */
     public static function getTemplateEngine($pluginPath)
     {
+        // Wenn die Template-Engine noch nicht geladen wurde, laden wir sie jetzt
         if (self::$templateEngine === null) {
             self::$templateEngine = new Template($pluginPath . 'templates');
         }
         return self::$templateEngine;
     }
 
-    // Sprachdateien einmal laden
+    /**
+     * Lädt die Sprachdateien für ein Plugin. Die Sprachdateien werden nur einmalig geladen.
+     *
+     * @param string $pluginName Der Name des Plugins
+     * @param string $pluginPath Der Pfad zum Plugin
+     * @return array|null Die Sprachdateien des Plugins oder null bei Fehler
+     */
     public static function getPluginLanguage($pluginName, $pluginPath)
     {
+        // Wenn die Sprachdateien für das Plugin noch nicht geladen wurden, laden wir sie jetzt
         if (!isset(self::$pluginLanguages[$pluginName])) {
             // Instanziiere plugin_manager nur, wenn die Klasse existiert
             if (class_exists('plugin_manager')) {
                 $pm = new plugin_manager();  // Instanziiere die Klasse plugin_manager
+                // Sprachdateien abrufen und speichern
                 self::$pluginLanguages[$pluginName] = $pm->plugin_language($pluginName, $pluginPath);
             } else {
                 echo 'plugin_manager Klasse wurde nicht gefunden';
@@ -68,7 +50,14 @@ class PluginService
         return self::$pluginLanguages[$pluginName];
     }
 
-    // Beide Aufgaben in einer Methode erledigen
+    /**
+     * Ruft sowohl die Sprachdateien als auch die Template-Engine für ein Plugin ab.
+     * Diese Methode kombiniert die beiden vorherigen Methoden.
+     *
+     * @param string $pluginName Der Name des Plugins
+     * @param string $pluginPath Der Pfad zum Plugin
+     * @return array Ein Array mit den Sprachdateien und der Template-Engine des Plugins
+     */
     public static function getPluginData($pluginName, $pluginPath)
     {
         // Sprachdateien abrufen
@@ -77,12 +66,10 @@ class PluginService
         // Template Engine abrufen
         $pluginTemplate = self::getTemplateEngine($pluginPath);
 
+        // Beide Daten als Array zurückgeben
         return [
             'language' => $pluginLanguage,
             'template' => $pluginTemplate
         ];
     }
 }
-
-
-

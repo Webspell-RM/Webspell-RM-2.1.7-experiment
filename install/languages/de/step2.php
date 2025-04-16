@@ -5,8 +5,7 @@ $language_array = array(
 'enter_url'               =>'Bitte gebe die URL an, wohin Webspell-RM installiert werden soll!',
 'error'                   =>'Fehler',
 'licence'                 =>'Lizenzvereinbarung',
-'php_info'                =>'Fehler: Webspell-RM kann nur mit PHP Version 8.0 oder höher installiert werden. Deine aktuelle PHP-Version ist nicht kompatibel! 
-Bitte nimm Kontakt mit Deinem Hoster auf, um die PHP-Version auf 8.0 oder höher zu aktualisieren.',
+'php_info'                =>'Aufgrund eines großen Fehlers in den MySQL fetch Funktionen in PHP 5.2.6 ist die Installation von Webspell-RM nicht möglich.<br>Webspell-RM läuft mit allen niedrigeren (bis zu PHP 4.3) und allen höheren PHP-Versionen. Nehm Kontakt mit Deinem Hoster auf, um die PHP-Version zu ändern',
 'php_version'             =>'PHP Version Inkompatibilität',
 'tooltip'                 =>'Das ist die URL von deiner Seite, z.B. (domain.de/pfad/Webspell-RM). Kein http:// vor dem Pfad mit eingeben und nicht mit einem Schrägstrich (Slash) enden.',
 'you_have_to_agree'       =>'Du musst die GNU GPL akzeptieren, um Webspell-RM auf Deinem Server zu installieren!',
@@ -36,9 +35,8 @@ Bitte nimm Kontakt mit Deinem Hoster auf, um die PHP-Version auf 8.0 oder höher
 'your_php_version'        =>'Deine PHP Version',
 'is_not_compatible'       =>'ist nicht kompatibel!',
 'is_compatible'           =>'ist kompatibel!',
-'new_install'             =>'Installation Webspell-RM (Version: 2.1.6)',
-/*'select_install'          =>'Update / Installation auswählen',*/
-'select_install'          =>'Installation auswählen',
+'new_install'             =>'Kein Update / Neuinstallation Webspell-RM (Version: 2.1.6)',
+'select_install'          =>'Update / Installation auswählen',
 'update_200_201'          =>'Update von Webspell-RM (Version: 2.0.0 - Update: 1.1 ) auf Webspell-RM (Version: 2.0.1 )',
 'update_201_202'          =>'Update von Webspell-RM (Version: 2.0.1) auf Webspell-RM (Version: 2.0.3 )',
 'update_125_209'          =>'Update von Webspell-NOR (Version: 1.2.5 ) auf Webspell-RM (Version: 2.1.1 )',

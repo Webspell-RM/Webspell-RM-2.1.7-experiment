@@ -34,22 +34,36 @@ namespace webspell;
 
 class Language
 {
+    // Sprache, die aktuell verwendet wird
     public $language = 'en';
+
+    // Array, das die Modulübersetzungen speichert
     public $module = array();
+
+    // Pfad zu den Sprachdateien
     private $language_path = 'languages/';
 
+    /**
+     * Setzt die zu verwendende Sprache.
+     *
+     * @param string $to Die zu verwendende Sprache.
+     * @param bool $admin Gibt an, ob es sich um die Admin-Oberfläche handelt.
+     * @param string|false $pluginpath Gibt einen alternativen Pluginpfad an.
+     * @return bool True, wenn die Sprache gesetzt wurde, andernfalls false.
+     */
     public function setLanguage($to, $admin = false, $pluginpath = false)
     {
+        // Wenn es sich um Admin-Sprache handelt, setze den Pfad für Admin-Dateien
         if ($admin) {
-            // Admin-Sprachdateien befinden sich in /admin/language/
             $this->language_path = 'language/';
         }
 
+        // Falls ein Pluginpfad angegeben wird, überschreibt dieser den Standardpfad
         if ($pluginpath) {
-            // Pluginpfad überschreibt alles, z. B. ../plugins/mymodule/
             $this->language_path = $pluginpath . 'languages/';
         }
 
+        // Array, das alle verfügbaren Sprachordner speichert
         $langs = array();
         if (is_dir($this->language_path)) {
             foreach (new \DirectoryIterator($this->language_path) as $fileInfo) {
@@ -59,6 +73,7 @@ class Language
             }
         }
 
+        // Überprüfen, ob die gewünschte Sprache verfügbar ist
         if (in_array($to, $langs)) {
             $this->language = $to;
             return true;
@@ -67,15 +82,30 @@ class Language
         }
     }
 
+    /**
+     * Gibt den Pfad zu den Sprachdateien zurück.
+     *
+     * @return string Der Pfad zu den Sprachdateien.
+     */
     public function getRootPath()
     {
         return $this->language_path;
     }
 
+    /**
+     * Lädt die Sprachdatei für ein Modul.
+     *
+     * @param string $module Das Modul, für das die Sprachdatei geladen werden soll.
+     * @param bool $add Gibt an, ob die Übersetzungen hinzugefügt werden sollen (anstelle des Überschreibens).
+     * @param bool $admin Gibt an, ob es sich um die Admin-Oberfläche handelt.
+     * @param string|false $pluginpath Gibt einen alternativen Pluginpfad an.
+     * @return bool True, wenn die Sprachdatei erfolgreich geladen wurde, andernfalls false.
+     */
     public function readModule($module, $add = false, $admin = false, $pluginpath = false)
     {
         global $default_language;
 
+        // Bestimmen des Sprachordners je nach Kontext (Admin, Plugin, Standard)
         if ($admin) {
             $langFolder = 'language/';
         } elseif ($pluginpath) {
@@ -84,16 +114,20 @@ class Language
             $langFolder = 'languages/';
         }
 
-        $folderPath = '%s%s/%s.php'; // z. B. admin/language/de/modul.php
+        // Pfadformat für Sprachdateien, z. B. admin/language/de/modul.php
+        $folderPath = '%s%s/%s.php';
 
+        // Fallback-Reihenfolge der Sprachen (Priorität: aktuelle Sprache > Standard-Sprache > Englisch)
         $languageFallbackTable = array(
             $this->language,
             $default_language,
             'en'
         );
 
+        // Entfernen von unerwünschten Zeichen aus dem Modulnamen
         $module = str_replace(array('\\', '/', '.'), '', $module);
 
+        // Versuch, die passende Sprachdatei zu laden
         foreach ($languageFallbackTable as $folder) {
             $path = sprintf($folderPath, $langFolder, $folder, $module);
             if (file_exists($path)) {
@@ -102,20 +136,25 @@ class Language
             }
         }
 
+        // Wenn keine Datei gefunden wurde, Rückgabe false
         if (!isset($module_file)) {
             return false;
         }
 
+        // Inkludieren der Sprachdatei
         include($module_file);
 
+        // Überprüfen, ob die Sprachdaten korrekt geladen wurden
         if (!isset($language_array) || !is_array($language_array)) {
             return false;
         }
 
+        // Wenn $add nicht gesetzt ist, wird das Modul-Array geleert
         if (!$add) {
             $this->module = array();
         }
 
+        // Füge alle geladenen Übersetzungen hinzu
         foreach ($language_array as $key => $val) {
             $this->module[$key] = $val;
         }
@@ -123,6 +162,12 @@ class Language
         return true;
     }
 
+    /**
+     * Ersetzt Platzhalter im Template durch die entsprechenden Übersetzungen.
+     *
+     * @param string $template Das Template mit den Platzhaltern.
+     * @return string Das Template mit den ersetzten Werten.
+     */
     public function replace($template)
     {
         foreach ($this->module as $key => $val) {
@@ -132,6 +177,11 @@ class Language
         return $template;
     }
 
+    /**
+     * Gibt eine Tabelle mit allen Platzhaltern und ihren Übersetzungen zurück.
+     *
+     * @return array Die Tabelle der Übersetzungen.
+     */
     public function getTranslationTable()
     {
         $map = array();

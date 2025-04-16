@@ -1,5 +1,4 @@
 <?php
-
 /**
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
  *                  Webspell-RM      /                        /   /                                          *
@@ -27,37 +26,33 @@
  * @copyright       2005-2011 by webspell.org / webspell.info                                                *
  *                                                                                                           *
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- */
+*/
 
-function setTitle($string)
+function settitle($string)
 {
-    $titlePrefix = isset($GLOBALS['hp_title']) ? $GLOBALS['hp_title'] : 'Website';
-    return $titlePrefix . ' - ' . $string;
+    return $GLOBALS['hp_title'] . ' - ' . $string;
 }
 
 function extractFirstElement($element)
 {
-    return is_array($element) && !empty($element) ? $element[0] : '';
+    return $element[0];
 }
 
 function getPageTitle($url = null, $prefix = true)
 {
-    $data = parseWebspellURL($url) ?? ['metatags' => [], 'titles' => []];
-
-    if (!isset($data['metatags']) || !isset($data['titles'])) {
-        return $prefix ? setTitle('') : '';
-    }
-
+    $data = parseWebspellURL($url);
     if (isset($GLOBALS['metatags'])) {
-        $GLOBALS['metatags'] += $data['metatags'];
+        $GLOBALS['metatags'] = $GLOBALS['metatags'] + $data['metatags'];
     } else {
         $GLOBALS['metatags'] = $data['metatags'];
     }
 
     $titles = array_map("extractFirstElement", $data['titles']);
     $title = implode('&nbsp; &raquo; &nbsp;', $titles);
-
-    return $prefix ? setTitle($title) : $title;
+    if ($prefix) {
+        $title = settitle($title);
+    }
+    return $title;
 }
 
 function parseWebspellURL($parameters = null)
@@ -97,11 +92,11 @@ function parseWebspellURL($parameters = null)
                 }
                 $get = mysqli_fetch_array(
                     safe_query(
-                        "SELECT articlecatname FROM `" . PREFIX . "plugins_articles_categories` WHERE articlecatID=" . (int)$articlecatID
+                        "SELECT articlecatname FROM plugins_articles_categories WHERE articlecatID=" . (int)$articlecatID
                     )
                 );
                 $get2 = mysqli_fetch_array(
-                    safe_query("SELECT question FROM `" . PREFIX . "plugins_articles` WHERE articleID=" . (int)$articleID)
+                    safe_query("SELECT question FROM plugins_articles WHERE articleID=" . (int)$articleID)
                 );
                 if ($action == "articlecat") {
                     $returned_title[] = array(
@@ -124,7 +119,7 @@ function parseWebspellURL($parameters = null)
                     $returned_title[] = array($_language->module['articles']);
                 }
                 break;
-
+   
 
             case 'awards':
                 if (isset($parameters['awardID'])) {
@@ -134,7 +129,7 @@ function parseWebspellURL($parameters = null)
                 }
                 if ($action == "details") {
                     $get = mysqli_fetch_array(
-                        safe_query("SELECT award FROM `" . PREFIX . "plugins_awards` WHERE awardID=" . (int)$awardID)
+                        safe_query("SELECT award FROM plugins_awards WHERE awardID=" . (int)$awardID)
                     );
                     $returned_title[] = array(
                         $_language->module['awards'],
@@ -181,7 +176,7 @@ function parseWebspellURL($parameters = null)
                     $cwID = '';
                 }
                 $get = mysqli_fetch_array(
-                    safe_query("SELECT opponent FROM `" . PREFIX . "plugins_clanwars` WHERE cwID=" . (int)$cwID)
+                    safe_query("SELECT opponent FROM plugins_clanwars WHERE cwID=" . (int)$cwID)
                 );
                 $returned_title[] = array(
                     $_language->module['clanwars'],
@@ -208,7 +203,7 @@ function parseWebspellURL($parameters = null)
                 if ($action == "showdemo") {
                     $get = mysqli_fetch_array(
                         safe_query(
-                            "SELECT game, clan1, clan2 FROM `" . PREFIX . "demos` WHERE demoID=" . (int)$demoID
+                            "SELECT game, clan1, clan2 FROM demos WHERE demoID=" . (int)$demoID
                         )
                     );
                     $returned_title[] = array(
@@ -217,10 +212,9 @@ function parseWebspellURL($parameters = null)
                     );
                     $returned_title[] = array(
                         $get['game'] . ' ' . $_language->module['demo'] . ': ' .
-                            $get['clan1'] . ' ' .
-                            $_language->module['versus'] . ' ' .
-                            $get['clan2']
-                    );
+                        $get['clan1'] . ' ' .
+                        $_language->module['versus'] . ' ' .
+                        $get['clan2']);
                 } else {
                     $returned_title[] = array($_language->module['demos']);
                 }
@@ -239,11 +233,11 @@ function parseWebspellURL($parameters = null)
                 }
                 $get = mysqli_fetch_array(
                     safe_query(
-                        "SELECT faqcatname FROM `" . PREFIX . "plugins_faq_categories` WHERE faqcatID=" . (int)$faqcatID
+                        "SELECT faqcatname FROM plugins_faq_categories WHERE faqcatID=" . (int)$faqcatID
                     )
                 );
                 $get2 = mysqli_fetch_array(
-                    safe_query("SELECT question FROM `" . PREFIX . "plugins_faq` WHERE faqID=" . (int)$faqID)
+                    safe_query("SELECT question FROM plugins_faq WHERE faqID=" . (int)$faqID)
                 );
                 if ($action == "faqcat") {
                     $returned_title[] = array(
@@ -284,7 +278,7 @@ function parseWebspellURL($parameters = null)
                             "SELECT
                                 filecatID, name
                             FROM
-                                " . PREFIX . "plugins_files_categories
+                                plugins_files_categories
                             WHERE
                                 filecatID='" . $cat . "'"
                         )
@@ -300,7 +294,7 @@ function parseWebspellURL($parameters = null)
                             "SELECT
                                 fileID, filecatID, filename
                             FROM
-                                " . PREFIX . "plugins_files
+                                plugins_files
                             WHERE
                                 fileID=" . (int)$file
                         )
@@ -310,7 +304,7 @@ function parseWebspellURL($parameters = null)
                             "SELECT
                                 name
                             FROM
-                                " . PREFIX . "plugins_files_categories
+                                plugins_files_categories
                             WHERE
                                 filecatID=" . (int)$file['filecatID']
                         )
@@ -338,7 +332,7 @@ function parseWebspellURL($parameters = null)
                 if (isset($parameters['board'])) {
                     $board = mysqli_fetch_array(
                         safe_query(
-                            "SELECT boardID, name FROM " . PREFIX . "plugins_forum_boards WHERE boardID='" . $board . "'"
+                            "SELECT boardID, name FROM plugins_forum_boards WHERE boardID='" . $board . "'"
                         )
                     );
                     $returned_title[] = array(
@@ -363,14 +357,14 @@ function parseWebspellURL($parameters = null)
                             "SELECT
                                 topicID, boardID, topic
                             FROM
-                                " . PREFIX . "plugins_forum_topics
+                                plugins_forum_topics
                             WHERE
                                 topicID=" . (int)$topic
                         )
                     );
                     $boardname = mysqli_fetch_array(
                         safe_query(
-                            "SELECT name FROM " . PREFIX . "plugins_forum_boards WHERE boardID=" . (int)$topic['boardID']
+                            "SELECT name FROM plugins_forum_boards WHERE boardID=" . (int)$topic['boardID']
                         )
                     );
                     $returned_title[] = array(
@@ -406,7 +400,7 @@ function parseWebspellURL($parameters = null)
                 if (isset($parameters['groupID'])) {
                     $groupID = mysqli_fetch_array(
                         safe_query(
-                            "SELECT groupID, name FROM " . PREFIX . "plugins_gallery_groups WHERE groupID=" . (int)$groupID
+                            "SELECT groupID, name FROM plugins_gallery_groups WHERE groupID=" . (int)$groupID
                         )
                     );
                     $returned_title[] = array(
@@ -420,7 +414,7 @@ function parseWebspellURL($parameters = null)
                             "SELECT
                                 galleryID, name, groupID
                             FROM
-                                " . PREFIX . "plugins_gallery
+                                plugins_gallery
                             WHERE
                                 galleryID=" . (int)$galleryID
                         )
@@ -430,7 +424,7 @@ function parseWebspellURL($parameters = null)
                             "SELECT
                                 name
                             FROM
-                                " . PREFIX . "plugins_gallery_groups
+                                plugins_gallery_groups
                             WHERE
                                 groupID=" . (int)$galleryID['groupID']
                         )
@@ -462,8 +456,8 @@ function parseWebspellURL($parameters = null)
                                 gal.galleryID,
                                 gal.name
                             FROM
-                                " . PREFIX . "plugins_gallery AS pic,
-                                " . PREFIX . "plugins_gallery AS gal
+                                plugins_gallery AS pic,
+                                plugins_gallery AS gal
                             WHERE
                                 pic.galleryID=" . (int)$parameters['galleryID'] . " AND
                                 gal.galleryID=pic.galleryID"
@@ -474,7 +468,7 @@ function parseWebspellURL($parameters = null)
                             "SELECT
                                 name
                             FROM
-                                " . PREFIX . "plugins_gallery_groups
+                                plugins_gallery_groups
                             WHERE
                                 groupID=" . (int)$getgalleryname['groupID']
                         )
@@ -488,7 +482,7 @@ function parseWebspellURL($parameters = null)
                             "SELECT
                                 picID, galleryID, name
                             FROM
-                                " . PREFIX . "plugins_gallery
+                                plugins_gallery
                             WHERE
                                 picID=" . (int)$picID
                         )
@@ -536,11 +530,11 @@ function parseWebspellURL($parameters = null)
                 }
                 $get = mysqli_fetch_array(
                     safe_query(
-                        "SELECT linkcatname FROM `" . PREFIX . "plugins_links_categories` WHERE linkcatID=" . (int)$linkcatID
+                        "SELECT linkcatname FROM plugins_links_categories WHERE linkcatID=" . (int)$linkcatID
                     )
                 );
                 $get2 = mysqli_fetch_array(
-                    safe_query("SELECT question FROM `" . PREFIX . "plugins_links` WHERE linkID=" . (int)$linkID)
+                    safe_query("SELECT question FROM plugins_links WHERE linkID=" . (int)$linkID)
                 );
                 if ($action == "linkcat") {
                     $returned_title[] = array(
@@ -562,7 +556,7 @@ function parseWebspellURL($parameters = null)
                 } else {
                     $returned_title[] = array($_language->module['links']);
                 }
-                break;
+                break;    
 
             case 'linkus':
                 $returned_title[] = array($_language->module['linkus']);
@@ -588,7 +582,7 @@ function parseWebspellURL($parameters = null)
                 }
                 if ($action == "show") {
                     $get = mysqli_fetch_array(
-                        safe_query("SELECT name FROM `" . PREFIX . "plugins_squads` WHERE squadID=" . (int)$squadID)
+                        safe_query("SELECT name FROM plugins_squads WHERE squadID=" . (int)$squadID)
                     );
                     $returned_title[] = array(
                         $_language->module['members'],
@@ -633,11 +627,10 @@ function parseWebspellURL($parameters = null)
                 }
                 $get = mysqli_fetch_array(
                     safe_query(
-                        "SELECT rubric FROM `" . PREFIX . "plugins_news_manager_rubrics` WHERE rubricID=" . (int)$rubricID
-                    )
+                        "SELECT rubric FROM plugins_news_rubrics WHERE rubricID=" . (int)$rubricID)
                 );
                 $get2 = mysqli_fetch_array(
-                    safe_query("SELECT headline FROM `" . PREFIX . "plugins_news_manager` WHERE newsID=" . (int)$newsID)
+                    safe_query("SELECT headline FROM plugins_news WHERE newsID=" . (int)$newsID)
                 );
                 if ($action == "newscat") {
                     $returned_title[] = array(
@@ -653,14 +646,15 @@ function parseWebspellURL($parameters = null)
 
                     $returned_title[] = array(
                         $get['rubric'],
-                        'index.php?site=news_contents&amp;action=newscat&amp;rubricID=' . $rubricID
-
+                        'index.php?site=news_contents&amp;action=newscat&amp;rubricID=' . $rubricID 
+                        
                     );
                     $returned_title[] = array($get2['headline']);
                     $metadata['keywords'] = \webspell\Tags::getTags('news', $newsID);
                 } else {
                     $returned_title[] = array($_language->module['news']);
                     $returned_title[] = array($get2['headline']);
+                   
                 }
                 break;
 
@@ -685,7 +679,7 @@ function parseWebspellURL($parameters = null)
                 }
                 if (isset($parameters['vote'])) {
                     $vote = mysqli_fetch_array(
-                        safe_query("SELECT titel FROM " . PREFIX . "plugins_polls WHERE pollID=" . (int)$vote)
+                        safe_query("SELECT titel FROM plugins_polls WHERE pollID=" . (int)$vote)
                     );
                     $returned_title[] = array(
                         $_language->module['polls'],
@@ -694,7 +688,7 @@ function parseWebspellURL($parameters = null)
                     $returned_title[] = array($vote['titel']);
                 } elseif (isset($parameters['pollID'])) {
                     $pollID = mysqli_fetch_array(
-                        safe_query("SELECT titel FROM " . PREFIX . "plugins_polls WHERE pollID=" . (int)$pollID)
+                        safe_query("SELECT titel FROM plugins_polls WHERE pollID=" . (int)$pollID)
                     );
                     $returned_title[] = array(
                         $_language->module['polls'],
@@ -713,7 +707,7 @@ function parseWebspellURL($parameters = null)
                     $id = '';
                 }
                 $returned_title[] = array($_language->module['profile']);
-                $returned_title[] = array(getnickname($id));
+                $returned_title[] = array(getusername($id));
                 break;
 
             case 'register':
@@ -742,7 +736,7 @@ function parseWebspellURL($parameters = null)
 
             case 'planning':
                 $returned_title[] = array($_language->module['planning']);
-                break;
+                break;    
 
             case 'squads':
                 if (isset($parameters['squadID'])) {
@@ -752,7 +746,7 @@ function parseWebspellURL($parameters = null)
                 }
                 if ($action == "show") {
                     $get = mysqli_fetch_array(
-                        safe_query("SELECT name FROM `" . PREFIX . "plugins_squads` WHERE squadID=" . (int)$squadID)
+                        safe_query("SELECT name FROM plugins_squads WHERE squadID=" . (int)$squadID)
                     );
                     $returned_title[] = array(
                         $_language->module['squads'],
@@ -771,7 +765,7 @@ function parseWebspellURL($parameters = null)
                     $staticID = '';
                 }
                 $get = mysqli_fetch_array(
-                    safe_query("SELECT title FROM `" . PREFIX . "settings_static` WHERE staticID=" . (int)$staticID)
+                    safe_query("SELECT title FROM settings_static WHERE staticID=" . (int)$staticID)
                 );
                 $returned_title[] = array($get['title']);
                 $metadata['keywords'] = \webspell\Tags::getTags('static', $staticID);
@@ -780,14 +774,14 @@ function parseWebspellURL($parameters = null)
             case 'usergallery':
                 $returned_title[] = array($_language->module['usergallery']);
                 break;
-            # neu Anfang
+# neu Anfang
             case 'todo':
                 $returned_title[] = array($_language->module['todo']);
                 break;
 
             case 'news_archive':
                 $returned_title[] = array($_language->module['news_archive']);
-                break;
+                break; 
 
             case 'privacy_policy':
                 $returned_title[] = array($_language->module['privacy_policy']);
@@ -795,32 +789,32 @@ function parseWebspellURL($parameters = null)
 
             case 'candidature':
                 $returned_title[] = array($_language->module['candidature']);
-                break;
+                break; 
 
             case 'twitter':
                 $returned_title[] = array($_language->module['twitter']);
-                break;
+                break; 
 
             case 'discord':
                 $returned_title[] = array($_language->module['discord']);
                 break;
-
+                
             case 'portfolio':
                 $returned_title[] = array($_language->module['portfolio']);
                 break;
-
+                
             case 'streams':
                 $returned_title[] = array($_language->module['streams']);
                 break;
-
+                
             case 'server_rules':
                 $returned_title[] = array($_language->module['server_rules']);
-                break;
-
+                break; 
+                
             case 'clan_rules':
                 $returned_title[] = array($_language->module['clan_rules']);
                 break;
-
+                
 
             case 'videos':
                 if (isset($parameters['videoscatID'])) {
@@ -835,11 +829,11 @@ function parseWebspellURL($parameters = null)
                 }
                 $get = mysqli_fetch_array(
                     safe_query(
-                        "SELECT catname FROM `" . PREFIX . "plugins_videos_categories` WHERE videoscatID=" . (int)$videoscatID
+                        "SELECT catname FROM plugins_videos_categories WHERE videoscatID=" . (int)$videoscatID
                     )
                 );
                 $get2 = mysqli_fetch_array(
-                    safe_query("SELECT videoname FROM `" . PREFIX . "plugins_videos` WHERE videosID=" . (int)$videosID)
+                    safe_query("SELECT videoname FROM plugins_videos WHERE videosID=" . (int)$videosID)
                 );
                 if ($action == "watch") {
                     $returned_title[] = array(
@@ -862,7 +856,7 @@ function parseWebspellURL($parameters = null)
                     $returned_title[] = array($_language->module['videos']);
                     #$returned_title[] = array($get2['videoname']);
                 }
-                break;
+                break; 
 
 
             case 'blog':
@@ -873,18 +867,18 @@ function parseWebspellURL($parameters = null)
                 }
                 $get2 = mysqli_fetch_array(
                     safe_query(
-                        "SELECT headline FROM `" . PREFIX . "plugins_blog` WHERE blogID=" . (int)$blogID
-                    )
-                );
+                        "SELECT headline FROM plugins_blog WHERE blogID=" . (int)$blogID)
+                    );
                 if ($action == "show") {
                     $get = mysqli_fetch_array(
-                        safe_query("SELECT headline FROM `" . PREFIX . "plugins_blog` WHERE blogID=" . (int)$blogID)
+                        safe_query("SELECT headline FROM plugins_blog WHERE blogID=" . (int)$blogID)
                     );
                     $returned_title[] = array(
                         $_language->module['blog'],
                         'index.php?site=blog'
                     );
                     $returned_title[] = array($get['headline']);
+
                 } elseif ($action == "blog") {
                     $returned_title[] = array(
                         $_language->module['blog'],
@@ -912,8 +906,8 @@ function parseWebspellURL($parameters = null)
                     $returned_title[] = array($_language->module['blog']);
                     $returned_title[] = array($_language->module['archive']);
                 }
-                break;
-            # neu ENDE
+                break;              
+# neu ENDE
             case 'whoisonline':
                 $returned_title[] = array($_language->module['whoisonline']);
                 break;

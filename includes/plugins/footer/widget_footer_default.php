@@ -42,7 +42,7 @@ $ds = [];
 $db_target = [];
 $windowsTargets = [];
 
-$settings = safe_query("SELECT * FROM " . PREFIX . "plugins_footer_target");
+$settings = safe_query("SELECT * FROM "plugins_footer_target");
 if (mysqli_num_rows($settings)) {
     $db_target = mysqli_fetch_array($settings);
 }

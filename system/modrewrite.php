@@ -105,7 +105,7 @@ class ModRewrite
     {
         $this->cache = array();
         // Holt alle Rewrite-Regeln aus der Datenbank
-        $get = safe_query("SELECT replace_regex, replace_result FROM " . PREFIX . "modrewrite ORDER BY link DESC");
+        $get = safe_query("SELECT `replace_regex`, `replace_result` FROM `modrewrite` ORDER BY `link` DESC");
         while ($ds = mysqli_fetch_assoc($get)) {
             $this->cache[] = $ds;
         }
@@ -263,6 +263,3 @@ class ModRewrite
         return array($regex, $replace);
     }
 }
-
-
-  

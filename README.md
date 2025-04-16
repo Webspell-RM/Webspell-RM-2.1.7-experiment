@@ -1,10 +1,10 @@
 ![Demo](https://www.webspell-rm.de/includes/plugins/pic_update/images/179.png)
 >											  
->### WEBSPELL-RM - Release: 2.1.6
+>### WEBSPELL-RM - Release: 2.1.5
 >						   
->### WEBSPELL-RM - Release: 2.1.6 - https://www.webspell-rm.de
+>### WEBSPELL-RM - Release: 2.1.5 - https://www.webspell-rm.de
 >
->### WIKI WEBSPELL-RM - Release: 2.1.6 - https://www.webspell-rm.de/wiki.html
+>### WIKI WEBSPELL-RM - Release: 2.1.5 - https://www.webspell-rm.de/wiki.html
 >
 ```
 /**
@@ -18,7 +18,7 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
  * @version         webspell-rm                                                                              *
  *                                                                                                           *
- * @copyright       2018-2025 by webspell-rm.de                                                              *
+ * @copyright       2018-2024 by webspell-rm.de                                                              *
  * @support         For Support, Plugins, Templates and the Full Script visit webspell-rm.de                 *
  * @website         <https://www.webspell-rm.de>                                                             *
  * @forum           <https://www.webspell-rm.de/forum.html>                                                  *
@@ -36,92 +36,7 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
 */
 ```
-
-# 📁 Wichtiger Hinweis zur Version 2.1.6 von Webspell-RM (Alpha)
-
-````
-
-Die Version 2.1.6 von Webspell-RM befindet sich derzeit im Alpha-Status. Diese Version ist noch nicht stabil und wurde nicht für den produktiven Einsatz oder eine Installation auf Live-Systemen freigegeben. Es handelt sich um eine Entwicklungs- und Testversion, die möglicherweise viele Fehler und unvollständige Funktionen enthält.
-
-Bitte beachten Sie, dass diese Version vor der Verwendung einer vollständigen Installation gründlich getestet werden sollte. Wir empfehlen, diese Alpha-Version nur in einer sicheren Testumgebung zu installieren und nicht auf einer Live-Website oder einem produktiven Server zu verwenden.
-
-Die in dieser Version vorgenommenen Änderungen und Anpassungen können unvorhergesehene Probleme verursachen. Verwenden Sie diese Version nur, wenn Sie bereit sind, mögliche Fehler zu beheben und uns bei der Weiterentwicklung zu unterstützen.
-
-Vielen Dank für Ihr Verständnis.
-````
-
-# 📁 Webspell-RM 2.1.6 – Ordnerstruktur
-````
-
-
-/webspell-rm/
-├── admin/                       # Adminbereich – Hier befinden sich alle Dateien, die das Backend betreffen.
-│   ├── css/                     # CSS für das Backend – Stylesheets für die Admin-Oberfläche.
-│   ├── images/                  # Bilder für das Backend – Alle Grafiken, die im Adminbereich verwendet werden.
-│   ├── img/colorpicker/         # Bootstrap Colorpicker – Farbwähler für das Backend.
-│   ├── js/                      # JS-Funktionen für Adminbereich – JavaScript-Dateien für die Verwaltung und interaktive Funktionen.
-│   ├── templates/               # Admin-Templates – Templates für die Darstellung im Adminbereich.
-│   ├── languages/               # Sprachen für Admin – Sprachdateien für den Adminbereich.
-│   │   ├── de/                  # Deutsche Sprachdateien – Texte und Übersetzungen für die Admin-Oberfläche.
-│   │   ├── en/                  # Englische Sprachdateien – Texte und Übersetzungen für die Admin-Oberfläche.
-│   │   └── it/                  # Italienische Sprachdateien – Texte und Übersetzungen für die Admin-Oberfläche.
-│   └── login/                   # Admin-Login-System – Dateien, die mit dem Admin-Login-Prozess zusammenhängen.
-│
-├── components/                  # Wiederverwendbare UI-Komponenten – Gemeinsame UI-Elemente, die in verschiedenen Teilen der Anwendung verwendet werden.
-│
-├── images/                      # Öffentliche Bilder – Bilder, die für das Frontend oder allgemeine Zwecke genutzt werden.
-│   ├── avatars/                 # Nutzer-Avatare – Bilder, die von Nutzern als Profilbilder verwendet werden.
-│   ├── languages/               # Sprach-Flaggen – Flaggenbilder für die Auswahl der Sprache im Frontend.
-│   └── userpics/                # Nutzerbilder – Allgemeine Benutzerbilder, die im Frontend angezeigt werden.
-│
-├── includes/                    # Systemlogik – Zentrale Dateien, die die Kernlogik und die Systemfunktionen enthalten.
-│   ├── expansion/               # Erweiterungen – Zusätzliche Module oder Anpassungen für das System.
-│   │	└── default/             # Standard-Erweiterungen – Standardkonfigurationen und Erweiterungen für die Systemfunktionalität.
-│   ├── modules/                 # Systemmodule – Zusätzliche Funktionalitäten oder Dienste für das System.
-│   ├── plugins/                 # Plugins – Erweiterungen, die in das System integriert werden.
-│   │	├── navigation/          # Navigations-Plugin – Logik und Dateien für die Navigation.
-│   │	├── footer/              # Footer-Plugin – Dateien und Logik für die Fußzeile.
-│   │	└── Plugins/             # Allgemeine Plugin-Dateien – Dateien und Funktionen für zusätzliche Plugins.
-│   └── themes                   # System-Designs – Design- und Layout-Dateien für das Frontend.
-│       ├── 404/                 # 404-Fehler-Seite – Layout und Design für die 404-Seite.
-│   	└── default/             # Standard-Design – Standard-Layout und Design-Dateien für das System.
-│
-├── install/                     # Installer – Dateien, die für die Installation und Setup des Systems notwendig sind.
-│   ├── css/                     # Styles für den Installationsprozess – Stylesheets für die Installationsoberfläche.
-│   ├── images/                  # Bilder für den Installer – Grafiken, die während des Installationsprozesses angezeigt werden.
-│   ├── installer/               # Installationsskripte und Logik – Skripte, die den Installationsprozess steuern.
-│   ├── languages/               # Sprachdateien für den Installer – Texte und Übersetzungen für die Installationsoberfläche.
-│   └── templates/               # Templates für den Installationsprozess – Templates, die im Installationsbereich verwendet werden.
-│
-├── languages/                   # Sprachdateien fürs Frontend – Alle unterstützten Sprachen für die öffentliche Seite.
-│   ├── de/                      # Deutsche Sprachdateien – Texte und Übersetzungen für das Frontend in deutscher Sprache.
-│   ├── en/                      # Englische Sprachdateien – Texte und Übersetzungen für das Frontend in englischer Sprache.
-│   └── it/                      # Italienische Sprachdateien – Texte und Übersetzungen für das Frontend in italienischer Sprache.
-│
-├── system/                      # Plugins, Widgets, SQL-Importe – Systemdateien, die von Plugins und Erweiterungen genutzt werden.
-│   └── func/                    # Allgemeine Systemfunktionen – Zentrale Systemfunktionen und -skripte, die für das gesamte System verwendet werden.
-│
-├── tmp/                         # Temporäre Dateien & Caches – Dateien, die während der Nutzung erstellt und zwischengespeichert werden, z.B. Caches.
-│
-├── .gitignore                   # Git-Ignore-Konfiguration – Dateien und Verzeichnisse, die in Git ignoriert werden sollen, um unnötige Dateien aus dem Repository zu halten.
-├── .htaccess                    # Apache-Konfiguration – Webserver-Konfiguration für URL-Umschreibungen und -Sicherheitsregeln.
-├── .htaccess_ws                 # Webspell-spezifische Apache-Konfiguration – Spezielle Regeln für webSPELL.
-├── CHANGELOG.md                 # Versionshistorie – Dokumentation der Änderungen und Updates, die in jeder Version vorgenommen wurden.
-├── README.md                    # Projektbeschreibung – Allgemeine Informationen zum Projekt, dessen Installation und Nutzung.
-├── index.php                    # Einstiegspunkt Frontend – Haupt-Controller für das Frontend der Webseite, der das Laden der Anwendung steuert.
-├── license.txt                  # Lizenzbedingungen – Details zur Lizenz des Projekts, wie die Rechte und Einschränkungen des Quellcodes.
-├── package.json                 # Node.js-Abhängigkeiten – Paketkonfiguration für Node.js, die die erforderlichen Module und Versionen beschreibt.
-└── rewrite.php                  # URL-Rewrite-Engine – Logik für das Umschreiben von URLs und Weiterleitungen, um benutzerfreundliche URLs zu erzeugen.
-
-````
-
 	Webspell-RM is a free Content Management System (CMS) that is available free of charge at https://www.webspell-rm.de. The following information should give you a first impression of how it works.
-
-	Webspell-RM mit angepassten, optimierten und sicherren code
-
-	Webspell-RM with customized, optimized and secure code
-
-	Webspell-RM con codice personalizzato, ottimizzato e sicuro
 
 ###############################################
 

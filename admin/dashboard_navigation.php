@@ -95,7 +95,7 @@ if (isset($_GET[ 'delete' ])) {
     $CAPCLASS = new \webspell\Captcha;
     if ($CAPCLASS->checkCaptcha(0, $_POST[ 'captcha_hash' ])
     ) {
-        $anz = mysqli_num_rows(safe_query("SELECT catID FROM " . PREFIX . "navigation_dashboard_categories"));
+        $anz = mysqli_num_rows(safe_query("SELECT catID FROM "navigation_dashboard_categories"));
         safe_query(
             "INSERT INTO " . PREFIX . "navigation_dashboard_categories ( fa_name, name, sort )
             values( '" . $_POST[ 'fa_name' ] . "', '" . $_POST[ 'name' ] . "', '" . ($anz + 1) . "' )"
@@ -394,7 +394,7 @@ if ($action == "add") {
     </tr></thead>';
 
     $ergebnis = safe_query("SELECT * FROM " . PREFIX . "navigation_dashboard_categories ORDER BY sort");
-    $tmp = mysqli_fetch_assoc(safe_query("SELECT count(catID) as cnt FROM " . PREFIX . "navigation_dashboard_categories"));
+    $tmp = mysqli_fetch_assoc(safe_query("SELECT count(catID) as cnt FROM "navigation_dashboard_categories"));
     $anz = $tmp[ 'cnt' ];
 
     $CAPCLASS = new \webspell\Captcha;

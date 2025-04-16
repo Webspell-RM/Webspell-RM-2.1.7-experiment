@@ -52,10 +52,10 @@ function getter($url) {
 }
 
 
-
-$CAPCLASS = new \webspell\Captcha;
-$CAPCLASS->createTransaction();
-$hash = $CAPCLASS->getHash();
+/// prüfen
+#$CAPCLASS = new \webspell\Captcha;
+#$CAPCLASS->createTransaction();
+#$hash = $CAPCLASS->getHash();
 
 $getversion = $version;
 
@@ -177,7 +177,7 @@ if (!$getnew = @file_get_contents($updateserverurl.'/base/vupdate.php')) {
 #    die($_language->module[ 'access_denied' ]);
 #}
 
-$nickname = '' . getnickname($userID) . ',<br>';
+$username = '' . getusername($userID) . ',<br>';
 $lastlogin = getformatdatetime($_SESSION[ 'ws_lastlogin' ]);
 
 echo'<div class="card">
@@ -193,7 +193,7 @@ echo'<div class="card">
               </div>            
               <div class="card-body" style="min-height: 270px">
                 <h4>'.$_language->module['welcome'].'</h4>
-                '.$_language->module['hello'].' <b>'.$nickname.'</b> '.$_language->module['last_login'].' '.$lastlogin.'.
+                '.$_language->module['hello'].' <b>'.$username.'</b> '.$_language->module['last_login'].' '.$lastlogin.'.
                 '. $_language->module['welcome_message'].'
               </div>
             </div>
@@ -350,7 +350,7 @@ if (!$getnew = @file_get_contents($updateserverurl.'/plugin/plugin-base_v.'.$get
           $translate = new multiLanguage(detectCurrentLanguage());
           $translate->detectLanguages($result['item'.$plug]['description']);
           $result['item'.$plug]['description'] = $translate->getTextByLanguage($result['item'.$plug]['description']);
-          $ergebnis = safe_query("SELECT * FROM `".PREFIX."settings_plugins` WHERE `modulname`='".$result['item'.$plug]['modulname']."'");
+          $ergebnis = safe_query("SELECT * FROM `settings_plugins` WHERE `modulname`='".$result['item'.$plug]['modulname']."'");
 
             if(mysqli_num_rows($ergebnis) == '1') {
               $row = mysqli_fetch_assoc($ergebnis);
@@ -431,7 +431,7 @@ if (!$getnew = @file_get_contents($updateserverurl.'/theme/style-base_v.'.$getve
           $translate = new multiLanguage(detectCurrentLanguage());
           $translate->detectLanguages($result['item'.$plug]['description']);
           $result['item'.$plug]['description'] = $translate->getTextByLanguage($result['item'.$plug]['description']);
-          $ergebnis = safe_query("SELECT * FROM `".PREFIX."settings_themes` WHERE `modulname`='".$result['item'.$plug]['modulname']."'");
+          $ergebnis = safe_query("SELECT * FROM `settings_themes` WHERE `modulname`='".$result['item'.$plug]['modulname']."'");
 
                 if(mysqli_num_rows($ergebnis) == '1') {
                     $row = mysqli_fetch_assoc($ergebnis);

@@ -40,9 +40,9 @@ $date = getformatdate($time);
 $dateyesterday = getformatdate($time - (24 * 3600));
 $datemonth = date(".m.Y", time());
 
-$ergebnis = safe_query("SELECT hits FROM " . PREFIX . "counter");
+$ergebnis = safe_query("SELECT hits FROM "counter");
 $ds = mysqli_fetch_array($ergebnis);
-$us = mysqli_num_rows(safe_query("SELECT userID FROM " . PREFIX . "user"));
+$us = mysqli_num_rows(safe_query("SELECT userID FROM "user"));
 
 $total = $ds[ 'hits' ];
 $dt = mysqli_fetch_array(safe_query("SELECT count FROM " . PREFIX . "counter_stats WHERE dates='$date'"));
@@ -70,7 +70,7 @@ if ($month == 0) {
 }
 $monatsstat = '';
 
-$tmp = mysqli_fetch_array(safe_query("SELECT online FROM " . PREFIX . "counter"));
+$tmp = mysqli_fetch_array(safe_query("SELECT online FROM "counter"));
 $days_online = round((time() - $tmp[ 'online' ]) / (3600 * 24));
 
 if (!$days_online) {
@@ -81,13 +81,13 @@ $perday = round($total / $days_online, 2);
 $perhour = round($total / $days_online / 24, 2);
 $permonth = round($total / $days_online * 24, 2);
 
-$tmp = mysqli_fetch_array(safe_query("SELECT max(count) as MAXIMUM FROM " . PREFIX . "counter_stats"));
+$tmp = mysqli_fetch_array(safe_query("SELECT max(count) as MAXIMUM FROM "counter_stats"));
 $maxvisits = $tmp[ 'MAXIMUM' ];
 $tmp2 = mysqli_fetch_array(safe_query("SELECT dates FROM " . PREFIX . "counter_stats WHERE count='$maxvisits'"));
 $maxvisits_date = $tmp2[ 'dates' ];
 
-$online = mysqli_num_rows(safe_query("SELECT time FROM " . PREFIX . "whoisonline"));
-$dm = mysqli_fetch_array(safe_query("SELECT maxonline FROM " . PREFIX . "counter"));
+$online = mysqli_num_rows(safe_query("SELECT time FROM "whoisonline"));
+$dm = mysqli_fetch_array(safe_query("SELECT maxonline FROM "counter"));
 $maxonline = $dm[ 'maxonline' ];
 
 $guests = mysqli_num_rows(safe_query("SELECT ip FROM " . PREFIX . "whoisonline WHERE userID=''"));

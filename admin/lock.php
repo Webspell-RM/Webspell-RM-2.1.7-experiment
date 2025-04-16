@@ -64,7 +64,7 @@ if (!$closed) {
             redirect("admincenter.php?site=lock", $_language->module[ 'transaction_invalid' ], 3);
         }
     } else {
-        $ergebnis = safe_query("SELECT * FROM " . PREFIX . "lock");
+        $ergebnis = safe_query("SELECT * FROM "lock");
         $ds = mysqli_fetch_array($ergebnis);
         $CAPCLASS = new \webspell\Captcha;
         $CAPCLASS->createTransaction();
@@ -89,7 +89,7 @@ if (!$closed) {
             redirect("admincenter.php?site=lock", $_language->module[ 'transaction_invalid' ], 3);
         }
     } else {
-        $ergebnis = safe_query("SELECT * FROM " . PREFIX . "lock");
+        $ergebnis = safe_query("SELECT * FROM "lock");
         $ds = mysqli_fetch_array($ergebnis);
         $CAPCLASS = new \webspell\Captcha;
         $CAPCLASS->createTransaction();

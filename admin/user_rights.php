@@ -182,7 +182,7 @@ $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugin
                 safe_query("DELETE FROM " . PREFIX . "plugins_forum_moderators WHERE userID='" . $id . "'");
             }
 
-            $sql = safe_query("SELECT * FROM " . PREFIX . "plugins_forum_groups");
+            $sql = safe_query("SELECT * FROM "plugins_forum_groups");
             while ($dc = mysqli_fetch_array($sql)) {
                 $name = $dc[ 'name' ];
                 $fgrID = $dc[ 'fgrID' ];
@@ -495,7 +495,7 @@ $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugin
     }else{  
 
     $usergrp = array();
-    $ergebnis = safe_query("SELECT * FROM " . PREFIX . "plugins_forum_groups");
+    $ergebnis = safe_query("SELECT * FROM "plugins_forum_groups");
     while ($ds = mysqli_fetch_array($ergebnis)) {
         $name = $ds[ 'name' ];
         $fgrID = $ds[ 'fgrID' ];
@@ -740,7 +740,7 @@ $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugin
 
 ';
 
-    $sql = safe_query("SELECT * FROM " . PREFIX . "plugins_forum_groups");
+    $sql = safe_query("SELECT * FROM "plugins_forum_groups");
     
     $i = 1;
     while ($dc = mysqli_fetch_array($sql)) {

@@ -43,7 +43,7 @@ if(mysqli_num_rows($ergebnis)){
 		
 
 
-        $settings = safe_query("SELECT * FROM " . PREFIX . "plugins_footer_target");
+        $settings = safe_query("SELECT * FROM "plugins_footer_target");
         $db = mysqli_fetch_array($settings);
 
         if ($db[ 'windows14' ]) {
@@ -113,7 +113,7 @@ if(mysqli_num_rows($ergebnis)){
                     $template = $GLOBALS["_template"]->loadTemplate("footer_plugin","one", $data_array, $plugin_path);
                     echo $template;
     
-                    $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "plugins_footer"));
+                    $dx = mysqli_fetch_array(safe_query("SELECT * FROM "plugins_footer"));
 
                     $widget=$dx['widget_left'];
                     $widgetdatei=$dx['widgetdatei_left'];
@@ -124,7 +124,7 @@ if(mysqli_num_rows($ergebnis)){
                     $template = $GLOBALS["_template"]->loadTemplate("footer_plugin","two", $data_array, $plugin_path);
                     echo $template;
 
-                    $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "plugins_footer"));
+                    $dx = mysqli_fetch_array(safe_query("SELECT * FROM "plugins_footer"));
 
                     $widget=$dx['widget_center'];
                     $widgetdatei=$dx['widgetdatei_center'];
@@ -135,7 +135,7 @@ if(mysqli_num_rows($ergebnis)){
                     $template = $GLOBALS["_template"]->loadTemplate("footer_plugin","three", $data_array, $plugin_path);
                     echo $template;
 
-                    $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "plugins_footer"));
+                    $dx = mysqli_fetch_array(safe_query("SELECT * FROM "plugins_footer"));
 
                     $widget=$dx['widget_right'];
                     $widgetdatei=$dx['widgetdatei_right'];

@@ -119,16 +119,12 @@ if (isset($_POST[ "saveedit" ])) {
     $copyright_link_name5 = $_POST[ "copyright_link_name5" ];
     $copyright_link5 = $_POST[ "copyright_link5" ];
     $windows_18 = $_POST[ "windows_18" ];
-    $widget_left = $_POST[ "widget_left" ];
-    $widget_center = $_POST[ "widget_center" ];
-    $widget_right = $_POST[ "widget_right" ];
-    $widgetname_left = $_POST[ "widget_left" ];
-    $widgetname_center = $_POST[ "widget_center" ];
-    $widgetname_right = $_POST[ "widget_right" ];
+    
     $footID = $_POST[ "footID" ];
     
     
-        
+
+
             safe_query(
                 "UPDATE
                     `" . PREFIX . "plugins_footer`
@@ -175,12 +171,12 @@ if (isset($_POST[ "saveedit" ])) {
                     `copyright_link4` = '" . $copyright_link4 . "',
                     `copyright_link_name5` = '" . $copyright_link_name5 . "',
                     `copyright_link5` = '" . $copyright_link5 . "',
-                    `widget_left` = '" . $widget_left . "',
-                    `widget_center` = '" . $widget_center . "',
-                    `widget_right` = '" . $widget_right . "',
-                    `widgetname_left` = '" . $widget_left . "',
-                    `widgetname_center` = '" . $widget_center . "',
-                    `widgetname_right` = '" . $widget_right . "'
+                    `widget_left` = '" . $modulname_left . "',
+                    `widget_center` = '" . $modulname_center . "',
+                    `widget_right` = '" . $modulname_right . "',
+                    `widgetdatei_left` = '" . $widgetdatei_left . "',
+                    `widgetdatei_center` = '" . $widget_center . "',
+                    `widgetdatei_right` = '" . $widget_right . "'
                 WHERE `footID` = '".$footID."'"
             );
 
@@ -229,7 +225,7 @@ if ($action == "") {
         
 
         $db = mysqli_fetch_array(safe_query(
-            "SELECT * FROM " . PREFIX . "plugins_footer_target"));
+            "SELECT * FROM "plugins_footer_target"));
 
     $CAPCLASS = new \webspell\Captcha;
     $CAPCLASS->createTransaction();
@@ -382,7 +378,7 @@ if ($action == "") {
             }
 
 $ds = mysqli_fetch_array(safe_query(
-            "SELECT * FROM " . PREFIX . "plugins_footer"));   
+            "SELECT * FROM "plugins_footer"));   
       
 echo '<div class="card">
     <div class="card-header">' . $plugin_language[ 'title' ] . '
@@ -838,18 +834,22 @@ echo '<div class="card">
 
 
 $widget_alle = '<option value="">' . $plugin_language[ 'no_plugin' ] . '</option>
-<option value="facebook">Facebook</option>
-<option value="blog">Blog</option>
-<option value="about">About</option>
-<option value="newsletter">Newsletter</option>
-<option value="clanwars">Clanwars</option>
-<option value="useronline">User online</option>
-<option value="tags">Tags</option>
-<option value="servers">Server</option>';
+<option value="widget_blog_sidebar">Blog</option>
+<option value="widget_about_sidebar">About</option>
 
-$widget_left = str_replace('value="' . $ds['widget_left'] . '"', 'value="' . $ds['widget_left'] . '" selected="selected"', $widget_alle);
-$widget_center = str_replace('value="' . $ds['widget_center'] . '"', 'value="' . $ds['widget_center'] . '" selected="selected"', $widget_alle);
-$widget_right = str_replace('value="' . $ds['widget_right'] . '"', 'value="' . $ds['widget_right'] . '" selected="selected"', $widget_alle);
+<option value="widget_useronline_sidebar">User online</option>
+';
+
+/*<option value="newsletter">Newsletter</option>
+<option value="clanwars">Clanwars</option>
+<option value="facebook">Facebook</option>
+<option value="tags">Tags</option>
+<option value="servers">Server</option>*/
+
+
+$widget_left = str_replace('value="' . $ds['widgetdatei_left'] . '"', 'value="' . $ds['widgetdatei_left'] . '" selected="selected"', $widget_alle);
+$widget_center = str_replace('value="' . $ds['widgetdatei_center'] . '"', 'value="' . $ds['widgetdatei_center'] . '" selected="selected"', $widget_alle);
+$widget_right = str_replace('value="' . $ds['widgetdatei_right'] . '"', 'value="' . $ds['widgetdatei_right'] . '" selected="selected"', $widget_alle);
 
 /*$widget_center = '<option value="">Kein Plugin</option>
 <option value="facebook">facebook</option>

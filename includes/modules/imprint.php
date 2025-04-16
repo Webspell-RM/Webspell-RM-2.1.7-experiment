@@ -43,9 +43,9 @@ echo $template;
 $ergebnis =
     safe_query(
         "SELECT
-            u.firstname, u.lastname, u.nickname, u.userID
+            u.firstname, u.lastname, u.username, u.userID
         FROM
-            " . PREFIX . "user_groups as g, " . PREFIX . "user as u
+            user_groups as g, users as u
         WHERE
             u.userID = g.userID
         AND
@@ -71,14 +71,14 @@ $ergebnis =
     );
 $administrators = '';
 while ($ds = mysqli_fetch_array($ergebnis)) {
-    $administrators .= "<a href='index.php?site=profile&amp;id=" . $ds[ 'userID' ] . "'>" . $ds[ 'firstname' ] . " '" . $ds[ 'nickname' ] . "' " . $ds[ 'lastname' ] . "</a><br>";
+    $administrators .= "<a href='index.php?site=profile&amp;id=" . $ds[ 'userID' ] . "'>" . $ds[ 'firstname' ] . " '" . $ds[ 'username' ] . "' " . $ds[ 'lastname' ] . "</a><br>";
 }
 $ergebnis =
     safe_query(
         "SELECT
-            u.firstname, u.lastname, u.nickname, u.userID
+            u.firstname, u.lastname, u.username, u.userID
         FROM
-            " . PREFIX . "user_groups as g, " . PREFIX . "user as u
+            user_groups as g, users as u
         WHERE
             u.userID = g.userID
         AND
@@ -86,7 +86,7 @@ $ergebnis =
     );
 $moderators = '';
 while ($ds = mysqli_fetch_array($ergebnis)) {
-    $moderators .= "<a href='index.php?site=profile&amp;id=" . $ds[ 'userID' ] . "'>" . $ds[ 'firstname' ] . " '" . $ds[ 'nickname' ] . "' " . $ds[ 'lastname' ] . "</a><br>";
+    $moderators .= "<a href='index.php?site=profile&amp;id=" . $ds[ 'userID' ] . "'>" . $ds[ 'firstname' ] . " '" . $ds[ 'username' ] . "' " . $ds[ 'lastname' ] . "</a><br>";
 }
 // Include version
 include('./system/version.php');
@@ -95,7 +95,7 @@ $headline1 = $_language->module['imprint'];
 $headline2 = $_language->module['coding'];
 
 if ($imprint_type) {
-    $ds = mysqli_fetch_array(safe_query("SELECT imprint FROM `" . PREFIX . "settings_imprint`"));
+    $ds = mysqli_fetch_array(safe_query("SELECT imprint FROM `settings_imprint`"));
     $imprint_head = $ds['imprint'];
 
     $translate = new multiLanguage(detectCurrentLanguage());
@@ -127,7 +127,7 @@ if ($imprint_type) {
     </div>';
 }
 
-$ergebnis = safe_query("SELECT * FROM " . PREFIX . "settings_imprint");
+$ergebnis = safe_query("SELECT * FROM settings_imprint");
 if (mysqli_num_rows($ergebnis)) {
     $ds = mysqli_fetch_array($ergebnis);
     $disclaimer_text = $ds['disclaimer_text'];

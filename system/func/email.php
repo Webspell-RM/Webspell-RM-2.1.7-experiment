@@ -30,39 +30,53 @@
 
 namespace webspell;
 
-
-if(file_exists('components/PHPMailer/PHPMailerAutoload.php')) {
-	require 'components/PHPMailer/PHPMailerAutoload.php';
-} else {
-	require 'components/PHPMailer/PHPMailerAutoload.php';
-} 
+// PHPMailer einbinden
+if (file_exists('components/PHPMailer/PHPMailerAutoload.php')) {
+    require 'components/PHPMailer/PHPMailerAutoload.php';
+}
 
 class Email
 {
+    /**
+     * Versendet eine E-Mail über PHPMailer mit SMTP- oder Standard-Mail-Funktion.
+     *
+     * @param string  $from     Absender-E-Mail
+     * @param string  $module   Modulname für Absenderbezeichnung
+     * @param string  $to       Empfänger-E-Mail
+     * @param string  $subject  Betreff der E-Mail
+     * @param string  $message  Nachricht (HTML/Text)
+     * @param boolean $pop      POP3 vor SMTP verwenden (optional)
+     *
+     * @return array Ergebnisarray mit "result" (done/fail), ggf. "error" und "debug"
+     */
     public static function sendEmail($from, $module, $to, $subject, $message, $pop = true)
     {
         $GLOBALS['mail_debug'] = '';
-        $get = safe_query("SELECT * FROM " . PREFIX . "email");
-        if (mysqli_num_rows($get)) {
-            $ds = mysqli_fetch_assoc($get);
-            $host = $ds['host'];
-            $user = $ds['user'];
+
+        // E-Mail-Einstellungen aus Datenbank lesen
+        $result = safe_query("SELECT * FROM `email`");
+        if (mysqli_num_rows($result)) {
+            $ds       = mysqli_fetch_assoc($result);
+            $host     = $ds['host'];
+            $user     = $ds['user'];
             $password = $ds['password'];
-            $port = $ds['port'];
-            $debug = $ds['debug'];
-            $auth = $ds['auth'];
-            $html = $ds['html'];
-            $smtp = $ds['smtp'];
-            $secure = $ds['secure'];
+            $port     = $ds['port'];
+            $debug    = $ds['debug'];
+            $auth     = $ds['auth'];
+            $html     = $ds['html'];
+            $smtp     = $ds['smtp'];
+            $secure   = $ds['secure'];
         } else {
             $smtp = 0;
             $auth = 0;
+            $debug = 0;
         }
 
         if ($smtp == 0) {
             $debug = 0;
         }
 
+        // POP3 vor SMTP falls aktiviert
         if ($smtp == 2) {
             $pop = \POP3::popBeforeSmtp($host, 110, 30, $user, $password, $debug);
         }
@@ -79,6 +93,7 @@ class Email
                 $mail->isSMTP();
                 $mail->Host = $host;
                 $mail->Port = $port;
+
                 if ($auth == 1) {
                     $mail->SMTPAuth = true;
                     $mail->Username = $user;
@@ -89,15 +104,14 @@ class Email
 
                 if (extension_loaded('openssl')) {
                     switch ($secure) {
-                        case 0:
-                            $mail->SMTPSecure = '';
-                            break;
                         case 1:
                             $mail->SMTPSecure = 'tls';
                             break;
                         case 2:
                             $mail->SMTPSecure = 'ssl';
                             break;
+                        default:
+                            $mail->SMTPSecure = '';
                     }
                 } else {
                     $mail->SMTPSecure = '';
@@ -106,11 +120,12 @@ class Email
                 $mail->isMail();
             }
 
-            $fromtitle = $GLOBALS['hp_title'] . ' - (' . $module . ')';
-            $mail->Subject = $subject;
-            $mail->setFrom($from, $fromtitle);
+            $fromTitle = $GLOBALS['hp_title'] . ' - (' . $module . ')';
+
+            $mail->setFrom($from, $fromTitle);
             $mail->addAddress($to);
             $mail->addReplyTo($from);
+            $mail->Subject = $subject;
             $mail->CharSet = 'utf-8';
             $mail->WordWrap = 78;
 
@@ -125,24 +140,23 @@ class Email
             }
 
             if (!$mail->send()) {
-                if ($debug == 0) {
-                    return array("result" => "fail", "error" => $mail->ErrorInfo);
-                } else {
-                    return array("result" => "fail", "error" => $mail->ErrorInfo, "debug" => $GLOBALS['mail_debug']);
-                }
+                return [
+                    "result" => "fail",
+                    "error" => $mail->ErrorInfo,
+                    "debug" => $debug ? $GLOBALS['mail_debug'] : null
+                ];
             } else {
-                if ($debug == 0) {
-                    return array("result" => "done");
-                } else {
-                    return array("result" => "done", "debug" => $GLOBALS['mail_debug']);
-                }
+                return [
+                    "result" => "done",
+                    "debug" => $debug ? $GLOBALS['mail_debug'] : null
+                ];
             }
         } else {
-            if ($debug == 0) {
-                return array("result" => "fail", "error" => $mail->ErrorInfo);
-            } else {
-                return array("result" => "fail", "error" => $mail->ErrorInfo, "debug" => $GLOBALS['mail_debug']);
-            }
+            return [
+                "result" => "fail",
+                "error" => $mail->ErrorInfo,
+                "debug" => $debug ? $GLOBALS['mail_debug'] : null
+            ];
         }
     }
 }

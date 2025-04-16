@@ -32,59 +32,32 @@ namespace webspell;
 
 class SpamApi
 {
+    // Konstanten für Spam-Status
     const NOSPAM = 0;
     const SPAM = 1;
+
+    // Singleton-Instanz
     private static $instance;
 
-    /**
-     * @var string The api-key
-     */
+    // API-Key für die Authentifizierung
     private $key;
-    /**
-     * @var string The url of the spam api
-     */
+
+    // URL der Spam-API
     private $host;
-    /**
-     * @var bool Is the api enabled
-     */
+
+    // Gibt an, ob die API aktiviert ist
     private $enabled;
-    /**
-     * @var bool Block posts if they can not be verified
-     */
+
+    // Gibt an, ob Beiträge blockiert werden sollen, wenn sie nicht verifiziert werden können
     private $blockOnError;
-    /**
-     * @var int
-     */
+
+    // Maximale Anzahl an Beiträgen, die ein Benutzer senden darf
     private $maxPosts;
 
     /**
-     *
-     */
-    /*private function __construct()
-    {
-        $get = safe_query(
-            "SELECT
-                `spam_check`,
-                `spamapikey`,
-                `spamapihost`,
-                `spamapiblockerror`,
-                `spammaxposts`
-            FROM
-                " . PREFIX . "settings
-            LIMIT 0,1"
-        );
-        if (mysqli_num_rows($get)) {
-            $ds = mysqli_fetch_assoc($get);
-            $this->key = $ds['spamapikey'];
-            $this->host = $ds['spamapihost'];
-            $this->enabled = ($ds['spam_check'] == 1);
-            $this->blockOnError = ($ds['spamapiblockerror'] == 1);
-            $this->maxPosts = (int)$ds['spammaxposts'];
-        }
-    }*/
-
-    /**
-     * @return SpamApi Singleton-Constructor
+     * Gibt die Singleton-Instanz der SpamApi zurück.
+     * 
+     * @return SpamApi Die Singleton-Instanz
      */
     final public static function getInstance()
     {
@@ -95,17 +68,16 @@ class SpamApi
         return self::$instance;
     }
 
+    // Verhindert das Klonen der Singleton-Instanz
     private function __clone()
     {
     }
 
-    #private function __wakeup()
-    #{
-    #}
-
     /**
-     * @param string $message the text which needs to be learned
-     * @param int $type is it spam (SpamApi::Spam) or ham (SpamApi::NOSPAM)
+     * Lernt, ob eine Nachricht Spam oder kein Spam (Ham) ist.
+     * 
+     * @param string $message Der Text, der gelernt werden soll
+     * @param int $type Der Typ: SpamApi::SPAM oder SpamApi::NOSPAM
      */
     public function learn($message, $type)
     {
@@ -124,14 +96,16 @@ class SpamApi
     }
 
     /**
-     * @param string $message the text which is going to be validated
-     *
-     * @return int
+     * Validiert eine Nachricht, um festzustellen, ob sie Spam ist.
+     * 
+     * @param string $message Der Text, der validiert werden soll
+     * @return int SpamApi::SPAM oder SpamApi::NOSPAM
      */
     public function validate($message)
     {
         if ($this->enabled) {
             $run = true;
+            // Überprüfen, ob der Benutzer bereits Beiträge überschreitet
             if ($GLOBALS['loggedin']) {
                 if (getuserforumposts($GLOBALS['userID']) + getallusercomments($GLOBALS['userID']) > $this->maxPosts) {
                     $run = false;
@@ -168,15 +142,17 @@ class SpamApi
     }
 
     /**
-     * Write a error message into the log
-     * @param $message
-     * @param $data
+     * Schreibt eine Fehlermeldung in das Log.
+     * 
+     * @param string $message Die Fehlermeldung
+     * @param array $data Die Daten, die mit dem Fehler verbunden sind
      */
     private function logError($message, $data)
     {
+        // Loggt die Fehlermeldung in die Tabelle `api_log`
         safe_query(
             "INSERT INTO
-                `" . PREFIX . "api_log` (`message`,`date`, `data`)
+                `api_log` (`message`, `date`, `data`)
             VALUES (
                 '" . addslashes($message) . "',
                 '" . time() . "',
@@ -185,14 +161,21 @@ class SpamApi
         );
     }
 
+    /**
+     * Führt eine POST-Anfrage an die Spam-API aus.
+     * 
+     * @param array $data Die zu sendenden Daten
+     * @return string Die Antwort der API
+     */
     private function postRequest($data)
     {
+        // Überprüft, ob cURL verfügbar ist und führt die Anfrage aus
         if (function_exists("curl_init")) {
             $ch = curl_init($this->host);
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            if (stripos($this->host, "https") == 0) {
+            if (stripos($this->host, "https") === 0) {
                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                 curl_setopt($ch, CURLOPT_CAINFO, "src/ca.pem");
             }
@@ -201,13 +184,14 @@ class SpamApi
                 curl_close($ch);
                 return $response;
             } else {
-                $this->logError("No Api-Respone. " . curl_error($ch), $data);
+                $this->logError("No Api-Response. " . curl_error($ch), $data);
                 curl_close($ch);
                 return "";
             }
         } elseif (include("HTTP/Request2.php") && class_exists("HTTP_Request2")) {
+            // Alternative Methode für HTTP-Request2
             $request = new \HTTP_Request2($this->host, \HTTP_Request2::METHOD_POST);
-            if (stripos($this->host, "https") == 0) {
+            if (stripos($this->host, "https") === 0) {
                 $request->setConfig(array("ssl_cafile" => "src/ca.pem", "ssl_verify_peer" => false));
             }
             $url = $request->getUrl();
@@ -215,19 +199,21 @@ class SpamApi
             try {
                 return $request->send()->getBody();
             } catch (\Exception $ex) {
-                $this->logError("No Api-Respone. Code: " . $ex->getCode() . ", Message: " . $ex->getMessage(), $data);
+                $this->logError("No Api-Response. Code: " . $ex->getCode() . ", Message: " . $ex->getMessage(), $data);
                 return "";
             }
         } elseif (class_exists("HttpRequest")) {
+            // Alternative Methode für HttpRequest
             $request = new \HttpRequest($this->host, \HttpRequest::METH_POST);
             $request->addPostFields($data);
             try {
                 return $request->send()->getBody();
             } catch (\Exception $ex) {
-                $this->logError("No Api-Respone. Code: " . $ex->getCode() . ", Message: " . $ex->getMessage(), $data);
+                $this->logError("No Api-Response. Code: " . $ex->getCode() . ", Message: " . $ex->getMessage(), $data);
                 return "";
             }
         } elseif (ini_get("allow_url_fopen")) {
+            // Fallback für URL-Fopen
             $build_data = http_build_query($data);
             $params = array(
                 'http' => array(
@@ -241,7 +227,7 @@ class SpamApi
             if ($con !== false) {
                 return $con;
             } else {
-                $this->logError("No Api-Respone.", $data);
+                $this->logError("No Api-Response.", $data);
                 return "";
             }
         } else {

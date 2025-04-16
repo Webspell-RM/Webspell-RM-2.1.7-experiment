@@ -28,249 +28,209 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
 */
 
-function isUserInGroup($userID, $group) {
-    return (
-        mysqli_num_rows(
-            safe_query(
-                "SELECT userID FROM `" . PREFIX . "user_groups` WHERE `userID` = " . (int)$userID . " AND `$group` = 1"
-            )
-        ) > 0
-    );
-}
+class UserPermissions {
 
-function isanyadmin($userID)
-{
-    $groups = ['super', 'forum', 'files', 'page', 'feedback', 'news', 'news_writer', 'polls', 'clanwars', 'user', 'cash', 'gallery'];
-    foreach ($groups as $group) {
-        if (isUserInGroup($userID, $group)) {
-            return true;
-        }
-    }
-    return false;
-}
-
-function issuperadmin($userID)
-{
-    return isUserInGroup($userID, 'super');
-}
-
-function isforumadmin($userID)
-{
-    return isUserInGroup($userID, 'forum') || isUserInGroup($userID, 'super');
-}
-
-function isfilesadmin($userID)
-{
-    return isUserInGroup($userID, 'files') || isUserInGroup($userID, 'super');
-}
-
-function ispageadmin($userID)
-{
-    return isUserInGroup($userID, 'page') || isUserInGroup($userID, 'super');
-}
-
-function isfeedbackadmin($userID)
-{
-    return isUserInGroup($userID, 'feedback') || isUserInGroup($userID, 'super');
-}
-
-function isnewsadmin($userID)
-{
-    return isUserInGroup($userID, 'news') || isUserInGroup($userID, 'super');
-}
-
-function isnewswriter($userID)
-{
-    return isUserInGroup($userID, 'news_writer') || isUserInGroup($userID, 'super') || isUserInGroup($userID, 'news');
-}
-
-function ispollsadmin($userID)
-{
-    return isUserInGroup($userID, 'polls') || isUserInGroup($userID, 'super');
-}
-
-function isclanwarsadmin($userID)
-{
-    return isUserInGroup($userID, 'clanwars') || isUserInGroup($userID, 'super');
-}
-
-function ismoderator($userID, $boardID)
-{
-    if (empty($userID) || empty($boardID)) {
-        return false;
-    }
-
-    if (!isanymoderator($userID)) {
-        return false;
-    }
-
-    return (
-        mysqli_num_rows(
-            safe_query(
-                "SELECT
-                    userID
-                FROM
-                    " . PREFIX . "plugins_forum_moderators
-                WHERE
-                    `userID` = " . (int)$userID . " AND
-                    `boardID` = " . (int)$boardID
-            )
-        ) > 0
-    );
-}
-
-function isanymoderator($userID)
-{
-    return isUserInGroup($userID, 'moderator');
-}
-
-function isuseradmin($userID)
-{
-    return isUserInGroup($userID, 'user') || isUserInGroup($userID, 'super');
-}
-
-function iscashadmin($userID)
-{
-    return isUserInGroup($userID, 'cash') || isUserInGroup($userID, 'super');
-}
-
-function isgalleryadmin($userID)
-{
-    return isUserInGroup($userID, 'gallery') || isUserInGroup($userID, 'super');
-}
-
-function isclanmember($userID)
-{
-    if (mysqli_num_rows(
-        safe_query(
-            "SELECT userID FROM `" . PREFIX . "plugins_squads_members` WHERE `userID` = " . (int)$userID
-        )
-    ) > 0
-    ) {
-        return true;
-    } else {
-        return issuperadmin($userID);
-    }
-}
-
-function isjoinusmember($userID)
-{
-    if (mysqli_num_rows(
-        safe_query(
-            "SELECT userID FROM `" . PREFIX . "plugins_squads_members` WHERE `userID` = " . (int)$userID
-        )
-    ) > 0
-    ) {
-        return true;
-    } else {
-        return issuperadmin($userID);
-    }
-}
-
-function isbanned($userID)
-{
-    return (
-        mysqli_num_rows(
-            safe_query(
-                "SELECT
-                    userID
-                FROM
-                    `" . PREFIX . "user`
-                WHERE
-                    `userID` = " . (int)$userID . " AND
-                    (
-                        `banned` = 'perm' OR
-                        `banned` IS NOT NULL
-                    )"
-            )
-        ) > 0
-    );
-}
-
-function iscommentposter($userID, $commID)
-{
-    if (empty($userID) || empty($commID)) {
-        return false;
-    }
-
-    return (
-        mysqli_num_rows(
-            safe_query(
-                "SELECT
-                    commentID
-                FROM
-                    " . PREFIX . "plugins_comments
-                WHERE
-                    `commentID` = " . (int)$commID . " AND
-                    `userID` = " . (int)$userID
-            )
-        ) > 0
-    );
-}
-
-function isforumposter($userID, $postID)
-{
-    return (
-        mysqli_num_rows(
-            safe_query(
-                "SELECT
-                    postID
-                FROM
-                    " . PREFIX . "plugins_forum_posts
-                WHERE
-                    `postID` = " . (int)$postID . " AND
-                    `poster` = " . (int)$userID
-            )
-        ) > 0
-    );
-}
-
-function istopicpost($topicID, $postID)
-{
-        $ds = mysqli_fetch_array(
-            safe_query(
-                "SELECT
-                    postID
-                FROM
-                    " . PREFIX . "plugins_forum_posts
-                WHERE
-                    `topicID` = " . (int)$topicID . "
-                ORDER BY
-                    `date` ASC
-                LIMIT
-                    0,1"
-            )
+    // Überprüft, ob der Benutzer einer bestimmten Gruppe angehört
+    private function isUserInGroup($userID, $group) {
+        return (
+            mysqli_num_rows(
+                safe_query(
+                    "SELECT userID FROM `users_groups` WHERE `userID` = " . (int)$userID . " AND `$group` = 1"
+                )
+            ) > 0
         );
-        if($ds[ 'postID' ] == $postID) {
-            return true;
+    }
+
+    // Überprüft, ob der Benutzer ein Administrator ist
+    public function isAnyAdmin($userID) {
+        $groups = ['super', 'forum', 'files', 'page', 'feedback', 'news', 'news_writer', 'polls', 'clanwars', 'user', 'cash', 'gallery'];
+        foreach ($groups as $group) {
+            if ($this->isUserInGroup($userID, $group)) {
+                return true;
+            }
         }
-        else {
+        return false;
+    }
+
+    // Überprüft, ob der Benutzer ein Superadmin ist
+    public function isSuperAdmin($userID) {
+        return $this->isUserInGroup($userID, 'super');
+    }
+
+    // Überprüft, ob der Benutzer ein Foren-Administrator ist
+    public function isForumAdmin($userID) {
+        return $this->isUserInGroup($userID, 'forum') || $this->isUserInGroup($userID, 'super');
+    }
+
+    // Überprüft, ob der Benutzer ein Datei-Administrator ist
+    public function isFilesAdmin($userID) {
+        return $this->isUserInGroup($userID, 'files') || $this->isUserInGroup($userID, 'super');
+    }
+
+    // Überprüft, ob der Benutzer ein Seiten-Administrator ist
+    public function isPageAdmin($userID) {
+        return $this->isUserInGroup($userID, 'page') || $this->isUserInGroup($userID, 'super');
+    }
+
+    // Überprüft, ob der Benutzer ein Feedback-Administrator ist
+    public function isFeedbackAdmin($userID) {
+        return $this->isUserInGroup($userID, 'feedback') || $this->isUserInGroup($userID, 'super');
+    }
+
+    // Überprüft, ob der Benutzer ein Nachrichten-Administrator ist
+    public function isNewsAdmin($userID) {
+        return $this->isUserInGroup($userID, 'news') || $this->isUserInGroup($userID, 'super');
+    }
+
+    // Überprüft, ob der Benutzer ein Nachrichten-Schreiber ist
+    public function isNewsWriter($userID) {
+        return $this->isUserInGroup($userID, 'news_writer') || $this->isUserInGroup($userID, 'super') || $this->isUserInGroup($userID, 'news');
+    }
+
+    // Überprüft, ob der Benutzer ein Umfragen-Administrator ist
+    public function isPollsAdmin($userID) {
+        return $this->isUserInGroup($userID, 'polls') || $this->isUserInGroup($userID, 'super');
+    }
+
+    // Überprüft, ob der Benutzer ein Clanwars-Administrator ist
+    public function isClanWarsAdmin($userID) {
+        return $this->isUserInGroup($userID, 'clanwars') || $this->isUserInGroup($userID, 'super');
+    }
+
+    // Überprüft, ob der Benutzer Moderator für ein bestimmtes Board ist
+    public function isModerator($userID, $boardID) {
+        if (empty($userID) || empty($boardID)) {
             return false;
         }
-}
 
-function isinusergrp($usergrp, $userID)
-{
-    if ($usergrp == 'user' && !empty($userID)) {
-        return true;
+        if (!$this->isAnyModerator($userID)) {
+            return false;
+        }
+
+        return (
+            mysqli_num_rows(
+                safe_query(
+                    "SELECT userID FROM `plugins_forum_moderators` WHERE `userID` = " . (int)$userID . " AND `boardID` = " . (int)$boardID
+                )
+            ) > 0
+        );
     }
 
-    if (!usergrpexists($usergrp)) {
-        return false;
+    // Überprüft, ob der Benutzer irgendein Moderator ist
+    public function isAnyModerator($userID) {
+        return $this->isUserInGroup($userID, 'moderator');
     }
 
-    if (mysqli_num_rows(safe_query(
-        "SELECT
-                userID
-            FROM
-                " . PREFIX . "user_forum_groups
-            WHERE
-                `" . $usergrp . "` = 1 AND
-                `userID` = " . (int)$userID
-    )) > 0
-    ) {
-        return true;
+    // Überprüft, ob der Benutzer ein Benutzer-Administrator ist
+    public function isUserAdmin($userID) {
+        return $this->isUserInGroup($userID, 'user') || $this->isUserInGroup($userID, 'super');
     }
 
-    return isforumadmin($userID);
+    // Überprüft, ob der Benutzer ein Cash-Administrator ist
+    public function isCashAdmin($userID) {
+        return $this->isUserInGroup($userID, 'cash') || $this->isUserInGroup($userID, 'super');
+    }
+
+    // Überprüft, ob der Benutzer ein Gallery-Administrator ist
+    public function isGalleryAdmin($userID) {
+        return $this->isUserInGroup($userID, 'gallery') || $this->isUserInGroup($userID, 'super');
+    }
+
+    // Überprüft, ob der Benutzer Mitglied eines Clans ist
+    public function isClanMember($userID) {
+        if (mysqli_num_rows(
+            safe_query(
+                "SELECT userID FROM `plugins_squads_members` WHERE `userID` = " . (int)$userID
+            )
+        ) > 0) {
+            return true;
+        } else {
+            return $this->isSuperAdmin($userID);
+        }
+    }
+
+    // Überprüft, ob der Benutzer Mitglied eines JoinUs-Clans ist
+    public function isJoinUsMember($userID) {
+        if (mysqli_num_rows(
+            safe_query(
+                "SELECT userID FROM `plugins_squads_members` WHERE `userID` = " . (int)$userID
+            )
+        ) > 0) {
+            return true;
+        } else {
+            return $this->isSuperAdmin($userID);
+        }
+    }
+
+    // Überprüft, ob der Benutzer gebannt ist
+    public function isBanned($userID) {
+        return (
+            mysqli_num_rows(
+                safe_query(
+                    "SELECT userID FROM `users` WHERE `userID` = " . (int)$userID . " AND (`banned` = 'perm' OR `banned` IS NOT NULL)"
+                )
+            ) > 0
+        );
+    }
+
+    // Überprüft, ob der Benutzer den angegebenen Kommentar gepostet hat
+    public function isCommentPoster($userID, $commID) {
+        if (empty($userID) || empty($commID)) {
+            return false;
+        }
+
+        return (
+            mysqli_num_rows(
+                safe_query(
+                    "SELECT commentID FROM `plugins_comments` WHERE `commentID` = " . (int)$commID . " AND `userID` = " . (int)$userID
+                )
+            ) > 0
+        );
+    }
+
+    // Überprüft, ob der Benutzer den angegebenen Forumspost gepostet hat
+    public function isForumPoster($userID, $postID) {
+        return (
+            mysqli_num_rows(
+                safe_query(
+                    "SELECT postID FROM `plugins_forum_posts` WHERE `postID` = " . (int)$postID . " AND `poster` = " . (int)$userID
+                )
+            ) > 0
+        );
+    }
+
+    // Überprüft, ob der angegebene Post der erste Post in einem Thema ist
+    public function isTopicPost($topicID, $postID) {
+        $ds = mysqli_fetch_array(
+            safe_query(
+                "SELECT postID FROM `plugins_forum_posts` WHERE `topicID` = " . (int)$topicID . " ORDER BY `date` ASC LIMIT 0,1"
+            )
+        );
+        return $ds['postID'] == $postID;
+    }
+
+    // Überprüft, ob der Benutzer in der angegebenen Benutzergruppe ist
+    public function isInUserGroup($usergrp, $userID) {
+        if ($usergrp == 'user' && !empty($userID)) {
+            return true;
+        }
+
+        if (!$this->userGroupExists($usergrp)) {
+            return false;
+        }
+
+        if (mysqli_num_rows(safe_query(
+            "SELECT userID FROM `user_forum_groups` WHERE `$usergrp` = 1 AND `userID` = " . (int)$userID
+        )) > 0) {
+            return true;
+        }
+
+        return $this->isForumAdmin($userID);
+    }
+
+    // Überprüft, ob die Benutzergruppe existiert
+    private function userGroupExists($usergrp) {
+        // Deine Logik, um zu überprüfen, ob die Gruppe existiert (z. B. eine Abfrage zur Überprüfung der Gruppennamen)
+        return true; // Beispiel, du kannst das nach Bedarf anpassen
+    }
 }

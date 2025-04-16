@@ -462,7 +462,7 @@ $transaction->addQuery("INSERT INTO `".PREFIX."navigation_dashboard_links` (`lin
 (14, 2, '{[de]}Multi-Accounts{[en]}Multi-Accounts{[it]}Multi-Account', 'ac_spam_multi', 'admincenter.php?site=spam&amp;action=multi', 'user', 3),
 (15, 2, '{[de]}gebannte IPs{[en]}banned IPs{[it]}IP bannati', 'ac_spam_banned_ips', 'admincenter.php?site=banned_ips', 'user', 4),
 (16, 5, '{[de]}Webseiten Navigation{[en]}Webside Navigation{[it]}Menu Navigazione Web', 'ac_webside_navigation', 'admincenter.php?site=webside_navigation', 'page', 1),
-(17, 5, '{[de]}Themes Installer{[en]}Themes Installer{[it]}Installazione Themes', 'ac_themes_installer', 'admincenter.php?site=themes_installer', 'page', 2),
+(17, 5, '{[de]}Themes Installer{[en]}Themes Installer{[it]}Installazione Themes', 'ac_themes', 'admincenter.php?site=themes_installer', 'page', 2),
 (18, 5, '{[de]}Themes - Style{[en]}Themes - Style{[it]}Themes Grafici', 'ac_themes', 'admincenter.php?site=settings_themes', 'page', 3),
 (20, 5, '{[de]}Startseite{[en]}Start Page{[it]}Pagina Principale', 'ac_startpage', 'admincenter.php?site=settings_startpage', 'page', 5),
 (21, 5, '{[de]}Statische Seiten{[en]}Static Pages{[it]}Pagine Statiche', 'ac_static', 'admincenter.php?site=settings_static', 'page', 6),
@@ -1013,8 +1013,8 @@ $transaction->addQuery("INSERT INTO `".PREFIX."settings_plugins` (`pluginID`, `n
 (10, 'Register', 'register', '{[de]}Kein Plugin. Bestandteil vom System!!!{[en]}No plugin. Part of the system!!!{[it]}Nessun plug-in. Parte del sistema!!!', '', 1, '', '', 'register', '', '', '', 1, 0, 1, 0, 'deactivated'),
 (11, 'My Profile', 'myprofile', '{[de]}Kein Plugin. Bestandteil vom System!!!{[en]}No plugin. Part of the system!!!{[it]}Nessun plug-in. Parte del sistema!!!', '', 1, '', '', 'myprofile', '', '', '', 1, 0, 1, 0, 'deactivated'),
 (12, 'Report', 'report', '{[de]}Kein Plugin. Bestandteil vom System!!!{[en]}No plugin. Part of the system!!!{[it]}Nessun plug-in. Parte del sistema!!!', '', 1, '', '', 'report', '', '', '', 1, 0, 1, 0, 'deactivated'),
-(13, 'Navigation', 'navigation', '{[de]}Mit diesem Plugin k&ouml;nnt ihr euch die Navigation anzeigen lassen.{[en]}With this plugin you can display navigation.{[it]}Con questo plugin puoi visualizzare la Barra di navigazione predefinita.', '', 1, 'T-Seven', 'https://webspell-rm.de', '', '', '0.3', 'includes/plugins/navigation/', 1, 1, 0, 0, 'deactivated'),
-(14, 'Footer', 'footer', '{[de]}Mit diesem Plugin k&ouml;nnt ihr einen neuen Footer anzeigen lassen.{[en]}With this plugin you can have a new Footer displayed.{[it]}Con questo plugin puoi visualizzare un nuovo piè di pagina.', 'admin_footer', 1, 'T-Seven', 'https://webspell-rm.de', '', '', '0.1', 'includes/plugins/footer/', 1, 1, 0, 0, 'deactivated')");
+(13, 'Navigation', 'navigation', '{[de]}Mit diesem Plugin könnt ihr euch die Navigation anzeigen lassen.{[en]}With this plugin you can display navigation.{[it]}Con questo plugin puoi visualizzare la Barra di navigazione predefinita.', '', 1, 'T-Seven', 'https://webspell-rm.de', '', '', '0.3', 'includes/plugins/navigation/', 1, 1, 0, 0, 'deactivated'),
+(14, 'Footer', 'footer', '{[de]}Mit diesem Plugin könnt ihr einen neuen Footer anzeigen lassen.{[en]}With this plugin you can have a new Footer displayed.{[it]}Con questo plugin puoi visualizzare un nuovo piè di pagina.', 'admin_footer', 1, 'T-Seven', 'https://webspell-rm.de', '', '', '0.1', 'includes/plugins/footer/', 1, 1, 0, 0, 'deactivated')");
 
 
 ##############################################################################################################################
@@ -1370,13 +1370,12 @@ $transaction->addQuery("CREATE TABLE IF NOT EXISTS `".PREFIX."user` (
   `videos` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `games` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `projectlist` text NOT NULL,
-  `profile_visibility` int(1) DEFAULT '1',
   PRIMARY KEY (`userID`)
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;");
 
 
-$transaction->addQuery("INSERT INTO `".PREFIX."user` (`userID`, `registerdate`, `lastlogin`, `password`, `password_hash`, `password_pepper`, `nickname`, `email`, `email_hide`, `email_change`, `email_activate`, `firstname`, `lastname`, `gender`, `town`, `birthday`, `facebook`, `twitter`, `twitch`, `steam`, `instagram`, `youtube`, `discord`, `avatar`, `usertext`, `userpic`, `homepage`, `about`, `pmgot`, `pmsent`, `visits`, `banned`, `ban_reason`, `ip`, `topics`, `articles`, `demos`, `files`, `gallery_pictures`, `special_rank`, `mailonpm`, `userdescription`, `activated`, `language`, `date_format`, `time_format`, `newsletter`, `links`, `videos`, `games`, `projectlist`, `profile_visibility`) VALUES
-(1, '".time()."', '".time()."', '', '".$adminhash."', '".$new_pepper."', '".$adminname."', '".$adminmail."', 1, '', '', '', '', 'select_gender', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 0, 0, 0, NULL, '', '', '|', '', '', '', '', 0, 0, '', '1', '', 'd.m.Y', 'H:i', 1, '', '', '', '', '1')");
+$transaction->addQuery("INSERT INTO `".PREFIX."user` (`userID`, `registerdate`, `lastlogin`, `password`, `password_hash`, `password_pepper`, `nickname`, `email`, `email_hide`, `email_change`, `email_activate`, `firstname`, `lastname`, `gender`, `town`, `birthday`, `facebook`, `twitter`, `twitch`, `steam`, `instagram`, `youtube`, `discord`, `avatar`, `usertext`, `userpic`, `homepage`, `about`, `pmgot`, `pmsent`, `visits`, `banned`, `ban_reason`, `ip`, `topics`, `articles`, `demos`, `files`, `gallery_pictures`, `special_rank`, `mailonpm`, `userdescription`, `activated`, `language`, `date_format`, `time_format`, `newsletter`, `links`, `videos`, `games`, `projectlist`) VALUES
+(1, '".time()."', '".time()."', '', '".$adminhash."', '".$new_pepper."', '".$adminname."', '".$adminmail."', 1, '', '', '', '', 'select_gender', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 0, 0, 0, NULL, '', '', '|', '', '', '', '', 0, 0, '', '1', '', 'd.m.Y', 'H:i', 1, '', '', '', '')");
 
 $transaction->addQuery("DROP TABLE IF EXISTS `".PREFIX."user_groups`");
 $transaction->addQuery("CREATE TABLE IF NOT EXISTS `".PREFIX."user_groups` (

@@ -28,63 +28,113 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
 */
 
-// detect language
+// Funktion zur Erkennung der aktuellen Sprache
 function detectCurrentLanguage() {
-    $res = safe_query("SELECT `default_language` FROM `".PREFIX."settings` WHERE 1");
+    // Datenbankabfrage zum Abrufen der Standard-Sprache aus der Einstellungen-Tabelle
+    $res = safe_query("SELECT `default_language` FROM `settings` WHERE 1");
     $rox = mysqli_fetch_array($res);
-    if(isset($_SESSION[ 'language' ])) { $lng=$_SESSION[ 'language' ]; } elseif(isset($_SESSION[ 'language' ])) { $lng=$_SESSION[ 'language' ];} 
-    else { if(isset($rox['default_language'])) { $lng=$rox['default_language']; } else { $lng="en"; } }
+
+    // Überprüfen, ob die Sprache in der Session gesetzt ist
+    if (isset($_SESSION['language'])) {
+        $lng = $_SESSION['language'];
+    } 
+    // Falls die Sprache nicht in der Session gesetzt ist, auf den Standardwert aus den Einstellungen zurückgreifen
+    elseif (isset($rox['default_language'])) {
+        $lng = $rox['default_language'];
+    } 
+    // Wenn keine Sprache gesetzt ist, Standard auf Englisch setzen
+    else {
+        $lng = "en";
+    }
+
+    // Rückgabe der ermittelten Sprache
     return $lng;
 }
 
-
-function show_var($var) 
-{
+// Funktion zur sicheren Ausgabe von Variablen
+function show_var($var) {
+    // Überprüfen, ob die Variable ein Skalarwert (z.B. String, Integer) ist
     if (is_scalar($var)) {
         return $var;
     } else {
+        // Wenn es kein Skalarwert ist, wird die Variable zurückgegeben
         return $var;
     }
 }
 
-#css & js vom template
+
+// Funktion zum Laden von CSS- und JS-Dateien aus einem Template-Verzeichnis
 function headfiles($var, $path) {
-    $css ="";
-    $js="\n";
-    switch($var) {
+    $css = "";
+    $js = "\n";
+    
+    // Überprüfung für den Fall, dass CSS-Dateien geladen werden sollen
+    switch ($var) {
         case "css":
-            if(is_dir($path."css/")) { $subf = "css/"; } else { $subf=""; } $css="";
-            $f = array();
-            $f = glob(preg_replace('/(\*|\?|\[)/', '[$1]', $path.$subf).'*.css');
-            $fc = count((array($f)), COUNT_RECURSIVE);
-            if($fc>0) {
-                for($b=0; $b<=$fc-2; $b++) {
-                    $css .= '<link type="text/css" rel="stylesheet" href="./'.$f[$b].'" />'.chr(0x0D).chr(0x0A);
+            // Überprüfen, ob das Verzeichnis für CSS-Dateien existiert
+            if (is_dir($path . "css/")) { 
+                $subf = "css/"; 
+            } else { 
+                $subf = ""; 
+            }
+            
+            // Array für die CSS-Dateien
+            $f = glob(preg_replace('/(\*|\?|\[)/', '[$1]', $path . $subf) . '*.css');
+            $fc = count($f, COUNT_RECURSIVE);  // Zählen der CSS-Dateien
+
+            // Wenn CSS-Dateien gefunden wurden, diese hinzufügen
+            if ($fc > 0) {
+                for ($b = 0; $b <= $fc - 2; $b++) {
+                    $css .= '<link type="text/css" rel="stylesheet" href="./' . $f[$b] . '" />' . chr(0x0D) . chr(0x0A);
                 }
             }
             return $css;
             break;
+
+        // Überprüfung für den Fall, dass JS-Dateien geladen werden sollen
         case "js":
-            if(is_dir($path."js/")) { $subf2 = "js/"; } else { $subf2=""; } $js="";
-            $g = array();
-            $g = glob(preg_replace('/(\*|\?|\[)/', '[$1]', $path.$subf2).'*.js');
-            $fc = count($g, COUNT_RECURSIVE);
-            if($fc>0) {
-                for($d=0; $d<=$fc-2; $d++) {
-                    $js .= '<script src="./'.$g[$d].'"></script>'.chr(0x0D).chr(0x0A);
+            // Überprüfen, ob das Verzeichnis für JS-Dateien existiert
+            if (is_dir($path . "js/")) { 
+                $subf2 = "js/"; 
+            } else { 
+                $subf2 = ""; 
+            }
+            
+            // Array für die JS-Dateien
+            $g = glob(preg_replace('/(\*|\?|\[)/', '[$1]', $path . $subf2) . '*.js');
+            $fc = count($g, COUNT_RECURSIVE);  // Zählen der JS-Dateien
+
+            // Wenn JS-Dateien gefunden wurden, diese hinzufügen
+            if ($fc > 0) {
+                for ($d = 0; $d <= $fc - 2; $d++) {
+                    $js .= '<script src="./' . $g[$d] . '"></script>' . chr(0x0D) . chr(0x0A);
                 }
             }
             return $js;
             break;
+
+        // Standardfall für ungültige Parameter
         default:
-            return "<!-- invalid parameter, use 'css', 'js' or 'components' -->";   
+            return "<!-- invalid parameter, use 'css', 'js' or 'components' -->";
     }
 }
 
 // -- LOGIN SESSION -- //
 
-if(file_exists('session.php')) { systeminc('session'); } else { systeminc('../system/session'); }
-if(file_exists('ip.php')) { systeminc('ip'); } else { systeminc('../system/ip'); }
+// Prüfen, ob die Datei 'session.php' existiert und einbinden
+if (file_exists('session.php')) {
+    systeminc('session');
+} else {
+    systeminc('../system/session');
+}
+
+// Prüfen, ob die Datei 'ip.php' existiert und einbinden
+if (file_exists('ip.php')) {
+    systeminc('ip');
+} else {
+    systeminc('../system/ip');
+}
+
 
 // -- GLOBAL WEBSPELL FUNCTIONS -- //
 /*
@@ -156,94 +206,124 @@ function str_break($str, $maxlen)
     return $str_br;
 }*/
 
+// Funktion zur Zählung des Vorkommens eines Substrings in einem mehrdimensionalen Array
 function substri_count_array($haystack, $needle)
 {
     $return = 0;
+
+    // Durchlaufe jedes Element im Array
     foreach ($haystack as $value) {
+        // Falls das Element selbst ein Array ist, rekursiv die Funktion aufrufen
         if (is_array($value)) {
             $return += substri_count_array($value, $needle);
         } else {
+            // Andernfalls, den Substring zählen, dabei Groß-/Kleinschreibung ignorieren
             $return += substr_count(strtolower($value), strtolower($needle));
         }
     }
+
     return $return;
 }
 
+// Funktion zur Ersetzung von Zeichen in einem String für den sicheren Gebrauch in JavaScript
 function js_replace($string)
 {
+    // Ersetze Rückwärtsschrägstriche
     $output = preg_replace("/(\\\)/si", '\\\\\1', $string);
+
+    // Ersetze bestimmte Zeichen durch ihre escape-codierten Entsprechungen
     $output = str_replace(
         array("\r\n", "\n", "'", "<script>", "</script>", "<noscript>", "</noscript>"),
         array("\\n", "\\n", "\'", "\\x3Cscript\\x3E", "\\x3C/script\\x3E", "\\x3Cnoscript\\x3E", "\\x3C/noscript\\x3E"),
         $output
     );
+
     return $output;
 }
 
+// Funktion zur Berechnung des Prozentsatzes
 function percent($sub, $total, $dec = 2)
 {
-    // Controlla che $sub e $total siano numerici e che $total non sia zero
+    // Überprüfe, ob $sub und $total numerisch sind und $total nicht null ist
     if (!is_numeric($sub) || !is_numeric($total) || $total == 0) {
-        return 0; // Evita divisioni per zero e valori non numerici
+        return 0; // Verhindere Divisionen durch null und ungültige Eingabewerte
     }
 
+    // Berechne den Prozentsatz
     $perc = ($sub / $total) * 100;
+
+    // Runde den Prozentsatz auf die angegebene Dezimalstellenanzahl
     return round($perc, $dec);
 }
 
 
-// Wird angezeigt wenn sich die Seite im Wartungsmodus befindet
+
+// Funktion, die eine Seite im Wartungsmodus anzeigt
 function showlock($reason)
 {
-    $gettitle = mysqli_fetch_array(safe_query("SELECT title FROM `" . PREFIX . "settings`"));
+    // Holen des Seitentitels aus der Datenbank
+    $gettitle = mysqli_fetch_array(safe_query("SELECT `title` FROM `settings`"));
     $pagetitle = $gettitle['title'];
+    
+    // Erstellen eines Datenarrays, um den Seitentitel und andere Variablen zu speichern
     $data_array = array();
     $data_array['$pagetitle'] = $pagetitle;
+
+    // Prüfen, ob mod_rewrite aktiviert ist und die RewriteBase holen
     if (isset($GLOBALS['_modRewrite']) && $GLOBALS['_modRewrite']->enabled()) {
         $data_array['$rewriteBase'] = $GLOBALS['_modRewrite']->getRewriteBase();
     } else {
         $data_array['$rewriteBase'] = '';
     }
+
+    // Hinzufügen des Grundes für den Wartungsmodus
     $data_array['$reason'] = $reason;
-    
+
+    // Einbinden der Lock-Seite
     include("./includes/modules/lock.php");
-    
+
+    // Das Skript stoppen, damit keine weiteren Ausgaben erfolgen
     die();
 }
 
-
+// Funktion zur Überprüfung von Systemumgebungsvariablen
 function checkenv($systemvar, $checkfor)
 {
+    // Überprüft, ob der Wert der Systemumgebungsvariable $systemvar den String $checkfor enthält
     return stristr(ini_get($systemvar), $checkfor);
 }
 
-// Verschlüsselt eine E-Mail-Adresse für Spam-Bots
+// Funktion zur Verschlüsselung einer E-Mail-Adresse, um sie vor Spam-Bots zu schützen
 function mail_protect($mailaddress)
 {
-    // Sicherstellen, dass die E-Mail-Adresse gültig ist
+    // Sicherstellen, dass die E-Mail-Adresse nicht leer ist
     if (empty($mailaddress)) {
         return '';
     }
 
     // Initialisierung der Variablen zur Speicherung der verschlüsselten E-Mail
     $protected_mail = "";
-    
-    // Umwandlung der E-Mail-Adresse in ein Array von ASCII-Werten
+
+    // Umwandeln der E-Mail-Adresse in ein Array von ASCII-Werten
     $arr = unpack("C*", $mailaddress);
-    
+
     // Durchlaufen jedes Werts im Array und Umwandlung in hexadezimale Form
     foreach ($arr as $entry) {
-        $protected_mail .= sprintf("%%%X", $entry); // Hexadezimale Darstellung jedes Zeichens
+        // Hexadezimale Darstellung jedes Zeichens
+        $protected_mail .= sprintf("%%%X", $entry);
     }
 
+    // Rückgabe der verschlüsselten E-Mail-Adresse
     return $protected_mail;
 }
+
 // zum Prüfen
 #echo mail_protect("example@example.com");
 
-// Prüft ob es eine Gültige URL ist
+// Funktion zur Überprüfung, ob eine URL gültig ist
 function validate_url($url)
 {
+    // Regulärer Ausdruck zur Validierung einer URL
     return preg_match(
         // @codingStandardsIgnoreStart
         "/^(ht|f)tps?:\/\/([^:@]+:[^:@]+@)?(?!\.)(\.?(?!-)[0-9\p{L}-]+(?<!-))+(:[0-9]{2,5})?(\/[^#\?]*(\?[^#\?]*)?(#.*)?)?$/sui",
@@ -252,9 +332,10 @@ function validate_url($url)
     );
 }
 
-// Prüft ob es eine Gültige E-Mail Adresse ist
+// Funktion zur Überprüfung, ob eine E-Mail-Adresse gültig ist
 function validate_email($email)
 {
+    // Regulärer Ausdruck zur Validierung einer E-Mail-Adresse
     return preg_match(
         // @codingStandardsIgnoreStart
         "/^(?!\.)(\.?[\p{L}0-9!#\$%&'\*\+\/=\?^_`\{\|}~-]+)+@(?!\.)(\.?(?!-)[0-9\p{L}-]+(?<!-))+\.[\p{L}0-9]{2,}$/sui",
@@ -263,30 +344,57 @@ function validate_email($email)
     );
 }
 
+
+// Funktion zur Kombination von zwei Arrays, wenn `array_combine` nicht existiert
 if (!function_exists('array_combine')) {
+    /**
+     * Kombiniert zwei Arrays in ein assoziatives Array, wobei das erste Array die Schlüssel und das zweite die Werte darstellt.
+     *
+     * @param array $keyarray  Ein Array von Schlüsseln.
+     * @param array $valuearray Ein Array von Werten.
+     * @return array Ein assoziatives Array, das die Schlüssel aus `$keyarray` und die Werte aus `$valuearray` kombiniert.
+     */
     function array_combine($keyarray, $valuearray)
     {
+        // Arrays für die Schlüssel und Werte initialisieren
         $keys = array();
         $values = array();
         $result = array();
+
+        // Schlüssel aus dem ersten Array extrahieren
         foreach ($keyarray as $key) {
             $keys[] = $key;
         }
+
+        // Werte aus dem zweiten Array extrahieren
         foreach ($valuearray as $value) {
             $values[] = $value;
         }
+
+        // Kombination der Schlüssel und Werte in ein assoziatives Array
         foreach ($keys as $access => $resultkey) {
             $result[$resultkey] = $values[$access];
         }
+
+        // Das resultierende assoziative Array zurückgeben
         return $result;
     }
 }
 
+// Funktion zur sicheren Vergleich von zwei Hash-Werten, wenn `hash_equals` nicht existiert
 if (!function_exists("hash_equals")) {
+    /**
+     * Vergleicht zwei Strings sicher, ohne Timing-Angriffe zu ermöglichen.
+     *
+     * @param string $known_str Der bekannte String, der mit dem Benutzer-String verglichen wird.
+     * @param string $user_str Der vom Benutzer bereitgestellte String.
+     * @return bool `true`, wenn die Strings gleich sind, andernfalls `false`.
+     */
     function hash_equals($known_str, $user_str)
     {
         $result = 0;
 
+        // Sicherstellen, dass beide Parameter Strings sind
         if (!is_string($known_str)) {
             return false;
         }
@@ -295,28 +403,43 @@ if (!function_exists("hash_equals")) {
             return false;
         }
 
+        // Überprüfen, ob die Länge der beiden Strings übereinstimmt
         if (strlen($known_str) != strlen($user_str)) {
             return false;
         }
 
+        // Bitweise XOR-Operation, um die Unterschiede zwischen den Zeichen zu finden
         for ($j = 0; $j < strlen($known_str); $j++) {
             $result |= ord($known_str[$j]) ^ ord($user_str[$j]);
         }
+
+        // Wenn keine Unterschiede vorliegen, sind die Strings gleich
         return $result === 0;
     }
 }
 
-/* counts empty variables in an array */
 
+/**
+ * Zählt die leeren Variablen in einem Array.
+ *
+ * Diese Funktion prüft rekursiv jedes Element im übergebenen Array. 
+ * Wenn das Element leer ist (nachdem es getrimmt wurde), wird es gezählt.
+ *
+ * @param array $checkarray Das Array, das auf leere Variablen überprüft werden soll.
+ * @return int Die Anzahl der leeren Variablen im Array.
+ */
 function countempty($checkarray)
 {
-
     $ret = 0;
 
+    // Iteration über jedes Element im Array
     foreach ($checkarray as $value) {
+        // Wenn das Element ein Array ist, rekursive Zählung aufrufen
         if (is_array($value)) {
             $ret += countempty($value);
-        } elseif (trim($value) == "") {
+        }
+        // Wenn das Element leer ist (nach Trim) erhöhen wir den Zähler
+        elseif (trim($value) == "") {
             $ret++;
         }
     }
@@ -324,57 +447,127 @@ function countempty($checkarray)
     return $ret;
 }
 
-/* checks, if given request-variables are empty */
-
+/**
+ * Überprüft, ob bestimmte Request-Variablen leer sind.
+ *
+ * Diese Funktion prüft, ob alle übergebenen Request-Variablen leer sind.
+ * Wenn eine der Variablen leer ist, gibt sie `false` zurück, andernfalls `true`.
+ *
+ * @param array $valuearray Ein Array von Request-Variablen, die überprüft werden sollen.
+ * @return bool `true`, wenn keine leeren Variablen gefunden wurden, andernfalls `false`.
+ */
 function checkforempty($valuearray)
 {
-
     $check = array();
+
+    // Extrahiert die Werte der angegebenen Request-Variablen
     foreach ($valuearray as $value) {
+        // Füge den Wert der jeweiligen Request-Variable in das Array hinzu
         $check[] = $_REQUEST[$value];
     }
 
+    // Überprüft, ob es leere Variablen gibt
     if (countempty($check) > 0) {
         return false;
     }
+
     return true;
 }
 
+
 // -- DATE-TIME INFORMATION -- //
-if(file_exists('func/datetime.php')) { systeminc('func/datetime'); } else { systeminc('../system/func/datetime'); }
+// Einbinden der Datums- und Zeit-Funktionen, je nach Dateipfad
+if (file_exists('func/datetime.php')) {
+    systeminc('func/datetime');
+} else {
+    systeminc('../system/func/datetime');
+}
 
 // -- USER INFORMATION -- //
-if(file_exists('func/user.php')) { systeminc('func/user'); } else { systeminc('../system/func/user'); }
+// Einbinden der Benutzerinformations-Funktionen
+if (file_exists('func/user.php')) {
+    systeminc('func/user');
+} else {
+    systeminc('../system/func/user');
+}
 
 // -- ACCESS INFORMATION -- //
+// Einbinden der Zugriffssteuerungs-Funktionen
 #if(file_exists('func/useraccess.php')) { systeminc('func/useraccess'); } else { systeminc('../system/func/useraccess'); }
-if(file_exists('func/access_control.php')) { systeminc('func/access_control'); } else { systeminc('../system/func/access_control'); }
-if(file_exists('func/check_access.php')) { systeminc('func/check_access'); } else { systeminc('../system/func/check_access'); }
+if (file_exists('func/access_control.php')) {
+    systeminc('func/access_control');
+} else {
+    systeminc('../system/func/access_control');
+}
+
+if (file_exists('func/check_access.php')) {
+    systeminc('func/check_access');
+} else {
+    systeminc('../system/func/check_access');
+}
+// # Admin-Check wird derzeit nicht eingebunden
+#if(file_exists('func/admincheck.php')) { systeminc('func/admincheck'); } else { systeminc('../system/func/admincheck'); }
 
 // -- MESSENGER INFORMATION -- //
-if(file_exists('func/messenger.php')) { systeminc('func/messenger'); } else { systeminc('../system/func/messenger'); }
+// Einbinden der Messenger-Funktionen
+if (file_exists('func/messenger.php')) {
+    systeminc('func/messenger');
+} else {
+    systeminc('../system/func/messenger');
+}
 
 // -- GAME INFORMATION -- //
-if(file_exists('func/game.php')) { systeminc('func/game'); } else { systeminc('../system/func/game'); }
+// Einbinden der Spiel-Funktionen
+if (file_exists('func/game.php')) {
+    systeminc('func/game');
+} else {
+    systeminc('../system/func/game');
+}
 
 // -- Page INFORMATION -- //
-if(file_exists('func/page.php')) { systeminc('func/page'); } else { systeminc('../system/func/page'); }
+// Einbinden der Seiten-Funktionen
+if (file_exists('func/page.php')) {
+    systeminc('func/page');
+} else {
+    systeminc('../system/func/page');
+}
 
 // -- CAPTCHA -- //
-if(file_exists('func/captcha.php')) { systeminc('func/captcha'); } else { systeminc('../system/func/captcha'); }
+// Einbinden der CAPTCHA-Funktionen
+if (file_exists('func/captcha.php')) {
+    systeminc('func/captcha');
+} else {
+    systeminc('../system/func/captcha');
+}
 
 // -- LANGUAGE SYSTEM -- //
-if(file_exists('func/language.php')) { systeminc('func/language'); } else { systeminc('../system/func/language'); }
+// Einbinden des Sprachsystems und Setzen der Standardsprache
+if (file_exists('func/language.php')) {
+    systeminc('func/language');
+} else {
+    systeminc('../system/func/language');
+}
 
 $_language = new \webspell\Language;
 $_language->setLanguage($default_language);
 
 // -- TEMPLATE SYSTEM -- //
-if(file_exists('func/template.php')) { systeminc('func/template'); } else { systeminc('../system/func/template'); }
+// Einbinden des Template-Systems
+if (file_exists('func/template.php')) {
+    systeminc('func/template');
+} else {
+    systeminc('../system/func/template');
+}
 
-#PluginService.php
-if(file_exists('func/plugin_service.php')) { systeminc('func/plugin_service'); } else { systeminc('../system/func/plugin_service'); }
+// -- PLUGIN SERVICE -- //
+// Einbinden des Plugin-Service
+if (file_exists('func/plugin_service.php')) {
+    systeminc('func/plugin_service');
+} else {
+    systeminc('../system/func/plugin_service');
+}
 
+// Erstellen des Template-Objekts, je nachdem, ob es sich um das Admin-Verzeichnis handelt
 if (!stristr($_SERVER['SCRIPT_NAME'], '/admin/')) {
     $_template = new \Webspell\Template();
 } else {
@@ -382,65 +575,126 @@ if (!stristr($_SERVER['SCRIPT_NAME'], '/admin/')) {
 }
 
 // -- SPAM -- //
-if(file_exists('func/spam.php')) { systeminc('func/spam'); } else { systeminc('../system/func/spam'); }
-
+// Einbinden der Spam-Funktionen
+if (file_exists('func/spam.php')) {
+    systeminc('func/spam');
+} else {
+    systeminc('../system/func/spam');
+}
 
 // -- Tags -- //
-if(file_exists('func/tags.php')) { systeminc('func/tags'); } else { systeminc('../system/func/tags'); }
+// Einbinden der Tags-Funktionen
+if (file_exists('func/tags.php')) {
+    systeminc('func/tags');
+} else {
+    systeminc('../system/func/tags');
+}
 
 // -- Upload -- //
-if(file_exists('func/upload.php')) { systeminc('func/upload'); } else { systeminc('../system/func/upload'); }
+// Einbinden der Upload-Funktionen
+if (file_exists('func/upload.php')) {
+    systeminc('func/upload');
+} else {
+    systeminc('../system/func/upload');
+}
 
-if(file_exists('func/httpupload.php')) { systeminc('func/httpupload'); } else { systeminc('../system/func/httpupload'); }
+if (file_exists('func/httpupload.php')) {
+    systeminc('func/httpupload');
+} else {
+    systeminc('../system/func/httpupload');
+}
 
-if(file_exists('func/urlupload.php')) { systeminc('func/urlupload'); } else { systeminc('../system/func/urlupload'); }
-
+if (file_exists('func/urlupload.php')) {
+    systeminc('func/urlupload');
+} else {
+    systeminc('../system/func/urlupload');
+}
 
 // -- Mod Rewrite -- //
-if(file_exists('modrewrite.php')) { systeminc('modrewrite'); } else { systeminc('../system/modrewrite'); }
+// Einbinden des ModRewrite-Systems
+if (file_exists('modrewrite.php')) {
+    systeminc('modrewrite');
+} else {
+    systeminc('../system/modrewrite');
+}
 
-// -- index content  -- //
-if(file_exists('content.php')) { systeminc('content'); } else { systeminc('../system/content'); }
+// -- INDEX CONTENT -- //
+// Einbinden des Inhalts für die Startseite
+if (file_exists('content.php')) {
+    systeminc('content');
+} else {
+    systeminc('../system/content');
+}
 
-// -- index content  -- //
-#if(file_exists('theme_css.php')) { systeminc('theme_css'); } else { systeminc('../system/theme_css'); }
+// -- INSTALL BASE -- //
+// Einbinden der Installations-Basisklasse
+if (file_exists('func/install_base.php')) {
+    systeminc('func/install_base');
+} else {
+    systeminc('../system/func/install_base');
+}
 
-// -- install_base  -- //
-if(file_exists('func/install_base.php')) { systeminc('func/install_base'); } else { systeminc('../system/func/install_base'); }
-
+// ModRewrite-Objekt initialisieren und aktivieren
 $GLOBALS['_modRewrite'] = new \webspell\ModRewrite();
 if (!stristr($_SERVER['SCRIPT_NAME'], '/admin/') && $modRewrite) {
     $GLOBALS['_modRewrite']->enable();
 }
 
+/**
+ * Bereinigt den Text, indem HTML-Tags entfernt und Sonderzeichen umgewandelt werden.
+ *
+ * @param string $text Der zu bereinigende Text.
+ * @param bool $bbcode Optional, wenn wahr wird BBCode beibehalten.
+ * @param string $calledfrom Der Ursprung des Aufrufs (Standard ist 'root').
+ * @return string Der bereinigte Text.
+ */
 function cleartext($text, $bbcode = true, $calledfrom = 'root')
 {
-    $text = htmlspecialchars($text);
-    $text = strip_tags($text);
-    $text = nl2br($text);
+    $text = htmlspecialchars($text);  // Wandelt Sonderzeichen in HTML-Entities um
+    $text = strip_tags($text);        // Entfernt HTML-Tags
+    $text = nl2br($text);             // Wandelt neue Zeilen in <br> um
 
     return $text;
 }
 
+/**
+ * Bereinigt die Eingabe aus einer normalen Anfrage.
+ *
+ * @param string $text Der zu bereinigende Text.
+ * @return string Der bereinigte Text.
+ */
 function getinput($text)
 {
-    @$text = htmlspecialchars($text);
+    @$text = htmlspecialchars($text); // Wandelt Sonderzeichen in HTML-Entities um
 
     return $text;
 }
 
+/**
+ * Bereinigt die Eingabe aus einem Formular.
+ *
+ * @param string $text Der zu bereinigende Text.
+ * @return string Der bereinigte Text.
+ */
 function getforminput($text)
 {
-    $text = str_replace(array('\r', '\n'), array("\r", "\n"), $text);
-    $text = stripslashes($text);
-    $text = htmlspecialchars($text);
+    $text = str_replace(array('\r', '\n'), array("\r", "\n"), $text); // Zeilenumbrüche richtig konvertieren
+    $text = stripslashes($text); // Entfernt Escape-Zeichen
+    $text = htmlspecialchars($text); // Wandelt Sonderzeichen in HTML-Entities um
 
     return $text;
 }
 
-// -- LOGIN -- //
-if(file_exists('login.php')) { systeminc('login'); } else { systeminc('../system/login'); }
 
+// -- LOGIN -- //
+// Überprüft, ob die Login-Datei existiert, und bindet sie ein
+if (file_exists('login.php')) {
+    systeminc('login');
+} else {
+    systeminc('../system/login');
+}
+
+// Sprachwahl aus Cookie, Session oder automatische Erkennung
 if (isset($_COOKIE['language'])) {
     $_language->setLanguage($_COOKIE['language']);
 } elseif (isset($_SESSION['language'])) {
@@ -454,17 +708,21 @@ if (isset($_COOKIE['language'])) {
 }
 
 // -- SITE VARIABLE -- //
-
+// Setzt die Site-Variable aus der URL-Abfrage
 if (isset($_GET['site'])) {
     $site = $_GET['site'];
 } else {
     $site = '';
 }
+
+// Prüft, ob das Forum geschlossen ist und ob der Benutzer ein Admin ist
 if ($closed && !isanyadmin($userID)) {
-    $dl = mysqli_fetch_array(safe_query("SELECT * FROM `" . PREFIX . "lock` LIMIT 0,1"));
+    $dl = mysqli_fetch_array(safe_query("SELECT * FROM lock LIMIT 0,1"));
     $reason = $dl['reason'];
     showlock($reason);
 }
+
+// Setzt Standardwerte für HTTP_REFERER und REQUEST_URI
 if (!isset($_SERVER['HTTP_REFERER'])) {
     $_SERVER['HTTP_REFERER'] = "";
 }
@@ -477,8 +735,9 @@ if (!isset($_SERVER['REQUEST_URI'])) {
 }
 
 // -- BANNED USERS -- //
+// Überprüft alle Benutzer auf Bannstatus und entfernt abgelaufene Banns
 if (date("dh", $lastBanCheck) != date("dh")) {
-    $get = safe_query("SELECT userID, banned FROM `" . PREFIX . "user` WHERE banned IS NOT NULL");
+    $get = safe_query("SELECT userID, banned FROM users WHERE banned IS NOT NULL");
     $removeBan = array();
     while ($ds = mysqli_fetch_assoc($get)) {
         if ($ds['banned'] != "perm") {
@@ -489,220 +748,205 @@ if (date("dh", $lastBanCheck) != date("dh")) {
     }
     if (!empty($removeBan)) {
         $where = implode(" OR ", $removeBan);
-        safe_query("UPDATE " . PREFIX . "user SET banned=NULL WHERE " . $where);
+        safe_query("UPDATE users SET banned=NULL WHERE " . $where);
     }
-    safe_query("UPDATE " . PREFIX . "settings SET bancheck='" . time() . "'");
+    safe_query("UPDATE settings SET bancheck='" . time() . "'");
 }
 
-$banned = safe_query("SELECT userID, banned, ban_reason FROM `" . PREFIX . "user` WHERE (userID='" . $userID . "' OR ip='" . $GLOBALS[ 'ip' ] . "') AND banned IS NOT NULL");
-    while ($bq = mysqli_fetch_array($banned)) {
-        if ($bq['ban_reason']) {
-            $reason = '<div class="alert alert-warning" role="alert"><br>Grund / Reason: <br>' . $bq['ban_reason'] . '"</div>';
-        } else {
-            $reason = '';
-        }
-        if ($bq['banned']) {
-            $_SESSION = array();
+// Prüft, ob der Benutzer oder seine IP gesperrt ist, und löscht die Sitzung bei Bann
+$banned = safe_query("SELECT userID, banned, ban_reason FROM users WHERE (userID='" . $userID . "' OR ip='" . $GLOBALS['ip'] . "') AND banned IS NOT NULL");
+while ($bq = mysqli_fetch_array($banned)) {
+    if ($bq['ban_reason']) {
+        $reason = '<div class="alert alert-warning" role="alert"><br>Grund / Reason: <br>' . $bq['ban_reason'] . '"</div>';
+    } else {
+        $reason = '';
+    }
+    if ($bq['banned']) {
+        $_SESSION = array();
 
-            // remove session cookie
-            if (isset($_COOKIE[ session_name() ])) {
-                setcookie(session_name(), '', time() - 42000, '/');
-            }
+        // Entfernt das Session-Cookie
+        if (isset($_COOKIE[session_name()])) {
+            setcookie(session_name(), '', time() - 42000, '/');
+        }
 
         session_destroy();
 
-        // remove login cookie
+        // Entfernt das Login-Cookie
         webspell\LoginCookie::clear('ws_auth');
         system_error('<div class="alert alert-warning" role="alert"><strong>Du wurdest gebannt!<br>You have been banned!</strong></div>' . $reason, 0);
-        }
     }
+}
 
 // -- BANNED IPs -- //
-
-safe_query("DELETE FROM `" . PREFIX . "banned_ips` WHERE deltime < '" . time() . "'");
-
+// Löscht abgelaufene Einträge in der Tabelle für gesperrte IPs
+safe_query("DELETE FROM banned_ips WHERE deltime < '" . time() . "'");
 
 // -- HELP MODE -- //
-if(file_exists('help.php')) { systeminc('help'); } else { systeminc('../system/help'); }
+// Überprüft, ob die Hilfeseite existiert und bindet sie ein
+if (file_exists('help.php')) {
+    systeminc('help');
+} else {
+    systeminc('../system/help');
+}
 
+// -- UPDATE LAST LOGIN -- //
+// Wenn die Seite gesetzt ist und der Benutzer angemeldet ist, wird das letzte Login-Datum aktualisiert
 if ($site) {
     if ($userID) {
-        safe_query("UPDATE " . PREFIX . "user SET lastlogin='" . time() . "' WHERE userID='".$userID."'");
+        safe_query("UPDATE users SET lastlogin='" . time() . "' WHERE userID='" . $userID . "'");
     }
 }
-// -- WHO IS - WAS ONLINE -- //
+
+// =======================
+// WHO IS / WAS ONLINE
+// =======================
 function whouseronline() {
-  global $site,$userID;
- #if(isset($site)) { $site = $site; } else { $site = 'startpage'; }
+    global $site, $userID;
 
- if($site) { $site = $site; } else { $site = 'startpage'; }
+    $site = $site ?: 'startpage';
 
-  $timeout = 5; // 1 second
-  $deltime = time() - ($timeout * 60); // IS 1m
-  $wasdeltime = time() - (60 * 60 * 24); // WAS 24h
+    $timeout = 5; // Minuten
+    $deltime = time() - ($timeout * 60);
+    $wasdeltime = time() - (60 * 60 * 24); // 24 Stunden
 
-  safe_query("DELETE FROM `" . PREFIX . "whoisonline` WHERE time < '" . $deltime . "'");  // IS online
-  safe_query("DELETE FROM `" . PREFIX . "whowasonline` WHERE time < '" . $wasdeltime . "'");  // WAS online
+    safe_query("DELETE FROM `whoisonline` WHERE `time` < '$deltime'");
+    safe_query("DELETE FROM `whowasonline` WHERE `time` < '$wasdeltime'");
 
-  if ($site) {
     if ($userID) {
-    // IS online User
-        $anza =
-            mysqli_num_rows(safe_query("SELECT userID FROM `" . PREFIX . "whoisonline` WHERE userID ='".$userID."'"));
-        
-        if($anza > 0) {
-            safe_query("UPDATE " . PREFIX . "whoisonline SET time='" . time() . "', site='".$site."' WHERE userID='".$userID."'");
+        // Aktiver User
+        $check = safe_query("SELECT `userID` FROM `whoisonline` WHERE `userID` = '$userID'");
+        if (mysqli_num_rows($check)) {
+            safe_query("UPDATE `whoisonline` SET `time` = '" . time() . "', `site` = '$site' WHERE `userID` = '$userID'");
         } else {
-            safe_query("INSERT INTO " . PREFIX . "whoisonline (time, userID, site) VALUES ('" . time() . "', '".$userID."', '".$site."')");
+            safe_query("INSERT INTO `whoisonline` (`time`, `userID`, `site`) VALUES ('" . time() . "', '$userID', '$site')");
         }
 
-        // WAS online
-        $anzb = mysqli_num_rows(safe_query("SELECT userID FROM " . PREFIX . "whowasonline WHERE userID='".$userID."'"));
-
-        if($anzb > 0) {
-            safe_query("UPDATE " . PREFIX . "whowasonline SET time='" . time() . "', site='".$site."' WHERE userID='".$userID."'");
+        $check = safe_query("SELECT `userID` FROM `whowasonline` WHERE `userID` = '$userID'");
+        if (mysqli_num_rows($check)) {
+            safe_query("UPDATE `whowasonline` SET `time` = '" . time() . "', `site` = '$site' WHERE `userID` = '$userID'");
         } else {
-            safe_query("INSERT INTO " . PREFIX . "whowasonline (time, userID, site) VALUES ('" . time() . "', '".$userID."', '".$site."')");
+            safe_query("INSERT INTO `whowasonline` (`time`, `userID`, `site`) VALUES ('" . time() . "', '$userID', '$site')");
         }
-
     } else {
-        // IS online Gast 
-        $anzc = mysqli_num_rows(safe_query("SELECT ip FROM `" . PREFIX . "whoisonline` WHERE ip='" . $GLOBALS[ 'ip' ] . "'"));
-
-        if ($anzc  > 0) {
-            safe_query("UPDATE `" . PREFIX . "whoisonline` SET time='" . time() . "', site='$site' WHERE ip ='" . $GLOBALS[ 'ip' ] . "'");
+        // Gast
+        $ip = $GLOBALS['ip'];
+        $check = safe_query("SELECT `ip` FROM `whoisonline` WHERE `ip` = '$ip'");
+        if (mysqli_num_rows($check)) {
+            safe_query("UPDATE `whoisonline` SET `time` = '" . time() . "', `site` = '$site' WHERE `ip` = '$ip'");
         } else {
-            safe_query("INSERT INTO `" . PREFIX . "whoisonline` (time, ip, site) VALUES ('" . time() . "','" . $GLOBALS[ 'ip' ] . "', '$site')");
+            safe_query("INSERT INTO `whoisonline` (`time`, `ip`, `site`) VALUES ('" . time() . "', '$ip', '$site')");
         }
     }
-  }
 }
 
-// -- COUNTER -- //
+// =======================
+// COUNTER
+// =======================
 $time = time();
 $date = date("d.m.Y", $time);
 $deltime = $time - (3600 * 24);
-safe_query("DELETE FROM `" . PREFIX . "counter_iplist` WHERE del<" . $deltime);
 
-if (!mysqli_num_rows(safe_query("SELECT ip FROM `" . PREFIX . "counter_iplist` WHERE ip='" . $GLOBALS[ 'ip' ] . "'"))) {
+safe_query("DELETE FROM `counter_iplist` WHERE `del` < '$deltime'");
+
+$ip = $GLOBALS['ip'];
+if (!mysqli_num_rows(safe_query("SELECT `ip` FROM `counter_iplist` WHERE `ip` = '$ip'"))) {
     if ($userID) {
-        safe_query("UPDATE `" . PREFIX . "user` SET ip='" . $GLOBALS[ 'ip' ] . "' WHERE userID='" . $userID . "'");
+        safe_query("UPDATE `users` SET `ip` = '$ip' WHERE `userID` = '$userID'");
     }
-    safe_query("UPDATE `" . PREFIX . "counter` SET hits=hits+1");
-    safe_query(
-        "INSERT INTO `" . PREFIX . "counter_iplist` (dates, del, ip) VALUES ('" . $date . "', '" . $time . "', '" .
-        $GLOBALS[ 'ip' ] . "')"
-    );
-    if (!mysqli_num_rows(safe_query("SELECT dates FROM `" . PREFIX . "counter_stats` WHERE dates='" . $date . "'"))) {
-        safe_query("INSERT INTO `" . PREFIX . "counter_stats` (`dates`, `count`) VALUES ('" . $date . "', '1')");
+
+    safe_query("UPDATE `counter` SET `hits` = `hits` + 1");
+    safe_query("INSERT INTO `counter_iplist` (`dates`, `del`, `ip`) VALUES ('$date', '$time', '$ip')");
+
+    if (!mysqli_num_rows(safe_query("SELECT `dates` FROM `counter_stats` WHERE `dates` = '$date'"))) {
+        safe_query("INSERT INTO `counter_stats` (`dates`, `count`) VALUES ('$date', '1')");
     } else {
-        safe_query("UPDATE " . PREFIX . "counter_stats SET count=count+1 WHERE dates='" . $date . "'");
+        safe_query("UPDATE `counter_stats` SET `count` = `count` + 1 WHERE `dates` = '$date'");
     }
 }
 
-/* update maxonline if necessary */
-$res = mysqli_fetch_assoc(safe_query("SELECT count(*) as maxuser FROM `" . PREFIX . "whoisonline`"));
-safe_query(
-    "UPDATE `" . PREFIX . "counter`
-    SET maxonline = '" . $res[ 'maxuser' ] . "'
-    WHERE maxonline < '" . $res[ 'maxuser' ] . "'"
-);
+// Update maxonline
+$res = mysqli_fetch_assoc(safe_query("SELECT COUNT(*) as maxuser FROM `whoisonline`"));
+safe_query("UPDATE `counter` SET `maxonline` = '" . $res['maxuser'] . "' WHERE `maxonline` < '" . $res['maxuser'] . "'");
 
-// -- SEARCH ENGINE OPTIMIZATION (SEO) -- //
-if (stristr($_SERVER[ 'PHP_SELF' ], "/admin/") === false) {
-	if(file_exists('seo.php')) { systeminc('seo'); } else { systeminc('../system/seo'); }
+// =======================
+// SEO / PAGE TITLE
+// =======================
+if (stristr($_SERVER['PHP_SELF'], "/admin/") === false) {
+    if (file_exists('seo.php')) {
+        systeminc('seo');
+    } else {
+        systeminc('../system/seo');
+    }
     define('PAGETITLE', getPageTitle());
 } else {
     define('PAGETITLE', $GLOBALS['hp_title']);
 }
 
-// -- RSS FEEDS -- //
-if(file_exists('func/feeds.php')) { systeminc('func/feeds'); } else { systeminc('../system/func/feeds'); }
+// =======================
+// RSS FEEDS
+// =======================
+if (file_exists('func/feeds.php')) {
+    systeminc('func/feeds');
+} else {
+    systeminc('../system/func/feeds');
+}
 
-// -- Email -- //
-if(file_exists('func/email.php')) { systeminc('src/func/email'); } else { systeminc('../system/func/email'); }
+// =======================
+// EMAIL
+// =======================
+if (file_exists('func/email.php')) {
+    systeminc('src/func/email');
+} else {
+    systeminc('../system/func/email');
+}
 
+// =======================
+// DIRECTORY CLEANUP
+// =======================
 function recursiveRemoveDirectory($directory)
 {
     foreach (glob("{$directory}/*") as $file) {
-        if (is_dir($file)) {
-            recursiveRemoveDirectory($file);
-        } else {
-            unlink($file);
-        }
+        is_dir($file) ? recursiveRemoveDirectory($file) : unlink($file);
     }
-    @rmdir(@$directory);
+    @rmdir($directory);
 }
 
+// =======================
+// URL / PROTOKOLL HELPER
+// =======================
+function getCurrentUrl() {
+    return ((empty($_SERVER['HTTPS'])) ? 'http://' : 'https://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+}
 
-// Gibt die Aktuelle Domain aus mit Datei anhang und Prüft ob es eine HTTPS verbindung ist
- function getCurrentUrl() {
-        return ((empty($_SERVER['HTTPS'])) ? 'http://' : 'https://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-    }
-// Prüft ob HTTP oder HTTPS in einen Link gesetzt ist und fügt es hinzu
 function httpprotokollsetzen($string) {
-    if(stristr($string, 'https://') === FALSE) {
-     $protokoll = str_replace("$string", "http://", "http://$string");
+    if (stristr($string, 'https://') === false) {
+        return "http://$string";
     } else {
-    $protokoll = str_replace("$string", "https://", "https://$string");
-        }
-    return $protokoll;
+        return "https://$string";
+    }
 }
 
-// Prüft ob HTTP oder HTTPS in einen Link gesetzt ist
 function httpprotokoll($string) {
-    // Überprüft, ob die URL mit http:// oder https:// beginnt
     if (strpos($string, 'https://') === 0) {
-        // Die URL beginnt mit https://
         return 'https://';
     } elseif (strpos($string, 'http://') === 0) {
-        // Die URL beginnt mit http://
         return 'http://';
     } else {
-        // Wenn die URL kein Protokoll hat, wird https:// als Standard verwendet
-        return 'https://'; // Alternativ könnte hier auch http:// als Standard verwendet werden
+        return 'https://'; // Fallback
     }
 }
 
-// zum Prüfen
-#echo httpprotokoll("https://www.example.com");  // Gibt https:// zurück
-#echo httpprotokoll("http://www.example.com");   // Gibt http:// zurück
-#echo httpprotokoll("www.example.com");          // Gibt https:// zurück (Standard)
-
-// Rechte für Forum
-function usergrpexists($fgrID)
-{
-    return (mysqli_num_rows(safe_query("SELECT `fgrID` FROM `" . PREFIX . "plugins_forum_groups` WHERE `fgrID` = " . (int)$fgrID)) > 0);
+// =======================
+// FORUM GROUP CHECK
+// =======================
+function usergrpexists($fgrID) {
+    return (mysqli_num_rows(safe_query("SELECT `fgrID` FROM `plugins_forum_groups` WHERE `fgrID` = " . (int)$fgrID)) > 0);
 }
 
-// Funktion, die behandelt werden soll, wenn die Plugin-Einstellungstabelle nicht vorhanden ist
+// =======================
+// TABLE EXISTENCE CHECK
+// =======================
 function tableExists($table) {
-    // Versuchen, die Abfrage auszuführen
     $result = safe_query("SHOW TABLES LIKE '" . $table . "'");
-    
-    // Fehlerbehandlung für den Fall, dass die Abfrage fehlschlägt
-    if (!$result) {
-        // Hier könnte man eine Fehlermeldung ausgeben oder loggen
-        return false;  // Rückgabe false im Fehlerfall
-    }
-
-    // Überprüfung, ob mindestens eine Zeile gefunden wurde (d.h. die Tabelle existiert)
-    return mysqli_num_rows($result) > 0;
+    return $result && mysqli_num_rows($result) > 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-// Diese Funktion dient zum sicheren Escapen von Eingabewerten für MySQLi
-function escape($string) {
-    global $_database;  // $_database ist die MySQLi-Verbindung
-    return mysqli_real_escape_string($_database, $string);
-}
-?>

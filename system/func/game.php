@@ -28,103 +28,151 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
 */
 
+/**
+ * Gibt die Anzahl der Kommentare zu einem bestimmten CW zurück
+ *
+ * @param int $cwID - Die ID des CWs
+ * @return int - Anzahl der Kommentare
+ */
 function getanzcwcomments($cwID)
 {
     return mysqli_num_rows(
         safe_query(
-            "SELECT commentID FROM `" . PREFIX . "comments` WHERE `parentID` = " .(int)$cwID . " AND `type` = 'cw'"
+            "SELECT commentID FROM `plugins_comments` WHERE `parentID` = " . (int)$cwID . " AND `type` = 'cw'"
         )
     );
 }
 
+/**
+ * Gibt eine HTML-Option-Liste aller Squads zurück
+ *
+ * @return string - HTML-Optionen für alle Squads
+ */
 function getsquads()
 {
     $squads = "";
-    $ergebnis = safe_query("SELECT * FROM `" . PREFIX . "plugins_squads`");
-    while ($ds = mysqli_fetch_array($ergebnis)) {
-        $squads .= '<option value="' . $ds[ 'squadID' ] . '">' . $ds[ 'name' ] . '</option>';
+    $result = safe_query("SELECT * FROM `plugins_squads`");
+
+    while ($ds = mysqli_fetch_array($result)) {
+        $squads .= '<option value="' . $ds['squadID'] . '">' . htmlspecialchars($ds['name']) . '</option>';
     }
+
     return $squads;
 }
 
+/**
+ * Gibt eine HTML-Option-Liste aller Squads zurück, die als "Gamesquads" markiert sind
+ *
+ * @return string - HTML-Optionen für alle Gamesquads
+ */
 function getgamesquads()
 {
     $squads = '';
-    $ergebnis = safe_query("SELECT * FROM `" . PREFIX . "plugins_squads` WHERE `gamesquad` = 1");
-    while ($ds = mysqli_fetch_array($ergebnis)) {
-        $squads .= '<option value="' . $ds[ 'squadID' ] . '">' . $ds[ 'name' ] . '</option>';
+    $result = safe_query("SELECT * FROM `plugins_squads` WHERE `gamesquad` = 1");
+
+    while ($ds = mysqli_fetch_array($result)) {
+        $squads .= '<option value="' . $ds['squadID'] . '">' . htmlspecialchars($ds['name']) . '</option>';
     }
+
     return $squads;
 }
 
+/**
+ * Gibt den Namen eines Squads basierend auf der SquadID zurück
+ *
+ * @param int $squadID - Die ID des Squads
+ * @return string - Der Name des Squads
+ */
 function getsquadname($squadID)
 {
     $ds = mysqli_fetch_array(
         safe_query(
-            "SELECT `name` FROM `" . PREFIX . "plugins_squads` WHERE `squadID` = " . (int)$squadID
+            "SELECT `name` FROM `plugins_squads` WHERE `squadID` = " . (int)$squadID
         )
     );
-    return @$ds[ 'name' ];
+    return @$ds['name'];
 }
 
+/**
+ * Überprüft, ob ein Benutzer Mitglied eines bestimmten Squads ist
+ *
+ * @param int $userID - Die ID des Benutzers
+ * @param int $squadID - Die ID des Squads
+ * @return bool - True, wenn der Benutzer Mitglied des Squads ist, sonst False
+ */
 function issquadmember($userID, $squadID)
 {
     return (
         mysqli_num_rows(
             safe_query(
-                "SELECT
-                    `sqmID`
-                FROM
-                    `" . PREFIX . "plugins_squads_members`
-                WHERE
-                    `userID` = " . (int)$userID . " AND
-                    `squadID` = " . (int)$squadID
+                "SELECT `sqmID` FROM `plugins_squads_members` WHERE `userID` = " . (int)$userID . " AND `squadID` = " . (int)$squadID
             )
-        ) > 0);
+        ) > 0
+    );
 }
 
+/**
+ * Überprüft, ob ein Squad als "Gamesquad" markiert ist
+ *
+ * @param int $squadID - Die ID des Squads
+ * @return bool - True, wenn es sich um ein Gamesquad handelt, sonst False
+ */
 function isgamesquad($squadID)
 {
     return (
         mysqli_num_rows(
             safe_query(
-                "SELECT
-                    `squadID`
-                FROM
-                    `" . PREFIX . "plugins_squads`
-                WHERE
-                    `squadID` = " . (int)$squadID . " AND
-                    gamesquad = 1"
+                "SELECT `squadID` FROM `plugins_squads` WHERE `squadID` = " . (int)$squadID . " AND `gamesquad` = 1"
             )
-        ) > 0);
+        ) > 0
+    );
 }
 
+/**
+ * Gibt den Namen eines Spiels basierend auf dem Tag zurück
+ *
+ * @param string $tag - Das Tag des Spiels
+ * @return string - Der Name des Spiels
+ */
 function getgamename($tag)
 {
-    $get = safe_query("SELECT `name` FROM `" . PREFIX . "plugins_games_pic` WHERE `tag` = '$tag'");
-    if(mysqli_num_rows($get) > 0) {
+    $get = safe_query("SELECT `name` FROM `plugins_games_pic` WHERE `tag` = '$tag'");
+
+    if (mysqli_num_rows($get) > 0) {
         $ds = mysqli_fetch_array($get);
-    return $ds[ 'name' ];
+        return $ds['name'];
     } else {
         return '';
     }
 }
 
+/**
+ * Überprüft, ob ein bestimmtes Spiel-Tag existiert
+ *
+ * @param string $tag - Das Tag des Spiels
+ * @return bool - True, wenn das Tag existiert, sonst False
+ */
 function is_gametag($tag)
 {
-    return (mysqli_num_rows(safe_query("SELECT `name` FROM `" . PREFIX . "plugins_games_pic` WHERE `tag` = '$tag'")) > 0);
+    return (mysqli_num_rows(safe_query("SELECT `name` FROM `plugins_games_pic` WHERE `tag` = '$tag'")) > 0);
 }
 
+/**
+ * Gibt eine HTML-Option-Liste aller Spiele zurück
+ *
+ * @param string|null $selected - Das Tag des standardmäßig ausgewählten Spiels (optional)
+ * @return string - HTML-Optionen für alle Spiele
+ */
 function getGamesAsOptionList($selected = null)
 {
-    $gamesa = safe_query("SELECT * FROM `" . PREFIX . "plugins_games_pic` ORDER BY `name`");
+    $gamesa = safe_query("SELECT * FROM `plugins_games_pic` ORDER BY `name`");
     $list = "";
 
     while ($ds = mysqli_fetch_array($gamesa)) {
-        if ($ds[ 'tag' ] == $selected) {
-            $list .= '<option value="' . $ds[ 'tag' ] . '" selected="selected">' . $ds[ 'name' ] . '</option>';
+        if ($ds['tag'] == $selected) {
+            $list .= '<option value="' . $ds['tag'] . '" selected="selected">' . htmlspecialchars($ds['name']) . '</option>';
         } else {
-            $list .= '<option value="' . $ds[ 'tag' ] . '">' . $ds[ 'name' ] . '</option>';
+            $list .= '<option value="' . $ds['tag'] . '">' . htmlspecialchars($ds['name']) . '</option>';
         }
     }
 

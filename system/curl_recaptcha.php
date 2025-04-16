@@ -30,33 +30,13 @@
 
 function getCurlData($url)
 {
-    $curl = curl_init();
-
-    curl_setopt_array($curl, [
-        CURLOPT_URL            => $url,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT        => 10,
-        CURLOPT_FOLLOWLOCATION => true, // Automatische Weiterleitungen erlauben
-        CURLOPT_SSL_VERIFYPEER => true, // SSL-Zertifikat prüfen
-        CURLOPT_SSL_VERIFYHOST => 2,    // Hostname mit Zertifikat abgleichen
-        CURLOPT_USERAGENT      => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36",
-    ]);
-
-    $curlData = curl_exec($curl);
-    $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-    $error = curl_error($curl);
-
-    curl_close($curl);
-
-    if ($curlData === false) {
-        error_log("cURL Error: " . $error);
-        return null; // Oder eine Fehlernachricht
-    }
-
-    if ($httpCode >= 400) {
-        error_log("HTTP Error $httpCode: Fehler beim Abrufen der URL: $url");
-        return null;
-    }
-
-    return $curlData;
+		$curl = curl_init();
+		curl_setopt($curl, CURLOPT_URL, $url);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($curl, CURLOPT_TIMEOUT, 10);
+		curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2.16) Gecko/20110319 Firefox/3.6.16");
+		$curlData = curl_exec($curl);
+		curl_close($curl);
+		return $curlData;
+}
 ?>

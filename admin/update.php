@@ -233,7 +233,7 @@ if (!$getnew = $update) {
         '; 
       }
 
-  $settings = safe_query("SELECT * FROM " . PREFIX . "settings");
+  $settings = safe_query("SELECT * FROM "settings");
   $ds = mysqli_fetch_array($settings);
   $dir = $v / 18;
   $versionsplit = str_split($dir);

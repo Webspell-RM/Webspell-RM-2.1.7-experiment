@@ -117,7 +117,7 @@ if (isset($_GET[ 'delete' ])) {
     if (!$isdropdown) {
         $isdropdown = 0;
     }
-        $anz = mysqli_num_rows(safe_query("SELECT mnavID FROM " . PREFIX . "navigation_website_main"));
+        $anz = mysqli_num_rows(safe_query("SELECT mnavID FROM "navigation_website_main"));
         safe_query(
             "INSERT INTO " . PREFIX . "navigation_website_main ( mnavID, name, url, windows, isdropdown, sort )
             values( '', '" . $_POST[ 'name' ] . "', '" . $url . "', '" . $windows . "', '" . $isdropdown . "', '1' )"
@@ -475,7 +475,7 @@ $thergebnis = safe_query("SELECT * FROM " . PREFIX . "settings_themes WHERE acti
     </tr></thead>';
 
     $ergebnis = safe_query("SELECT * FROM " . PREFIX . "navigation_website_main ORDER BY sort");
-    $tmp = mysqli_fetch_assoc(safe_query("SELECT count(mnavID) as cnt FROM " . PREFIX . "navigation_website_main"));
+    $tmp = mysqli_fetch_assoc(safe_query("SELECT count(mnavID) as cnt FROM "navigation_website_main"));
     $anz = $tmp[ 'cnt' ];
 $CAPCLASS = new \webspell\Captcha;
     $CAPCLASS->createTransaction();

@@ -44,7 +44,7 @@ $ergebnis = safe_query("SELECT * FROM `".PREFIX."plugins_footer`");
 if (mysqli_num_rows($ergebnis)) {
     while ($ds = mysqli_fetch_array($ergebnis)) {
 
-        $settings = safe_query("SELECT * FROM " . PREFIX . "plugins_footer_target");
+        $settings = safe_query("SELECT * FROM "plugins_footer_target");
         $db = mysqli_fetch_array($settings);
 
         // Generiere target="_blank" für Links, falls benötigt

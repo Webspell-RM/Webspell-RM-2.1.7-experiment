@@ -17,8 +17,5 @@ $language_array = array(
     'verify_data'       =>'Bitte &uuml;berpr&uuml;fe Deine Daten!',
     'view_site'         =>'Betrachte Deine Seite',
     'write_failed'      =>'Das Beschreiben der Datei war nicht m&ouml;glich. Bitte vergewissere dich, dass dein Webserver Schreibzugriff auf die sql.php hat (CHMOD 777).<br>Sollte keine sql.php vorhanden sein bennene die sqlsample.php in sql.php um und aktualisiere deinen Browser!',
-    'error_fetching_tables' => 'Fehler beim Abrufen der Tabellen.',
-    'tables_installed' => 'Installierte Tabellen',
-    'tables_installed_info' => 'Tabellen wurden erfolgreich installiert.',
 );
 ?>

@@ -393,22 +393,22 @@ if ($action == "user") {
         $_language->module[ "delete_all" ] . '" />';
 
     if (isset($_GET[ 'del_option' ]) && $_GET[ 'del_option' ] == "del_all") {
-        $get = safe_query("SELECT userID FROM " . PREFIX . "plugins_forum_topics_spam");
+        $get = safe_query("SELECT userID FROM "plugins_forum_topics_spam");
         while ($ds = mysqli_fetch_assoc($get)) {
             safe_query(
                 "UPDATE " . PREFIX . "user SET banned='perm', ban_reason='Spam' WHERE userID='" . $ds[ "userID" ] . "'"
             );
         }
-        safe_query("DELETE FROM " . PREFIX . "spam_forum_topics");
+        safe_query("DELETE FROM "spam_forum_topics");
 
-        $get = safe_query("SELECT poster FROM " . PREFIX . "plugins_forum_posts_spam");
+        $get = safe_query("SELECT poster FROM "plugins_forum_posts_spam");
         while ($ds = mysqli_fetch_assoc($get)) {
             safe_query(
                 "UPDATE " . PREFIX . "user SET banned='perm', ban_reason='Spam' WHERE userID='" . $ds[ "poster" ] . "'"
             );
         }
-        safe_query("DELETE FROM " . PREFIX . "plugins_forum_posts_spam");
-        safe_query("DELETE FROM " . PREFIX . "spam_comments");
+        safe_query("DELETE FROM "plugins_forum_posts_spam");
+        safe_query("DELETE FROM "spam_comments");
     } elseif (isset($_GET[ 'del_option' ]) && $_GET[ 'del_option' ] == "delete_topic") {
         $topicID = $_GET[ 'topicID' ];
         safe_query("DELETE FROM " . PREFIX . "spam_forum_topics WHERE topicID='" . $topicID . "'");

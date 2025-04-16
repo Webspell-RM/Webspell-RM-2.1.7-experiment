@@ -1073,7 +1073,7 @@ $result = $backupDatabase->backupTables($changed) ? 'OK' : 'KO';
     $CAPCLASS->createTransaction();
     $hash = $CAPCLASS->getHash();
 
-    $select_query = "SELECT * FROM " . PREFIX . "backups";
+    $select_query = "SELECT * FROM "backups";
     $result = safe_query($select_query);
     $backups = array();
     while ($ds = mysqli_fetch_array($result)) {

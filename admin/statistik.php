@@ -171,7 +171,7 @@ echo '<div class="card p-4 mb-4">';
 echo '<h3 class="mb-4">👤 Benutzerstatistiken</h3>';
 
 // Gesamtanzahl Benutzer
-$res = safe_query("SELECT COUNT(*) AS total_users FROM " . PREFIX . "user");
+$res = safe_query("SELECT COUNT(*) AS total_users FROM "user");
 $total_users = mysqli_fetch_array($res)['total_users'];
 
 // Neue Benutzer

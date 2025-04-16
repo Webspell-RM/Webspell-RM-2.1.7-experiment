@@ -38,7 +38,7 @@ $qs_arr = array();
           $getsite = $qs_arr['site'];
         }
 
-    $ergebnis=safe_query("SELECT * FROM ".PREFIX."settings_expansion WHERE active = '1'");
+    $ergebnis=safe_query("SELECT * FROM settings_expansion WHERE active = '1'");
     $ds=mysqli_fetch_array($ergebnis);
 
 echo'<!-- ======= Navigation ======= -->

@@ -10,7 +10,7 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
  * @version         webspell-rm                                                                              *
  *                                                                                                           *
- * @copyright       2018-2025 by webspell-rm.de                                                              *
+ * @copyright       2018-2023 by webspell-rm.de                                                              *
  * @support         For Support, Plugins, Templates and the Full Script visit webspell-rm.de                 *
  * @website         <https://www.webspell-rm.de>                                                             *
  * @forum           <https://www.webspell-rm.de/forum.html>                                                  *

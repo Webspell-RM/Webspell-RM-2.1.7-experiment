@@ -29,10 +29,20 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
  */
 
-#error_reporting(E_ALL);
-#ini_set('display_errors', 1);
+#session_start(); // Session starten
+
+#if (isset($_SESSION['userID']) && isset($_SESSION['role'])) {
+    // Wenn der Benutzer bereits eingeloggt ist, Weiterleitung zum Admincenter
+#    header('Location: admin/admincenter.php');
+#    exit;
+#}
 
 
+
+// Fehlernachricht anzeigen, falls aus admincheck.php weitergeleitet wurde
+#if (isset($_GET['error']) && $_GET['error'] === 'login_required') {
+#    echo "<div class='alert alert-warning'>Bitte melde dich zuerst an.</div>";
+#}
 
 chdir('../');
 include('system/sql.php');
@@ -50,19 +60,19 @@ if (isset($_GET['site'])) {
 } elseif (isset($site)) {
 	unset($site);
 }
-$cookievalueadmin = 'false';
-if (isset($_COOKIE['ws_cookie'])) {
-	$cookievalueadmin = 'accepted';
-}
+#$cookievalueadmin = 'false';
+#if (isset($_COOKIE['ws_cookie'])) {
+#	$cookievalueadmin = 'accepted';
+#}
 
 // Beispiel: Benutzer-ID aus der Sitzung erhalten (falls vorhanden)
 $userID = $_SESSION['userID'] ?? 0; // Falls keine userID, dann 0
 
 // Überprüfen, ob der Benutzer eine Rolle zugewiesen hat
-if (!$userID || !checkUserRoleAssignment($userID)) {
-    die('<div style="background-color: red; color: white; padding: 10px; border-radius: 5px;">
-    Zugriff verweigert: Sie haben keine Rolle zugewiesen bekommen.</div>');
-}
+#if (!$userID || !checkUserRoleAssignment($userID)) {
+#    die('<div style="background-color: red; color: white; padding: 10px; border-radius: 5px;">
+#    Zugriff verweigert: Sie haben keine Rolle zugewiesen bekommen.</div>');
+#}
 
 
 if (!isset($_SERVER['REQUEST_URI'])) {
@@ -75,7 +85,7 @@ if (!isset($_SERVER['REQUEST_URI'])) {
 function getplugincatID($catname)
 {
     // Bereite die SQL-Anfrage vor, um SQL-Injection zu verhindern
-    $stmt = $_database->prepare("SELECT * FROM `" . PREFIX . "navigation_dashboard_categories` WHERE name LIKE ?");
+    $stmt = $_database->prepare("SELECT * FROM `navigation_dashboard_categories` WHERE name LIKE ?");
     $searchTerm = '%' . $catname . '%';
     $stmt->bind_param('s', $searchTerm);  // 's' für String
     $stmt->execute();
@@ -84,7 +94,7 @@ function getplugincatID($catname)
     // Prüfen, ob eine Kategorie gefunden wurde
     if ($ds = $result->fetch_assoc()) {
         // Kategorie gefunden, nun Links überprüfen
-        $stmt2 = $_database->prepare("SELECT * FROM `" . PREFIX . "navigation_dashboard_links` WHERE catID = ?");
+        $stmt2 = $_database->prepare("SELECT * FROM `navigation_dashboard_links` WHERE catID = ?");
         $stmt2->bind_param('i', $ds['catID']);  // 'i' für Integer
         $stmt2->execute();
         $result2 = $stmt2->get_result();
@@ -101,11 +111,13 @@ function getplugincatID($catname)
     }
 }
 
+
+
 function dashnavi() {
     global $userID;  // Stellen Sie sicher, dass $userID korrekt gesetzt ist
 
     $links = '';
-    $ergebnis = safe_query("SELECT * FROM " . PREFIX . "navigation_dashboard_categories ORDER BY sort");
+    $ergebnis = safe_query("SELECT * FROM navigation_dashboard_categories ORDER BY sort");
 
     while ($ds = mysqli_fetch_array($ergebnis)) {
         $name = $ds['name'];
@@ -118,7 +130,7 @@ function dashnavi() {
         if (checkAccessRights($userID, $ds['catID'])) {  // Übergebe $userID an die Funktion
             $links .= '<li><a class=\'has-arrow\' aria-expanded=\'false\' href=\'#\'><i class=\'' . $fa_name . '\' style="font-size: 1rem;"></i> ' . $name . '</a><ul class=\'nav nav-third-level\'>';
 
-            $catlinks = safe_query("SELECT * FROM " . PREFIX . "navigation_dashboard_links WHERE catID='" . $ds['catID'] . "' ORDER BY sort");
+            $catlinks = safe_query("SELECT * FROM navigation_dashboard_links WHERE catID='" . $ds['catID'] . "' ORDER BY sort");
 
             while ($db = mysqli_fetch_array($catlinks)) {
                 $linkID = $db['linkID'];  // Setze die Link ID
@@ -138,8 +150,8 @@ function dashnavi() {
 }
 
 if ($userID && !isset($_GET['userID']) && !isset($_POST['userID'])) {
-	$ds = mysqli_fetch_array(safe_query("SELECT registerdate FROM `" . PREFIX . "user` WHERE userID='" . $userID . "'"));
-	$username = '<a class="nav-link nav-link-3" href="../index.php?site=profile&amp;id=' . $userID . '">' . getnickname($userID) . '</a>';
+	$ds = mysqli_fetch_array(safe_query("SELECT registerdate FROM `users` WHERE userID='" . $userID . "'"));
+	$username = '<a class="nav-link nav-link-3" href="../index.php?site=profile&amp;id=' . $userID . '">' . getusername($userID) . '</a>';
 	$lastlogin = getformatdatetime($_SESSION['ws_lastlogin']);
 	$registerdate = getformatdatetime($ds['registerdate']);
 
@@ -154,6 +166,8 @@ if ($getavatar = getavatar($userID)) {
 } else {
 	$l_avatar = "noavatar.png";
 }
+
+
 
 ?>
 <!DOCTYPE html>
@@ -227,7 +241,7 @@ if ($getavatar = getavatar($userID)) {
 				<a class="navbar-brand" href="/admin/admincenter.php">
 					<img src="/admin/images/rm.png" style="width: 230px;margin-top: 7px; margin-bottom: 7px;" alt="setting">
 				</a><br>
-				<img id="avatar-big" style="height: 90px;margin-top: 9px;margin-bottom: 9px; -webkit-box-shadow: 2px 2px 15px 3px rgba(0,0,0,0.54);box-shadow: 2px 2px 15px 3px rgba(0,0,0,0.54);border: 3px solid #fe821d;border-radius: 25px;--bs-tooltip-bg: #fe821d;" src="/images/avatars/<?php echo $l_avatar ?>" data-toggle="tooltip" data-html="true" data-bs-placement="right" data-bs-original-title="<?php echo getnickname($userID) ?>" class="rounded-circle profile_img">
+				<img id="avatar-big" style="height: 90px;margin-top: 9px;margin-bottom: 9px; -webkit-box-shadow: 2px 2px 15px 3px rgba(0,0,0,0.54);box-shadow: 2px 2px 15px 3px rgba(0,0,0,0.54);border: 3px solid #fe821d;border-radius: 25px;--bs-tooltip-bg: #fe821d;" src="/images/avatars/<?php echo $l_avatar ?>" data-toggle="tooltip" data-html="true" data-bs-placement="right" data-bs-original-title="<?php echo getusername($userID) ?>" class="rounded-circle profile_img">
 				<div class="sidebar-nav col1lapse navbar-collapse" id="navbarNavDropdown">
 					<ul class="nav metismenu text-start navbar-nav" id="side-bar">
 						<li class="sidebar-head mm-active">
@@ -241,6 +255,9 @@ if ($getavatar = getavatar($userID)) {
 				<!-- Copy -->
 				<div class="copy">
 					<em>Admin Template by <a href="https://www.webspell-rm.de" target="_blank" rel="noopener">Webspell-RM</a></em>
+					<form action="logout.php" method="post">
+    <button type="submit" name="logout">Logout</button>
+</form>
 				</div>
 			</div>
 		</nav>

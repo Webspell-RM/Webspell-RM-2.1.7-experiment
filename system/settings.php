@@ -29,39 +29,36 @@
 */
 
 // -- SYSTEM ERROR DISPLAY -- //
-include('error.php');
-ini_set('display_errors', 1);
+include('error.php'); // Fehlerbehandlungsdatei einbinden
+ini_set('display_errors', 1); // Alle Fehler im Entwicklung-Modus anzeigen
 
 // -- PHP FUNCTION CHECK -- //
-
 if (!function_exists('mb_substr')) {
-    system_error('PHP Multibyte String Support is not enabled.', 0);
+    // Überprüfen, ob die mbstring-Erweiterung aktiviert ist
+    system_error('PHP Multibyte String Support is not enabled.', 0); // Fehler ausgeben, wenn die Funktion nicht existiert
 }
 
 // -- ERROR REPORTING -- //
-define('DEBUG', "ON"); // ON = development-mode | OFF = public mode
+define('DEBUG', "ON"); // Debugging-Modus (ON für Entwicklungsmodus, OFF für Produktionsmodus)
 if (DEBUG === 'ON') {
-    error_reporting(E_ALL);
+    error_reporting(E_ALL); // Alle Fehler im Entwicklungsmodus anzeigen
 } else {
-    error_reporting(0);
+    error_reporting(0); // Fehler im Produktionsmodus unterdrücken
 }
 
 // -- SET ENCODING FOR MB-FUNCTIONS -- //
-
-mb_internal_encoding("UTF-8");
+mb_internal_encoding("UTF-8"); // Die interne Zeichencodierung auf UTF-8 setzen
 
 // -- SET INCLUDE-PATH FOR vendors --//
-
- $path = __DIR__.DIRECTORY_SEPARATOR.'components';
- set_include_path(get_include_path() . PATH_SEPARATOR .$path);
+$path = __DIR__.DIRECTORY_SEPARATOR.'components'; // Pfad zum Verzeichnis mit den Komponenten setzen
+set_include_path(get_include_path() . PATH_SEPARATOR .$path); // Include-Pfad für externe Bibliotheken erweitern
 
 // -- SET HTTP ENCODING -- //
-
-header('content-type: text/html; charset=utf-8');
+header('content-type: text/html; charset=utf-8'); // Den HTTP-Header für die richtige Zeichencodierung setzen
 
 // -- INSTALL CHECK -- //
-
 if (DEBUG == "OFF" && file_exists('install/index.php')) {
+    // Überprüfen, ob das Installationsverzeichnis noch vorhanden ist, falls der Debug-Modus ausgeschaltet ist
     system_error(
         'The install-folder exists. Did you run the <a href="install/">Installer</a>?<br>
         If yes, please remove the install-folder.',
@@ -71,34 +68,25 @@ if (DEBUG == "OFF" && file_exists('install/index.php')) {
 
 // -- CONNECTION TO MYSQL -- //
 if (!isset($GLOBALS[ '_database' ])) {
-    $_database = @new mysqli($host, $user, $pwd, $db);
+    // Überprüfen, ob die Datenbankverbindung bereits existiert
+    $_database = @new mysqli($host, $user, $pwd, $db); // Verbindung zur MySQL-Datenbank herstellen
 
     if ($_database->connect_error) {
+        // Falls keine Verbindung zur Datenbank hergestellt werden kann, Fehler anzeigen
         system_error('Cannot connect to MySQL-Server');
     }
 
-    $_database->query("SET NAMES 'utf8mb4'");
-    $_database->query("SET sql_mode = ''");
+    $_database->query("SET NAMES 'utf8mb4'"); // Zeichencodierung für die MySQL-Verbindung auf UTF-8MB4 setzen
+    $_database->query("SET sql_mode = ''"); // Den SQL-Modus zurücksetzen, um Fehler zu vermeiden
 }
 
-
 // -- GENERAL PROTECTIONS -- //
-
 if (function_exists("globalskiller") === false) {
-    function globalskiller()
-    {
-        // Kills all non-system variables
+    // Sicherstellen, dass die Funktion zur Zerstörung nicht-systemrelevanter Variablen vorhanden ist
+    function globalskiller() {
+        // Löscht alle nicht-systemrelevanten globalen Variablen
         $global = array(
-            'GLOBALS',
-            '_POST',
-            '_GET',
-            '_COOKIE',
-            '_FILES',
-            '_SERVER',
-            '_ENV',
-            '_REQUEST',
-            '_SESSION',
-            '_database'
+            'GLOBALS', '_POST', '_GET', '_COOKIE', '_FILES', '_SERVER', '_ENV', '_REQUEST', '_SESSION', '_database'
         );
 
         // Durchlaufe alle globalen Variablen
@@ -117,92 +105,67 @@ if (function_exists("globalskiller") === false) {
 }
 
 if (function_exists("unset_array") === false) {
-    function unset_array($array)
-    {
+    // Sicherstellen, dass die Funktion zum Löschen von Arrays existiert
+    function unset_array($array) {
         foreach ($array as $key) {
             if (is_array($key)) {
-                unset_array($key);
+                unset_array($key); // Rekursiv Arrays löschen
             } else {
-                unset($key);
+                unset($key); // Lösche einzelne Elemente
             }
         }
     }
 }
 
-globalskiller();
+globalskiller(); // Funktion aufrufen, um nicht benötigte globale Variablen zu löschen
 
 if (isset($_GET[ 'site' ])) {
+    // Wenn der Parameter 'site' in der URL vorhanden ist, diesen setzen
     $site = $_GET[ 'site' ];
 } else {
-    $site = null;
+    $site = null; // Andernfalls auf null setzen
 }
+
+// -- VALIDATE QUERY STRING -- //
 if ($site != "search") {
-    $request = strtolower(urldecode($_SERVER[ 'QUERY_STRING' ]));
+    // Überprüfen, ob die Seite nicht 'search' ist, um SQL-Injektionen zu verhindern
+    $request = strtolower(urldecode($_SERVER[ 'QUERY_STRING' ])); // Anfrage-String in Kleinbuchstaben dekodieren
     $protarray = array(
-        "union",
-        "select",
-        "into",
-        "where",
-        "update ",
-        "from",
-        "/*",
-        "set ",
-        PREFIX . "user ",
-        PREFIX . "user(",
-        PREFIX . "user`",
-        PREFIX . "user_groups",
-        "phpinfo",
-        "escapeshellarg",
-        "exec",
-        "fopen",
-        "fwrite",
-        "escapeshellcmd",
-        "passthru",
-        "proc_close",
-        "proc_get_status",
-        "proc_nice",
-        "proc_open",
-        "proc_terminate",
-        "shell_exec",
-        "system",
-        "telnet",
-        "ssh",
-        "cmd",
-        "mv",
-        "chmod",
-        "chdir",
-        "locate",
-        "killall",
-        "passwd",
-        "kill",
-        "script",
-        "bash",
-        "perl",
-        "mysql",
-        "~root",
-        ".history",
-        "~nobody",
-        "getenv"
+        "union", "select", "into", "where", "update ", "from", "/*", "set ", "users", // Tabelle geändert von 'user' auf 'users'
+        "users(", "users`", "user_groups", "phpinfo", "escapeshellarg", "exec", "fopen", "fwrite",
+        "escapeshellcmd", "passthru", "proc_close", "proc_get_status", "proc_nice", "proc_open",
+        "proc_terminate", "shell_exec", "system", "telnet", "ssh", "cmd", "mv", "chmod", "chdir",
+        "locate", "killall", "passwd", "kill", "script", "bash", "perl", "mysql", "~root", ".history",
+        "~nobody", "getenv"
     );
+    // Ersetze alle potenziell gefährlichen Teile der Anfrage durch '*'
     $check = str_replace($protarray, '*', $request);
     if ($request != $check) {
+        // Wenn sich die Anfrage nach der Ersetzung unterscheidet, wurde eine potenziell gefährliche Anfrage entdeckt
         system_error("Invalid request detected.");
     }
 }
 
+
+// -- SECURITY SLASHES FUNCTION -- //
+// Diese Funktion stellt sicher, dass alle Eingabewerte aus $_POST, $_GET, $_COOKIE und $_REQUEST
+// gegen SQL-Injektionen geschützt werden, indem sie Escaping durchführen.
 function security_slashes(&$array)
 {
-
     global $_database;
 
+    // Durchlaufe jedes Element im Array
     foreach ($array as $key => $value) {
         if (is_array($array[ $key ])) {
+            // Rekursiv auf verschachtelte Arrays anwenden
             security_slashes($array[ $key ]);
         } else {
             $tmp = $value;
             if (function_exists("mysqli_real_escape_string")) {
+                // Sicherstellen, dass wir eine sichere Methode für das Escaping verwenden
                 $array[ $key ] = $_database->escape_string($tmp);
             } else {
+                // Fallback auf addslashes, falls mysqli_real_escape_string nicht verfügbar ist
                 $array[ $key ] = addslashes($tmp);
             }
             unset($tmp);
@@ -210,51 +173,66 @@ function security_slashes(&$array)
     }
 }
 
+// Aufruf der Funktion für alle globalen Eingabewerte
 security_slashes($_POST);
 security_slashes($_COOKIE);
 security_slashes($_GET);
 security_slashes($_REQUEST);
 
 // -- ESCAPE QUERY FUNCTION FOR TABLE -- //
+// Diese Funktion sorgt dafür, dass SQL-Abfragen vor der Ausführung sicher sind
 function escapestring($mquery) {
     global $_database;
     
+    // Überprüfe, ob mysqli_real_escape_string verfügbar ist und verwende es
     if (function_exists("mysqli_real_escape_string")) {
         $mquery = $_database->escape_string($mquery);
     } else {
+        // Fallback auf addslashes
         $mquery = addslashes($mquery);
     }
     return $mquery;
 }
 
+// -- MYSQL FETCH FUNCTION -- //
+// Diese Funktion fetcht ein assoziatives Array aus einem MySQL-Abfrageergebnis
 function mysqli_fetch_assocss($mquery) {
-if(isset($mquery)){
-$putquery = '0';
-} else {
-$putquery = mysqli_fetch_assoc($mquery);
-}
+    if(isset($mquery)) {
+        $putquery = '0';
+    } else {
+        // Hole das assoziative Array der Abfrageergebnisse
+        $putquery = mysqli_fetch_assoc($mquery);
+    }
 
-return $putquery;
-print_r($putquery);
+    // Ausgabe der Ergebnisse (Debugging)
+    print_r($putquery);
 
+    return $putquery;
 }
 
 // -- MYSQL QUERY FUNCTION -- //
+// Diese Funktion führt eine SQL-Abfrage aus und überprüft auf potenziell unsichere Abfragen
 $_mysql_querys = array();
 function safe_query($query = "")
 {
-
     global $_database;
     global $_mysql_querys;
+
+    // Setze den SQL-Modus für die Verbindung
     $_database->query("SET sql_mode = ''");
 
+    // Überprüfe, ob die Abfrage keine potenziell gefährlichen UNION-Select-Abfragen enthält
     if (stristr(str_replace(' ', '', $query), "unionselect") === false and
         stristr(str_replace(' ', '', $query), "union(select") === false
     ) {
-        $_mysql_querys[ ] = $query;
+        $_mysql_querys[] = $query;
+
+        // Überprüfe, ob die Abfrage leer ist
         if (empty($query)) {
             return false;
         }
+
+        // Führe die Abfrage aus und gebe Fehler aus, wenn DEBUG aktiviert ist
         if (DEBUG == "OFF") {
             $result = $_database->query($query) or system_error('Query failed!');
         } else {
@@ -263,21 +241,21 @@ function safe_query($query = "")
                 '<strong>Query failed</strong> ' . '<ul>' .
                 '<li>MySQL error no.: <mark>' . $_database->errno . '</mark></li>' .
                 '<li>MySQL error: <mark>' . $_database->error . '</mark></li>' .
-                '<li>SQL: <mark>' . $query . '</mark></li>'.
+                '<li>SQL: <mark>' . $query . '</mark></li>' .
                 '</ul>',
                 1,
                 1
             );
         }
         return $result;
-echo $result;
     } else {
+        // Abfrage abbrechen, wenn eine unsichere UNION-Abfrage gefunden wurde
         die();
     }
 }
 
 // -- SYSTEM FILE INCLUDE -- //
-
+// Diese Funktion lädt Systemdateien sicher und gibt eine Fehlermeldung aus, falls die Datei nicht gefunden wird
 function systeminc($file) {
     if (!include('system/' . $file . '.php')) {
         if (DEBUG == "OFF") {
@@ -291,8 +269,8 @@ function systeminc($file) {
 // -- GLOBAL SETTINGS -- //
 $headlines = '';
 
-// Führen Sie die Abfrage aus
-$result = safe_query("SELECT * FROM " . PREFIX . "settings_expansion WHERE active = '1'");
+// Führe eine Abfrage aus, um die aktiven Einstellungen zu holen
+$result = safe_query("SELECT * FROM `settings_expansion` WHERE `active` = '1'");
 
 // Fehlerbehandlung für das Abfrageergebnis
 if ($result && mysqli_num_rows($result) > 0) {
@@ -304,7 +282,6 @@ if ($result && mysqli_num_rows($result) > 0) {
     $headlines = isset($dx['headlines']) ? $dx['headlines'] : 'default-headline'; // Fallback für Headlines
 } else {
     // Fehlerbehandlung, wenn keine Daten gefunden wurden
-    // Hier kannst du Fehler melden oder Standardwerte verwenden
     $font_family = 'default-font';
     $headlines = 'default-headline';
 }
@@ -341,96 +318,118 @@ $components = array(
 // Funktion zum Prüfen, ob die Dateien existieren (CSS und JS)
 function check_file_exists($file)
 {
-    return file_exists($file) ? $file : '';
+    return file_exists($file) ? $file : ''; // Gibt den Dateipfad zurück, wenn die Datei existiert
 }
 
 // Dateien nur hinzufügen, wenn sie existieren
 $valid_css = array_filter($components['css'], 'check_file_exists');
 $valid_js = array_filter($components['js'], 'check_file_exists');
 
-// Hier kannst du dann das $valid_css und $valid_js weiterverwenden
+// -- Konfiguration und Einstellungen -- //
 
+// Hole alle Einstellungen aus der Tabelle 'settings'
 $ds = mysqli_fetch_array(
-    safe_query("SELECT * FROM `" . PREFIX . "settings`")
+    safe_query("SELECT * FROM settings")
 );
 
-$maxlatesttopics = $ds[ 'latesttopics' ];
+// Maximalanzahl der neuesten Themen
+$maxlatesttopics = $ds['latesttopics'];
 if (empty($maxlatesttopics)) {
     $maxlatesttopics = 10;
 }
-$maxlatesttopicchars = $ds[ 'latesttopicchars' ];
+
+// Maximale Zeichenanzahl für Themen
+$maxlatesttopicchars = $ds['latesttopicchars'];
 if (empty($maxlatesttopicchars)) {
     $maxlatesttopicchars = 18;
 }
-$maxtopics = $ds[ 'topics' ];
+
+// Maximale Anzahl der Themen
+$maxtopics = $ds['topics'];
 if (empty($maxtopics)) {
     $maxtopics = 20;
 }
-$maxposts = $ds[ 'posts' ];
+
+// Maximale Anzahl der Beiträge
+$maxposts = $ds['posts'];
 if (empty($maxposts)) {
     $maxposts = 10;
 }
-$maxsball = $ds[ 'sball' ];
+
+// Maximale Anzahl der Spielstände
+$maxsball = $ds['sball'];
 if (empty($maxsball)) {
     $maxsball = 5;
 }
-$maxmessages = $ds[ 'messages' ];
+
+// Maximale Anzahl der Nachrichten
+$maxmessages = $ds['messages'];
 if (empty($maxmessages)) {
     $maxmessages = 5;
 }
-$hp_url = $ds[ 'hpurl' ];
-$hp_title = stripslashes($ds[ 'title' ]);
-$register_per_ip = $ds[ 'register_per_ip' ];
-$admin_name = $ds[ 'adminname' ];
-$admin_email = $ds[ 'adminemail' ];
-$myclantag = $ds[ 'clantag' ];
-$myclanname = $ds[ 'clanname' ];
 
-$keywords = $ds[ 'keywords' ];
-$description = $ds[ 'description'];
+// Zusätzliche Einstellungen
+$hp_url = $ds['hpurl'];
+$hp_title = stripslashes($ds['title']);
+$register_per_ip = $ds['register_per_ip'];
+$admin_name = $ds['adminname'];
+$admin_email = $ds['adminemail'];
+$myclantag = $ds['clantag'];
+$myclanname = $ds['clanname'];
 
+// SEO-Einstellungen
+$keywords = $ds['keywords'];
+$description = $ds['description'];
 
-$sessionduration = $ds[ 'sessionduration' ];
+// Sitzungseinstellungen
+$sessionduration = $ds['sessionduration'];
 if (empty($sessionduration)) {
     $sessionduration = 24;
 }
-$closed = (int)$ds[ 'closed' ];
-$imprint_type = $ds[ 'imprint' ];
+$closed = (int)$ds['closed'];
+$imprint_type = $ds['imprint'];
 
-$default_language = $ds[ 'default_language' ];
+// Sprach- und Datumseinstellungen
+$default_language = $ds['default_language'];
 if (empty($default_language)) {
     $default_language = 'en';
 }
-$rss_default_language = $ds[ 'default_language' ];
+$rss_default_language = $ds['default_language'];
 if (empty($rss_default_language)) {
     $rss_default_language = 'en';
 }
-$max_wrong_pw = $ds[ 'max_wrong_pw' ];
+
+// Sicherheitseinstellungen
+$max_wrong_pw = $ds['max_wrong_pw'];
 if (empty($max_wrong_pw)) {
     $max_wrong_pw = 3;
 }
-$lastBanCheck = $ds[ 'bancheck' ];
-$insertlinks = $ds[ 'insertlinks' ];
-$autoDetectLanguage = (int)$ds[ 'detect_language' ];
-$spamCheckMaxPosts = $ds[ 'spammaxposts' ];
+$lastBanCheck = $ds['bancheck'];
+$insertlinks = $ds['insertlinks'];
+$autoDetectLanguage = (int)$ds['detect_language'];
+$spamCheckMaxPosts = $ds['spammaxposts'];
 if (empty($spamCheckMaxPosts)) {
     $spamCheckMaxPosts = 30;
 }
-$spamCheckEnabled = (int)$ds[ 'spam_check' ];
+$spamCheckEnabled = (int)$ds['spam_check'];
 $spamCheckRating = 0.95;
-$default_format_date = $ds[ 'date_format' ];
+
+// Datums- und Zeiteinstellungen
+$default_format_date = $ds['date_format'];
 if (empty($default_format_date)) {
     $default_format_date = 'd.m.Y';
 }
-$default_format_time = $ds[ 'time_format' ];
+$default_format_time = $ds['time_format'];
 if (empty($default_format_time)) {
     $default_format_time = 'H:i';
 }
-$search_min_len = $ds[ 'search_min_len' ];
+
+// Suchfunktion-Einstellungen
+$search_min_len = $ds['search_min_len'];
 if (empty($search_min_len)) {
     $search_min_len = '4';
 }
-$modRewrite = (bool)$ds[ 'modRewrite' ];
+$modRewrite = (bool)$ds['modRewrite'];
 if (empty($modRewrite)) {
     $modRewrite = false;
 }
@@ -440,7 +439,7 @@ $new_chmod = 0666;
 // -- LOGO -- //
 
 // Logo-Abfrage
-$dx = safe_query("SELECT * FROM " . PREFIX . "settings_themes WHERE active = '1'");
+$dx = safe_query("SELECT * FROM settings_themes WHERE active = '1'");
 
 // Fehlerbehandlung für die Logo-Abfrage
 if ($dx && mysqli_num_rows($dx) > 0) {
@@ -452,7 +451,7 @@ if ($dx && mysqli_num_rows($dx) > 0) {
 }
 
 // Erweiterte Einstellungen - partners
-$row = safe_query("SELECT * FROM " . PREFIX . "settings_expansion WHERE active = '1'");
+$row = safe_query("SELECT * FROM settings_expansion WHERE active = '1'");
 
 // Fehlerbehandlung für Erweiterungsabfrage
 if ($row && mysqli_num_rows($row) > 0) {
@@ -466,7 +465,7 @@ if ($row && mysqli_num_rows($row) > 0) {
 }
 
 // Abfrage für Partneranzahl
-$tmp = safe_query("SELECT count(themeID) as cnt FROM " . PREFIX . "settings_expansion");
+$tmp = safe_query("SELECT count(themeID) as cnt FROM settings_expansion");
 
 // Fehlerbehandlung für Partneranzahl
 if ($tmp && mysqli_num_rows($tmp) > 0) {
