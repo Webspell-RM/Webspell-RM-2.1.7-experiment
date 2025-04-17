@@ -29,7 +29,7 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
  */
 
-session_start(); // Session starten
+#session_start(); // Session starten
 
 if (isset($_SESSION['userID']) && isset($_SESSION['role'])) {
     // Wenn der Benutzer bereits eingeloggt ist, Weiterleitung zum Admincenter
@@ -66,7 +66,7 @@ if (isset($_COOKIE['ws_cookie'])) {
 }
 
 // Beispiel: Benutzer-ID aus der Sitzung erhalten (falls vorhanden)
-$userID = $_SESSION['userID'] ?? 0; // Falls keine userID, dann 0
+#$userID = $_SESSION['userID'] ?? 0; // Falls keine userID, dann 0
 
 // Überprüfen, ob der Benutzer eine Rolle zugewiesen hat
 /*if (!$userID || !checkUserRoleAssignment($userID)) {
@@ -82,12 +82,37 @@ exit;
 
 if (!$userID || !checkUserRoleAssignment($userID)) {
     // Gib eine Fehlermeldung aus
-    echo '<div style="background-color: red; color: white; padding: 10px; border-radius: 5px;">
-    Zugriff verweigert: Sie haben keine Rolle zugewiesen bekommen.<br>Sie werden in 3 Sekunden weitergeleitet...</div>';
-    
-    // Verwende ein Meta-Tag für die Umleitung nach 3 Sekunden
-    echo '<meta http-equiv="refresh" content="3;url=login.php">';
-    exit;
+echo '
+<div style="
+    background-color: #e74c3c;
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    font-family: Arial, sans-serif;
+    max-width: 600px;
+    margin: 50px auto;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+">
+    <img src="images/error.png" alt="Logo" style="
+        width: 400px;
+        height: auto;
+        margin-bottom: 20px;
+        border-radius: 6px;
+    ">
+    <h2 style="margin-top: 0;">Zugriff verweigert</h2>
+    <p>Sie haben derzeit <strong>keine Benutzerrolle</strong> zugewiesen und können daher nicht auf diesen Bereich zugreifen.</p>
+    <p>Bitte wenden Sie sich an einen Administrator, um Ihre Zugriffsrechte zu prüfen.</p>
+    <p style="margin-top: 20px;">Sie werden in <strong>10 Sekunden</strong> automatisch zur Login-Seite weitergeleitet...</p>
+</div>
+
+<script>
+    setTimeout(function() {
+        window.location.href = "login.php";
+    }, 10000);
+</script>
+';
+exit;
 }
 
 

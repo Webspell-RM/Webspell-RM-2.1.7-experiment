@@ -634,6 +634,14 @@ if (file_exists('func/install_base.php')) {
     systeminc('../system/func/install_base');
 }
 
+
+
+if (file_exists('func/login_check.php')) {
+    systeminc('func/login_check');
+} else {
+    systeminc('../system/func/login_check');
+}
+
 // ModRewrite-Objekt initialisieren und aktivieren
 $GLOBALS['_modRewrite'] = new \webspell\ModRewrite();
 if (!stristr($_SERVER['SCRIPT_NAME'], '/admin/') && $modRewrite) {

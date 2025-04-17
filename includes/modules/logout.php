@@ -28,6 +28,9 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
 */
 
+// Namespace verwenden, falls LoginCookie-Klasse genutzt wird
+use webspell\LoginCookie;
+
 // Session starten, falls noch nicht aktiv
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -36,10 +39,9 @@ if (session_status() === PHP_SESSION_NONE) {
 // Alle Session-Variablen löschen
 $_SESSION = [];
 
-// Session-Cookie löschen, falls verwendet
+// Session-Cookie löschen (sicherstellen, dass es korrekt entfernt wird)
 if (ini_get("session.use_cookies")) {
     $params = session_get_cookie_params();
-    
     setcookie(
         session_name(),
         '',
@@ -54,9 +56,14 @@ if (ini_get("session.use_cookies")) {
 // Session zerstören
 session_destroy();
 
-// Login-Cookie entfernen (falls verwendet)
-webspell\LoginCookie::clear('ws_auth');
+// Login-Cookie entfernen (falls deine Seite das verwendet)
+if (class_exists(LoginCookie::class)) {
+    LoginCookie::clear('ws_auth');
+}
 
-// Weiterleitung zur Startseite
-header("Location: ../../../index.php");
+// Optional: weiteren Cookie manuell löschen (falls gesetzt)
+setcookie('ws_session', '', time() - 3600, '/');
+
+// Weiterleitung zur Login-Seite oder Startseite
+header("Location: index.php");
 exit;

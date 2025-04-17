@@ -1,8 +1,8 @@
 <?php
 // Überprüfen, ob eine Session bereits gestartet wurde
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();  // Nur starten, wenn noch keine Session läuft
-}
+#if (session_status() == PHP_SESSION_NONE) {
+#    session_start();  // Nur starten, wenn noch keine Session läuft
+#}
 
 // In Root-Verzeichnis wechseln
 chdir('../');
@@ -19,20 +19,39 @@ include('system/multi_language.php');
 // Zurück ins Admin-Verzeichnis
 chdir('admin');
 
-// Plugin-Manager und Sprache laden
-$load = new plugin_manager();
+// Prüfen, ob bereits eingeloggt
+if (isset($_SESSION['userID'])) {
+    header("Location: login.php");
+    exit;
+}
+
+$message = null;
+
+// POST-Login-Versuch
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ws_user'], $_POST['password'])) {
+    $ws_user = trim($_POST['ws_user']);
+    $password = $_POST['password'];
+
+    // loginCheck aufrufen
+    $result = loginCheck($ws_user, $password);
+
+    if ($result->state == "success") {
+        header("Location: admincenter.php");
+        exit;
+    } else {
+        $message = $result->message;
+    }
+}
+
+
+
+
+
+
+
 $_language->readModule('admincenter', false, true);
 
-// Session-Benutzer-ID prüfen
-$userID = $_SESSION['userID'] ?? 0;
-#$cookievalue = 'false';
-#if (isset($_COOKIE['ws_cookie'])) {
-#    $cookievalue = 'accepted';
-#}
 
-$_language->readModule('cookie', false, true);
-
-// >>>>>>> Jetzt beginnt das HTML <<<<<<<<
 echo'
 
 <!DOCTYPE html>
@@ -47,7 +66,7 @@ echo'
 
     <!-- CSS STUFF -->
     <link href="/admin/css/bootstrap.min.css" rel="stylesheet">    
-    <link href="./login/style.css" rel="stylesheet">
+    <link href="/admin/css/style.css" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="../components/css/styles.css.php" />
     <link rel="stylesheet" href="../components/cookies/css/cookieconsent.css" media="print" onload="this.media=\'all\'">
     <link rel="stylesheet" href="../components/cookies/css/iframemanager.css" media="print" onload="this.media=\'all\'">
@@ -103,7 +122,7 @@ echo'
   <div class="row no-gutter">
     <div class="d-none d-md-flex col-md-4 col-lg-6 bg-image">
         <div class="logo">
-            <img class="mw-100 mh-100" src="./login/images/logo.png" width="auto" height="auto">
+            <img class="mw-100 mh-100" src="/admin/images/logo.png" width="auto" height="auto">
             <p class="text1">webspell <span>rm</span>
         </div>
     </div>
@@ -117,12 +136,10 @@ echo'
                     <h5>'.$_language->module[ 'dashboard' ].'</h5><br />
                     <div class="alert alert-info" role="alert">
                     '.$_language->module[ 'welcome2' ].' '.$version.' Login.<br><br>
-
-                    '.$_language->module[ 'insertmail' ].'.
-                        
+                    '.$_language->module[ 'insertmail' ].'                        
                     </div>
                 </div>
-              <form method="post" name="login" action="login/admincheck.php">
+              <form method="POST" action="">
                 <div class="form-label-group">
                     <label for="exampleInputEmail1">'.$_language->module[ 'email_address' ].'</label>
                   <input class="form-control" name="ws_user" type="text" placeholder="Email Address" id="login" required>
