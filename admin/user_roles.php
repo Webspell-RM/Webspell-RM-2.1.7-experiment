@@ -86,7 +86,7 @@ if (isset($_GET['roleID'])) {
 
     // Bestehende Rechte laden
     $stmt = $_database->prepare("SELECT type, modulname, accessID 
-                                 FROM user_admin_access_rights 
+                                 FROM user_role_admin_navi_rights 
                                  WHERE roleID = ?");
     $stmt->bind_param('i', $roleID);
     $stmt->execute();
@@ -110,7 +110,7 @@ if (isset($_GET['roleID'])) {
         // Module speichern
         $grantedModules = $_POST['modules'] ?? [];
         if (!empty($grantedModules)) {
-            $insertStmt = $_database->prepare("INSERT INTO user_admin_access_rights (roleID, type, modulname, accessID) 
+            $insertStmt = $_database->prepare("INSERT INTO user_role_admin_navi_rights (roleID, type, modulname, accessID) 
                                                VALUES (?, 'link', ?, ?)
                                                ON DUPLICATE KEY UPDATE accessID = VALUES(accessID)");
             foreach ($grantedModules as $modulname) {
@@ -134,7 +134,7 @@ if (isset($_GET['roleID'])) {
         // Kategorien speichern
         $grantedCategories = $_POST['category'] ?? [];
         if (!empty($grantedCategories)) {
-            $insertCat = $_database->prepare("INSERT INTO user_admin_access_rights (roleID, type, modulname, accessID) 
+            $insertCat = $_database->prepare("INSERT INTO user_role_admin_navi_rights (roleID, type, modulname, accessID) 
                                               VALUES (?, 'category', ?, ?)
                                               ON DUPLICATE KEY UPDATE accessID = VALUES(accessID)");
             foreach ($grantedCategories as $modulname) {
@@ -260,7 +260,7 @@ if (isset($_GET['userID'])) {
         // Modul-/Kategorie-Rechte der Rolle abfragen + Anzeigename holen
         $rights_query = "
             SELECT ar.type, ar.modulname, ndl.name
-            FROM user_admin_access_rights ar
+            FROM user_role_admin_navi_rights ar
             JOIN user_role_assignments ur ON ar.roleID = ur.roleID
             JOIN navigation_dashboard_links ndl ON ar.accessID = ndl.linkID
             WHERE ur.adminID = '$userID'

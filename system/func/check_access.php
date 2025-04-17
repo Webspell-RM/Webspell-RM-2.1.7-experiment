@@ -63,7 +63,7 @@ function checkAccessRights($userID, $catID = null, $linkID = null) {
 
     $query = "
         SELECT ar.type, ar.accessID
-        FROM `user_admin_access_rights` AS ar
+        FROM `user_role_admin_navi_rights` AS ar
         JOIN `user_role_assignments` AS ur ON ar.roleID = ur.roleID
         WHERE ur.adminID = '$userID' 
         AND (
@@ -89,7 +89,7 @@ function assignRoleToUser($userID, $roleID) {
         $type = $permission['type'];
         $accessID = $permission['accessID'];
         safe_query("
-            INSERT INTO `user_admin_access_rights` (`adminID`, `roleID`, `type`, `accessID`) 
+            INSERT INTO `user_role_admin_navi_rights` (`adminID`, `roleID`, `type`, `accessID`) 
             VALUES ('$userID', '$roleID', '$type', '$accessID')
         ");
     }

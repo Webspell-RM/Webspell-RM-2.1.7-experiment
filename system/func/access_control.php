@@ -17,7 +17,7 @@ class AccessControl
         // Prüfen, ob der Benutzer Zugriff auf das Modul hat und den Rollennamen holen
         $query = "
             SELECT r.`role_name`, ar.`modulname`, COUNT(*) AS access_count
-            FROM `user_admin_access_rights` ar
+            FROM `user_role_admin_navi_rights` ar
             JOIN `user_role_assignments` ur ON ar.`roleID` = ur.`roleID`
             JOIN `user_roles` r ON ur.`roleID` = r.`roleID`
             WHERE ur.`adminID` = '" . (int)$userID . "'
