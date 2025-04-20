@@ -45,7 +45,7 @@ if (isset($_GET['error']) && $_GET['error'] === 'login_required') {
 }
 
 chdir('../');
-include('system/sql.php');
+include('system/config.inc.php');
 include('system/settings.php');
 include('system/functions.php');
 include('system/plugin.php');

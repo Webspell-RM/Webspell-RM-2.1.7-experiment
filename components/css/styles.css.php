@@ -3,7 +3,7 @@
 chdir("../../");
 
 $includeFileArray = array(
-    'sql',
+    'config.inc',
     'settings',
     'functions'
 );

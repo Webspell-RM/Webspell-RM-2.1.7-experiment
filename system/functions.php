@@ -850,7 +850,7 @@ function whouseronline() {
 // =======================
 // COUNTER
 // =======================
-$time = time();
+/*$time = time();
 $date = date("d.m.Y", $time);
 $deltime = $time - (3600 * 24);
 
@@ -871,7 +871,7 @@ if (!mysqli_num_rows(safe_query("SELECT `ip` FROM `counter_iplist` WHERE `ip` = 
         safe_query("UPDATE `counter_stats` SET `count` = `count` + 1 WHERE `dates` = '$date'");
     }
 }
-
+*/
 // Update maxonline
 $res = mysqli_fetch_assoc(safe_query("SELECT COUNT(*) as maxuser FROM `whoisonline`"));
 safe_query("UPDATE `counter` SET `maxonline` = '" . $res['maxuser'] . "' WHERE `maxonline` < '" . $res['maxuser'] . "'");

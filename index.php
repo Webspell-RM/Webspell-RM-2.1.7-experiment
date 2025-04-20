@@ -34,7 +34,7 @@ if (file_exists($filename)) {
 
 // INCLUDE
 // the neccessary files
-include_once("system/sql.php");
+include_once("system/config.inc.php");
 include_once("system/settings.php");
 include_once("system/functions.php");
 include_once("system/themes.php");

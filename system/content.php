@@ -50,7 +50,8 @@ function get_sitetitle()
 // Ausgabe des Hauptinhalts
 function get_mainContent()
 {
-    global $cookievalue, $userID, $date, $loggedin, $_language, $tpl, $myclanname, $hp_url, $imprint_type, $admin_email, $admin_name;
+    #global $cookievalue, $userID, $date, $loggedin, $_language, $tpl, $myclanname, $hp_url, $imprint_type, $admin_email, $admin_name;
+    global $cookievalue, $userID, $date, $loggedin, $_language, $tpl, $hp_url, $imprint_type, $admin_email, $admin_name;
     global $maxtopics, $plugin_path, $maxposts, $page, $action, $preview, $message, $topicID, $_database, $maxmessages, $new_chmod;
     global $hp_title, $default_format_date, $default_format_time, $register_per_ip, $rewriteBase;
 
