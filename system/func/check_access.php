@@ -5,7 +5,7 @@ use webspell\AccessControl;
 /**
  * Überprüft, ob der Benutzer als Admin Zugriff auf ein bestimmtes Modul hat
  */
-function checkAdminAccess($currentModule) {
+/*function checkAdminAccess($currentModule) {
     AccessControl::enforceLogin();
 
     global $_database, $_SESSION, $_language;
@@ -39,43 +39,105 @@ function checkAdminAccess($currentModule) {
         header("Refresh: 3; url=/admin/admincenter.php");
         exit;
     }
+}*/
+
+function checkAdminAccess($currentModule) {
+    AccessControl::enforceLogin();
+
+    global $_database, $_SESSION, $_language;
+
+    $userID = $_SESSION['userID'] ?? 0;
+
+    // Prüfe, ob der Benutzer ein Admin ist
+    $stmt = $_database->prepare("SELECT is_admin FROM `users` WHERE `userID` = ?");
+    $stmt->bind_param("i", $userID);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+
+    if (!$data || intval($data['is_admin']) !== 1) {
+        echo $_language->module['access_denied'];
+        header("Refresh: 3; url=/index.php");
+        exit;
+    }
+
+    // Prüfe, ob der Admin Zugriff auf das aktuelle Modul hat
+    $stmt = $_database->prepare("SELECT `modulname` FROM `admin_access_rights` WHERE `userID` = ?");
+    $stmt->bind_param("i", $userID);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $allowedModules = [];
+    while ($row = $result->fetch_assoc()) {
+        $allowedModules[] = $row['modulname'];
+    }
+
+    if (!in_array($currentModule, $allowedModules)) {
+        echo $_language->module['access_denied'];
+        header("Refresh: 3; url=/admin/admincenter.php");
+        exit;
+    }
 }
+
 
 /**
  * Prüft, ob ein Benutzer einer Rolle zugewiesen wurde
  */
-function checkUserRoleAssignment($userID) {
+/*function checkUserRoleAssignment($userID) {
     global $_database;
     $stmt = $_database->prepare("SELECT COUNT(*) AS cnt FROM `user_role_assignments` WHERE `adminID` = ?");
     $stmt->bind_param("i", $userID);
     $stmt->execute();
     $result = $stmt->get_result()->fetch_assoc();
     return $result['cnt'] > 0;
+}*/
+
+function checkUserRoleAssignment($userID) {
+    global $_database;
+
+    $stmt = $_database->prepare("SELECT COUNT(*) AS cnt FROM `user_role_assignments` WHERE `userID` = ?");
+    $stmt->bind_param("i", $userID);
+    $stmt->execute();
+
+    $result = $stmt->get_result()->fetch_assoc();
+    return $result['cnt'] > 0;
 }
+
 
 /**
  * Überprüft, ob ein Benutzer Zugriff auf eine bestimmte Kategorie oder einen Link hat
  */
 function checkAccessRights($userID, $catID = null, $linkID = null) {
+    global $_database;
+
     if (!$catID && !$linkID) {
         return false;
     }
 
+    // Grundstruktur des SQL-Statements mit Platzhaltern
     $query = "
         SELECT ar.type, ar.accessID
         FROM `user_role_admin_navi_rights` AS ar
         JOIN `user_role_assignments` AS ur ON ar.roleID = ur.roleID
-        WHERE ur.adminID = '$userID' 
+        WHERE ur.userID = ?
         AND (
-            (ar.type = 'category' AND ar.accessID = '$catID') 
+            (ar.type = 'category' AND ar.accessID = ?) 
             OR 
-            (ar.type = 'link' AND ar.accessID = '$linkID')
+            (ar.type = 'link' AND ar.accessID = ?)
         )
     ";
 
-    $result = safe_query($query);
-    return mysqli_num_rows($result) > 0;
+    $stmt = $_database->prepare($query);
+    $cat = $catID ?? 0;  // Wenn null, dann auf 0 setzen
+    $link = $linkID ?? 0;
+
+    $stmt->bind_param('iii', $userID, $cat, $link);
+    $stmt->execute();
+    $stmt->store_result();
+
+    return $stmt->num_rows > 0;
 }
+
 
 /**
  * Weist einem Benutzer eine Rolle zu und überträgt die zugehörigen Rechte
@@ -100,7 +162,7 @@ function assignRoleToUser($userID, $roleID) {
  */
 function hasRole($userID, $roleID) {
     global $_database;
-    $stmt = $_database->prepare("SELECT 1 FROM `user_role_assignments` WHERE `adminID` = ? AND `roleID` = ?");
+    $stmt = $_database->prepare("SELECT 1 FROM `user_role_assignments` WHERE `userID` = ? AND `roleID` = ?");
     $stmt->bind_param("ii", $userID, $roleID);
     $stmt->execute();
     $result = $stmt->get_result();

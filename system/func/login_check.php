@@ -1,94 +1,138 @@
 <?php
-function loginCheck($ws_user, $password, $sleep = 1)
-{
+
+/*function loginCheck($username, $password) {
     global $_database;
-    $return = new stdClass();
-    $return->state = "failed";
-    $return->message = "";
 
-    $ip = $_SERVER['REMOTE_ADDR'];
-    $max_wrong_pw = 5;
-    $sessionduration = 6; // in Stunden
+    // Benutzer anhand des Benutzernamens oder der E-Mail abrufen
+    $query = $_database->query("SELECT * FROM users WHERE username = '" . $_database->escape_string($username) . "' OR email = '" . $_database->escape_string($username) . "'");
+    $user = $query->fetch_assoc();
 
-    // IP gebannt?
-    $res = safe_query("SELECT * FROM banned_ips WHERE ip = '" . $_database->escape_string($ip) . "'");
-    if (mysqli_num_rows($res)) {
-        $return->message = "Diese IP wurde gesperrt.";
-        return $return;
-    }
+    // Überprüfen, ob der Benutzer existiert
+    if ($user) {
+        // Passwort überprüfen
+        if (password_verify($password, $user['password_hash'])) {
+            // Erfolgreiches Login, setze die Session
+            $_SESSION['userID'] = $user['userID'];
+            $_SESSION['username'] = $user['username'];
+            $_SESSION['email'] = $user['email'];
+            $_SESSION['role'] = $user['role']; // Wenn du die Rolle des Benutzers speichern möchtest
 
-    // Benutzer prüfen (E-Mail oder Username erlaubt)
-    $ws_user_escaped = $_database->escape_string($ws_user);
-    $check = safe_query("SELECT * FROM users WHERE email = '$ws_user_escaped' OR username = '$ws_user_escaped'");
+            // Weiterleitung zur entsprechenden Seite basierend auf dem Referrer
+            $redirect_url = isset($_SESSION['login_redirect']) ? $_SESSION['login_redirect'] : '/admin/admincenter.php'; // Standard zu admincenter.php
 
-    if (!mysqli_num_rows($check)) {
-        $return->message = "Benutzer nicht gefunden.";
-        return $return;
-    }
+            // Lösche den Referrer, um Endlosschleifen zu vermeiden
+            unset($_SESSION['login_redirect']);
 
-    $user = mysqli_fetch_assoc($check);
-
-    // Account aktiviert?
-    if ($user['activated'] != 1) {
-        $return->message = "Account ist nicht aktiviert.";
-        return $return;
-    }
-
-    // Altes Passwort-System prüfen (optional)
-    if (!empty($user['password'])) {
-        $old_hash = generatePasswordHash($password);
-        if ($old_hash === $user['password']) {
-            $pepper = Gen_PasswordPepper();
-            $new_hash = Gen_PasswordHash($password, $pepper);
-            safe_query("UPDATE users SET password='', password_hash='" . $_database->escape_string($new_hash) . "', password_pepper='" . $_database->escape_string($pepper) . "' WHERE userID=" . (int)$user['userID']);
-            $user['password'] = '';
-            $user['password_hash'] = $new_hash;
-            $user['password_pepper'] = $pepper;
+            return (object)[
+                'state' => 'success',
+                'message' => 'Login erfolgreich',
+                'redirect' => $redirect_url // Weiterleitung zur entsprechenden Seite
+            ];
+        } else {
+            // Fehler: Passwort stimmt nicht überein
+            return (object)[
+                'state' => 'failed',
+                'message' => 'Falsches Passwort'
+            ];
         }
-    }
-
-    // Passwort prüfen (neues System)
-    $combined = $password . $user['password_pepper'];
-    if (password_verify($combined, $user['password_hash'])) {
-        // Erfolgreich
-        $_SESSION['userID'] = $user['userID'];
-        $_SESSION['username'] = $user['username'];
-
-        // Cookie setzen (optional)
-        \webspell\LoginCookie::set('ws_auth', $user['userID'], $sessionduration * 60 * 60);
-
-        // IP-Eintrag löschen
-        safe_query("DELETE FROM failed_login_attempts WHERE ip = '" . $_database->escape_string($ip) . "'");
-
-        $return->state = "success";
-        $return->message = "Login erfolgreich.";
-        return $return;
-    }
-
-    // Passwort falsch → Fehlversuch zählen
-    if ($sleep) sleep(3);
-
-    $check_failed = safe_query("SELECT * FROM failed_login_attempts WHERE ip = '" . $_database->escape_string($ip) . "'");
-    if (mysqli_num_rows($check_failed)) {
-        safe_query("UPDATE failed_login_attempts SET wrong = wrong + 1 WHERE ip = '" . $_database->escape_string($ip) . "'");
     } else {
-        safe_query("INSERT INTO failed_login_attempts (ip, wrong) VALUES ('" . $_database->escape_string($ip) . "', 1)");
+        // Fehler: Benutzer nicht gefunden
+        return (object)[
+            'state' => 'failed',
+            'message' => 'Benutzer nicht gefunden'
+        ];
     }
+}*/
 
-    $entry = safe_query("SELECT wrong FROM failed_login_attempts WHERE ip = '" . $_database->escape_string($ip) . "'");
-    $fail = mysqli_fetch_assoc($entry);
+function loginCheck($username, $password) {
+    global $_database;
 
-    if ($fail['wrong'] >= $max_wrong_pw) {
-        $bantime = time() + 3 * 60 * 60; // 3 Stunden
-        safe_query("INSERT INTO banned_ips (ip, deltime, reason) VALUES ('" . $_database->escape_string($ip) . "', $bantime, 'Brute Force Verdacht')");
-        safe_query("DELETE FROM failed_login_attempts WHERE ip = '" . $_database->escape_string($ip) . "'");
-        $return->message = "Zu viele Fehlversuche. IP wurde gesperrt.";
+    // Benutzer anhand des Benutzernamens oder der E-Mail abrufen
+    $query = $_database->query("SELECT * FROM users WHERE username = '" . $_database->escape_string($username) . "' OR email = '" . $_database->escape_string($username) . "'");
+    $user = $query->fetch_assoc();
+
+    // Überprüfen, ob der Benutzer existiert
+    if ($user) {
+        // Passwort überprüfen
+        if (password_verify($password, $user['password_hash'])) {
+            // Erfolgreiches Login, setze die Session
+            $_SESSION['userID'] = $user['userID'];
+            $_SESSION['username'] = $user['username'];
+            $_SESSION['email'] = $user['email'];
+            $_SESSION['role'] = $user['role'];
+
+            // Session-Daten speichern
+            saveSessionToDatabase($user['userID'], $_SESSION);
+            // Weiterleitung zur entsprechenden Seite basierend auf dem Referrer
+            $redirect_url = isset($_SESSION['login_redirect']) ? $_SESSION['login_redirect'] : '/admin/admincenter.php'; // Standard zu admincenter.php
+
+            // Lösche den Referrer, um Endlosschleifen zu vermeiden
+            unset($_SESSION['login_redirect']);
+
+            return (object)[
+                'state' => 'success',
+                'message' => 'Login erfolgreich',
+                'redirect' => $redirect_url // Weiterleitung zur entsprechenden Seite
+            ];
+        } else {
+            return (object)[
+                'state' => 'failed',
+                'message' => 'Falsches Passwort'
+            ];
+        }
     } else {
-        $return->message = "Falsches Passwort.";
+        return (object)[
+            'state' => 'failed',
+            'message' => 'Benutzer nicht gefunden'
+        ];
     }
-
-    return $return;
 }
+
+
+
+
+
+function saveSessionToDatabase($userID, $sessionData) {
+    global $_database;
+
+    // Session-Daten als JSON codieren, um komplexe Daten zu speichern
+    $sessionData = json_encode($sessionData);
+
+    // Session-Daten in die Datenbank speichern
+    $query = $_database->prepare("INSERT INTO user_sessions (userID, session_id, session_data) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE session_data = ?, last_activity = NOW()");
+    $query->bind_param('isss', $userID, session_id(), $sessionData, $sessionData);
+    $query->execute();
+}
+
+function deleteSessionFromDatabase($userID) {
+    global $_database;
+
+    // Die Session-Daten aus der Datenbank löschen
+    $query = $_database->prepare("DELETE FROM user_sessions WHERE userID = ?");
+    $query->bind_param('i', $userID);
+    $query->execute();
+}
+
+function getSessionFromDatabase($sessionId) {
+    global $_database;
+
+    // Die Session-Daten aus der Datenbank abrufen
+    $query = $_database->prepare("SELECT session_data FROM user_sessions WHERE session_id = ?");
+    $query->bind_param('s', $sessionId);
+    $query->execute();
+    $result = $query->get_result();
+    $sessionData = $result->fetch_assoc();
+
+    if ($sessionData) {
+        return json_decode($sessionData['session_data'], true); // Rückgabe der Session-Daten als Array
+    } else {
+        return null;
+    }
+}
+
+
+
+
 
 // Funktion für fehlgeschlagene Logins
 function trackFailedLogin() {

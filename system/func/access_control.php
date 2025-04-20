@@ -20,7 +20,7 @@ class AccessControl
             FROM `user_role_admin_navi_rights` ar
             JOIN `user_role_assignments` ur ON ar.`roleID` = ur.`roleID`
             JOIN `user_roles` r ON ur.`roleID` = r.`roleID`
-            WHERE ur.`adminID` = '" . (int)$userID . "'
+            WHERE ur.`userID` = '" . (int)$userID . "'
             AND ar.`modulname` = '" . escape($modulname) . "'
             GROUP BY r.`role_name`, ar.`modulname`
         ";

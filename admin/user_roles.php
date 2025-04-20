@@ -237,7 +237,7 @@ if (isset($_GET['roleID'])) {
 
 
 
-require_once("../system/sql.php");
+require_once("../system/config.inc.php");
 require_once("../system/functions.php");
 
 if (isset($_GET['userID'])) {
@@ -247,7 +247,7 @@ if (isset($_GET['userID'])) {
     $query = "
         SELECT u.username, r.role_name AS name
         FROM users u
-        JOIN user_role_assignments ur ON u.userID = ur.adminID
+        JOIN user_role_assignments ur ON u.userID = ur.userID
         JOIN user_roles r ON ur.roleID = r.roleID
         WHERE u.userID = '$userID'
     ";
@@ -263,7 +263,7 @@ if (isset($_GET['userID'])) {
             FROM user_role_admin_navi_rights ar
             JOIN user_role_assignments ur ON ar.roleID = ur.roleID
             JOIN navigation_dashboard_links ndl ON ar.accessID = ndl.linkID
-            WHERE ur.adminID = '$userID'
+            WHERE ur.userID = '$userID'
             ORDER BY ar.type, ar.modulname
         ";
         $rights_result = safe_query($rights_query);
@@ -366,7 +366,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $roleID = (int)$_POST['role_id'];  // Rollen-ID
 
         // Überprüfen, ob die Rolle bereits zugewiesen wurde
-        $existing_assignment = safe_query("SELECT * FROM user_role_assignments WHERE adminID = '$userID' AND roleID = '$roleID'");
+        $existing_assignment = safe_query("SELECT * FROM user_role_assignments WHERE userID = '$userID' AND roleID = '$roleID'");
         if (mysqli_num_rows($existing_assignment) > 0) {
             $_SESSION['csrf_error'] = $_language->module['role_already_assigned']; // Rolle bereits zugewiesen
             header("Location: admincenter.php?site=user_roles&action=admins");
@@ -374,7 +374,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Zuweisung in der Tabelle speichern
-        safe_query("INSERT INTO user_role_assignments (adminID, roleID) VALUES ('$userID', '$roleID')");
+        safe_query("INSERT INTO user_role_assignments (userID, roleID) VALUES ('$userID', '$roleID')");
 
         // Erfolgreiche Zuweisung
         $_SESSION['csrf_success'] = $_language->module['role_assigned_successfully']; // Erfolgsnachricht
@@ -458,19 +458,19 @@ if (isset($_SESSION['csrf_success'])): ?>
                 </thead>
                 <tbody>
                 <?php
-                $assignments = safe_query("SELECT ur.adminID, ur.roleID, u.username, r.role_name AS role_name
+                $assignments = safe_query("SELECT ur.userID, ur.roleID, u.username, r.role_name AS role_name
                                            FROM user_role_assignments ur
-                                           JOIN users u ON ur.adminID = u.userID
+                                           JOIN users u ON ur.userID = u.userID
                                            JOIN user_roles r ON ur.roleID = r.roleID");
                 while ($assignment = mysqli_fetch_assoc($assignments)) : ?>
                     <tr>
                         <td><?= htmlspecialchars($assignment['username']) ?></td>
                         <td><?= htmlspecialchars($assignment['role_name']) ?></td>
                         <td>
-                            <a href="admincenter.php?site=user_roles&action=user_role_details&userID=<?= $assignment['adminID'] ?>" class="btn btn-sm btn-warning">
+                            <a href="admincenter.php?site=user_roles&action=user_role_details&userID=<?= $assignment['userID'] ?>" class="btn btn-sm btn-warning">
                                 <?= $_language->module['view_assigned_rights'] ?>
                             </a>
-                            <a href="admincenter.php?site=user_roles&action=admins&delete_assignment=<?= $assignment['adminID'] ?>&roleID=<?= $assignment['roleID'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('<?= $_language->module['remove_role_confirm'] ?>')">
+                            <a href="admincenter.php?site=user_roles&action=admins&delete_assignment=<?= $assignment['userID'] ?>&roleID=<?= $assignment['roleID'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('<?= $_language->module['remove_role_confirm'] ?>')">
                                 <?= $_language->module['remove'] ?>
                             </a>
                         </td>
@@ -486,11 +486,11 @@ if (isset($_SESSION['csrf_success'])): ?>
     // Überprüfen, ob die Parameter 'delete_assignment' und 'roleID' in der URL gesetzt sind
 if (isset($_GET['delete_assignment']) && isset($_GET['roleID'])) {
     // Sichere die Parameter und konvertiere sie in Ganzzahlen
-    $adminID = (int)$_GET['delete_assignment'];
+    $userID = (int)$_GET['delete_assignment'];
     $roleID = (int)$_GET['roleID'];
 
     // SQL-Abfrage ausführen, um die Zuweisung zu entfernen
-    $result = safe_query("DELETE FROM user_role_assignments WHERE adminID = '$adminID' AND roleID = '$roleID'");
+    $result = safe_query("DELETE FROM user_role_assignments WHERE userID = '$userID' AND roleID = '$roleID'");
 
     // Erfolgreiche Löschung und Weiterleitung
     if ($result) {
@@ -507,7 +507,7 @@ if (isset($_GET['delete_assignment']) && isset($_GET['roleID'])) {
 
 } elseif ($action == "roles") {
 
-require_once("../system/sql.php");
+require_once("../system/config.inc.php");
 require_once("../system/functions.php");
 
 // CSRF-Token generieren und in der Session speichern
@@ -529,7 +529,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $roleID = (int)$_POST['role_id'];  // Rollen-ID
 
         // Überprüfen, ob die Rolle bereits zugewiesen wurde
-        $existing_assignment = safe_query("SELECT * FROM user_role_assignments WHERE adminID = '$userID' AND roleID = '$roleID'");
+        $existing_assignment = safe_query("SELECT * FROM user_role_assignments WHERE userID = '$userID' AND roleID = '$roleID'");
         if (mysqli_num_rows($existing_assignment) > 0) {
             $_SESSION['csrf_error'] = $_language->module['role_already_assigned'];
             header("Location: admincenter.php?site=user_roles");
@@ -537,7 +537,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Zuweisung in der Tabelle speichern
-        safe_query("INSERT INTO user_role_assignments (adminID, roleID) VALUES ('$userID', '$roleID')");
+        safe_query("INSERT INTO user_role_assignments (userID, roleID) VALUES ('$userID', '$roleID')");
 
         // Erfolgsmeldung
         $_SESSION['success_message'] = $_language->module['role_assigned_successfully'];
@@ -793,7 +793,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete_user' && isset($_GET['u
     $user_check = safe_query("SELECT * FROM users WHERE userID = '$userID'");
     if (mysqli_num_rows($user_check) > 0) {
         // Zuerst die zugehörigen Einträge aus der rm_216_user_role_assignments Tabelle löschen
-        safe_query("DELETE FROM user_role_assignments WHERE adminID = '$userID'");
+        safe_query("DELETE FROM user_role_assignments WHERE userID = '$userID'");
 
         // Jetzt den Benutzer aus der user Tabelle löschen
         safe_query("DELETE FROM users WHERE userID = '$userID'");

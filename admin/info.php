@@ -178,7 +178,8 @@ if (!$getnew = @file_get_contents($updateserverurl.'/base/vupdate.php')) {
 #}
 
 $username = '' . getusername($userID) . ',<br>';
-$lastlogin = getformatdatetime($_SESSION[ 'ws_lastlogin' ]);
+#$lastlogin = getformatdatetime($_SESSION[ 'ws_lastlogin' ]);
+$lastlogin = 'fehlt noch';
 
 echo'<div class="card">
       <div class="card-header">

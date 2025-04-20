@@ -28,19 +28,25 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
 */
 
+global $_language, $tpl, $_database;
+
+$_language->readModule('index');
+
+// Sprache wechseln über URL
 if (isset($_GET['new_lang'])) {
-    // Prüfen, ob die Sprachdatei existiert
-    if (file_exists('languages/' . $_GET['new_lang'])) {
-        $lang = preg_replace("[^a-z]", "", $_GET['new_lang']);
+    $lang = preg_replace("/[^a-z]/", "", $_GET['new_lang']); // nur Buchstaben erlauben
+
+    // Existiert Sprachordner?
+    if (file_exists('languages/' . $lang)) {
         $_SESSION['language'] = $lang;
 
-        // Sprache auch in der Datenbank speichern, falls der Benutzer eingeloggt ist
-        if ($userID) {
-            safe_query("UPDATE `users` SET `language` = '" . $lang . "' WHERE `userID` = '" . $userID . "'");
+        // Sprache in DB speichern (wenn eingeloggt)
+        if (isset($userID) && $userID > 0) {
+            safe_query("UPDATE `users` SET `language` = '" . $lang . "' WHERE `userID` = '" . intval($userID) . "'");
         }
     }
 
-    // Weiterleitung zur gewünschten Seite nach Sprachänderung
+    // Weiterleitung
     if (isset($_GET['query'])) {
         $query = rawurldecode($_GET['query']);
         header("Location: ./" . $query);
@@ -48,84 +54,87 @@ if (isset($_GET['new_lang'])) {
         header("Location: index.php");
     }
 
+    exit();
+}
+
+// Sprache aus Session oder DB laden
+$lang = 'de'; // Standard
+
+if (isset($_SESSION['language'])) {
+    $lang = $_SESSION['language'];
+} elseif (isset($userID) && $userID > 0) {
+    $result = mysqli_fetch_array(safe_query("SELECT `language` FROM `users` WHERE `userID` = '" . intval($userID) . "'"));
+    if (!empty($result['language'])) {
+        $lang = $result['language'];
+    }
+}
+
+// Sprachlinks vorbereiten
+$filepath = "languages/";
+$langs = [];
+$index_language = [
+    'de' => 'Deutsch',
+    'en' => 'English',
+    'it' => 'Italiano'
+];
+
+if ($dh = opendir($filepath)) {
+    while (($file = readdir($dh)) !== false) {
+        if (strlen($file) == 2 && is_dir($filepath . $file)) {
+            $langs[ucfirst($file)] = $file;
+        }
+    }
+    closedir($dh);
+}
+
+ksort($langs, defined("SORT_NATURAL") ? SORT_NATURAL : SORT_LOCALE_STRING);
+
+// Rücksprung-URL vorbereiten
+$querystring = '';
+if (defined('modRewrite') && modRewrite === true) {
+    $path = rawurlencode(str_replace($GLOBALS['rewriteBase'], '', $_SERVER['REQUEST_URI']));
 } else {
-    $_language->readModule('index');
-
-    $filepath = "languages/";
-    $langs = [];
-
-    // Verfügbare Sprachverzeichnisse einlesen
-    if ($dh = opendir($filepath)) {
-        while ($file = mb_substr(readdir($dh), 0, 2)) {
-            if ($file != "." && $file != ".." && is_dir($filepath . $file)) {
-                if (isset($mysql_langs[$file])) {
-                    $name = ucfirst($mysql_langs[$file]);
-                    $langs[$name] = $file;
-                } else {
-                    $langs[$file] = $file;
-                }
-            }
-        }
-        closedir($dh);
-    }
-
-    // Sprachen alphabetisch sortieren
-    $sortMode = defined("SORT_NATURAL") ? SORT_NATURAL : SORT_LOCALE_STRING;
-    ksort($langs, $sortMode);
-
-    // Aktueller Pfad für Rückleitung nach Sprachwechsel
-    $querystring = '';
-    if ($modRewrite === true) {
-        $path = rawurlencode(str_replace($GLOBALS['rewriteBase'], '', $_SERVER['REQUEST_URI']));
-    } else {
-        $path = rawurlencode($_SERVER['QUERY_STRING']);
-        if (!empty($path)) {
-            $path = "?" . $path;
-        }
-    }
+    $path = rawurlencode($_SERVER['QUERY_STRING']);
     if (!empty($path)) {
-        $querystring = "&amp;query=" . $path;
+        $path = "?" . $path;
     }
+}
+if (!empty($path)) {
+    $querystring = "&amp;query=" . $path;
+}
 
-    // Sprachlinks vorbereiten
-    $index_langs = ['de', 'en', 'it'];
-    foreach ($index_langs as $short) {
-        $dx = mysqli_fetch_array(safe_query("SELECT * FROM `settings` WHERE `" . $short . "_lang` = '1'"));
-        ${$short . '_languages'} = ($dx[$short . '_lang'] ?? '0') == '1'
-            ? '<a href="index.php?new_lang=' . $short . $querystring . '" data-toggle="tooltip" title="' . $index_language[$short] . '"><img class="flag" src="images/languages/' . $short . '.png" alt="' . $short . '">' . $index_language[$short] . '</a>'
-            : '';
+// Sprachlinks erzeugen
+$de_languages = $en_languages = $it_languages = '';
+$index_langs = ['de', 'en', 'it'];
+
+foreach ($index_langs as $short) {
+    $enabled = mysqli_fetch_array(safe_query("SELECT * FROM `settings` WHERE `" . $short . "_lang` = '1'"));
+    if ($enabled[$short . '_lang'] == '1') {
+        ${$short . '_languages'} = '<a href="index.php?new_lang=' . $short . $querystring . '" data-toggle="tooltip" title="' . $index_language[$short] . '"><img class="flag" src="images/languages/' . $short . '.png" alt="' . $short . '">' . $index_language[$short] . '</a>';
     }
+}
 
-    // Aktuelle Sprache mit grünem Haken markieren
-    if ($userID) {
-        $dx = mysqli_fetch_array(safe_query("SELECT * FROM `users` WHERE `userID` = '" . $userID . "'"));
-        $lang = $dx['language'];
-    } else {
-        global $lang;
-    }
+// Aktuelle Sprache anzeigen mit Haken
+$language_name = isset($index_language[$lang]) ? $index_language[$lang] : ucfirst($lang);
+$flag = '<img class="flag" src="images/languages/' . $lang . '.png" alt="' . $lang . '">';
+$lang_ok = '<a href="index.php?new_lang=' . $lang . $querystring . '" data-toggle="tooltip" title="' . $language_name . '"><img class="flag" src="images/languages/' . $lang . '.png" alt="' . $lang . '">' . $language_name . ' <i class="bi bi-check2 text-success" style="font-size: 2rem;"></i></a>';
 
-    $flag = '<img class="flag" src="images/languages/' . $lang . '.png" alt="' . $lang . '">';
-    $lang_ok = '<a href="index.php?new_lang=' . $lang . $querystring . '" data-toggle="tooltip" title="' . $index_language[$lang] . '"><img class="flag" src="images/languages/' . $lang . '.png" alt="' . $lang . '">' . $index_language[$lang] . ' <i class="bi bi-check2 text-success" style="font-size: 2rem;"></i></a>';
+// Template einfügen
+$dx = mysqli_fetch_array(safe_query("SELECT * FROM `settings` WHERE `de_lang` = '1' OR `en_lang` = '1' OR `it_lang` = '1'"));
 
-    // Template-Daten vorbereiten
-    $dx = mysqli_fetch_array(safe_query("SELECT * FROM `settings` WHERE `de_lang` = '1' OR `en_lang` = '1' OR `it_lang` = '1'"));
+if (
+    (isset($dx['de_lang']) && $dx['de_lang'] == '1') ||
+    (isset($dx['en_lang']) && $dx['en_lang'] == '1') ||
+    (isset($dx['it_lang']) && $dx['it_lang'] == '1')
+) {
+    $data_array = [
+        'flag' => $flag,
+        'de_languages_ok' => $lang_ok,
+        'de_languages' => $de_languages,
+        'en_languages' => $en_languages,
+        'it_languages' => $it_languages,
+    ];
 
-    if (
-        (isset($dx['de_lang']) && $dx['de_lang'] == '1') ||
-        (isset($dx['en_lang']) && $dx['en_lang'] == '1') ||
-        (isset($dx['it_lang']) && $dx['it_lang'] == '1')
-    ) {
-        $data_array = [
-            'flag' => $flag,
-            'de_languages_ok' => $lang_ok,
-            'de_languages' => $de_languages,
-            'en_languages' => $en_languages,
-            'it_languages' => $it_languages,
-        ];
-
-        $template = $tpl->loadTemplate("navigation", "languages", $data_array);
-        echo $template;
-    } else {
-        echo "";
-    }
+    $template = $tpl->loadTemplate("navigation", "languages", $data_array);
+    echo $template;
 }

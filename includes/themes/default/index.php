@@ -30,10 +30,40 @@ $_language->readModule('index');
 
 $index_language = $_language->module;
 
-$cookievalue = 'false';
-if (isset($_COOKIE['ws_cookie'])) {
-    $cookievalue = 'accepted';
+
+// Überprüfe, ob die Session bereits gestartet wurde
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
+
+
+
+// Debug-Ausgabe
+echo '<pre>';
+print_r($_SESSION);
+echo '</pre>';
+
+echo 'Aktiver Session-Name: ' . session_name() . '<br>';
+echo 'Session-ID: ' . session_id() . '<br>';
+
+echo "Role gesetzt: " . $_SESSION['role'] . '<br>';
+
+
+// Login-Status anzeigen
+if (!isset($_SESSION['userID'])) {
+    echo "NICHT eingeloggt<br>";
+} else {
+    echo "Eingeloggt als: " . htmlspecialchars($_SESSION['username']) . "<br>";
+    echo "✅ Eingeloggt als Benutzer #{$_SESSION['userID']}<br>";
+}
+
+// Cookie anzeigen
+#$cookievalue = 'false';
+#if (isset($_COOKIE['ws_cookie'])) {
+#    $cookievalue = 'accepted';
+#}
+#echo "Cookie-Zustimmung: $cookievalue";
+
 header('X-UA-Compatible: IE=edge');
 ?>
 <!DOCTYPE html>
@@ -56,8 +86,7 @@ header('X-UA-Compatible: IE=edge');
     <base href="<?php echo htmlspecialchars($rewriteBase, ENT_QUOTES, 'UTF-8'); ?>">
 
     <link type="application/rss+xml" rel="alternate" href="tmp/rss.xml" title="<?php echo htmlspecialchars($myclanname, ENT_QUOTES, 'UTF-8'); ?> - RSS Feed">
-    <link type="text/css" rel="stylesheet" href="./components/cookies/css/cookieconsent.css" media="print" onload="this.media='all'">
-    <link type="text/css" rel="stylesheet" href="./components/cookies/css/iframemanager.css" media="print" onload="this.media='all'">
+    
     <?php
     $lang = $_language->language; // Language Variable setzen         
     echo $components_css;
@@ -114,12 +143,9 @@ header('X-UA-Compatible: IE=edge');
     echo '<!--Widget js-->' . PHP_EOL;
     echo ($_pluginmanager->plugin_loadheadfile_widget_js());
     echo '<!--Widget js END-->' . PHP_EOL;
-    echo get_editor();
+    
     ?>
-    <script defer src="./components/cookies/js/iframemanager.js"></script>
-    <script defer src="./components/cookies/js/cookieconsent.js"></script>
-    <script defer src="./components/cookies/js/cookieconsent-init.js"></script>
-    <script defer src="./components/cookies/js/app.js"></script>
+   
     <script>
         const LangDataTables = <?= json_encode($_language->language, JSON_HEX_TAG); ?>;
     </script>

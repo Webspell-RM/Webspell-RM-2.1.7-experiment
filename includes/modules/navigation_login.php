@@ -28,6 +28,14 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
 */
 
+#session_name("rm_session");
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$loggedin = isset($_SESSION['userID']) && $_SESSION['userID'] > 0;
+$userID = $_SESSION['userID'] ?? 0;
+
 GLOBAL $userID, $board_topics, $split, $array;
 
 $_language->readModule('index');

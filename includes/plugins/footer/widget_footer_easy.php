@@ -40,11 +40,11 @@ $myclanname = isset($myclanname) ? $myclanname : 'Unbekannter Clan';  // Standar
 // htmlspecialchars nur aufrufen, wenn der Wert nicht null oder leer ist
 $myclanname = htmlspecialchars($myclanname, ENT_QUOTES, 'UTF-8');  // Sicherstellen, dass der String sicher ist
 
-$ergebnis = safe_query("SELECT * FROM `".PREFIX."plugins_footer`");
+$ergebnis = safe_query("SELECT * FROM `plugins_footer`");
 if (mysqli_num_rows($ergebnis)) {
     while ($ds = mysqli_fetch_array($ergebnis)) {
 
-        $settings = safe_query("SELECT * FROM "plugins_footer_target");
+        $settings = safe_query("SELECT * FROM plugins_footer_target");
         $db = mysqli_fetch_array($settings);
 
         // Generiere target="_blank" für Links, falls benötigt
@@ -68,7 +68,7 @@ if (mysqli_num_rows($ergebnis)) {
         }
 
         // Holen der "since"-Daten aus den Social Media Einstellungen
-        $dx = mysqli_fetch_array(safe_query("SELECT * FROM `".PREFIX."settings_social_media`"));
+        $dx = mysqli_fetch_array(safe_query("SELECT * FROM `settings_social_media`"));
         $since = $dx['since'];
 
         // Bereite das Array mit den Template-Daten vor

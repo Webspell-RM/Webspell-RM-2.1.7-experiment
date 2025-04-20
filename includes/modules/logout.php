@@ -28,7 +28,7 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
 */
 
-// Namespace verwenden, falls LoginCookie-Klasse genutzt wird
+// Namespace verwenden (falls vorhanden)
 use webspell\LoginCookie;
 
 // Session starten, falls noch nicht aktiv
@@ -36,34 +36,62 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Alle Session-Variablen löschen
+// Cache-Header setzen, um alte Session nicht wiederherzustellen
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+
+// Session-Daten löschen
 $_SESSION = [];
 
-// Session-Cookie löschen (sicherstellen, dass es korrekt entfernt wird)
+// Session-Cookie löschen
 if (ini_get("session.use_cookies")) {
     $params = session_get_cookie_params();
     setcookie(
         session_name(),
         '',
         time() - 42000,
-        $params["path"],
-        $params["domain"],
-        $params["secure"],
-        $params["httponly"]
+        $params["path"] ?? '/',
+        $params["domain"] ?? '',
+        $params["secure"] ?? false,
+        $params["httponly"] ?? true
     );
 }
 
-// Session zerstören
+// Session endgültig zerstören
 session_destroy();
 
-// Login-Cookie entfernen (falls deine Seite das verwendet)
+// Login-Cookie (Auto-Login) löschen, wenn LoginCookie-Klasse verwendet wird
 if (class_exists(LoginCookie::class)) {
-    LoginCookie::clear('ws_auth');
+    LoginCookie::clear('ws_auth'); // oder je nach Cookie-Name anpassen
 }
 
-// Optional: weiteren Cookie manuell löschen (falls gesetzt)
+// Zusätzliche benutzerdefinierte Cookies löschen
 setcookie('ws_session', '', time() - 3600, '/');
+setcookie('ws_cookie', '', time() - 3600, '/');
 
-// Weiterleitung zur Login-Seite oder Startseite
-header("Location: index.php");
-exit;
+// Optional: Benutzer-Logout loggen
+// logLogout($_SESSION['userID']); // Funktion definieren, falls Logging gewünscht
+
+// Logout-Funktion
+function logout() {
+    // Falls du noch eine Datenbankfunktion zum Löschen der Session-Daten benötigst
+    if (isset($_SESSION['userID'])) {
+        deleteSessionFromDatabase($_SESSION['userID']);
+    }
+
+    // Session-Daten aus der aktuellen Sitzung löschen
+    session_unset();
+    session_destroy();
+
+    // Auch sicherstellen, dass alle relevanten Cookies gelöscht werden
+    setcookie(session_name(), '', time() - 3600, '/'); // Session-Cookie
+    setcookie('ws_auth', '', time() - 3600, '/'); // Auto-Login-Cookie, falls verwendet
+    setcookie('ws_session', '', time() - 3600, '/'); // Benutzerdefiniertes Cookie
+
+    // Weiterleitung zur Start- oder Loginseite
+    header("Location: /index.php"); // Weiterleitung zur Login-Seite
+    exit;
+}
+
+// Aufruf der Logout-Funktion, wenn erforderlich
+logout();

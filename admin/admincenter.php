@@ -29,21 +29,44 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
  */
 
-#session_start(); // Session starten
-
-if (isset($_SESSION['userID']) && isset($_SESSION['role'])) {
-    // Wenn der Benutzer bereits eingeloggt ist, Weiterleitung zum Admincenter
-    header('Location: admin/admincenter.php');
+// Überprüfen, ob der Benutzer bereits eingeloggt ist
+if (isset($_SESSION['userID'])) {
+    // Wenn der Benutzer eingeloggt ist, Weiterleitung zum Admincenter
+    header("Location: /admin/admincenter.php");
     exit;
 }
 
+// Überprüfen, ob ein Login-Versuch gemacht wurde
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ws_user'], $_POST['password'])) {
+    $ws_user = trim($_POST['ws_user']);
+    $password = $_POST['password'];
 
+    // loginCheck-Funktion aufrufen, die den Benutzer validiert
+    $result = loginCheck($ws_user, $password);
+
+    if ($result->state == "success") {
+        // Erfolgreiches Login, setze die Session und leite weiter
+        $_SESSION['userID'] = $result->userID; // Setze die Benutzer-ID (falls nötig)
+        $_SESSION['username'] = $result->username; // Setze den Benutzernamen
+        $_SESSION['email'] = $result->email; // Setze die E-Mail (falls nötig)
+
+        // Weiterleitung zur entsprechenden Seite
+        $redirect_url = isset($_SESSION['login_redirect']) ? $_SESSION['login_redirect'] : '/admin/admincenter.php'; // Standard zu admincenter.php
+        unset($_SESSION['login_redirect']); // Lösche den Referrer, um Endlosschleifen zu vermeiden
+        header("Location: " . $redirect_url);
+        exit;
+    } else {
+        // Fehlermeldung anzeigen, wenn Login fehlgeschlagen ist
+        echo "<div class='alert alert-warning'>" . $result->message . "</div>";
+    }
+}
 
 // Fehlernachricht anzeigen, falls aus admincheck.php weitergeleitet wurde
 if (isset($_GET['error']) && $_GET['error'] === 'login_required') {
     echo "<div class='alert alert-warning'>Bitte melde dich zuerst an.</div>";
 }
 
+// Einbindung wichtiger Systemdateien
 chdir('../');
 include('system/config.inc.php');
 include('system/settings.php');
@@ -53,66 +76,99 @@ include('system/widget.php');
 include('system/version.php');
 include('system/multi_language.php');
 chdir('admin');
+
+
+
+
+
+
+
+
+
+
+echo '<pre>';
+print_r($_SESSION);
+echo '</pre>';
+
+if (!isset($_SESSION['userID'])) {
+    echo "NICHT eingeloggt";
+} else {
+    echo "Eingeloggt als: " . htmlspecialchars($_SESSION['username']);
+}
+
+
+// Überprüfen, ob die Session wirklich gelöscht wurde
+if (!isset($_SESSION['userID'])) {
+    echo "Die Session wurde erfolgreich beendet.";
+} else {
+    echo "Die Session ist immer noch aktiv.";
+}
+
+// Plugin-Manager laden und Sprachmodul für Admincenter einbinden
 $load = new plugin_manager();
 $_language->readModule('admincenter', false, true);
-if (isset($_GET['site'])) {
-	$site = $_GET['site'];
-} elseif (isset($site)) {
-	unset($site);
-}
+
+// Site-Parameter festlegen, falls vorhanden
+$site = isset($_GET['site']) ? $_GET['site'] : (isset($site) ? $site : null);
+
+// Cookie für Adminrechte prüfen
 $cookievalueadmin = 'false';
 if (isset($_COOKIE['ws_cookie'])) {
-	$cookievalueadmin = 'accepted';
+    $cookievalueadmin = 'accepted';
 }
 
-// Beispiel: Benutzer-ID aus der Sitzung erhalten (falls vorhanden)
-#$userID = $_SESSION['userID'] ?? 0; // Falls keine userID, dann 0
-
-// Überprüfen, ob der Benutzer eine Rolle zugewiesen hat
-/*if (!$userID || !checkUserRoleAssignment($userID)) {
-    die('<div style="background-color: red; color: white; padding: 10px; border-radius: 5px;">
-    Zugriff verweigert: Sie haben keine Rolle zugewiesen bekommen.<br>Sie werden in 3 Sekunden weitergeleitet...</div>');
-    // Setze einen Header für die Umleitung, aber mit einem Timeout von 3 Sekunden
-header('Location: admin/login.php');
-
-// Gib eine Nachricht aus, um dem Benutzer mitzuteilen, dass er weitergeleitet wird
-echo "Sie werden in 3 Sekunden weitergeleitet...";
-exit;
-}*/
-
-if (!$userID || !checkUserRoleAssignment($userID)) {
-    // Gib eine Fehlermeldung aus
-echo '
-<div style="
-    background-color: #e74c3c;
-    color: white;
-    padding: 20px;
-    border-radius: 8px;
-    font-family: Arial, sans-serif;
-    max-width: 600px;
-    margin: 50px auto;
-    text-align: center;
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
-">
-    <img src="images/error.png" alt="Logo" style="
-        width: 400px;
-        height: auto;
-        margin-bottom: 20px;
-        border-radius: 6px;
+// Überprüfen, ob der Benutzer eine gültige Rolle hat und eingeloggt ist
+if (!isset($_SESSION['userID']) || !checkUserRoleAssignment($_SESSION['userID'])) {
+    // Fehlerseite anzeigen, wenn der Benutzer keine Rolle zugewiesen hat oder nicht eingeloggt ist
+    echo '
+    <div style="
+        background-color: #e74c3c;
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: 50px auto;
+        text-align: center;
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
     ">
-    <h2 style="margin-top: 0;">Zugriff verweigert</h2>
-    <p>Sie haben derzeit <strong>keine Benutzerrolle</strong> zugewiesen und können daher nicht auf diesen Bereich zugreifen.</p>
-    <p>Bitte wenden Sie sich an einen Administrator, um Ihre Zugriffsrechte zu prüfen.</p>
-    <p style="margin-top: 20px;">Sie werden in <strong>10 Sekunden</strong> automatisch zur Login-Seite weitergeleitet...</p>
-</div>
+        <img src="images/error.png" alt="Logo" style="
+            width: 400px;
+            height: auto;
+            margin-bottom: 20px;
+            border-radius: 6px;
+        ">
+        <h2 style="margin-top: 0;">Zugriff verweigert</h2>
+        <p>Sie haben derzeit <strong>keine Benutzerrolle</strong> zugewiesen und können daher nicht auf diesen Bereich zugreifen.</p>
+        <p>Bitte wenden Sie sich an einen Administrator, um Ihre Zugriffsrechte zu prüfen.</p>
+        <p style="margin-top: 20px;">Sie werden in <strong>10 Sekunden</strong> automatisch zur Login-Seite weitergeleitet...</p>
+    </div>
 
-<script>
-    setTimeout(function() {
-        window.location.href = "login.php";
-    }, 10000);
-</script>
-';
-exit;
+    <script>
+        setTimeout(function() {
+            window.location.href = "login.php";
+        }, 10000);
+    </script>
+    ';
+    exit;
+}
+
+$userID = $_SESSION['userID'];
+
+$result = safe_query("
+    SELECT ar.type, ar.accessID, ar.roleID
+    FROM user_role_admin_navi_rights AS ar
+    JOIN user_role_assignments AS ur ON ar.roleID = ur.roleID
+    WHERE ur.userID = '$userID'
+");
+
+if (mysqli_num_rows($result) == 0) {
+    echo '<div style="color:red;">⚠️ Du hast keine Rechte für Kategorien oder Links (Tabellen leer?)</div>';
+} else {
+    echo '<div style="color:green;">✅ Zugriffsrechte gefunden:</div>';
+    while ($row = mysqli_fetch_assoc($result)) {
+        #echo "Typ: {$row['type']} → accessID: {$row['accessID']} (Rolle {$row['roleID']})<br>";
+    }
 }
 
 
@@ -193,7 +249,8 @@ function dashnavi() {
 if ($userID && !isset($_GET['userID']) && !isset($_POST['userID'])) {
 	$ds = mysqli_fetch_array(safe_query("SELECT registerdate FROM `users` WHERE userID='" . $userID . "'"));
 	$username = '<a class="nav-link nav-link-3" href="../index.php?site=profile&amp;id=' . $userID . '">' . getusername($userID) . '</a>';
-	$lastlogin = getformatdatetime($_SESSION['ws_lastlogin']);
+	#$lastlogin = getformatdatetime($_SESSION['ws_lastlogin']);
+	$lastlogin = 'fehlt noch';
 	$registerdate = getformatdatetime($ds['registerdate']);
 
 	$data_array = array();
@@ -265,7 +322,7 @@ if ($getavatar = getavatar($userID)) {
 				</a>
 				<ul class="dropdown-menu">
 					<li><a class="dropdown-item" href="../index.php"><i class="bi bi-arrow-clockwise text-success"></i> <?php echo $_language->module['back_to_website'] ?></a></li>
-					<li><a class="dropdown-item" href="../index.php?site=logout"><i class="bi bi-x-lg text-danger"></i> <?php echo $_language->module['logout'] ?></a></li>
+					<li><a class="dropdown-item" href="/admin/admincenter.php?site=logout"><i class="bi bi-x-lg text-danger"></i> <?php echo $_language->module['logout'] ?></a></li>
 				</ul>
 			</li>
 		</ul>

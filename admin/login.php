@@ -1,121 +1,62 @@
 <?php
-// Überprüfen, ob eine Session bereits gestartet wurde
-#if (session_status() == PHP_SESSION_NONE) {
-#    session_start();  // Nur starten, wenn noch keine Session läuft
-#}
+#session_start();
+include('../system/config.inc.php');  // config.inc.php einbinden (anstelle von sql.php)
+include('../system/settings.php');
+include('../system/functions.php');
+include('../system/plugin.php');
+include('../system/widget.php');
+include('../system/version.php');
+include('../system/multi_language.php');
 
-// In Root-Verzeichnis wechseln
-chdir('../');
-
-// Systemdateien einbinden
-include('system/sql.php');
-include('system/settings.php');
-include('system/functions.php');
-include('system/plugin.php');
-include('system/widget.php');
-include('system/version.php');
-include('system/multi_language.php');
-
-// Zurück ins Admin-Verzeichnis
-chdir('admin');
-
-// Prüfen, ob bereits eingeloggt
+// Wenn der Benutzer bereits eingeloggt ist, weiterleiten zum Admincenter
 if (isset($_SESSION['userID'])) {
-    header("Location: login.php");
+    header("Location: admincenter.php");
     exit;
 }
 
 $message = null;
 
-// POST-Login-Versuch
+// Wenn ein POST-Login-Versuch gemacht wird
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ws_user'], $_POST['password'])) {
     $ws_user = trim($_POST['ws_user']);
     $password = $_POST['password'];
 
-    // loginCheck aufrufen
+    // loginCheck-Funktion aufrufen, die den Benutzer validiert
     $result = loginCheck($ws_user, $password);
 
     if ($result->state == "success") {
-        header("Location: admincenter.php");
+        // Weiterleitung zur entsprechenden Seite basierend auf der loginCheck()-Antwort
+        header("Location: " . $result->redirect);
         exit;
     } else {
+        // Fehlermeldung anzeigen, wenn Login fehlgeschlagen ist
         $message = $result->message;
     }
 }
 
-
-
-
-
-
-
 $_language->readModule('admincenter', false, true);
 
-
-echo'
-
+// HTML-Ausgabe
+echo '
 <!DOCTYPE html>
 <html lang="'.$_language->language.'">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="Website using webSPELL-RM CMS">
     <meta name="copyright" content="Copyright &copy; 2017-2023 by webspell-rm.de">
     <meta name="author" content="webspell-rm.de">
     <link rel="SHORTCUT ICON" href="./favicon.ico">
-
-    <!-- CSS STUFF -->
+    
+    <!-- CSS einbinden -->
     <link href="/admin/css/bootstrap.min.css" rel="stylesheet">    
     <link href="/admin/css/style.css" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="../components/css/styles.css.php" />
     <link rel="stylesheet" href="../components/cookies/css/cookieconsent.css" media="print" onload="this.media=\'all\'">
     <link rel="stylesheet" href="../components/cookies/css/iframemanager.css" media="print" onload="this.media=\'all\'">
 
-    <title>webSpell | RM - Bootstrap Admin Theme</title>
-
-    <style>
-        /* CSS für das Cookie-Banner */
-        .cookie-banner {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7); /* Dunkler Hintergrund */
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999; /* Sehr hoch, um sicherzustellen, dass es über allem liegt */
-            text-align: center;
-        }
-
-        .cookie-banner .cookie-content {
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            color: #000;
-            width: 80%;
-            max-width: 500px;
-        }
-
-        .cookie-banner button {
-            margin-top: 10px;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .cookie-banner button:hover {
-            background-color: #0056b3;
-        }
-    </style>
-
-  </head>
-
+    <title>webSpell | RM - Admin Login</title>
+</head>
 <body>
 
 <div class="container-fluid">
@@ -152,6 +93,13 @@ echo'
 
                 <input type="submit" name="submit" value="'.$_language->module[ 'signup' ].'" class="fourth btn btn-lg btn-primary btn-block btn-login text-uppercase font-weight-bold mb-2">
               </form>
+              ';
+
+if ($message) {
+    echo '<div class="alert alert-danger mt-3" role="alert">' . htmlspecialchars($message) . '</div>';
+}
+
+echo '
             </div>
           </div>
         </div>
@@ -169,5 +117,3 @@ echo'
 </body>
 </html>
 ';
-
-?>

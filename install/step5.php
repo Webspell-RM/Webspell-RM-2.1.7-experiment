@@ -41,7 +41,7 @@ function import_sql_files($mysqli, $folderPath, $replacements = [])
 
             // Debugging: Ausgabe der aktuellen SQL-Query
             if (strpos($query, 'CREATE TABLE') !== false) {
-                echo "Versuche Tabelle zu erstellen: <pre>$query</pre>";
+                #echo "Versuche Tabelle zu erstellen: <pre>$query</pre>";
             }
 
             // Query ausführen

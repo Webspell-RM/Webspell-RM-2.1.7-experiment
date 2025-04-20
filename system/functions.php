@@ -696,11 +696,11 @@ function getforminput($text)
 
 // -- LOGIN -- //
 // Überprüft, ob die Login-Datei existiert, und bindet sie ein
-if (file_exists('login.php')) {
+/*if (file_exists('login.php')) {
     systeminc('login');
 } else {
     systeminc('../system/login');
-}
+}*/
 
 // Sprachwahl aus Cookie, Session oder automatische Erkennung
 if (isset($_COOKIE['language'])) {
@@ -762,7 +762,7 @@ if (date("dh", $lastBanCheck) != date("dh")) {
 }
 
 // Prüft, ob der Benutzer oder seine IP gesperrt ist, und löscht die Sitzung bei Bann
-$banned = safe_query("SELECT userID, banned, ban_reason FROM users WHERE (userID='" . $userID . "' OR ip='" . $GLOBALS['ip'] . "') AND banned IS NOT NULL");
+/*$banned = safe_query("SELECT userID, banned, ban_reason FROM users WHERE (userID='" . $userID . "' OR ip='" . $GLOBALS['ip'] . "') AND banned IS NOT NULL");
 while ($bq = mysqli_fetch_array($banned)) {
     if ($bq['ban_reason']) {
         $reason = '<div class="alert alert-warning" role="alert"><br>Grund / Reason: <br>' . $bq['ban_reason'] . '"</div>';
@@ -783,7 +783,7 @@ while ($bq = mysqli_fetch_array($banned)) {
         webspell\LoginCookie::clear('ws_auth');
         system_error('<div class="alert alert-warning" role="alert"><strong>Du wurdest gebannt!<br>You have been banned!</strong></div>' . $reason, 0);
     }
-}
+}*/
 
 // -- BANNED IPs -- //
 // Löscht abgelaufene Einträge in der Tabelle für gesperrte IPs
@@ -799,11 +799,11 @@ if (file_exists('help.php')) {
 
 // -- UPDATE LAST LOGIN -- //
 // Wenn die Seite gesetzt ist und der Benutzer angemeldet ist, wird das letzte Login-Datum aktualisiert
-if ($site) {
+/*if ($site) {
     if ($userID) {
         safe_query("UPDATE users SET lastlogin='" . time() . "' WHERE userID='" . $userID . "'");
     }
-}
+}*/
 
 // =======================
 // WHO IS / WAS ONLINE
