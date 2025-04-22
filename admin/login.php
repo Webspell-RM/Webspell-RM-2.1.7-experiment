@@ -14,23 +14,56 @@ if (isset($_SESSION['userID'])) {
     exit;
 }
 
+function escape($string) {
+    global $_database;
+    return $_database->real_escape_string($string);
+}
+
+
+
+
 $message = null;
 
-// Wenn ein POST-Login-Versuch gemacht wird
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ws_user'], $_POST['password'])) {
-    $ws_user = trim($_POST['ws_user']);
+// POST-Login-Versuch
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'], $_POST['password'])) {
+    $email = trim($_POST['email']);
     $password = $_POST['password'];
 
-    // loginCheck-Funktion aufrufen, die den Benutzer validiert
-    $result = loginCheck($ws_user, $password);
+    // Benutzer anhand der E-Mail holen
+    $result = safe_query("SELECT * FROM `users` WHERE `email` = '" . escape($email) . "'");
+    
+    if (mysqli_num_rows($result)) {
+        $user = mysqli_fetch_assoc($result);
 
-    if ($result->state == "success") {
-        // Weiterleitung zur entsprechenden Seite basierend auf der loginCheck()-Antwort
-        header("Location: " . $result->redirect);
-        exit;
+        if (!empty($user['password_hash']) && !empty($user['password_pepper'])) {
+            $inputPasswordWithPepper = $password . $user['password_pepper'];
+
+            if (password_verify($inputPasswordWithPepper, $user['password_hash'])) {
+                // Erfolgreich eingeloggt
+                $_SESSION['userID'] = $user['userID'];
+                $_SESSION['username'] = $user['username'];
+
+                // Session in DB speichern
+                saveSessionToDatabase($user['userID'], $_SESSION);
+
+                $redirect_url = $_SESSION['login_redirect'] ?? '/admin/admincenter.php';
+                unset($_SESSION['login_redirect']);
+                // Erfolgreiche Anmeldung
+                $message = '<div class="alert alert-success" role="alert">✅ Login erfolgreich!</div>';
+                
+                header("Location: /admin/admincenter.php"); // oder Weiterleitung ins Dashboard
+                exit;
+            } else {
+                // Fehler: Passwort falsch
+                $message = '<div class="alert alert-danger" role="alert">⚠️ Falsches Passwort!</div>';
+            }
+        } else {
+            // Fehler: Kein gültiges Passwort gespeichert
+            $message = '<div class="alert alert-warning" role="alert">⚠️ Benutzer hat kein gültiges Passwort gespeichert.</div>';
+        }
     } else {
-        // Fehlermeldung anzeigen, wenn Login fehlgeschlagen ist
-        $message = $result->message;
+        // Fehler: Benutzer nicht gefunden
+        $message = '<div class="alert alert-danger" role="alert">⚠️ Benutzer nicht gefunden!</div>';
     }
 }
 
@@ -83,7 +116,7 @@ echo '
               <form method="POST" action="">
                 <div class="form-label-group">
                     <label for="exampleInputEmail1">'.$_language->module[ 'email_address' ].'</label>
-                  <input class="form-control" name="ws_user" type="text" placeholder="Email Address" id="login" required>
+                  <input class="form-control" name="email" type="text" placeholder="Email Address" id="login" required>
                 </div>
                   
                 <div class="form-label-group">

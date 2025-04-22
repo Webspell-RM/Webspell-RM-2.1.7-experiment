@@ -40,18 +40,18 @@ if (isset($_POST[ 'submit' ])) {
     $disclaimer_text = $_POST[ 'disclaimer_text' ];
     $CAPCLASS = new \webspell\Captcha;
     if ($CAPCLASS->checkCaptcha(0, $_POST[ 'captcha_hash' ])) {
-        safe_query("UPDATE `" . PREFIX . "settings` SET imprint='" . $_POST[ 'type' ] . "'");
+        safe_query("UPDATE `settings` SET imprint='" . $_POST[ 'type' ] . "'");
 
-        if (mysqli_num_rows(safe_query("SELECT * FROM `" . PREFIX . "settings_imprint`"))) {
+        if (mysqli_num_rows(safe_query("SELECT * FROM `settings_imprint`"))) {
             safe_query(
             "UPDATE
-                `" . PREFIX . "settings_imprint`
+                `settings_imprint`
             SET
                 `imprint` = '" . $imprint . "',
                 `disclaimer_text` = '" . $disclaimer_text . "'"
         );
         } else {
-            safe_query("INSERT INTO `" . PREFIX . "settings_imprint` (imprint, disclaimer_text) values( '" . $imprint . "', '" . $disclaimer_text . "') ");
+            safe_query("INSERT INTO `settings_imprint` (imprint, disclaimer_text) values( '" . $imprint . "', '" . $disclaimer_text . "') ");
         }
         redirect("admincenter.php?site=settings_imprint", "", 0);
     } else {
@@ -68,7 +68,7 @@ if (isset($_POST[ 'submit' ])) {
     }
 
     // Abrufen der bestehenden Einstellungen
-    $stmt = $_database->prepare("SELECT * FROM `" . PREFIX . "settings_imprint`");
+    $stmt = $_database->prepare("SELECT * FROM `settings_imprint`");
     $stmt->execute();
     $result = $stmt->get_result();
     $ds = $result->fetch_array();

@@ -162,19 +162,20 @@ CREATE TABLE `navigation_dashboard_categories` (
 ) ENGINE=InnoDB;
 
 
-INSERT INTO `navigation_dashboard_categories` (`catID`, `name`, `modulname`, `fa_name`, `sort`) VALUES
-(1, 'Webseiten Info - Einstellungen', 'cat_web_info', 'bi bi-gear', 1),
-(2, 'Spam', 'cat_spam', 'bi bi-exclamation-triangle', 2),
-(3, 'Benutzer Administration', 'cat_user', 'bi bi-person', 3),
-(4, 'Team Verwaltung', 'cat_team', 'bi bi-people', 4),
-(5, 'Template - Layout', 'cat_temp', 'bi bi-layout-text-window-reverse', 5),
-(6, 'Plugin & Widget Verwaltung', 'cat_pwv', 'bi bi-puzzle', 6),
-(7, 'Webseiteninhalte', 'cat_web_content', 'bi bi-card-checklist', 7),
-(8, 'Grafik - Video - Projekte', 'cat_grafik', 'bi bi-image', 8),
-(9, 'Header - Slider', 'cat_header', 'bi bi-fast-forward-btn', 9),
-(10, 'Game - Voice Server Tools', 'cat_game', 'bi bi-controller', 10),
-(11, 'Social Media', 'cat_social', 'bi bi-steam', 11),
-(12, 'Links - Download - Sponsoren', 'cat_links', 'bi bi-link', 12);
+INSERT INTO `".PREFIX."navigation_dashboard_categories` (`catID`, `name`, `fa_name`, `accesslevel`, `default`, `sort`) VALUES
+(1, '[[lang:de]]Webseiten Info - Einstellungen[[lang:en]]Website Info - Settings[[lang:it]]Informazioni-Impostazioni Sito', 'bi bi-gear', 'any', 0, 1),
+(2, '[[lang:de]]Spam[[lang:en]]Spam[[lang:it]]Spam', 'bi bi-exclamation-triangle', 'user', 0, 2),
+(3, '[[lang:de]]Benutzer Administration[[lang:en]]User Administration[[lang:it]]Amministrazione Utenti', 'bi bi-person', 'user', 0, 3),
+(4, '[[lang:de]]Team Verwaltung[[lang:en]]Team Administration[[lang:it]]Amministrazione della squadra', 'bi bi-people', 'any', 0, 4),
+(5, '[[lang:de]]Template - Layout[[lang:en]]Template - Layout[[lang:it]]Template - Disposizione', 'bi bi-layout-text-window-reverse', 'page', 0, 5),
+(6, '[[lang:de]]Plugin & Widget Verwaltung[[lang:en]]Plugin and Widget Management[[lang:it]]Gestione plugin e widget', 'bi bi-puzzle', 'page', 0, 6),
+(7, '[[lang:de]]Webseiteninhalte[[lang:en]]Website Content[[lang:it]]Contenuto del sito web', 'bi bi-card-checklist', 'page', 0, 7),
+(8, '[[lang:de]]Grafik - Video - Projekte[[lang:en]]Grafik - Video - Projekte[[lang:it]]Grafica - Video - Progetti', 'bi bi-image', 'gallery', 0, 8),
+(9, '[[lang:de]]Header - Slider[[lang:en]]Header - Slider[[lang:it]]Slider-Header', 'bi bi-fast-forward-btn', 'page', 0, 9),
+(10, '[[lang:de]]Game - Voice Server Tools[[lang:en]]Game - Voice Server Tools[[lang:it]]Voice Server Tools', 'bi bi-controller', 'clanwars', 0, 10),
+(11, '[[lang:de]]Social Media[[lang:en]]Social Media[[lang:it]]Social Media', 'bi bi-steam', 'feedback', 0, 11),
+(12, '[[lang:de]]Links - Download - Sponsoren[[lang:en]]Links - Download - Sponsore[[lang:it]]Link - Download - Sponsor', 'bi bi-link', 'any', 0, 12);
+
 
 -- Ende der Tabelle 'navigation_dashboard_categories'
 
@@ -194,33 +195,35 @@ CREATE TABLE `navigation_dashboard_links` (
 
 INSERT INTO `navigation_dashboard_links` (`linkID`, `catID`, `modulname`, `name`, `url`, `sort`) 
 VALUES
-(1, 1, 'ac_overview', 'Webserver-Info', 'admincenter.php?site=overview', 1),
-(2, 1, 'ac_page_statistic', 'Seiten Statistiken', 'admincenter.php?site=page_statistic', 2),
-(3, 1, 'ac_visitor_statistic', 'Besucher Statistiken', 'admincenter.php?site=visitor_statistic', 3),
-(4, 1, 'ac_settings', 'Allgemeine Einstellungen', 'admincenter.php?site=settings', 4),
-(5, 1, 'ac_dashboard_navigation', 'Admincenter Navigation', 'admincenter.php?site=dashboard_navigation', 5),
-(6, 1, 'ac_email', 'E-Mail', 'admincenter.php?site=email', 6),
-(7, 1, 'ac_contact', 'Kontakte', 'admincenter.php?site=contact', 7),
-(8, 1, 'ac_modrewrite', 'Mod-Rewrite', 'admincenter.php?site=modrewrite', 8),
-(9, 1, 'ac_database', 'Datenbank', 'admincenter.php?site=database', 9),
-(10, 1, 'ac_update', 'Webspell-RM Update', 'admincenter.php?site=update', 10),
-(11, 3, 'ac_users', 'Registrierte Benutzer', 'admincenter.php?site=users', 1),
-(12, 2, 'ac_spam_forum', 'Geblockte Inhalte', 'admincenter.php?site=spam&action=forum_spam', 1),
-(13, 2, 'ac_spam_user', 'Nutzer löschen', 'admincenter.php?site=spam&action=user', 2),
-(14, 2, 'ac_spam_multi', 'Multi-Accounts', 'admincenter.php?site=spam&action=multi', 3),
-(15, 2, 'ac_spam_banned_ips', 'gebannte IPs', 'admincenter.php?site=banned_ips', 4),
-(16, 5, 'ac_webside_navigation', 'Webseiten Navigation', 'admincenter.php?site=webside_navigation', 1),
-(17, 5, 'ac_themes_installer', 'Themes Installer', 'admincenter.php?site=themes_installer', 2),
-(18, 5, 'ac_themes', 'Themes - Style', 'admincenter.php?site=settings_themes', 3),
-(20, 5, 'ac_startpage', 'Startseite', 'admincenter.php?site=settings_startpage', 5),
-(21, 5, 'ac_static', 'Statische Seiten', 'admincenter.php?site=settings_static', 6),
-(22, 5, 'ac_imprint', 'Impressum', 'admincenter.php?site=settings_imprint', 7),
-(23, 5, 'ac_privacy_policy', 'Datenschutz-Bestimmungen', 'admincenter.php?site=settings_privacy_policy', 8),
-(24, 6, 'ac_plugin_manager', 'Plugin & Widget Manager', 'admincenter.php?site=plugin_manager', 1),
-(25, 6, 'ac_plugin_installer', 'Plugin Installer', 'admincenter.php?site=plugin_installer', 2),
-(26, 1, 'ac_editlang', 'Spracheditor', 'admincenter.php?site=editlang', 11),
-(69, 7, 'footer', 'Footer', 'admincenter.php?site=fotter', 0),
-(70, 3, 'ac_admin_security', 'admin_security', 'admincenter.php?site=admin_security', 0);
+(1, 1, 'ac_overview', '{[lang:de]}Webserver-Info{[lang:en]}Webserver Info{[lang:it]}Informazioni Sul Sito', 'admincenter.php?site=overview', 1),
+(2, 1, 'ac_page_statistic', '{[lang:de]}Seiten Statistiken{[lang:en]}Page Statistics{[lang:it]}Pagina delle Statistiche', 'admincenter.php?site=page_statistic', 2),
+(3, 1, 'ac_visitor_statistic', '{[lang:de]}Besucher Statistiken{[lang:en]}Visitor Statistics{[lang:it]}Statistiche Visitatori', 'admincenter.php?site=visitor_statistic', 3),
+(4, 1, 'ac_settings', '{[lang:de]}Allgemeine Einstellungen{[lang:en]}General Settings{[lang:it]}Impostazioni Generali', 'admincenter.php?site=settings', 4),
+(5, 1, 'ac_dashboard_navigation', '{[lang:de]}Admincenter Navigation{[lang:en]}Admincenter Navigation{[lang:it]}Menu Navigazione Admin', 'admincenter.php?site=dashboard_navigation', 5),
+(6, 1, 'ac_email', '{[lang:de]}E-Mail{[lang:en]}E-Mail{[lang:it]}E-Mail', 'admincenter.php?site=email', 6),
+(7, 1, 'ac_contact', '{[lang:de]}Kontakte{[lang:en]}Contacts{[lang:it]}Contatti', 'admincenter.php?site=contact', 7),
+(8, 1, 'ac_modrewrite', '{[lang:de]}Mod-Rewrite{[lang:en]}Mod-Rewrite{[lang:it]}Mod-Rewrite', 'admincenter.php?site=modrewrite', 8),
+(9, 1, 'ac_database', '{[lang:de]}Datenbank{[lang:en]}Database{[lang:it]}Database', 'admincenter.php?site=database', 9),
+(10, 1, 'ac_update', '{[lang:de]}Webspell-RM Update{[lang:en]}Webspell-RM Update{[lang:it]}Aggiornamento Webspell-RM', 'admincenter.php?site=update', 10),
+(11, 3, 'ac_users', '{[lang:de]}Registrierte Benutzer{[lang:en]}Registered Users{[lang:it]}Utenti Registrati', 'admincenter.php?site=users', 1),
+(12, 2, 'ac_spam_forum', '{[lang:de]}Geblockte Inhalte{[lang:en]}Blocked Content{[lang:it]}Contenuti Bloccati', 'admincenter.php?site=spam&action=forum_spam', 1),
+(13, 2, 'ac_spam_user', '{[lang:de]}Nutzer löschen{[lang:en]}Remove User{[lang:it]}Banna Utente', 'admincenter.php?site=spam&action=user', 2),
+(14, 2, 'ac_spam_multi', '{[lang:de]}Multi-Accounts{[lang:en]}Multi-Accounts{[lang:it]}Multi-Account', 'admincenter.php?site=spam&action=multi', 3),
+(15, 2, 'ac_spam_banned_ips', '{[lang:de]}gebannte IPs{[lang:en]}Banned IPs{[lang:it]}IP Bannate', 'admincenter.php?site=banned_ips', 4),
+(16, 5, 'ac_webside_navigation', '{[lang:de]}Webseiten Navigation{[lang:en]}Website Navigation{[lang:it]}Menu Navigazione Web', 'admincenter.php?site=webside_navigation', 1),
+(17, 5, 'ac_themes_installer', '{[lang:de]}Themes Installer{[lang:en]}Themes Installer{[lang:it]}Installazione Themes', 'admincenter.php?site=themes_installer', 2),
+(18, 5, 'ac_themes', '{[lang:de]}Themes{[lang:en]}Themes{[lang:it]}Temi', 'admincenter.php?site=settings_themes', 3),
+(20, 5, 'ac_startpage', '{[lang:de]}Startseite{[lang:en]}Start Page{[lang:it]}Pagina Principale', 'admincenter.php?site=settings_startpage', 5),
+(21, 5, 'ac_static', '{[lang:de]}Statische Seiten{[lang:en]}Static Pages{[lang:it]}Pagine Statiche', 'admincenter.php?site=settings_static', 6),
+(22, 5, 'ac_imprint', '{[lang:de]}Impressum{[lang:en]}Imprint{[lang:it]}Impronta Editoriale', 'admincenter.php?site=settings_imprint', 7),
+(23, 5, 'ac_privacy_policy', '{[lang:de]}Datenschutz-Bestimmungen{[lang:en]}Privacy Policy{[lang:it]}Informativa sulla Privacy', 'admincenter.php?site=settings_privacy_policy', 8),
+(24, 6, 'ac_plugin_manager', '{[lang:de]}Plugin & Widget Manager{[lang:en]}Plugin & Widget Manager{[lang:it]}Gestore di Plugin e Widget', 'admincenter.php?site=plugin_manager', 1),
+(25, 6, 'ac_plugin_installer', '{[lang:de]}Plugin Installer{[lang:en]}Plugin Installer{[lang:it]}Installazione Plugin', 'admincenter.php?site=plugin_installer', 2),
+(26, 1, 'ac_editlang', '{[lang:de]}Spracheditor{[lang:en]}Language Editor{[lang:it]}Editor di Linguaggi', 'admincenter.php?site=editlang', 11),
+(27, 7, 'footer', '{[lang:de]}Footer{[lang:en]}Footer{[lang:it]}Piè di pagina', 'admincenter.php?site=fotter', 0),
+(28, 3, 'ac_admin_security', '{[lang:de]}Admin Security{[lang:en]}Admin Security{[lang:it]}Sicurezza Admin', 'admincenter.php?site=admin_security', 2),
+(29, 3, 'ac_user_roles', '{[lang:de]}User Roles{[lang:en]}User Roles{[lang:it]}Ruoli Utente', 'admincenter.php?site=user_roles', 3);
+
 
 -- Ende der Tabelle 'navigation_dashboard_links'
 
@@ -235,12 +238,13 @@ CREATE TABLE IF NOT EXISTS `navigation_website_main` (
 ) ENGINE=InnoDB;
   
 INSERT INTO `navigation_website_main` (`mnavID`, `name`, `url`, `default`, `sort`, `isdropdown`, `windows`) VALUES
-(1, 'HAUPT', '#', 1, 1, 1, 1),
-(2, 'TEAM', '#', 1, 2, 1, 1),
-(3, 'GEMEINSCHAFT', '#', 1, 3, 1, 1),
-(4, 'MEDIEN', '#', 1, 4, 1, 1),
-(5, 'SOCIAL', '#', 1, 5, 1, 1),
-(6, 'SONSTIGES', '#', 1, 6, 1, 1); 
+(1, '[[lang:de]]HAUPT[[lang:en]]MAIN[[lang:it]]PRINCIPALE', '#', 1, 1, 1, 1),
+(2, '[[lang:de]]TEAM[[lang:en]]TEAM[[lang:it]]TEAM', '#', 1, 2, 1, 1),
+(3, '[[lang:de]]GEMEINSCHAFT[[lang:en]]COMMUNITY[[lang:it]]COMMUNITY', '#', 1, 3, 1, 1),
+(4, '[[lang:de]]MEDIEN[[lang:en]]MEDIA[[lang:it]]MEDIA', '#', 1, 4, 1, 1),
+(5, '[[lang:de]]SOCIAL[[lang:en]]SOCIAL[[lang:it]]SOCIAL', '#', 1, 5, 1, 1),
+(6, '[[lang:de]]SONSTIGES[[lang:en]]MISCELLANEOUS[[lang:it]]VARIE', '#', 1, 6, 1, 1);
+
 
 CREATE TABLE IF NOT EXISTS `navigation_website_sub` (
   `snavID` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -254,9 +258,10 @@ CREATE TABLE IF NOT EXISTS `navigation_website_sub` (
 ) ENGINE=InnoDB;
   
 INSERT INTO `navigation_website_sub` (`snavID`, `mnavID`, `name`, `modulname`, `url`, `sort`, `indropdown`, `themes_modulname`) VALUES
-(1, 6, 'Kontakt', 'contact', 'index.php?site=contact', 1, 1, 'default'),
-(2, 6, 'Datenschutz-Bestimmungen', 'privacy_policy', 'index.php?site=privacy_policy', 2, 1, 'default'),
-(3, 6, 'Impressum', 'imprint', 'index.php?site=imprint', 3, 1, 'default');
+(1, 6, '[[lang:de]]Kontakt[[lang:en]]Contact[[lang:it]]Contatti', 'contact', 'index.php?site=contact', 1, 1, 'default'),
+(2, 6, '[[lang:de]]Datenschutz-Bestimmungen[[lang:en]]Privacy Policy[[lang:it]]Informativa sulla Privacy', 'privacy_policy', 'index.php?site=privacy_policy', 2, 1, 'default'),
+(3, 6, '[[lang:de]]Impressum[[lang:en]]Imprint[[lang:it]]Impronta Editoriale', 'imprint', 'index.php?site=imprint', 3, 1, 'default');
+
 
 
 -- Tabelle erstellen
@@ -536,7 +541,23 @@ CREATE TABLE IF NOT EXISTS `settings_imprint` (
 ) ENGINE=InnoDB;
 
 INSERT INTO `settings_imprint` (`imprintID`, `imprint`, `disclaimer_text`) VALUES
-(1, 'Impressum in deutscher Sprache.<br /><span style=\"color:#c0392b\"><strong>Konfigurieren Sie bitte Ihr Impressum!</strong></span>', 'Haftungsausschluss in deutscher Sprache.<br /><span style=\"color:#c0392b\"><strong>Konfigurieren Sie bitte Ihr Haftungsausschluss! </strong></span>');
+(1,
+'[[lang:de]]Impressum in deutscher Sprache.<br />
+<span style="color:#c0392b"><strong>Konfigurieren Sie bitte Ihr Impressum!</strong></span>
+
+[[lang:en]]Imprint in English.<br />
+<span style="color:#c0392b"><strong>Please configure your imprint!</strong></span>
+
+[[lang:it]]Impronta Editoriale in Italiano.<br />
+<span style="color:#c0392b"><strong>Si prega di configurare l&rsquo;impronta!</strong></span>',
+'[[lang:de]]Haftungsausschluss in deutscher Sprache.<br />
+<span style="color:#c0392b"><strong>Konfigurieren Sie bitte Ihr Haftungsausschluss! </strong></span>
+
+[[lang:en]]Disclaimer in English.<br />
+<span style="color:#c0392b"><strong>Please configure your disclaimer!</strong></span>
+
+[[lang:it]]Dichiarazione di non Responsabilità in Italiano.<br />
+<span style="color:#c0392b"><strong>Si prega di configurare la Dichiarazione di non Responsabilità!</strong></span>');
 
 CREATE TABLE IF NOT EXISTS `settings_languages` (
   `langID` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -605,20 +626,20 @@ CREATE TABLE IF NOT EXISTS `settings_plugins` (
 ) ENGINE=InnoDB;
 
 INSERT INTO `settings_plugins` (`pluginID`, `name`, `modulname`, `info`, `admin_file`, `activate`, `author`, `website`, `index_link`, `hiddenfiles`, `version`, `path`, `status_display`, `plugin_display`, `widget_display`, `delete_display`, `sidebar`) VALUES
-(1, 'Startpage', 'startpage', 'Kein Plugin. Bestandteil vom System!!!', '', 1, '', '', '', '', '', '', 0, 0, 1, 0, 'full_activated'),
-(2, 'Privacy Policy', 'privacy_policy', 'Kein Plugin. Bestandteil vom System!!!', '', 1, '', '', 'privacy_policy', '', '', '', 0, 0, 1, 0, 'deactivated'),
-(3, 'Imprint', 'imprint', 'Kein Plugin. Bestandteil vom System!!!', '', 1, '', '', 'imprint', '', '', '', 0, 0, 1, 0, 'deactivated'),
-(4, 'Static', 'static', 'Kein Plugin. Bestandteil vom System!!!', '', 1, '', '', 'static', '', '', '', 1, 0, 1, 0, 'deactivated'),
-(5, 'Error_404', 'error_404', 'Kein Plugin. Bestandteil vom System!!!', '', 1, '', '', 'error_404', '', '', '', 1, 0, 1, 0, 'deactivated'),
-(6, 'Profile', 'profile', 'Kein Plugin. Bestandteil vom System!!!', '', 1, '', '', 'profile', '', '', '', 1, 0, 1, 0, 'deactivated'),
-(7, 'Login', 'login', 'Kein Plugin. Bestandteil vom System!!!', '', 1, '', '', 'login', '', '', '', 1, 0, 1, 0, 'deactivated'),
-(8, 'Lost Password', 'lostpassword', 'Kein Plugin. Bestandteil vom System!!!', '', 1, '', '', 'lostpassword', '', '', '', 1, 0, 1, 0, 'deactivated'),
-(9, 'Contact', 'contact', 'Kein Plugin. Bestandteil vom System!!!', '', 1, '', '', 'contact', '', '', '', 1, 0, 1, 0, 'deactivated'),
-(10, 'Register', 'register', 'Kein Plugin. Bestandteil vom System!!!', '', 1, '', '', 'register', '', '', '', 1, 0, 1, 0, 'deactivated'),
-(11, 'My Profile', 'myprofile', 'Kein Plugin. Bestandteil vom System!!!', '', 1, '', '', 'myprofile', '', '', '', 1, 0, 1, 0, 'deactivated'),
-(12, 'Report', 'report', 'Kein Plugin. Bestandteil vom System!!!', '', 1, '', '', 'report', '', '', '', 1, 0, 1, 0, 'deactivated'),
-(13, 'Navigation', 'navigation', 'Mit diesem Plugin könnt ihr euch die Navigation anzeigen lassen.', '', 1, 'T-Seven', 'https://webspell-rm.de', '', '', '0.3', 'includes/plugins/navigation/', 1, 1, 0, 0, 'deactivated'),
-(14, 'Footer', 'footer', 'Mit diesem Plugin könnt ihr einen neuen Footer anzeigen lassen.', 'admin_footer', 1, 'T-Seven', 'https://webspell-rm.de', '', '', '0.1', 'includes/plugins/footer/', 1, 1, 0, 0, 'deactivated');
+(1, 'Startpage', 'startpage', '{[lang:de]}Kein Plugin. Bestandteil vom System!!!{[lang:en]}No plugin. Part of the system!!!{[lang:it]}Nessun plug-in. Parte del sistema!!!', '', 1, '', '', '', '', '', '', 0, 0, 1, 0, 'full_activated'),
+(2, 'Privacy Policy', 'privacy_policy', '{[lang:de]}Kein Plugin. Bestandteil vom System!!!{[lang:en]}No plugin. Part of the system!!!{[lang:it]}Nessun plug-in. Parte del sistema!!!', '', 1, '', '', 'privacy_policy', '', '', '', 0, 0, 1, 0, 'deactivated'),
+(3, 'Imprint', 'imprint', '{[lang:de]}Kein Plugin. Bestandteil vom System!!!{[lang:en]}No plugin. Part of the system!!!{[lang:it]}Nessun plug-in. Parte del sistema!!!', '', 1, '', '', 'imprint', '', "", "", 0, 0, 1, 0, 'deactivated'),
+(4, 'Static', 'static', '{[lang:de]}Kein Plugin. Bestandteil vom System!!!{[lang:en]}No plugin. Part of the system!!!{[lang:it]}Nessun plug-in. Parte del sistema!!!', '', 1, '', '', 'static', '', "", "", 1, 0, 1, 0, 'deactivated'),
+(5, 'Error_404', 'error_404', '{[lang:de]}Kein Plugin. Bestandteil vom System!!!{[lang:en]}No plugin. Part of the system!!!{[lang:it]}Nessun plug-in. Parte del sistema!!!', '', 1, '', '', 'error_404', '', "", "", 1, 0, 1, 0, 'deactivated'),
+(6, 'Profile', 'profile', '{[lang:de]}Kein Plugin. Bestandteil vom System!!!{[lang:en]}No plugin. Part of the system!!!{[lang:it]}Nessun plug-in. Parte del sistema!!!', '', 1, '', '', 'profile', '', "", "", 1, 0, 1, 0, 'deactivated'),
+(7, 'Login', 'login', '{[lang:de]}Kein Plugin. Bestandteil vom System!!!{[lang:en]}No plugin. Part of the system!!!{[lang:it]}Nessun plug-in. Parte del sistema!!!', '', 1, '', '', 'login', '', "", "", 1, 0, 1, 0, 'deactivated'),
+(8, 'Lost Password', 'lostpassword', '{[lang:de]}Kein Plugin. Bestandteil vom System!!!{[lang:en]}No plugin. Part of the system!!!{[lang:it]}Nessun plug-in. Parte del sistema!!!', '', 1, '', '', 'lostpassword', '', "", "", 1, 0, 1, 0, 'deactivated'),
+(9, 'Contact', 'contact', '{[lang:de]}Kein Plugin. Bestandteil vom System!!!{[lang:en]}No plugin. Part of the system!!!{[lang:it]}Nessun plug-in. Parte del sistema!!!', '', 1, '', '', 'contact', '', "", "", 1, 0, 1, 0, 'deactivated'),
+(10, 'Register', 'register', '{[lang:de]}Kein Plugin. Bestandteil vom System!!!{[lang:en]}No plugin. Part of the system!!!{[lang:it]}Nessun plug-in. Parte del sistema!!!', '', 1, '', '', 'register', '', "", "", 1, 0, 1, 0, 'deactivated'),
+(11, 'My Profile', 'myprofile', '{[lang:de]}Kein Plugin. Bestandteil vom System!!!{[lang:en]}No plugin. Part of the system!!!{[lang:it]}Nessun plug-in. Parte del sistema!!!', '', 1, '', '', 'myprofile', '', "", "", 1, 0, 1, 0, 'deactivated'),
+(12, 'Report', 'report', '{[lang:de]}Kein Plugin. Bestandteil vom System!!!{[lang:en]}No plugin. Part of the system!!!{[lang:it]}Nessun plug-in. Parte del sistema!!!', '', 1, '', '', 'report', '', "", "", 1, 0, 1, 0, 'deactivated'),
+(13, 'Navigation', 'navigation', '{[lang:de]}Mit diesem Plugin k&ouml;nnt ihr euch die Navigation anzeigen lassen.{[lang:en]}With this plugin you can display navigation.{[lang:it]}Con questo plugin puoi visualizzare la Barra di navigazione predefinita.', '', 1, 'T-Seven', 'https://webspell-rm.de', '', '', '0.3', 'includes/plugins/navigation/', 1, 1, 0, 0, 'deactivated'),
+(14, 'Footer', 'footer', '{[lang:de]}Mit diesem Plugin k&ouml;nnt ihr einen neuen Footer anzeigen lassen.{[lang:en]}With this plugin you can have a new Footer displayed.{[lang:it]}Con questo plugin puoi visualizzare un nuovo piè di pagina.', 'admin_footer', 1, 'T-Seven', 'https://webspell-rm.de', '', '', '0.1', 'includes/plugins/footer/', 1, 1, 0, 0, 'deactivated');
 
 
 CREATE TABLE IF NOT EXISTS `settings_plugins_widget` (
@@ -661,7 +682,7 @@ CREATE TABLE IF NOT EXISTS `settings_privacy_policy` (
 ) ENGINE=InnoDB;
 
 INSERT INTO `settings_privacy_policy` (`privacy_policyID`, `date`, `privacy_policy_text`) VALUES
-(1, 1576689811, 'Datenschutz-Bestimmungen in deutscher Sprache.<br /><span style="color:#c0392b"><strong>Konfigurieren Sie bitte Ihre Datenschutz-Bestimmungen!</strong></span>');
+(1, UNIX_TIMESTAMP(), '[[lang:de]] Datenschutz-Bestimmungen in deutscher Sprache.<br /><span style="color:#c0392b"><strong>Konfigurieren Sie bitte Ihre Datenschutz-Bestimmungen!</strong></span><br />[[lang:en]] Privacy Policy in English.<br /><span style="color:#c0392b"><strong>Please configure your Privacy Policy!</strong></span>[[lang:it]] Informativa sulla Privacy in Italiano.<br /><span style="color:#c0392b"><strong>Si prega di configurare l&rsquo;Informativa sulla Privacy!</strong></span>');
 
 
 CREATE TABLE IF NOT EXISTS `settings_recaptcha` (
@@ -702,6 +723,8 @@ CREATE TABLE IF NOT EXISTS `settings_startpage` (
   `date` int(14) NOT NULL,
   `displayed` varchar(255) DEFAULT '0'
 ) ENGINE=InnoDB;
+
+INSERT INTO `settings_startpage` (`pageID`, `title`, `startpage_text`, `date`, `displayed`) VALUES (1, '[[lang:de]]Willkommen zu Webspell | RM[[lang:en]]Welcome to Webspell | RM[[lang:it]]Benvenuti su Webspell | RM', '<!-- Page Content -->\r\n<div class=\"container\"><!-- Jumbotron Header -->\r\n<h1>Webspell RM!</h1>\r\n\r\n<p>[[lang:de]]</p>\r\n\r\n<p><strong><u>Was ist Webspell RM?</u></strong><br />\r\n<br />\r\nWebspell RM ist ein Clan &amp; Gamer CMS (<em>Content Management System</em>). Es basiert auf PHP, MySQL und der letzten webSPELL.org GitHub Version (4.3.0). Webspell RM l&auml;uft unter der General Public License. Siehe auch <a href=\"http://wiki.webspell-rm.de/index.php?site=static&amp;staticID=4\" target=\"_blank\">Lizenzvereinbarung</a>.</p>\r\n\r\n<p style=\"text-align:center\"><a class=\"btn btn-info\" href=\"http://demo.webspell-rm.de/\" rel=\"noopener\" role=\"button\" target=\"_blank\"><strong><u>WEBSPELL RM DEMO</u></strong></a> <a class=\"btn btn-success\" href=\"https://webspell-rm.de/index.php?site=forum\" rel=\"noopener\" role=\"button\" target=\"_blank\"><strong><u>WEBSPELL RM SUPPORT</u></strong></a></p>\r\n\r\n<p><strong><u>Was bietet Webspell | RM?</u></strong><br />\r\n<br />\r\nWebspell RM basiert auf Bootstrap und ist einfach anzupassen via Dashboard. Theoretisch sind alle Bootstrap Templates verwendbar. Als Editor wir der CKEditor verwendet. Das CMS ist Multi-Language f&auml;hig und liefert von Haus aus viele Sprachen mit. Das beliebte reCAPTCHA wurde als Spam Schutz integriert. Alle Plugins sind via Webspell RM Installer einfach und problemlos zu installieren.</p>\r\n<!-- Page Features -->\r\n\r\n<div class=\"row text-center\">\r\n<div class=\"col mb-4\">\r\n<div class=\"card h-100\" style=\"width:15rem\"><img alt=\"\" class=\"card-img-top img-fluid\" src=\"https://www.webspell-rm.de/includes/plugins/pic_update/images/173.jpg\" />\r\n<div class=\"card-body\">\r\n<h4>Webside</h4>\r\n\r\n</div>\r\n\r\n<div class=\"card-footer\"><a class=\"btn btn-primary\" href=\"#\">Find Out More!</a></div>\r\n</div>\r\n</div>\r\n\r\n<div class=\"col mb-4\">\r\n<div class=\"card h-100\" style=\"width:15rem\"><img alt=\"\" class=\"card-img-top\" src=\"https://www.webspell-rm.de//includes/plugins/pic_update/images/170.jpg\" />\r\n<div class=\"card-body\">\r\n<h4>Dashboard</h4>\r\n\r\n</div>\r\n\r\n<div class=\"card-footer\"><a class=\"btn btn-primary\" href=\"/admin/admincenter.php\" target=\"_blank\">Find Out More!</a></div>\r\n</div>\r\n</div>\r\n\r\n<div class=\"col mb-4\">\r\n<div class=\"card h-100\" style=\"width:15rem\"><img alt=\"\" class=\"card-img-top img-fluid\" src=\"https://www.webspell-rm.de/includes/plugins/pic_update/images/171.jpg\" />\r\n<div class=\"card-body\">\r\n<h4>Layout</h4>\r\n\r\n</div>\r\n\r\n<div class=\"card-footer\"><a class=\"btn btn-primary\" href=\"/admin/admincenter.php?site=settings_templates\" target=\"_blank\">Find Out More!</a></div>\r\n</div>\r\n</div>\r\n\r\n<div class=\"col mb-4\">\r\n<div class=\"card h-100\" style=\"width:15rem\"><img alt=\"\" class=\"card-img-top img-fluid\" src=\"https://www.webspell-rm.de/includes/plugins/pic_update/images/172.jpg\" />\r\n<div class=\"card-body\">\r\n<h4>Plugin-Installer</h4>\r\n\r\n</div>\r\n\r\n<div class=\"card-footer\"><a class=\"btn btn-primary\" href=\"/admin/admincenter.php?site=plugin_installer\" target=\"_blank\">Find Out More!</a></div>\r\n</div>\r\n</div>\r\n<!-- zweite Reihe -->\r\n\r\n<div class=\"col mb-4\">\r\n<div class=\"card h-100\" style=\"width:15rem\"><img alt=\"\" class=\"card-img-top img-fluid\" src=\"https://www.webspell-rm.de/includes/plugins/pic_update/images/174.jpg\" />\r\n<div class=\"card-body\">\r\n<h4>Theme-Installer</h4>\r\n\r\n</div>\r\n\r\n<div class=\"card-footer\"><a class=\"btn btn-primary\" href=\"/admin/admincenter.php?site=template_installer\" target=\"_blank\">Find Out More!</a></div>\r\n</div>\r\n</div>\r\n\r\n<div class=\"col mb-4\">\r\n<div class=\"card h-100\" style=\"width:15rem\"><img alt=\"\" class=\"card-img-top img-fluid\" src=\"https://www.webspell-rm.de/includes/plugins/pic_update/images/175.jpg\" />\r\n<div class=\"card-body\">\r\n<h4>Updater</h4>\r\n\r\n</div>\r\n\r\n<div class=\"card-footer\"><a class=\"btn btn-primary\" href=\"/admin/admincenter.php?site=update\" target=\"_blank\">Find Out More!</a></div>\r\n</div>\r\n</div>\r\n\r\n<div class=\"col mb-4\">\r\n<div class=\"card h-100\" style=\"width:15rem\"><img alt=\"\" class=\"card-img-top img-fluid\" src=\"https://www.webspell-rm.de/includes/plugins/pic_update/images/176.jpg\" />\r\n<div class=\"card-body\">\r\n<h4>Startpage</h4>\r\n\r\n</div>\r\n\r\n<div class=\"card-footer\"><a class=\"btn btn-primary\" href=\"/admin/admincenter.php?site=settings_startpage\" target=\"_blank\">Find Out More!</a></div>\r\n</div>\r\n</div>\r\n\r\n<div class=\"col mb-4\">\r\n<div class=\"card h-100\" style=\"width:15rem\"><img alt=\"\" class=\"card-img-top img-fluid\" src=\"https://www.webspell-rm.de/includes/plugins/pic_update/images/177.jpg\" />\r\n<div class=\"card-body\">\r\n<h4>Webspell-RM</h4>\r\n\r\n</div>\r\n\r\n<div class=\"card-footer\"><a class=\"btn btn-primary\" href=\"https://www.webspell-rm.de/forum.html\" target=\"_blank\">Support</a> <a class=\"btn btn-primary\" href=\"https://www.webspell-rm.de/wiki.html\" target=\"_blank\">WIKI</a></div>\r\n</div>\r\n</div>\r\n</div>\r\n<!-- /.row --></div>\r\n<!-- /.container -->\r\n\r\n<p>[[lang:en]]</p>\r\n\r\n<p><strong><u>What is Webspell RM?</u></strong><br />\r\n<br />\r\nWebspell RM is a Clan &amp; Gamer CMS (Content Management System). It is based on PHP, MySQL and the latest webSPELL.org GitHub version (4.3.0). Webspell RM runs under the General Public License. See also license agreement <a href=\"http://wiki.webspell-rm.de/index.php?site=static&amp;staticID=4\" target=\"_blank\">license agreement</a>.</p>\r\n\r\n<p style=\"text-align:center\"><a class=\"btn btn-info\" href=\"http://demo.webspell-rm.de/\" rel=\"noopener\" role=\"button\" target=\"_blank\"><strong><u>WEBSPELL RM DEMO</u></strong></a> <a class=\"btn btn-success\" href=\"https://webspell-rm.de/index.php?site=forum\" rel=\"noopener\" role=\"button\" target=\"_blank\"><strong><u>WEBSPELL RM SUPPORT</u></strong></a></p>\r\n\r\n<p><strong><u>What does Webspell | RM offer?</u></strong><br />\r\n<br />\r\nWebspell RM is based on bootstrap and it is easy to customize via dashboard. Theoretically, all bootstrap templates can be used. As editor we use the CKEditor. The CMS is multi-language capable and comes with many native languages. The popular reCAPTCHA was integrated as spam protection. All plugins are easy to install via Webspell RM Installer.</p>\r\n<!-- Page Features -->\r\n\r\n<div class=\"row text-center\">\r\n<div class=\"col mb-4\">\r\n<div class=\"card h-100\" style=\"width:15rem\"><img alt=\"\" class=\"card-img-top img-fluid\" src=\"https://www.webspell-rm.de/includes/plugins/pic_update/images/173.jpg\" />\r\n<div class=\"card-body\">\r\n<h4>Webside</h4>\r\n\r\n</div>\r\n\r\n<div class=\"card-footer\"><a class=\"btn btn-primary\" href=\"#\">Find Out More!</a></div>\r\n</div>\r\n</div>\r\n\r\n<div class=\"col mb-4\">\r\n<div class=\"card h-100\" style=\"width:15rem\"><img alt=\"\" class=\"card-img-top\" src=\"https://www.webspell-rm.de//includes/plugins/pic_update/images/170.jpg\" />\r\n<div class=\"card-body\">\r\n<h4>Dashboard</h4>\r\n\r\n</div>\r\n\r\n<div class=\"card-footer\"><a class=\"btn btn-primary\" href=\"/admin/admincenter.php\" target=\"_blank\">Find Out More!</a></div>\r\n</div>\r\n</div>\r\n\r\n<div class=\"col mb-4\">\r\n<div class=\"card h-100\" style=\"width:15rem\"><img alt=\"\" class=\"card-img-top img-fluid\" src=\"https://www.webspell-rm.de/includes/plugins/pic_update/images/171.jpg\" />\r\n<div class=\"card-body\">\r\n<h4>Layout</h4>\r\n\r\n</div>\r\n\r\n<div class=\"card-footer\"><a class=\"btn btn-primary\" href=\"/admin/admincenter.php?site=settings_templates\" target=\"_blank\">Find Out More!</a></div>\r\n</div>\r\n</div>\r\n\r\n<div class=\"col mb-4\">\r\n<div class=\"card h-100\" style=\"width:15rem\"><img alt=\"\" class=\"card-img-top img-fluid\" src=\"https://www.webspell-rm.de/includes/plugins/pic_update/images/172.jpg\" />\r\n<div class=\"card-body\">\r\n<h4>Plugin-Installer</h4>\r\n\r\n</div>\r\n\r\n<div class=\"card-footer\"><a class=\"btn btn-primary\" href=\"/admin/admincenter.php?site=plugin_installer\" target=\"_blank\">Find Out More!</a></div>\r\n</div>\r\n</div>\r\n<!-- zweite Reihe -->\r\n\r\n<div class=\"col mb-4\">\r\n<div class=\"card h-100\" style=\"width:15rem\"><img alt=\"\" class=\"card-img-top img-fluid\" src=\"https://www.webspell-rm.de/includes/plugins/pic_update/images/174.jpg\" />\r\n<div class=\"card-body\">\r\n<h4>Theme-Installer</h4>\r\n\r\n</div>\r\n\r\n<div class=\"card-footer\"><a class=\"btn btn-primary\" href=\"/admin/admincenter.php?site=template_installer\" target=\"_blank\">Find Out More!</a></div>\r\n</div>\r\n</div>\r\n\r\n<div class=\"col mb-4\">\r\n<div class=\"card h-100\" style=\"width:15rem\"><img alt=\"\" class=\"card-img-top img-fluid\" src=\"https://www.webspell-rm.de/includes/plugins/pic_update/images/175.jpg\" />\r\n<div class=\"card-body\">\r\n<h4>Updater</h4>\r\n\r\n</div>\r\n\r\n<div class=\"card-footer\"><a class=\"btn btn-primary\" href=\"/admin/admincenter.php?site=update\" target=\"_blank\">Find Out More!</a></div>\r\n</div>\r\n</div>\r\n\r\n<div class=\"col mb-4\">\r\n<div class=\"card h-100\" style=\"width:15rem\"><img alt=\"\" class=\"card-img-top img-fluid\" src=\"https://www.webspell-rm.de/includes/plugins/pic_update/images/176.jpg\" />\r\n<div class=\"card-body\">\r\n<h4>Startpage</h4>\r\n\r\n</div>\r\n\r\n<div class=\"card-footer\"><a class=\"btn btn-primary\" href=\"/admin/admincenter.php?site=settings_startpage\" target=\"_blank\">Find Out More!</a></div>\r\n</div>\r\n</div>\r\n\r\n<div class=\"col mb-4\">\r\n<div class=\"card h-100\" style=\"width:15rem\"><img alt=\"\" class=\"card-img-top img-fluid\" src=\"https://www.webspell-rm.de/includes/plugins/pic_update/images/177.jpg\" />\r\n<div class=\"card-body\">\r\n<h4>Webspell-RM</h4>\r\n\r\n</div>\r\n\r\n<div class=\"card-footer\"><a class=\"btn btn-primary\" href=\"https://www.webspell-rm.de/forum.html\" target=\"_blank\">Support</a> <a class=\"btn btn-primary\" href=\"https://www.webspell-rm.de/wiki.html\" target=\"_blank\">WIKI</a></div>\r\n</div>\r\n</div>\r\n</div>\r\n</div>\r\n<!-- /.row --></div><!-- /.container -->\r\n\r\n<p>[[lang:it]]</p>\r\n\r\n<p><strong><u>Che cosa &egrave; Webspell RM? </u> </strong><br />\r\n<br />\r\nWebspell RM &egrave; un Clan Gamer CMS (Content Management System). Basato su PHP, MySQL ultima versione di webSPELL.org GitHub (4.3.0). Webspell RM funziona con la General Public License. Vedi anche il contratto di licenza <a href=\"http://wiki.webspell-rm.de/index.php?site=static&amp;staticID=4\" target=\"_blank\"> contratto di licenza </a>.</p>\r\n\r\n<p style=\"text-align:center\"><a class=\"btn btn-info\" href=\"http://demo.webspell-rm.de/\" rel=\"noopener\" role=\"button\" target=\"_blank\"><strong><u>DEMO WEBSPELL RM </u> </strong> </a> <a class=\"btn btn-success\" href=\"https://webspell-rm.de/index. php? site = forum \" rel=\" noopener \" role=\" button \" target=\" _ blank \"> <strong> <u> SUPPORTO RM WEBSPELL </u> </strong> </a></p>\r\n\r\n<p><strong><u>Cosa fa Webspell RM? </u> </strong><br />\r\n<br />\r\nWebspell RM &egrave; basato su bootstrap ed &egrave; facile da personalizzare tramite dashboard. Teoricamente, possono essere utilizzati tutti i modelli di bootstrap. Come editor usiamo CKEditor. Il CMS &egrave; multilingue e viene fornito con molte lingue native. Il popolare reCAPTCHA &egrave; stato integrato come protezione antispam. Tutti i plugin sono facili da installare tramite Webspell RM Installer.</p>\r\n<!-- Page Features -->\r\n\r\n<div class=\"row text-center\">\r\n<div class=\"col mb-4\">\r\n<div class=\"card h-100\" style=\"width:15rem\"><img alt=\"\" class=\"card-img-top img-fluid\" src=\"https://www.webspell-rm.de/includes/plugins/pic_update/images/173.jpg\" />\r\n<div class=\"card-body\">\r\n<h4>Sito Web</h4>\r\n\r\n</div>\r\n\r\n<div class=\"card-footer\"><a class=\"btn btn-primary\" href=\"#\">Find Out More!</a></div>\r\n</div>\r\n</div>\r\n\r\n<div class=\"col mb-4\">\r\n<div class=\"card h-100\" style=\"width:15rem\"><img alt=\"\" class=\"card-img-top\" src=\"https://www.webspell-rm.de//includes/plugins/pic_update/images/170.jpg\" />\r\n<div class=\"card-body\">\r\n<h4>Dashboard</h4>\r\n\r\n</div>\r\n\r\n<div class=\"card-footer\"><a class=\"btn btn-primary\" href=\"/admin/admincenter.php\" target=\"_blank\">Find Out More!</a></div>\r\n</div>\r\n</div>\r\n\r\n<div class=\"col mb-4\">\r\n<div class=\"card h-100\" style=\"width:15rem\"><img alt=\"\" class=\"card-img-top img-fluid\" src=\"https://www.webspell-rm.de/includes/plugins/pic_update/images/171.jpg\" />\r\n<div class=\"card-body\">\r\n<h4>Layout</h4>\r\n\r\n</div>\r\n\r\n<div class=\"card-footer\"><a class=\"btn btn-primary\" href=\"/admin/admincenter.php?site=settings_templates\" target=\"_blank\">Find Out More!</a></div>\r\n</div>\r\n</div>\r\n\r\n<div class=\"col mb-4\">\r\n<div class=\"card h-100\" style=\"width:15rem\"><img alt=\"\" class=\"card-img-top img-fluid\" src=\"https://www.webspell-rm.de/includes/plugins/pic_update/images/172.jpg\" />\r\n<div class=\"card-body\">\r\n<h4>Plugin-Installer</h4>\r\n\r\n</div>\r\n\r\n<div class=\"card-footer\"><a class=\"btn btn-primary\" href=\"/admin/admincenter.php?site=plugin_installer\" target=\"_blank\">Find Out More!</a></div>\r\n</div>\r\n</div>\r\n<!-- zweite Reihe -->\r\n\r\n<div class=\"col mb-4\">\r\n<div class=\"card h-100\" style=\"width:15rem\"><img alt=\"\" class=\"card-img-top img-fluid\" src=\"https://www.webspell-rm.de/includes/plugins/pic_update/images/174.jpg\" />\r\n<div class=\"card-body\">\r\n<h4>Theme-Installer</h4>\r\n\r\n</div>\r\n\r\n<div class=\"card-footer\"><a class=\"btn btn-primary\" href=\"/admin/admincenter.php?site=template_installer\" target=\"_blank\">Find Out More!</a></div>\r\n</div>\r\n</div>\r\n\r\n<div class=\"col mb-4\">\r\n<div class=\"card h-100\" style=\"width:15rem\"><img alt=\"\" class=\"card-img-top img-fluid\" src=\"https://www.webspell-rm.de/includes/plugins/pic_update/images/175.jpg\" />\r\n<div class=\"card-body\">\r\n<h4>Updater</h4>\r\n\r\n</div>\r\n\r\n<div class=\"card-footer\"><a class=\"btn btn-primary\" href=\"/admin/admincenter.php?site=update\" target=\"_blank\">Find Out More!</a></div>\r\n</div>\r\n</div>\r\n\r\n<div class=\"col mb-4\">\r\n<div class=\"card h-100\" style=\"width:15rem\"><img alt=\"\" class=\"card-img-top img-fluid\" src=\"https://www.webspell-rm.de/includes/plugins/pic_update/images/176.jpg\" />\r\n<div class=\"card-body\">\r\n<h4>Startpage</h4>\r\n\r\n</div>\r\n\r\n<div class=\"card-footer\"><a class=\"btn btn-primary\" href=\"/admin/admincenter.php?site=settings_startpage\" target=\"_blank\">Find Out More!</a></div>\r\n</div>\r\n</div>\r\n\r\n<div class=\"col mb-4\">\r\n<div class=\"card h-100\" style=\"width:15rem\"><img alt=\"\" class=\"card-img-top img-fluid\" src=\"https://www.webspell-rm.de/includes/plugins/pic_update/images/177.jpg\" />\r\n<div class=\"card-body\">\r\n<h4>Webspell-RM</h4>\r\n\r\n</div>\r\n\r\n<div class=\"card-footer\"><a class=\"btn btn-primary\" href=\"https://www.webspell-rm.de/forum.html\" target=\"_blank\">Support</a> <a class=\"btn btn-primary\" href=\"https://www.webspell-rm.de/wiki.html\" target=\"_blank\">WIKI</a></div>\r\n</div>\r\n</div>\r\n</div>\r\n</div>\r\n<!-- /.row --></div><!-- /.container -->', 1616526018, '1');
 
 
 CREATE TABLE IF NOT EXISTS `settings_static` (

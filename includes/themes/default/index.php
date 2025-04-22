@@ -36,7 +36,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-
+/*
 
 // Debug-Ausgabe
 echo '<pre>';
@@ -57,13 +57,66 @@ if (!isset($_SESSION['userID'])) {
     echo "✅ Eingeloggt als Benutzer #{$_SESSION['userID']}<br>";
 }
 
-// Cookie anzeigen
-#$cookievalue = 'false';
-#if (isset($_COOKIE['ws_cookie'])) {
-#    $cookievalue = 'accepted';
-#}
-#echo "Cookie-Zustimmung: $cookievalue";
 
+
+// Beispiel-Datenbankwerte
+$storedPepper = '$2y$12$5r3fk8F2IzjujRl0341AwOYb/jIwOmTw1SemV56yhLTceAK.eQQ5q';
+$storedPasswordHash = '$2y$12$GDF0ITCfluygz5OGeCCC1uNfrZZ6LBBJmx3iR/J2qUzNGu4l4iM1C'; // Der Hash des Passworts in der DB
+
+// Eingabe des Benutzers
+$inputPassword = 'kJrgvPot9u'; // Eingabe des Benutzers
+
+// Überprüfen des Passworts
+if (verifyPassword($inputPassword, $storedPasswordHash, $storedPepper)) {
+    echo "Login erfolgreich!";
+} else {
+    echo "Falsches Passwort!";
+}
+
+
+$username = 'T-Seven';
+$password = 'kJrgvPot9u';
+
+$result = safe_query("SELECT * FROM `users` WHERE `username` = 'T-Seven'");
+if (mysqli_num_rows($result)) {
+    $user = mysqli_fetch_assoc($result);
+    
+    // Passwort prüfen
+    $inputPasswordWithPepper = $password . $user['password_pepper'];
+    
+    if (password_verify($inputPasswordWithPepper, $user['password_hash'])) {
+        $_SESSION['userID'] = $user['userID'];
+        $_SESSION['username'] = $user['username'];
+        echo "Login erfolgreich!";
+    } else {
+        echo "Falsches Passwort!";
+    }
+} else {
+    echo "Benutzer nicht gefunden!";
+}
+
+$inputPasswordWithPepper = $inputPassword . $user['password_pepper']; // Passworteingabe mit Pepper kombinieren
+
+if (password_verify($inputPasswordWithPepper, $user['password_hash'])) {
+    // Login erfolgreich
+    $_SESSION['userID'] = $user['userID'];
+    $_SESSION['username'] = $user['username'];
+    echo "Login erfolgreich!xxxxx";
+} else {
+    echo "Falsches Passwort!xxxx";
+}
+
+echo "Eingegebenes Passwort: " . $inputPassword . "<br>";
+echo "Kombiniertes Passwort mit Pepper: " . $inputPasswordWithPepper . "<br>";
+echo "Gespeicherter Hash: " . $user['password_hash'] . "<br>";
+
+echo'<br><br>';
+$result = safe_query("SELECT * FROM `users` WHERE `email` = 'info@webspell-rm.de'");
+$user = mysqli_fetch_array($result);
+
+echo "Abgerufenes Passwort-Hash: " . $user['password_hash'] . "<br>";
+echo "Abgerufener Pepper: " . $user['password_pepper'] . "<br>";
+*/
 header('X-UA-Compatible: IE=edge');
 ?>
 <!DOCTYPE html>
@@ -86,6 +139,8 @@ header('X-UA-Compatible: IE=edge');
     <base href="<?php echo htmlspecialchars($rewriteBase, ENT_QUOTES, 'UTF-8'); ?>">
 
     <link type="application/rss+xml" rel="alternate" href="tmp/rss.xml" title="<?php echo htmlspecialchars($myclanname, ENT_QUOTES, 'UTF-8'); ?> - RSS Feed">
+    <link type="text/css" rel="stylesheet" href="./components/cookies/css/cookieconsent.css" media="print" onload="this.media='all'">
+    <link type="text/css" rel="stylesheet" href="./components/cookies/css/iframemanager.css" media="print" onload="this.media='all'">
     
     <?php
     $lang = $_language->language; // Language Variable setzen         
@@ -143,26 +198,39 @@ header('X-UA-Compatible: IE=edge');
     echo '<!--Widget js-->' . PHP_EOL;
     echo ($_pluginmanager->plugin_loadheadfile_widget_js());
     echo '<!--Widget js END-->' . PHP_EOL;
-    
+    /* ckeditor */
+    #echo get_editor();
+    /* ckeditor END*/
     ?>
-   
+    <!-- Cookies Abfrage -->
+    <script defer src="./components/cookies/js/iframemanager.js"></script>
+    <script defer src="./components/cookies/js/cookieconsent.js"></script>
+    <script defer src="./components/cookies/js/cookieconsent-init.js"></script>
+    <script defer src="./components/cookies/js/app.js"></script>
+    <!-- Language recognition for DataTables -->
     <script>
-        const LangDataTables = <?= json_encode($_language->language, JSON_HEX_TAG); ?>;
+        const LangDataTables = <? echo "'$_language->language'"; ?>
     </script>
     <script type="text/javascript">
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
         (function() {
             'use strict'
-            var forms = document.querySelectorAll('.needs-validation');
+
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.querySelectorAll('.needs-validation')
+
+            // Loop over them and prevent submission
             Array.prototype.slice.call(forms)
                 .forEach(function(form) {
                     form.addEventListener('submit', function(event) {
                         if (!form.checkValidity()) {
-                            event.preventDefault();
-                            event.stopPropagation();
+                            event.preventDefault()
+                            event.stopPropagation()
                         }
-                        form.classList.add('was-validated');
-                    }, false);
-                });
+
+                        form.classList.add('was-validated')
+                    }, false)
+                })
         })()
     </script>
 </body>

@@ -375,7 +375,7 @@ function detectUserLanguage()
     }
     return null;
 }
-
+/*
 function generatePasswordHash($password)
 {
     $md5 = hash("md5", $password);
@@ -396,7 +396,7 @@ function destroy_token() {
 }
 
 function is_PasswordPepper($userID) {
-    $q=safe_query("SELECT `password_pepper` FROM `".PREFIX."user` WHERE `userID` = '".intval($userID)."'");
+    $q=safe_query("SELECT `password_pepper` FROM `users` WHERE `userID` = '".intval($userID)."'");
     $r=mysqli_fetch_array($q);
     if(mysqli_num_rows($q) && !empty($r['password_pepper'])) {
         return true;
@@ -416,10 +416,10 @@ function Gen_PasswordPepper() {
 }
 function Set_PasswordPepper($pep, $userID) {
     $pepper_hash = Gen_Hash($pep,"");
-    safe_query("UPDATE `".PREFIX."user` SET `password_pepper` = '".$pepper_hash."' WHERE `userID` = '".intval($userID)."'");
+    safe_query("UPDATE `users` SET `password_pepper` = '".$pepper_hash."' WHERE `userID` = '".intval($userID)."'");
 }
 function Get_PasswordPepper($userID) {
-    $q=safe_query("SELECT `password_pepper` FROM `".PREFIX."user` WHERE `userID` = '".intval($userID)."' LIMIT 1");
+    $q=safe_query("SELECT `password_pepper` FROM `users` WHERE `userID` = '".intval($userID)."' LIMIT 1");
     $r=mysqli_fetch_array($q);
     if(mysqli_num_rows($q) && !empty($r['password_pepper'])) {
         return $r['password_pepper'];
@@ -428,7 +428,7 @@ function Get_PasswordPepper($userID) {
     }
 }
 function destroy_PasswordPepper($userID) {
-        safe_query("UPDATE `".PREFIX."user` SET `password_pepper` = '' WHERE `userID` = '".$userID."';");
+        safe_query("UPDATE `users` SET `password_pepper` = '' WHERE `userID` = '".$userID."';");
 }
 function Gen_Hash($string, $pepper) {
     return password_hash($string.$pepper,PASSWORD_DEFAULT,array('cost'=>12));
@@ -447,4 +447,4 @@ function Gen_PasswordHash($password, $userID) {
 }
 function verify_PasswordHash($post, $pepper, $dbpass) {
     return password_verify($post.$pepper,$dbpass);
-}
+}*/

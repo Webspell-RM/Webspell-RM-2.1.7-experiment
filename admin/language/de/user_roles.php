@@ -69,6 +69,17 @@ $language_array = array(
     'error_saving_module'       => 'Fehler beim Speichern der Modulrechte',
     'error_saving_category'     => 'Fehler beim Speichern der Kategorienrechte',
     'access'                    => 'Zugriff',
+
+
+    'email_failed'              => 'Es trat ein Fehler beim Versenden der E-Mail auf, kontaktiere den Webmaster.',
+    'email_subject'             => 'Dein Konto für %pagetitle%',
+    'email_text'                => 'Dein Konto für %pagetitle%<p>ACHTUNG dein Passwort wurde vom Admin geändert</p><p>Deine E-Mail Adresse: %email%<br>Dein neues Passwort: %new_password%</p><p>Viel Spass auf unserer Webseite</p>%homepage_url%',
+
+
+
+    'reset_password'              => 'Passwort zurücksetzen',
+'confirm_reset_password'              => 'Möchtest du das Passwort wirklich zurücksetzen?',
+'new_password'              => 'Neues Passwort',
 );
 
 

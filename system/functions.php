@@ -642,6 +642,11 @@ if (file_exists('func/login_check.php')) {
     systeminc('../system/func/login_check');
 }
 
+if (file_exists('func/aes_config.php')) {
+    systeminc('func/aes_config');
+} else {
+    systeminc('../system/func/aes_config');
+}
 // ModRewrite-Objekt initialisieren und aktivieren
 $GLOBALS['_modRewrite'] = new \webspell\ModRewrite();
 if (!stristr($_SERVER['SCRIPT_NAME'], '/admin/') && $modRewrite) {

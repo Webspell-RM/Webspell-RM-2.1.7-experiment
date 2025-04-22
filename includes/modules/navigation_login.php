@@ -147,8 +147,6 @@ if ($loggedin) {
     // Ausgabe des Dashboards (je nach Berechtigung)
     echo $dashboard ? $dashboard : '';
 
-    $_SESSION['ws_sessiontest'] = true;
-
     $data_array = [
         'modulepath' => substr(MODULE, 0, -1),
         'icon' => $icon,
@@ -168,8 +166,6 @@ if ($loggedin) {
     echo $template;
 
 } else {
-
-    $_SESSION['ws_sessiontest'] = true;
 
     $data_array = [
         'modulepath' => substr(MODULE, 0, -1),

@@ -32,9 +32,9 @@
 $_language->readModule('users', false, true);
 $_language->readModule('rank_special', true, true);
 
-use webspell\AccessControl;
+#use webspell\AccessControl;
 // Den Admin-Zugriff für das Modul überprüfen
-AccessControl::checkAdminAccess('ac_user_roles');
+#AccessControl::checkAdminAccess('ac_user_roles');
 
 if (isset($_POST[ 'edit' ])) {
     $CAPCLASS = new \webspell\Captcha;
