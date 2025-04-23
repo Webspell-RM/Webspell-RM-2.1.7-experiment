@@ -1,12 +1,19 @@
 <?php
-session_start();
+
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 require_once __DIR__ . '/check_install_lock.php';
 require_once __DIR__ . '/../system/config.inc.php';
+require_once __DIR__ . '/../system/func/aes_config.php';
+use webspell\SecurityHelper;
 
 $sql_file = __DIR__ . '/sql/webspellrm_base.sql';
+
 
 // Platzhalter ersetzen
 function replace_placeholders($sql, $replacements)
@@ -50,19 +57,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($admin_user) || empty($admin_email) || empty($admin_pass) || empty($admin_weburl)) {
         $error = 'Bitte alle Felder ausfüllen.';
     } else {
-        // Passwort hashen und in Session speichern
-        $hashed_pass = password_hash($admin_pass, PASSWORD_DEFAULT);
+        // Verwende dieselbe Passwortlogik wie beim normalen Register-Prozess
+        $pepper_plain = SecurityHelper::generatePepper(); // Klartext Pepper
+        $pepper_encrypted = openssl_encrypt(
+            $pepper_plain,
+            'aes-256-cbc',
+            SecurityHelper::AES_KEY,
+            0,
+            SecurityHelper::AES_IV
+        );
+
+        $hashed_pass = SecurityHelper::createPasswordHash($admin_pass, $admin_email, $pepper_plain);
 
         $_SESSION['install_adminuser'] = $admin_user;
         $_SESSION['install_adminmail'] = $admin_email;
         $_SESSION['install_adminpass'] = $hashed_pass;
+        $_SESSION['install_adminpepper'] = $pepper_encrypted; // verschlüsselter Pepper
         $_SESSION['install_adminweburl'] = $admin_weburl;
 
         $replacements = [
-            'adminuser' => $_SESSION['install_adminuser'],
-            'adminmail' => $_SESSION['install_adminmail'],
-            'adminpass' => $_SESSION['install_adminpass'],
-            'weburl'    => $_SESSION['install_adminweburl'],
+            'adminuser' => $admin_user,
+            'adminmail' => $admin_email,
+            'adminpass' => $hashed_pass,
+            'weburl'    => $admin_weburl,
+            'adminpepper' => $pepper_encrypted
         ];
 
         if (!isset($_SESSION['step4_sql_imported'])) {
@@ -80,6 +98,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 }
+
+
+
 ?>
 
 <!DOCTYPE html>

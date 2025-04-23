@@ -827,15 +827,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->execute();
         $userID = $_database->insert_id;
 
-        // Klartext-Pepper erzeugen, über SecurityHelper
-        $pepper_plain = SecurityHelper::generatePepper();
-
-        // Pepper verschlüsseln, über SecurityHelper
-        $pepper_encrypted = openssl_encrypt($pepper_plain, 'aes-256-cbc', SecurityHelper::AES_KEY, 0, SecurityHelper::AES_IV);
-
-        // Passwort mit Pepper hashen, über SecurityHelper
-        $password_with_pepper = $password . $pepper_plain;
-        $password_hash = password_hash($password_with_pepper, PASSWORD_BCRYPT);
+    $pepper_plain = SecurityHelper::generatePepper();
+    $pepper_encrypted = openssl_encrypt($pepper_plain, 'aes-256-cbc', SecurityHelper::AES_KEY, 0, SecurityHelper::AES_IV);
+    $password_hash = SecurityHelper::createPasswordHash($password, $email, $pepper_plain);
 
         // Passwort und Pepper in der Datenbank aktualisieren
         $query = "UPDATE users SET password_hash = ?, password_pepper = ? WHERE userID = ?";
@@ -853,6 +847,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['error_message'] = "Fehler bei der Benutzererstellung.";
     }
 }
+
 
 
 ?>

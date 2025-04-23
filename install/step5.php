@@ -1,5 +1,9 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 require_once("../system/config.inc.php");
 
 // Platzhalter-Ersetzung
@@ -73,7 +77,8 @@ $replacements = [
     'adminuser' => $_SESSION['install_adminuser'],
     'adminmail' => $_SESSION['install_adminmail'],
     'adminpass' => $_SESSION['install_adminpass'],
-    'adminweburl' => $_SESSION['install_adminweburl']
+    'adminweburl' => $_SESSION['install_adminweburl'],
+    'adminpepper' => $_SESSION['install_adminpepper']
 ];
 
 // SQL-Dateien im Installationsordner importieren

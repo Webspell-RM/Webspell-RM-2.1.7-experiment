@@ -1,9 +1,13 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
 // installed.lock schreiben
-#$lock_file = __DIR__ . '/../system/installed.lock';
-#file_put_contents($lock_file, "Installation erfolgreich am " . date('Y-m-d H:i:s'));
+$lock_file = __DIR__ . '/../system/installed.lock';
+file_put_contents($lock_file, "Installation erfolgreich am " . date('Y-m-d H:i:s'));
 
 ?>
 

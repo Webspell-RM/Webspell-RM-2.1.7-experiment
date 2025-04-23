@@ -74,12 +74,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Anzahl der Versuche abrufen
         $failCount = SecurityHelper::getFailCount($ip);
 
-        if ($failCount >= 2) {
+        if ($failCount >= 5) {
             SecurityHelper::banIp($ip, $userID, "Zu viele Fehlversuche", $email);
             #SecurityHelper::banIp('192.168.1.100', 1, "Zu viele Fehlversuche", $email);  // Beispiel für die Funktion mit IP und userID
             $_SESSION['error_message'] = "Zu viele Fehlversuche – Deine IP wurde gesperrt.";
         } else {
-            $_SESSION['error_message'] = "Falsche E-Mail oder Passwort. Versuche: $failCount / 2";
+            $_SESSION['error_message'] = "Falsche E-Mail oder Passwort. Versuche: $failCount / 5";
         }
 
         #header("Location: index.php?site=login");
@@ -87,22 +87,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Überprüfen, ob eine Fehlermeldung in der Session gesetzt wurde
-if (isset($_SESSION['error_message'])) {
-    // Speichern der Fehlermeldung in $message
-    $message = '<div class="alert alert-danger" role="alert">' . $_SESSION['error_message'] . '</div>';
-
-
-    // Lösche die Fehlermeldung nach der Anzeige
-    unset($_SESSION['error_message']);
-}
+    if (isset($_SESSION['error_message'])) {
+        // Speichern der Fehlermeldung in $message
+        $message = '<div class="alert alert-danger" role="alert">' . $_SESSION['error_message'] . '</div>';
+        // Lösche die Fehlermeldung nach der Anzeige
+        unset($_SESSION['error_message']);
+    }
 
 }
 
  // Formular anzeigen
    $data_array = [
     'login_headline' => $_language->module['title'],  // Beispiel, anpassen
-    'username_label' => $_language->module['email-address'],
-    'password_label' => $_language->module['your_email'],
+    
+    'email_label' => $_language->module['email_label'],
+    'your_email' => $_language->module['your_email'],
+    'pass_label' => $_language->module['pass_label'],
+    'your_pass' => $_language->module['your_pass'],
+
     'remember_me' => $_language->module['remember_me'],
     'login_button' => $_language->module['login_button'],
     'register_link' => $_language->module['register_link'],

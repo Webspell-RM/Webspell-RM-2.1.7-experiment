@@ -2,12 +2,13 @@
 
 echo '<div class="card"><div class="card-body">';
 echo '<h4>Benutzer</h4>';
-$get = $_database->query("SELECT userID, email, activated, registerdate FROM users");
+$get = $_database->query("SELECT userID, username, email, activated, registerdate FROM users");
 echo '<table class="table table-striped">';
-echo '<thead><tr><th>ID</th><th>Email</th><th>Aktiviert</th><th>Registriert</th></tr></thead>';
+echo '<thead><tr><th>ID</th><th>Username</th><th>Email</th><th>Aktiviert</th><th>Registriert</th></tr></thead>';
 while ($ds = $get->fetch_assoc()) {
     echo '<tr>
         <td>' . $ds['userID'] . '</td>
+        <td>' . htmlspecialchars($ds['username']) . '</td>
         <td>' . htmlspecialchars($ds['email']) . '</td>
         <td>' . ($ds['activated'] ? '✔️' : '❌') . '</td>
         <td>' . date("d.m.Y H:i", $ds['registerdate']) . '</td>

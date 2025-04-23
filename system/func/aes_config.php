@@ -157,31 +157,31 @@ class SecurityHelper {
     }
 
     // Funktion zum Sperren der IP
-   public static function banIp($ip, $userID, $reason = "", $email = "") {
-    global $_database;
+    public static function banIp($ip, $userID, $reason = "", $email = "") {
+        global $_database;
 
-    // Bannzeit auf 3 Stunden setzen
-    $banTime = date('Y-m-d H:i:s', strtotime('+3 hours'));  // Sperre für 3 Stunden
+        // Bannzeit auf 3 Stunden setzen
+        $banTime = date('Y-m-d H:i:s', strtotime('+3 hours'));  // Sperre für 3 Stunden
 
-    // SQL-Abfrage zum Sperren der IP
-    $query = "INSERT INTO banned_ips (ip, userID, reason, email, deltime) VALUES (?, ?, ?, ?, ?)";
-    if ($stmt = $_database->prepare($query)) {
-        $stmt->bind_param("sisss", $ip, $userID, $reason, $email, $banTime);
+        // SQL-Abfrage zum Sperren der IP
+        $query = "INSERT INTO banned_ips (ip, userID, reason, email, deltime) VALUES (?, ?, ?, ?, ?)";
+        if ($stmt = $_database->prepare($query)) {
+            $stmt->bind_param("sisss", $ip, $userID, $reason, $email, $banTime);
 
-        if ($stmt->execute()) {
-            // Erfolgreich gespeichert
-            return true;
+            if ($stmt->execute()) {
+                // Erfolgreich gespeichert
+                return true;
+            } else {
+                // Fehler bei der Ausführung der SQL-Abfrage
+                echo "Fehler beim Ausführen der Abfrage: " . $stmt->error;
+                return false;
+            }
         } else {
-            // Fehler bei der Ausführung der SQL-Abfrage
-            echo "Fehler beim Ausführen der Abfrage: " . $stmt->error;
+            // Fehler beim Vorbereiten der Abfrage
+            echo "Fehler beim Vorbereiten der Abfrage: " . $_database->error;
             return false;
         }
-    } else {
-        // Fehler beim Vorbereiten der Abfrage
-        echo "Fehler beim Vorbereiten der Abfrage: " . $_database->error;
-        return false;
     }
-}
 
     // Funktion zum Speichern der Session nach erfolgreichem Login
     public static function saveSession(int $userID): void {
@@ -221,24 +221,24 @@ class SecurityHelper {
 
     // Funktion zur Überprüfung, ob die IP-Adresse des Nutzers gesperrt ist
     public static function isIpBanned(string $ip, ?string $email = null): bool {
-    global $_database;
+        global $_database;
 
-    $stmt = $_database->prepare("SELECT COUNT(*) FROM banned_ips WHERE ip = ? OR email = ?");
-    $stmt->bind_param('ss', $ip, $email);
-    $stmt->execute();
-    $stmt->bind_result($count);
-    $stmt->fetch();
+        $stmt = $_database->prepare("SELECT COUNT(*) FROM banned_ips WHERE ip = ? OR email = ?");
+        $stmt->bind_param('ss', $ip, $email);
+        $stmt->execute();
+        $stmt->bind_result($count);
+        $stmt->fetch();
 
-    return ($count > 0);
-}
+        return ($count > 0);
+    }
 
     public static function cleanupExpiredBans() {
-    global $_database;
+        global $_database;
 
-    // Bereinigen von Banns, die abgelaufen sind
-    $now = date('Y-m-d H:i:s');
-    $_database->query("DELETE FROM banned_ips WHERE deltime <= '$now'");
-}
+        // Bereinigen von Banns, die abgelaufen sind
+        $now = date('Y-m-d H:i:s');
+        $_database->query("DELETE FROM banned_ips WHERE deltime <= '$now'");
+    }
 
     public static function tooManyFailedAttempts(int $userID, string $ip, int $max = 5): bool
     {
@@ -254,6 +254,11 @@ class SecurityHelper {
         $stmt->fetch();
 
         return ($count >= $max);
+    }
+
+    public static function escape(string $string): string
+    {
+        return htmlspecialchars(trim($string), ENT_QUOTES, 'UTF-8');
     }
     
 }
