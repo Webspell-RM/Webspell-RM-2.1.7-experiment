@@ -1,8 +1,10 @@
 <?php
 
+use webspell\LoginSecurity;
+
 echo '<div class="card"><div class="card-body">';
 echo '<h4>Benutzer</h4>';
-$get = $_database->query("SELECT userID, username, email, activated, registerdate FROM users");
+$get = $_database->query("SELECT userID, username, email, is_active, registerdate FROM users");
 echo '<table class="table table-striped">';
 echo '<thead><tr><th>ID</th><th>Username</th><th>Email</th><th>Aktiviert</th><th>Registriert</th></tr></thead>';
 while ($ds = $get->fetch_assoc()) {
@@ -10,7 +12,7 @@ while ($ds = $get->fetch_assoc()) {
         <td>' . $ds['userID'] . '</td>
         <td>' . htmlspecialchars($ds['username']) . '</td>
         <td>' . htmlspecialchars($ds['email']) . '</td>
-        <td>' . ($ds['activated'] ? '✔️' : '❌') . '</td>
+        <td>' . ($ds['is_active'] ? '✔️' : '❌') . '</td>
         <td>' . date("d.m.Y H:i", $ds['registerdate']) . '</td>
     </tr>';
 }

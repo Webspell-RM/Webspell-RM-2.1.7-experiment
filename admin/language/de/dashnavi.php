@@ -42,5 +42,9 @@ $language_array = Array(
   'delete_info_category'          => 'Möchten Sie diesen Kategorie wirklich entfernen? <br><br>Es wird alles endgültig gelöscht.',
   'close'                         => 'Schließen',
 
+
+  'no_data_found' =>'Keine Daten gefunden.',
+  'roleID_missing' =>'Die RoleID fehlt.',
+
 );
 

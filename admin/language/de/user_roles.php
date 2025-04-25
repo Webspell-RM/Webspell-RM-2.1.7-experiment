@@ -77,6 +77,23 @@ $language_array = array(
 
 
 
+    $_language->module['email_text'] = "
+Hallo %email%,
+
+dein Passwort wurde zurückgesetzt. Dein neues Passwort lautet:
+
+%new_password%
+
+Diese Aktion wurde von %admin_name% (%admin_email%) durchgeführt.
+
+Viele Grüße,
+%pagetitle%
+";
+
+$_language->module['email_subject'] = "Neues Passwort für %email% auf %pagetitle%";
+
+
+
     'reset_password'              => 'Passwort zurücksetzen',
 'confirm_reset_password'              => 'Möchtest du das Passwort wirklich zurücksetzen?',
 'new_password'              => 'Neues Passwort',

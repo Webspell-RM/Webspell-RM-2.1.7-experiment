@@ -642,10 +642,18 @@ if (file_exists('func/login_check.php')) {
     systeminc('../system/func/login_check');
 }
 
-if (file_exists('func/aes_config.php')) {
-    systeminc('func/aes_config');
+
+// Für Login unf Rollen
+if (file_exists('classes/login_security.php')) {
+    systeminc('classes/login_security');
 } else {
-    systeminc('../system/func/aes_config');
+    systeminc('../system/classes/login_security');
+}
+
+if (file_exists('classes/role_manager.php')) {
+    systeminc('classes/role_manager');
+} else {
+    systeminc('../system/classes/role_manager');
 }
 // ModRewrite-Objekt initialisieren und aktivieren
 $GLOBALS['_modRewrite'] = new \webspell\ModRewrite();

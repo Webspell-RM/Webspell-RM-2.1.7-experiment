@@ -32,9 +32,9 @@
 $_language->readModule('users', false, true);
 $_language->readModule('rank_special', true, true);
 
-#use webspell\AccessControl;
+use webspell\AccessControl;
 // Den Admin-Zugriff für das Modul überprüfen
-#AccessControl::checkAdminAccess('ac_user_roles');
+AccessControl::checkAdminAccess('ac_user_roles');
 
 if (isset($_POST[ 'edit' ])) {
     $CAPCLASS = new \webspell\Captcha;
@@ -173,7 +173,7 @@ if (isset($_POST[ 'edit' ])) {
 
         if (mysqli_num_rows(
             safe_query(
-                "SELECT userID FROM " . PREFIX . "user WHERE nickname='" . $nickname .
+                "SELECT userID FROM user WHERE nickname='" . $nickname .
                 "' AND userID!=" . $id
             )
         )) {
@@ -184,14 +184,14 @@ if (isset($_POST[ 'edit' ])) {
             echo generateErrorBoxFromArray($_language->module[ 'error' ], $error_array);
         } else {
 
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='forum'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='forum'"));
             if (@$dx[ 'modulname' ] != 'forum') {
                 $specialrank = '';
             }else{
                 $specialrank = "special_rank = '".$_POST['special_rank']."',"; 
             }
             safe_query(
-                "UPDATE " . PREFIX . "user SET nickname='" . $nickname . "',
+                "UPDATE user SET nickname='" . $nickname . "',
 									 email='" . $_POST[ 'email' ] . "',
 									 firstname='" . $_POST[ 'firstname' ] . "',
 									 lastname='" . $_POST[ 'lastname' ] . "',
@@ -212,17 +212,17 @@ if (isset($_POST[ 'edit' ])) {
                                      WHERE userID='" . $id . "' "
             );
             safe_query(
-                "UPDATE " . PREFIX . "user_nickname SET nickname='" . $nickname . "' WHERE userID='" . $id . "' "
+                "UPDATE user_nickname SET nickname='" . $nickname . "' WHERE userID='" . $id . "' "
             );
 
             if (isset($_POST[ 'avatar' ])) {
-                safe_query("UPDATE " . PREFIX . "user SET avatar='' WHERE userID='" . $id . "'");
+                safe_query("UPDATE user SET avatar='' WHERE userID='" . $id . "'");
                 @unlink('../images/avatars/' . $id . '.gif');
                 @unlink('../images/avatars/' . $id . '.jpg');
                 @unlink('../images/avatars/' . $id . '.png');
             }
             if (isset($_POST[ 'userpic' ])) {
-                safe_query("UPDATE " . PREFIX . "user SET userpic='' WHERE userID='" . $id . "'");
+                safe_query("UPDATE user SET userpic='' WHERE userID='" . $id . "'");
                 @unlink('../images/userpics/' . $id . '.gif');
                 @unlink('../images/userpics/' . $id . '.jpg');
                 @unlink('../images/userpics/' . $id . '.png');
@@ -236,7 +236,7 @@ if (isset($_POST[ 'edit' ])) {
     if ($CAPCLASS->checkCaptcha(0, $_POST[ 'captcha_hash' ])) {
         $newnickname = htmlspecialchars(mb_substr(trim($_POST[ 'nickname' ]), 0, 30));
         $anz = mysqli_num_rows(safe_query(
-            "SELECT userID FROM " . PREFIX . "user WHERE (nickname='" . $newnickname . "') "
+            "SELECT userID FROM user WHERE (nickname='" . $newnickname . "') "
         ));
         if (!$anz && $newnickname != "") {
             safe_query(
@@ -246,10 +246,10 @@ if (isset($_POST[ 'edit' ])) {
                 "', 1, '|') "
             );
             safe_query("
-              INSERT INTO " . PREFIX . "user_nickname ( userID,nickname ) values ('" . mysqli_insert_id($_database) ."','" . $newnickname ."')
+              INSERT INTO user_nickname ( userID,nickname ) values ('" . mysqli_insert_id($_database) ."','" . $newnickname ."')
             ");
             safe_query(
-                "INSERT INTO " . PREFIX . "user_groups ( userID ) values('" . mysqli_insert_id($_database) .
+                "INSERT INTO user_groups ( userID ) values('" . mysqli_insert_id($_database) .
                 "' )"
             );
         } else {
@@ -263,16 +263,16 @@ if (isset($_POST[ 'edit' ])) {
     if ($CAPCLASS->checkCaptcha(0, $_GET[ 'captcha_hash' ])) {
         $id = $_GET[ 'id' ];
         if (!issuperadmin($id) || (issuperadmin($id) && issuperadmin($userID))) {
-          @  safe_query("DELETE FROM " . PREFIX . "plugins_forum_moderators WHERE userID='$id'");
-          #  safe_query("DELETE FROM " . PREFIX . "plugins_messenger WHERE touser='$id'");
-          $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='squads'"));
+          @  safe_query("DELETE FROM plugins_forum_moderators WHERE userID='$id'");
+          #  safe_query("DELETE FROM plugins_messenger WHERE touser='$id'");
+          $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='squads'"));
             if (@$dx[ 'modulname' ] != 'squads') {
             } else {
-                @  safe_query("DELETE FROM " . PREFIX . "plugins_squads_members WHERE userID='$id'");
+                @  safe_query("DELETE FROM plugins_squads_members WHERE userID='$id'");
             }    
-          #  safe_query("DELETE FROM " . PREFIX . "upcoming_announce WHERE userID='$id'");
-             safe_query("DELETE FROM " . PREFIX . "user WHERE userID='$id'");
-             safe_query("DELETE FROM " . PREFIX . "user_groups WHERE userID='$id'");
+          #  safe_query("DELETE FROM upcoming_announce WHERE userID='$id'");
+             safe_query("DELETE FROM user WHERE userID='$id'");
+             safe_query("DELETE FROM user_groups WHERE userID='$id'");
             $userfiles = array(
                 '../images/avatars/' . $id . '.jpg',
                 '../images/avatars/' . $id . '.gif',
@@ -292,8 +292,8 @@ if (isset($_POST[ 'edit' ])) {
 } elseif  (isset($_GET[ 'user_rights_delete' ])) {
     $CAPCLASS = new \webspell\Captcha;
     if ($CAPCLASS->checkCaptcha(0, $_GET[ 'captcha_hash' ])) {
-        safe_query("DELETE FROM `" . PREFIX . "user_groups` WHERE usgID='" . $_GET[ 'usgID' ] . "'");
-        safe_query("DELETE FROM `" . PREFIX . "user_forum_groups` WHERE userID='" . $_GET[ 'userID' ] . "'");
+        safe_query("DELETE FROM `user_groups` WHERE usgID='" . $_GET[ 'usgID' ] . "'");
+        safe_query("DELETE FROM `user_forum_groups` WHERE userID='" . $_GET[ 'userID' ] . "'");
     } else {
         echo $_language->module[ 'transaction_invalid' ];
     }
@@ -320,24 +320,24 @@ if (isset($_POST[ 'edit' ])) {
         $reason = $_POST[ 'reason' ];
 
         if (isset($_POST[ 'remove_ban' ])) {
-            safe_query("UPDATE " . PREFIX . "user SET banned=(NULL), ban_reason='' WHERE userID='$id'");
+            safe_query("UPDATE user SET banned=(NULL), ban_reason='' WHERE userID='$id'");
         } else {
             if ($permanent == "1") {
                 safe_query(
-                    "UPDATE " . PREFIX . "user SET banned='perm', ban_reason='" . $reason .
+                    "UPDATE user SET banned='perm', ban_reason='" . $reason .
                     "' WHERE userID='$id'"
                 );
             } else {
                 if ($ban_num && $ban_multi) {
                     $ban_time = time() + (60 * 60 * 24 * $ban_num * $ban_multi);
                     safe_query(
-                        "UPDATE " . PREFIX . "user SET banned='" . $ban_time . "', ban_reason='" . $reason .
+                        "UPDATE user SET banned='" . $ban_time . "', ban_reason='" . $reason .
                         "' WHERE userID='$id'"
                     );
                 } else {
                     $ban_time = mktime(0, 0, 0, $_POST[ 'u_month' ], $_POST[ 'u_day' ], $_POST[ 'u_year' ]);
                     safe_query(
-                        "UPDATE " . PREFIX . "user SET banned='" . $ban_time . "', ban_reason='" . $reason .
+                        "UPDATE user SET banned='" . $ban_time . "', ban_reason='" . $reason .
                         "' WHERE userID='$id'"
                     );
                 }
@@ -358,7 +358,7 @@ if ($action == "activate") {
     $CAPCLASS = new \webspell\Captcha;
     if ($CAPCLASS->checkCaptcha(0, $_GET[ 'captcha_hash' ])) {
         $id = $_GET[ 'id' ];
-        safe_query("UPDATE " . PREFIX . "user SET activated='1' WHERE userID='$id'");
+        safe_query("UPDATE user SET activated='1' WHERE userID='$id'");
         redirect('admincenter.php?site=users', '', 0);
     } else {
         echo $_language->module[ 'transaction_invalid' ];
@@ -384,7 +384,7 @@ if ($action == "activate") {
             $CAPCLASS = new \webspell\Captcha;
             $CAPCLASS->createTransaction();
             $hash = $CAPCLASS->getHash();
-            $get = safe_query("SELECT nickname,banned,ban_reason FROM " . PREFIX . "user WHERE userID='" . $id . "'");
+            $get = safe_query("SELECT nickname,banned,ban_reason FROM user WHERE userID='" . $id . "'");
             $data = mysqli_fetch_assoc($get);
             $nickname = $data[ 'nickname' ];
 
@@ -584,7 +584,7 @@ if ($action == "activate") {
      <div class="card-body">';
 
     $id = $_GET[ 'id' ];
-    $ds = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "user WHERE userID='$id'"));
+    $ds = mysqli_fetch_array(safe_query("SELECT * FROM user WHERE userID='$id'"));
 
     if (!empty($ds[ 'userpic' ])) {
         $viewpic = '<img id="img-upload" class="img-thumbnail" style="width: 100%; max-width: 150px" src="../images/userpics/' . $ds[ 'userpic' ] . '" alt="">';
@@ -613,7 +613,7 @@ if ($action == "activate") {
     $CAPCLASS->createTransaction();
     $hash = $CAPCLASS->getHash();
 
-    $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='forum'"));
+    $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='forum'"));
     if (@$dx[ 'modulname' ] != 'forum') {
     }else{
     $get_rank = mysqli_fetch_assoc(
@@ -621,14 +621,14 @@ if ($action == "activate") {
             "SELECT
               special_rank
             FROM
-              " . PREFIX . "user
+              user
             WHERE
               userID='" . $id . "'"
         )
     );
 
     $ranks = "<option value='0'>" . $_language->module[ 'no_special_rank' ] . "</option>";
-    $get = safe_query("SELECT * FROM " . PREFIX . "plugins_forum_ranks WHERE special='1'");
+    $get = safe_query("SELECT * FROM plugins_forum_ranks WHERE special='1'");
     while ($rank = mysqli_fetch_assoc($get)) {
         $ranks .="<option value='" . $rank[ 'rankID' ] . "'>" . $rank[ 'rank' ] . "</option>";
     }
@@ -670,7 +670,7 @@ if ($action == "activate") {
     <input class="form-control" type="text" name="email" value="'.getinput($ds['email']).'" />
     </div>
   </div>';
-  $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='forum'"));
+  $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='forum'"));
     if (@$dx[ 'modulname' ] != 'forum') {
     }else{ echo'
 <div class="mb-3 row">
@@ -836,26 +836,26 @@ echo '<div class="card">
                 <tr>
                     <th><center>' . $_language->module[ 'user' ] . '</center></th>';
 
-                    $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='news_manager'"));
+                    $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='news_manager'"));
                     if (@$dx[ 'modulname' ] != 'news_manager') {
                     }else{echo'<th><center>' . $_language->module['news' ] . '</center></th>
                                 <th><center>' . $_language->module['news_writer' ] . '</center></th>';
                     }
 
-                    $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='polls'"));
+                    $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='polls'"));
                     if (@$dx[ 'modulname' ] != 'polls') {
                     }else{
                         echo'<th><center>' . $_language->module['poll' ] . '</center></th>';
                     }
 
-                    $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='forum'")); 
+                    $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='forum'")); 
                     if (@$dx[ 'modulname' ] != 'forum') {
                     }else{
                         echo'<th><center>' . $_language->module['forum' ] . '</center></th>
                         <th><center>' . $_language->module['mod' ] . '</center></th>';
                     }
                           
-                    $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='clanwars'"));
+                    $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='clanwars'"));
                     if (@$dx[ 'modulname' ] != 'clanwars') {
                     }else{
                         echo'<th><center>' . $_language->module['war' ] . '</center></th>';
@@ -866,7 +866,7 @@ echo '<div class="card">
                     <th><center>' . $_language->module['page' ] . '</center></th>
                     <th><center>' . $_language->module['file' ] . '</center></th>';
 
-                    $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='cashbox'"));
+                    $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='cashbox'"));
                     if (@$dx[ 'modulname' ] != 'cashbox') {
                     }else{
                         echo'<th><center>' . $_language->module['cash' ] . '</center></th>';
@@ -875,7 +875,7 @@ echo '<div class="card">
                     echo'<th><center>' . $_language->module['gallery' ] . '</center></th>
                     <th><center>' . $_language->module['super' ] . '</center></th>';
 
-                    $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='forum'"));
+                    $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='forum'"));
                     if (@$dx[ 'modulname' ] != 'forum') {
                     }else{
                         echo'<th><center>' . $_language->module['forum_group' ] . '</center></th>';
@@ -891,9 +891,9 @@ echo '<div class="card">
         "SELECT
             w.*, u.*
         FROM
-            " . PREFIX . "user_groups w
+            user_groups w
         LEFT JOIN
-            " . PREFIX . "user_forum_groups u
+            user_forum_groups u
             ON
             w.userID = u.userID
         WHERE
@@ -921,27 +921,27 @@ echo '<div class="card">
         if($i%2) { $td='td1'; }
         else { $td='td2'; }
 
-        $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='news_manager'"));
+        $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='news_manager'"));
         if (@$dx[ 'modulname' ] != 'news_manager') {
         }else{
         if($ds['news']=='1') { $news = '<font class="text-success">' . $_language->module['on' ] . '</font>'; } else { $news = '<i><font class="text-danger">' . $_language->module['off' ] . '</i></font>'; }
         if($ds['news_writer']=='1') { $news_writer = '<font class="text-success">' . $_language->module['on' ] . '</font>'; } else { $news_writer = '<i><font class="text-danger">' . $_language->module['off' ] . '</i></font>'; }
         }
 
-        $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='polls'"));
+        $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='polls'"));
         if (@$dx[ 'modulname' ] != 'polls') {
         }else{
             if($ds['polls']=='1') { $polls = '<font class="text-success">' . $_language->module['on' ] . '</font>'; } else { $polls = '<i><font class="text-danger">' . $_language->module['off' ] . '</i></font>'; }
         }
 
-        $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='forum'"));
+        $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='forum'"));
         if (@$dx[ 'modulname' ] != 'forum') {
         }else{
             if($ds['forum']=='1') { $forum = '<font class="text-success">' . $_language->module['on' ] . '</font>'; } else { $forum = '<i><font class="text-danger">' . $_language->module['off' ] . '</i></font>'; }
             if($ds['moderator']=='1') { $moderator = '<font class="text-success">' . $_language->module['on' ] . '</font>'; } else { $moderator = '<i><font class="text-danger">' . $_language->module['off' ] . '</i></font>'; }
         }
         
-        $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='clanwars'"));
+        $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='clanwars'"));
         if (@$dx[ 'modulname' ] != 'clanwars') {
         }else{    
             if($ds['clanwars']=='1') { $clanwars = '<font class="text-success">' . $_language->module['on' ] . '</font>'; } else{ $clanwars = '<i><font class="text-danger">' . $_language->module['off' ] . '</i></font>'; }
@@ -952,7 +952,7 @@ echo '<div class="card">
         if($ds['page']=='1') { $page = '<font class="text-success">' . $_language->module['on' ] . '</font>'; } else { $page = '<i><font class="text-danger">' . $_language->module['off' ] . '</i></font>'; }
         if($ds['files']=='1') { $files = '<font class="text-success">' . $_language->module['on' ] . '</font>'; } else { $files = '<i><font class="text-danger">' . $_language->module['off' ] . '</i></font>'; }
 
-        $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='cashbox'"));
+        $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='cashbox'"));
         if (@$dx[ 'modulname' ] != 'cashbox') {
         }else{ 
             if($ds['cash']=='1') { $cash = '<font class="text-success">' . $_language->module['on' ] . '</font>'; } else { $cash = '<i><font class="text-danger">' . $_language->module['off' ] . '</i></font>'; }
@@ -965,10 +965,10 @@ echo '<div class="card">
 $id = $ds['userID'];
 
         $usergrp = array();
-        $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='forum'"));
+        $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='forum'"));
         if (@$dx[ 'modulname' ] != 'forum') {
         }else{
-            $ergebnis = safe_query("SELECT * FROM "plugins_forum_groups");
+            $ergebnis = safe_query("SELECT * FROM plugins_forum_groups");
             while ($db = mysqli_fetch_array($ergebnis)) {
                 $name = $db[ 'name' ];
                 $fgrID = $db[ 'fgrID' ];
@@ -984,24 +984,24 @@ $id = $ds['userID'];
         echo '<td class="'.$td.'">
             <b>'.getnickname($ds['userID']).'</b>
             </td>';
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='news_manager'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='news_manager'"));
             if (@$dx[ 'modulname' ] != 'news_manager') {
             }else{echo'<td class="'.$td.'"><center>'.$news.'</center></td>
                         <td class="'.$td.'"><center>'.$news_writer.'</center></td>';
             }
                     
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='polls'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='polls'"));
             if (@$dx[ 'modulname' ] != 'polls') {
             }else{echo'<td class="'.$td.'"><center>'.$polls.'</center></td>';
             }
 
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='forum'")); 
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='forum'")); 
             if (@$dx[ 'modulname' ] != 'forum') {
             }else{echo'<td class="'.$td.'"><center>'.$forum.'</center></td>
                 <td class="'.$td.'"><center>'.$moderator.'</center></td>';
             }
               
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='clanwars'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='clanwars'"));
             if (@$dx[ 'modulname' ] != 'clanwars') {
             }else{echo'<td class="'.$td.'"><center>'.$clanwars.'</center></td>';
             }
@@ -1011,7 +1011,7 @@ $id = $ds['userID'];
             <td class="'.$td.'"><center>'.$page.'</center></td>
             <td class="'.$td.'"><center>'.$files.'</center></td>';
 
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='cashbox'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='cashbox'"));
             if (@$dx[ 'modulname' ] != 'cashbox') {
             }else{echo'<td class="'.$td.'"><center>'.$cash.'</center></td>';
             }
@@ -1019,11 +1019,11 @@ $id = $ds['userID'];
             echo'<td class="'.$td.'"><center>'.$gallery.'</center></td>
             <td class="'.$td.'"><center>'.$super.'</center></td>';
             
-        $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='forum'"));
+        $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='forum'"));
         if (@$dx[ 'modulname' ] != 'forum') {
         }else{
             echo'<td class="'.$td.'"><center>';
-            $sql = safe_query("SELECT * FROM "plugins_forum_groups");
+            $sql = safe_query("SELECT * FROM plugins_forum_groups");
             
             $i = 1;
             while ($df = mysqli_fetch_array($sql)) {
@@ -1112,13 +1112,13 @@ $referer = "admincenter.php?site=users&action=user_rights";
         if (($_GET[ 'sort' ] == 'nickname') || ($_GET[ 'sort' ] == 'registerdate')) {
             $sort = "u." . $_GET[ 'sort' ];
         } elseif ($_GET[ 'sort' ] == 'status') {
-            $sort = "IF(	(SELECT super FROM " . PREFIX . "user_groups WHERE userID=u.userID LIMIT 0,1) = 1,'1',
-	  				IF( 	(SELECT userID FROM " . PREFIX . "user_groups WHERE userID=u.userID AND (page='1' OR
+            $sort = "IF(	(SELECT super FROM user_groups WHERE userID=u.userID LIMIT 0,1) = 1,'1',
+	  				IF( 	(SELECT userID FROM user_groups WHERE userID=u.userID AND (page='1' OR
 	  				            forum='1' OR user='1' OR news='1' or news_writer='1' OR clanwars='1' OR feedback='1' OR super='1' OR
 	  				            gallery='1' OR cash='1' OR files='1') LIMIT 0,1) =u.userID,2,
-	  					IF( 	(SELECT userID FROM " . PREFIX . "user_groups WHERE userID=u.userID AND
+	  					IF( 	(SELECT userID FROM user_groups WHERE userID=u.userID AND
 	  					    moderator='1' LIMIT 0,1) = u.userID, 3,
-	  						IF( 	(SELECT userID FROM " . PREFIX . "plugins_squads_members WHERE
+	  						IF( 	(SELECT userID FROM plugins_squads_members WHERE
 	  						userID=u.userID LIMIT 0,1) = u.userID,4,5 )
 	  					)
 	  				)
@@ -1127,12 +1127,12 @@ $referer = "admincenter.php?site=users&action=user_rights";
         }
     }
 
-    $alle = safe_query("SELECT userID FROM "user");
+    $alle = safe_query("SELECT userID FROM user");
     $gesamt = mysqli_num_rows($alle);
     $pages = 1;
 
     $pages = ceil($gesamt);
-    $ergebnis = safe_query("SELECT u.* FROM " . PREFIX . "user u ORDER BY $sort");
+    $ergebnis = safe_query("SELECT u.* FROM user u ORDER BY $sort");
     
     $anz = mysqli_num_rows($ergebnis);
     if ($anz) {
@@ -1174,7 +1174,7 @@ echo'<table width="100%" border="0" cellspacing="1" cellpadding="3">
 
 #####################################################
 
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='squads'"));
+            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='squads'"));
             if (@$dx[ 'modulname' ] != 'squads') {
                 
                 if (issuperadmin($ds[ 'userID' ])) {
@@ -1219,7 +1219,7 @@ $referer = "admincenter.php?site=users";
             }
 
              if ($ds[ 'activated' ] == "1") {
-                $dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='squads'"));
+                $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='squads'"));
                 if (@$dx[ 'modulname' ] != 'squads') {
                     $actions =
                     '<a class="btn btn-warning" href="admincenter.php?site=user_rights&amp;action=edit&amp;id=' . $ds[ 'userID' ] .

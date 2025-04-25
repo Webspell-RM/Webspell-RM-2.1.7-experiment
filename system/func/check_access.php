@@ -41,7 +41,7 @@ use webspell\AccessControl;
     }
 }*/
 
-function checkAdminAccess($currentModule) {
+/*function checkAdminAccess($currentModule) {
     AccessControl::enforceLogin();
 
     global $_database, $_SESSION, $_language;
@@ -77,7 +77,7 @@ function checkAdminAccess($currentModule) {
         header("Refresh: 3; url=/admin/admincenter.php");
         exit;
     }
-}
+}*/
 
 
 /**
@@ -142,7 +142,7 @@ function checkAccessRights($userID, $catID = null, $linkID = null) {
 /**
  * Weist einem Benutzer eine Rolle zu und überträgt die zugehörigen Rechte
  */
-function assignRoleToUser($userID, $roleID) {
+/*function assignRoleToUser($userID, $roleID) {
     safe_query("INSERT INTO `user_roles` (`userID`, `roleID`) VALUES ('$userID', '$roleID')");
 
     $rolePermissions = safe_query("SELECT * FROM `user_role_permissions` WHERE `roleID` = '$roleID'");
@@ -155,24 +155,24 @@ function assignRoleToUser($userID, $roleID) {
             VALUES ('$userID', '$roleID', '$type', '$accessID')
         ");
     }
-}
+}*/
 
 /**
  * Prüft, ob ein Benutzer eine bestimmte Rolle hat
  */
-function hasRole($userID, $roleID) {
+/*function hasRole($userID, $roleID) {
     global $_database;
     $stmt = $_database->prepare("SELECT 1 FROM `user_role_assignments` WHERE `userID` = ? AND `roleID` = ?");
     $stmt->bind_param("ii", $userID, $roleID);
     $stmt->execute();
     $result = $stmt->get_result();
     return $result->num_rows > 0;
-}
+}*/
 
 /**
  * Gibt alle im System verfügbaren Rollen zurück
  */
-function getAvailableRoles() {
+/*function getAvailableRoles() {
     global $_database;
     $query = "SELECT `roleID` FROM `user_roles`";
     $result = $_database->query($query);
@@ -182,12 +182,12 @@ function getAvailableRoles() {
         $roles[] = $row['roleID'];
     }
     return $roles;
-}
+}*/
 
 /**
  * Prüft, ob ein Benutzer eine beliebige Rolle aus einer Liste besitzt
  */
-function hasAnyRole($userID, array $allowedRoles): bool {
+/*function hasAnyRole($userID, array $allowedRoles): bool {
     $availableRoles = getAvailableRoles();
     $userRoles = getUserRoles($userID);
 
@@ -197,12 +197,12 @@ function hasAnyRole($userID, array $allowedRoles): bool {
         }
     }
     return false;
-}
+}*/
 
 /**
  * Gibt alle Rollen eines Benutzers zurück
  */
-function getUserRoles($userID) {
+/*function getUserRoles($userID) {
     global $_database;
     $stmt = $_database->prepare("SELECT `roleID` FROM `user_role_assignments` WHERE `adminID` = ?");
     $stmt->bind_param("i", $userID);
@@ -214,12 +214,12 @@ function getUserRoles($userID) {
         $roles[] = $row['roleID'];
     }
     return $roles;
-}
+}*/
 
 /**
  * Bannt einen Benutzer mit optionalem Grund und Dauer
  */
-function ban_user($userID, $reason = '', $duration = null) {
+/*function ban_user($userID, $reason = '', $duration = null) {
     $userID = intval($userID);
     $ban_until = $duration ? date('Y-m-d H:i:s', strtotime("+$duration")) : null;
 
@@ -230,4 +230,4 @@ function ban_user($userID, $reason = '', $duration = null) {
     ";
 
     return safe_query($query) !== false;
-}
+}*/

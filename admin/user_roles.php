@@ -37,7 +37,7 @@ use webspell\AccessControl;
 // Den Admin-Zugriff für das Modul überprüfen
 AccessControl::checkAdminAccess('ac_user_roles');
 
-use webspell\SecurityHelper;
+use webspell\LoginSecurity;
 use webspell\Email;
 
 if (isset($_GET[ 'action' ])) {
@@ -613,8 +613,8 @@ if (isset($_SESSION['csrf_error'])): ?>
 
 } elseif ($action == "edit_user") {
 
-/*    $pepper_plain = SecurityHelper::generatePepper();
-$pepper_encrypted = SecurityHelper::encryptPepper($pepper_plain);
+/*    $pepper_plain = LoginSecurity::generatePepper();
+$pepper_encrypted = LoginSecurity::encryptPepper($pepper_plain);
 
 // in Datenbank speichern:
 safe_query("
@@ -657,12 +657,12 @@ if ($userID > 0) {
         if (!empty($new_password_plain) || $reset_password) {
             if ($reset_password && empty($new_password_plain)) {
                 // Generiere temporäres Passwort
-                $new_password_plain = SecurityHelper::generateTemporaryPassword();
+                $new_password_plain = LoginSecurity::generateTemporaryPassword();
             }
 
             // Pepper und Passwort Hashing
-            $new_pepper = SecurityHelper::generateRandomPepper();
-            $pepper_encrypted = SecurityHelper::encryptPepper($new_pepper);
+            $new_pepper = LoginSecurity::generateRandomPepper();
+            $pepper_encrypted = LoginSecurity::encryptPepper($new_pepper);
             $password_hash = password_hash($new_password_plain . $new_pepper, PASSWORD_DEFAULT);
 
             // Benutzer in der Datenbank mit Prepared Statement aktualisieren
@@ -827,9 +827,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->execute();
         $userID = $_database->insert_id;
 
-    $pepper_plain = SecurityHelper::generatePepper();
-    $pepper_encrypted = openssl_encrypt($pepper_plain, 'aes-256-cbc', SecurityHelper::AES_KEY, 0, SecurityHelper::AES_IV);
-    $password_hash = SecurityHelper::createPasswordHash($password, $email, $pepper_plain);
+        // Klartext-Pepper erzeugen, über LoginSecurity
+        $pepper_plain = LoginSecurity::generatePepper();
+
+        // Pepper verschlüsseln, über LoginSecurity
+        $pepper_encrypted = openssl_encrypt($pepper_plain, 'aes-256-cbc', LoginSecurity::AES_KEY, 0, LoginSecurity::AES_IV);
+
+        // Passwort mit Pepper hashen, über LoginSecurity
+        $password_with_pepper = $password . $pepper_plain;
+        $password_hash = password_hash($password_with_pepper, PASSWORD_BCRYPT);
 
         // Passwort und Pepper in der Datenbank aktualisieren
         $query = "UPDATE users SET password_hash = ?, password_pepper = ? WHERE userID = ?";

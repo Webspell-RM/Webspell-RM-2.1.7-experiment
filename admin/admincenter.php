@@ -29,6 +29,8 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
  */
 
+use webspell\RoleManager;
+
 // Überprüfen, ob der Benutzer bereits eingeloggt ist
 if (isset($_SESSION['userID'])) {
     // Wenn der Benutzer eingeloggt ist, Weiterleitung zum Admincenter
@@ -352,10 +354,7 @@ if ($getavatar = getavatar($userID)) {
 				</div>
 				<!-- Copy -->
 				<div class="copy">
-					<em>Admin Template by <a href="https://www.webspell-rm.de" target="_blank" rel="noopener">Webspell-RM</a></em>
-					<form action="logout.php" method="post">
-    <button type="submit" name="logout">Logout</button>
-</form>
+					<em>Admin Template by <a href="https://www.webspell-rm.de" target="_blank" rel="noopener">Webspell-RM</a></em>					
 				</div>
 			</div>
 		</nav>
@@ -393,11 +392,22 @@ if ($getavatar = getavatar($userID)) {
 		<!-- ckeditor -->
 		<?php
 		// Beispiel: CKEditor für Super-Admin (1) und Admin (2)
-		if (hasrole($userID, [1, 2])) {
-			echo '<script src="../components/ckeditor/ckeditor.js"></script><script src="../components/ckeditor/config.js"></script>';
-		} else {
-			echo '<script src="../components/ckeditor/ckeditor.js"></script><script src="../components/ckeditor/user_config.js"></script>';
-		}
+		#if (hasrole($userID, [1, 2])) {
+		#	echo '<script src="../components/ckeditor/ckeditor.js"></script><script src="../components/ckeditor/config.js"></script>';
+		#} else {
+		#	echo '<script src="../components/ckeditor/ckeditor.js"></script><script src="../components/ckeditor/user_config.js"></script>';
+		#}
+
+		$roleID = RoleManager::getUserRoleID($userID);
+
+if ($roleID !== null && RoleManager::roleHasPermission($roleID, 'ckeditor_full')) {
+    echo '<script src="../components/ckeditor/ckeditor.js"></script>';
+    echo '<script src="../components/ckeditor/config.js"></script>';
+    echo 'admin';
+} else {
+    echo '<script src="../components/ckeditor/ckeditor.js"></script>';
+    echo '<script src="../components/ckeditor/user_config.js"></script>';
+}
 		?>
 
 		<!-- jQuery -->

@@ -62,7 +62,7 @@ class AccessControl
     }
 }
 
-class multiLanguage
+/*class multiLanguage
 {
     public $language;
     public $availableLanguages = [];
@@ -97,7 +97,7 @@ class multiLanguage
     }
 
     // Extrahiert den Inhalt eines bestimmten Sprach-Tags
-    private function getTextByTag($language, $text)
+   /* private function getTextByTag($language, $text)
     {
         $output = '';
         $segments = explode('{[' . $language . ']}', $text);
@@ -106,8 +106,8 @@ class multiLanguage
             $output .= $tmp[0];
         }
         return $output;
-    }
-}
+    }*/
+/*}*/
 
 function escape($input) {
     return mysqli_real_escape_string($GLOBALS['_database'], $input);

@@ -46,8 +46,10 @@ include_once("system/multi_language.php");
 // INITIALIZE
 // Theme
 $theme = new theme();
+
 // Template
-$tpl = new template();
+#$tpl = new template();
+$tpl = new \webspell\TemplateEngine();
 $tpl->themes_path = $theme->get_active_theme();
 $tpl->template_path = "templates/";
 

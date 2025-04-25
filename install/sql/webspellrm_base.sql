@@ -101,26 +101,25 @@ CREATE TABLE IF NOT EXISTS `navigation_dashboard_categories` (
   `name` varchar(255) NOT NULL DEFAULT '',
   `modulname` varchar(255) NOT NULL,
   `fa_name` varchar(255) NOT NULL DEFAULT '',
-  `accesslevel` INT(11) DEFAULT NULL,
-  `default` INT(11) DEFAULT 0,
+  `sort_art` INT(11) DEFAULT 0,
   `sort` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`catID`),
   UNIQUE KEY `modulname` (`modulname`, `catID`)
 ) ENGINE=InnoDB;
 
-INSERT INTO `navigation_dashboard_categories` (`catID`, `name`, `fa_name`, `accesslevel`, `default`, `sort`) VALUES
-(1, '[[lang:de]]Webseiten Info - Einstellungen[[lang:en]]Website Info - Settings[[lang:it]]Informazioni-Impostazioni Sito', 'bi bi-gear', 'any', 0, 1),
-(2, '[[lang:de]]Spam[[lang:en]]Spam[[lang:it]]Spam', 'bi bi-exclamation-triangle', 'user', 0, 2),
-(3, '[[lang:de]]Benutzer Administration[[lang:en]]User Administration[[lang:it]]Amministrazione Utenti', 'bi bi-person', 'user', 0, 3),
-(4, '[[lang:de]]Team Verwaltung[[lang:en]]Team Administration[[lang:it]]Amministrazione della squadra', 'bi bi-people', 'any', 0, 4),
-(5, '[[lang:de]]Template - Layout[[lang:en]]Template - Layout[[lang:it]]Template - Disposizione', 'bi bi-layout-text-window-reverse', 'page', 0, 5),
-(6, '[[lang:de]]Plugin & Widget Verwaltung[[lang:en]]Plugin and Widget Management[[lang:it]]Gestione plugin e widget', 'bi bi-puzzle', 'page', 0, 6),
-(7, '[[lang:de]]Webseiteninhalte[[lang:en]]Website Content[[lang:it]]Contenuto del sito web', 'bi bi-card-checklist', 'page', 0, 7),
-(8, '[[lang:de]]Grafik - Video - Projekte[[lang:en]]Grafik - Video - Projekte[[lang:it]]Grafica - Video - Progetti', 'bi bi-image', 'gallery', 0, 8),
-(9, '[[lang:de]]Header - Slider[[lang:en]]Header - Slider[[lang:it]]Slider-Header', 'bi bi-fast-forward-btn', 'page', 0, 9),
-(10, '[[lang:de]]Game - Voice Server Tools[[lang:en]]Game - Voice Server Tools[[lang:it]]Voice Server Tools', 'bi bi-controller', 'clanwars', 0, 10),
-(11, '[[lang:de]]Social Media[[lang:en]]Social Media[[lang:it]]Social Media', 'bi bi-steam', 'feedback', 0, 11),
-(12, '[[lang:de]]Links - Download - Sponsoren[[lang:en]]Links - Download - Sponsore[[lang:it]]Link - Download - Sponsor', 'bi bi-link', 'any', 0, 12);
+INSERT INTO `navigation_dashboard_categories` (`catID`, `name`, `modulname`, `fa_name`, `sort_art`, `sort`) VALUES
+(1, '[[lang:de]]Webseiten Info - Einstellungen[[lang:en]]Website Info - Settings[[lang:it]]Informazioni-Impostazioni Sito', 'cat_webinfo', 'bi bi-gear', 0, 1),
+(2, '[[lang:de]]Spam[[lang:en]]Spam[[lang:it]]Spam', 'cat_spam', 'bi bi-exclamation-triangle', 0, 2),
+(3, '[[lang:de]]Benutzer Administration[[lang:en]]User Administration[[lang:it]]Amministrazione Utenti', 'cat_admin', 'bi bi-person', 0, 3),
+(4, '[[lang:de]]Team Verwaltung[[lang:en]]Team Administration[[lang:it]]Amministrazione della squadra', 'cat_team', 'bi bi-people', 0, 4),
+(5, '[[lang:de]]Template - Layout[[lang:en]]Template - Layout[[lang:it]]Template - Disposizione', 'cat_theme', 'bi bi-layout-text-window-reverse', 0, 5),
+(6, '[[lang:de]]Plugin & Widget Verwaltung[[lang:en]]Plugin and Widget Management[[lang:it]]Gestione plugin e widget', 'cat_plugin', 'bi bi-puzzle', 0, 6),
+(7, '[[lang:de]]Webseiteninhalte[[lang:en]]Website Content[[lang:it]]Contenuto del sito web', 'cat_web_content', 'bi bi-card-checklist', 0, 7),
+(8, '[[lang:de]]Grafik - Video - Projekte[[lang:en]]Grafik - Video - Projekte[[lang:it]]Grafica - Video - Progetti', 'cat_gallery', 'bi bi-image', 0, 8),
+(9, '[[lang:de]]Header - Slider[[lang:en]]Header - Slider[[lang:it]]Slider-Header', 'cat_slider', 'bi bi-fast-forward-btn', 0, 9),
+(10, '[[lang:de]]Game - Voice Server Tools[[lang:en]]Game - Voice Server Tools[[lang:it]]Voice Server Tools', 'cat_game', 'bi bi-controller', 0, 10),
+(11, '[[lang:de]]Social Media[[lang:en]]Social Media[[lang:it]]Social Media', 'cat_social', 'bi bi-steam', 0, 11),
+(12, '[[lang:de]]Links - Download - Sponsoren[[lang:en]]Links - Download - Sponsore[[lang:it]]Link - Download - Sponsor', 'cat_link', 'bi bi-link', 0, 12);
 -- Ende der Tabelle 'navigation_dashboard_categories'
 
 -- Tabellenstruktur für Tabelle `navigation_dashboard_links`
@@ -135,8 +134,7 @@ CREATE TABLE IF NOT EXISTS `navigation_dashboard_links` (
   UNIQUE KEY `modulname` (`modulname`, `linkID`)
 ) ENGINE=InnoDB;
 
-INSERT INTO `navigation_dashboard_links` (`linkID`, `catID`, `modulname`, `name`, `url`, `sort`) 
-VALUES
+INSERT INTO `navigation_dashboard_links` (`linkID`, `catID`, `modulname`, `name`, `url`, `sort`) VALUES
 (1, 1, 'ac_overview', '[[lang:de]]Webserver-Info[[lang:en]]Webserver Info[[lang:it]]Informazioni Sul Sito', 'admincenter.php?site=overview', 1),
 (2, 1, 'ac_page_statistic', '[[lang:de]]Seiten Statistiken[[lang:en]]Page Statistics[[lang:it]]Pagina delle Statistiche', 'admincenter.php?site=page_statistic', 2),
 (3, 1, 'ac_visitor_statistic', '[[lang:de]]Besucher Statistiken[[lang:en]]Visitor Statistics[[lang:it]]Statistiche Visitatori', 'admincenter.php?site=visitor_statistic', 3),
@@ -164,7 +162,8 @@ VALUES
 (26, 1, 'ac_editlang', '[[lang:de]]Spracheditor[[lang:en]]Language Editor[[lang:it]]Editor di Linguaggi', 'admincenter.php?site=editlang', 11),
 (27, 7, 'footer', '[[lang:de]]Footer[[lang:en]]Footer[[lang:it]]Piè di pagina', 'admincenter.php?site=fotter', 0),
 (28, 3, 'ac_admin_security', '[[lang:de]]Admin Security[[lang:en]]Admin Security[[lang:it]]Sicurezza Admin', 'admincenter.php?site=admin_security', 2),
-(29, 3, 'ac_user_roles', '[[lang:de]]User Roles[[lang:en]]User Roles[[lang:it]]Ruoli Utente', 'admincenter.php?site=user_roles', 3);
+(29, 3, 'ac_user_roles', '[[lang:de]]User Roles[[lang:en]]User Roles[[lang:it]]Ruoli Utente', 'admincenter.php?site=user_roles', 3),
+(31, 3, 'role_permissions', 'Role Permissions.php', 'admincenter.php?site=admin_role_permissions', 1);
 
 -- Ende der Tabelle 'navigation_dashboard_links'
 
@@ -958,7 +957,7 @@ CREATE TABLE IF NOT EXISTS `user_role_admin_navi_rights` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_access` (`roleID`, `type`, `modulname`),
   CONSTRAINT `user_role_admin_navi_rights_ibfk_1` FOREIGN KEY (`roleID`) REFERENCES `user_roles` (`roleID`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci AUTO_INCREMENT=56;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci AUTO_INCREMENT=42;
 
 INSERT INTO `user_role_admin_navi_rights` (`id`, `roleID`, `type`, `modulname`, `accessID`) VALUES
 (1, 1, 'link', 'ac_overview', 1),
@@ -976,8 +975,6 @@ INSERT INTO `user_role_admin_navi_rights` (`id`, `roleID`, `type`, `modulname`, 
 (13, 1, 'link', 'ac_spam_user', 13),
 (14, 1, 'link', 'ac_spam_multi', 14),
 (15, 1, 'link', 'ac_spam_banned_ips', 15),
-(16, 1, 'link', 'ac_webside_navigation', 16),
-(17, 1, 'link', 'ac_themes_installer', 17),
 (18, 1, 'link', 'ac_themes', 18),
 (19, 1, 'link', 'ac_startpage', 20),
 (20, 1, 'link', 'ac_static', 21),
@@ -988,35 +985,39 @@ INSERT INTO `user_role_admin_navi_rights` (`id`, `roleID`, `type`, `modulname`, 
 (25, 1, 'link', 'ac_editlang', 26),
 (26, 1, 'link', 'footer', 27),
 (27, 1, 'link', 'ac_admin_security', 28),
-(28, 1, 'category', 'ac_overview', 1),
-(29, 1, 'category', 'ac_page_statistic', 2),
-(30, 1, 'category', 'ac_visitor_statistic', 3),
-(31, 1, 'category', 'ac_settings', 4),
-(32, 1, 'category', 'ac_dashboard_navigation', 5),
-(33, 1, 'category', 'ac_email', 6),
-(34, 1, 'category', 'ac_contact', 7),
-(35, 1, 'category', 'ac_modrewrite', 8),
-(36, 1, 'category', 'ac_database', 9),
-(37, 1, 'category', 'ac_update', 10),
-(38, 1, 'category', 'ac_users', 11),
-(39, 1, 'category', 'ac_spam_forum', 12),
-(40, 1, 'category', 'ac_spam_user', 13),
-(41, 1, 'category', 'ac_spam_multi', 14),
-(42, 1, 'category', 'ac_spam_banned_ips', 15),
-(43, 1, 'category', 'ac_webside_navigation', 16),
-(44, 1, 'category', 'ac_themes_installer', 17),
-(45, 1, 'category', 'ac_themes', 18),
-(46, 1, 'category', 'ac_startpage', 20),
-(47, 1, 'category', 'ac_static', 21),
-(48, 1, 'category', 'ac_imprint', 22),
-(49, 1, 'category', 'ac_privacy_policy', 23),
-(50, 1, 'category', 'ac_plugin_manager', 24),
-(51, 1, 'category', 'ac_plugin_installer', 25),
-(52, 1, 'category', 'ac_editlang', 26),
-(53, 1, 'category', 'footer', 69),
-(54, 1, 'link', 'ac_user_roles', 29),
-(84, 1, 'category', '', 1);
+(28, 1, 'link', 'ac_user_roles', 29),
+(29, 1, 'category', 'cat_webinfo', 1),
+(30, 1, 'category', 'cat_spam', 2),
+(31, 1, 'category', 'cat_admin', 3),
+(32, 1, 'category', 'cat_team', 4),
+(33, 1, 'category', 'cat_theme', 5),
+(34, 1, 'category', 'cat_plugin', 6),
+(35, 1, 'category', 'cat_web_content', 7),
+(36, 1, 'category', 'cat_gallery', 8),
+(37, 1, 'category', 'cat_slider', 9),
+(38, 1, 'category', 'cat_game', 10),
+(39, 1, 'category', 'cat_social', 11),
+(40, 1, 'category', 'cat_link', 12),
+(41, 1, 'link', 'role_permissions', 31);
 -- Ende der Tabelle 'user_role_admin_navi_rights'
+
+
+-- Tabellenstruktur für Tabelle `user_role_permissions`
+CREATE TABLE IF NOT EXISTS `user_role_permissions` (
+  `roleID` int(11) NOT NULL,
+  `permission_key` varchar(50) NOT NULL,
+  PRIMARY KEY (`roleID`, `permission_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `user_role_permissions` (`roleID`, `permission_key`) VALUES
+(1, 'ckeditor_full'),
+(1, 'edit_articles'),
+(1, 'manage_users'),
+(1, 'view_dashboard_only'),
+(2, 'edit_articles'),
+(2, 'manage_users'),
+(3, 'view_dashboard_only');
+-- Ende der Tabelle 'user_role_permissions'
 
 -- Tabellenstruktur für Tabelle `user_groups`
 CREATE TABLE IF NOT EXISTS `user_groups` (
