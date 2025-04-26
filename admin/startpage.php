@@ -27,7 +27,7 @@
 
 $_language->readModule('startpage', false, true);
 
-$ergebnis = safe_query("SELECT * FROM ".PREFIX."navigation_dashboard_links WHERE modulname='ac_startpage'");
+$ergebnis = safe_query("SELECT * FROM navigation_dashboard_links WHERE modulname='ac_startpage'");
     while ($db=mysqli_fetch_array($ergebnis)) {
       $accesslevel = 'is'.$db['accesslevel'].'admin';
 
@@ -48,10 +48,10 @@ if (isset($_POST[ 'submit' ])) {
 
     $CAPCLASS = new \webspell\Captcha;
     if ($CAPCLASS->checkCaptcha(0, $_POST[ 'captcha_hash' ])) {
-        if (mysqli_num_rows(safe_query("SELECT * FROM "settings_startpage"))) {
-            safe_query("UPDATE " . PREFIX . "settings_startpage SET title='" . $title . "', date='" . time() . "', startpage_text='" . $startpage_text . "', displayed='" . $displayed . "'");
+        if (mysqli_num_rows(safe_query("SELECT * FROM settings_startpage"))) {
+            safe_query("UPDATE settings_startpage SET title='" . $title . "', date='" . time() . "', startpage_text='" . $startpage_text . "', displayed='" . $displayed . "'");
         } else {
-            safe_query("INSERT INTO " . PREFIX . "settings_startpage (date ,startpage_text,displayed) values( '" . time() . "', '" . $startpage_text . "','" . $displayed . "') ");
+            safe_query("INSERT INTO settings_startpage (date ,startpage_text,displayed) values( '" . time() . "', '" . $startpage_text . "','" . $displayed . "') ");
         }
     } else {
         echo $_language->module[ 'transaction_invalid' ];
@@ -59,7 +59,7 @@ if (isset($_POST[ 'submit' ])) {
 }
 
 
-$ergebnis = safe_query("SELECT * FROM "settings_startpage");
+$ergebnis = safe_query("SELECT * FROM settings_startpage");
 $ds = mysqli_fetch_array($ergebnis);
 
 $CAPCLASS = new \webspell\Captcha;

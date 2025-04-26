@@ -66,7 +66,6 @@ if (mysqli_num_rows($ergebnis)) {
     $data_array = [
         'startpage_text' => $startpage_text,  // Den übersetzten Startseitentext setzen
         'date' => $date,  // Aktuelles Datum setzen
-        'myclanname' => $myclanname,  // Clanname setzen
         'startpage' => $_language->module['startpage'],
         'stand1' => $_language->module['stand1'],
         'stand2' => $_language->module['stand2'],

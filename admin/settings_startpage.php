@@ -47,20 +47,20 @@ if (isset($_POST['submit'])) {
     $CAPCLASS = new \webspell\Captcha;
     if ($CAPCLASS->checkCaptcha(0, $_POST['captcha_hash'])) {
         // Sicherer SQL-Befehl mit vorbereiteten Statements
-        $stmt = $_database->prepare("SELECT * FROM `" . PREFIX . "settings_startpage`");
+        $stmt = $_database->prepare("SELECT * FROM `settings_startpage`");
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
             // Datensatz existiert, also aktualisieren
-            $stmt = $_database->prepare("UPDATE `" . PREFIX . "settings_startpage` SET title = ?, date = ?, startpage_text = ?, displayed = ?");
+            $stmt = $_database->prepare("UPDATE `settings_startpage` SET title = ?, date = ?, startpage_text = ?, displayed = ?");
             $current_time = time(); // Aktuelle Zeit
             $stmt->bind_param("siss", $title, $current_time, $startpage_text, $displayed);
             $stmt->execute();
             $stmt->close();
         } else {
             // Datensatz existiert nicht, also neuen Eintrag erstellen
-            $stmt = $_database->prepare("INSERT INTO `" . PREFIX . "settings_startpage` (date, startpage_text, displayed, title) VALUES (?, ?, ?, ?)");
+            $stmt = $_database->prepare("INSERT INTO `settings_startpage` (date, startpage_text, displayed, title) VALUES (?, ?, ?, ?)");
             $current_time = time();
             $stmt->bind_param("isss", $current_time, $startpage_text, $displayed, $title);
             $stmt->execute();
@@ -75,7 +75,7 @@ if (isset($_POST['submit'])) {
 }
 
 // Abrufen der bestehenden Startseiteneinstellungen
-$stmt = $_database->prepare("SELECT * FROM `" . PREFIX . "settings_startpage`");
+$stmt = $_database->prepare("SELECT * FROM `settings_startpage`");
 $stmt->execute();
 $result = $stmt->get_result();
 $ds = $result->fetch_array();
