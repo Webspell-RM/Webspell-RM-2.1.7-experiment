@@ -87,7 +87,7 @@ chdir('admin');
 
 
 
-
+/*
 echo '<pre>';
 print_r($_SESSION);
 echo '</pre>';
@@ -104,7 +104,7 @@ if (!isset($_SESSION['userID'])) {
     echo "Die Session wurde erfolgreich beendet.";
 } else {
     echo "Die Session ist immer noch aktiv.";
-}
+}*/
 
 // Plugin-Manager laden und Sprachmodul für Admincenter einbinden
 $load = new plugin_manager();
@@ -164,14 +164,14 @@ $result = safe_query("
     WHERE ur.userID = '$userID'
 ");
 
-if (mysqli_num_rows($result) == 0) {
+/*if (mysqli_num_rows($result) == 0) {
     echo '<div style="color:red;">⚠️ Du hast keine Rechte für Kategorien oder Links (Tabellen leer?)</div>';
 } else {
     echo '<div style="color:green;">✅ Zugriffsrechte gefunden:</div>';
     while ($row = mysqli_fetch_assoc($result)) {
         #echo "Typ: {$row['type']} → accessID: {$row['accessID']} (Rolle {$row['roleID']})<br>";
     }
-}
+}*/
 
 
 if (!isset($_SERVER['REQUEST_URI'])) {

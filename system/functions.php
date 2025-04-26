@@ -567,6 +567,8 @@ if (file_exists('func/plugin_service.php')) {
     systeminc('../system/func/plugin_service');
 }
 
+
+
 // Erstellen des Template-Objekts, je nachdem, ob es sich um das Admin-Verzeichnis handelt
 if (!stristr($_SERVER['SCRIPT_NAME'], '/admin/')) {
     $_template = new \Webspell\Template();
@@ -654,6 +656,12 @@ if (file_exists('classes/role_manager.php')) {
     systeminc('classes/role_manager');
 } else {
     systeminc('../system/classes/role_manager');
+}
+
+if (file_exists('classes/plugin_manager.php')) {
+    systeminc('classes/plugin_manager');
+} else {
+    systeminc('../system/classes/plugin_manager');
 }
 // ModRewrite-Objekt initialisieren und aktivieren
 $GLOBALS['_modRewrite'] = new \webspell\ModRewrite();

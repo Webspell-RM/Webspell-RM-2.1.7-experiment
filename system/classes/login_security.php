@@ -52,44 +52,11 @@ class LoginSecurity {
 
     
 
-/*public static function verifyLogin($email, $password, $ip): array {
-    // Benutzer aus der Datenbank abrufen
-    $query = "SELECT * FROM `users` WHERE `email` = '" . escape($email) . "'";
-    $result = safe_query($query);
-
-    if ($result && mysqli_num_rows($result) > 0) {
-        $user = mysqli_fetch_array($result);
-
-        // Überprüfen, ob das Konto aktiv ist
-        if ($user['is_active'] == 0) {
-            return ['success' => false, 'error' => 'Dein Konto wurde noch nicht aktiviert. Bitte überprüfe deine E-Mail.'];
-        }
-
-        // Entschlüsseln des Peppers
-        $pepper_plain = self::decryptPepper($user['password_pepper']);
-        if (!$pepper_plain) {
-            return ['success' => false, 'error' => 'Fehler beim Entschlüsseln des Peppers.'];
-        }
-
-        // Passwort mit E-Mail und Pepper kombinieren und überprüfen
-        if (password_verify($password . $email . $pepper_plain, $user['password_hash'])) {
-            // Erfolgreiches Login
-            return ['success' => true];
-        } else {
-            // Falsches Passwort
-            return ['success' => false, 'error' => 'Ungültige E-Mail-Adresse oder Passwort'];
-        }
-    } else {
-        // Keine Benutzer gefunden
-        return ['success' => false, 'error' => 'Ungültige E-Mail-Adresse oder Passwort'];
-    }
-}*/
-
-    public static function verifyLogin($email, $password, $ip, $is_active): array {
+    public static function verifyLogin($email, $password, $ip, $is_active ,$banned): array {
         // Zuerst prüfen, ob IP gesperrt ist
         $isIpBanned = self::isIpBanned($ip); // IP-Überprüfung
         if ($isIpBanned) {
-            return ['success' => false, 'ip_banned' => true, 'error' => 'Deine IP-Adresse wurde gesperrt.xxx'];
+            return ['success' => false, 'ip_banned' => true, 'error' => 'Deine IP-Adresse wurde gesperrt.'];
         }
 
         // Benutzer aus der Datenbank abrufen
@@ -104,6 +71,11 @@ class LoginSecurity {
                 return ['success' => false, 'ip_banned' => false, 'error' => 'Dein Konto wurde noch nicht aktiviert. Bitte überprüfe deine E-Mail.'];
             }
 
+            // Überprüfen, ob das Konto aktiv ist
+            if ($user['banned'] == 1) {
+                return ['success' => false, 'ip_banned' => false, 'error' => 'Dein Konto wurde gesperrt. Bitte überprüfe deine E-Mail.'];
+            }
+
             // Entschlüsseln des Peppers
             $pepper_plain = self::decryptPepper($user['password_pepper']);
             if (!$pepper_plain) {
@@ -116,14 +88,15 @@ class LoginSecurity {
                 return ['success' => true, 'ip_banned' => false];
             } else {
                 // Falsches Passwort
-                return ['success' => false, 'ip_banned' => false, 'error' => 'Ungültige E-Mail-Adresse oder Passwort'];
+                return ['success' => false, 'ip_banned' => false, 'error' => 'Ungültige E-Mail-Adresse oder Passwort.'];
             }
 
         } else {
             // Keine Benutzer gefunden
-            return ['success' => false, 'ip_banned' => false, 'error' => 'Ungültige E-Mail-Adresse oder Passwortyyy'];
+            return ['success' => false, 'ip_banned' => false, 'error' => 'Ungültige E-Mail-Adresse oder Passwort.'];
         }
     }
+
 
 
     public static function handleLoginError(array $loginResult, int $failCount, string $ip, ?int $userID, string $email): array
@@ -187,11 +160,6 @@ class LoginSecurity {
     }
 
 
-
-
-
-
-
     // Fehlversuche löschen
     public static function clearFailedAttempts(string $ip): void {
         safe_query("DELETE FROM failed_login_attempts WHERE ip = '" . escape($ip) . "'");
@@ -221,21 +189,6 @@ class LoginSecurity {
         );
     }
 
-    
-
-    // Funktion, um die Anzahl der fehlgeschlagenen Login-Versuche zu zählen
-    /*public static function getFailCount($ip): int {
-        global $_database;
-
-        $stmt = $_database->prepare("SELECT COUNT(*) AS count FROM failed_login_attempts WHERE ip = ? AND attempt_time >= NOW() - INTERVAL 3 HOUR");
-        $stmt->bind_param("s", $ip);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $row = $result->fetch_assoc();
-
-        return (int)($row['count'] ?? 0);
-    }*/
-
     public static function getFailCount(string $ip, string $email): int
     {
         global $_database;
@@ -252,92 +205,71 @@ class LoginSecurity {
 
     // Funktion zum Verfolgen eines fehlgeschlagenen Logins
     public static function trackFailedLogin(?int $userID, string $email, string $ip): void
-{
-    global $_database;
+    {
+        global $_database;
 
-    // Benutzer-ID ermitteln, falls nicht vorhanden
-    if (is_null($userID)) {
-        $stmt = $_database->prepare("SELECT userID FROM users WHERE email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result && $row = $result->fetch_assoc()) {
-            $userID = (int)$row['userID'];
-        } else {
-            $userID = 0; // Wenn Benutzer nicht gefunden wurde
+        // Benutzer-ID ermitteln, falls nicht vorhanden
+        if (is_null($userID)) {
+            $stmt = $_database->prepare("SELECT userID FROM users WHERE email = ?");
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($result && $row = $result->fetch_assoc()) {
+                $userID = (int)$row['userID'];
+            } else {
+                $userID = 0; // Wenn Benutzer nicht gefunden wurde
+            }
+            $stmt->close();
         }
+
+        $reason = "Login fehlgeschlagen";
+        $status = "failed";
+
+        $stmt = $_database->prepare("INSERT INTO failed_login_attempts (userID, email, ip, status, reason) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("issss", $userID, $email, $ip, $status, $reason);
+        $stmt->execute();
         $stmt->close();
     }
-
-    $reason = "Login fehlgeschlagen";
-    $status = "failed";
-
-    $stmt = $_database->prepare("INSERT INTO failed_login_attempts (userID, email, ip, attempt_time, status, reason) 
-                                 VALUES (?, ?, ?, NOW(), ?, ?)");
-    $stmt->bind_param("issss", $userID, $email, $ip, $status, $reason);
-    $stmt->execute();
-    $stmt->close();
-}
 
 
     // Funktion zum Sperren der IP
     public static function banIp($ip, $userID, $reason = "", $email = "") {
-    global $_database;
+        global $_database;
 
-    // Zuerst fehlgeschlagene Login-Versuche für diese IP löschen
-    $query = "DELETE FROM `failed_login_attempts` WHERE `ip` = '" . self::escape($ip) . "'";
-    safe_query($query);
+        // Zuerst fehlgeschlagene Login-Versuche für diese IP löschen
+        $query = "DELETE FROM `failed_login_attempts` WHERE `ip` = '" . self::escape($ip) . "'";
+        safe_query($query);
 
-    // Bannzeit auf 3 Stunden setzen
-    $banTime = date('Y-m-d H:i:s', strtotime('+3 hours'));  // Sperre für 3 Stunden
+        // Bannzeit auf 3 Stunden setzen
+        $banTime = date('Y-m-d H:i:s', strtotime('+3 hours'));  // Sperre für 3 Stunden
 
-    // SQL-Abfrage zum Sperren der IP
-    $query = "INSERT INTO `banned_ips` (ip, userID, reason, email, deltime) VALUES (?, ?, ?, ?, ?)";
-    if ($stmt = $_database->prepare($query)) {
-        // Benutzung des richtigen Typs für die Parameter
-        $stmt->bind_param("sisss", $ip, $userID, $reason, $email, $banTime);
+        // SQL-Abfrage zum Sperren der IP
+        $query = "INSERT INTO `banned_ips` (ip, userID, reason, email, deltime) VALUES (?, ?, ?, ?, ?)";
+        if ($stmt = $_database->prepare($query)) {
+            // Benutzung des richtigen Typs für die Parameter
+            $stmt->bind_param("sisss", $ip, $userID, $reason, $email, $banTime);
 
-        if ($stmt->execute()) {
-            // Erfolgreich gespeichert
-            return true;
+            if ($stmt->execute()) {
+                // Erfolgreich gespeichert
+                return true;
+            } else {
+                // Fehler bei der Ausführung der SQL-Abfrage
+                echo "Fehler beim Ausführen der Abfrage: " . $stmt->error;
+                return false;
+            }
         } else {
-            // Fehler bei der Ausführung der SQL-Abfrage
-            echo "Fehler beim Ausführen der Abfrage: " . $stmt->error;
+            // Fehler beim Vorbereiten der Abfrage
+            echo "Fehler beim Vorbereiten der Abfrage: " . $_database->error;
             return false;
         }
-    } else {
-        // Fehler beim Vorbereiten der Abfrage
-        echo "Fehler beim Vorbereiten der Abfrage: " . $_database->error;
-        return false;
     }
-}
 
-
-    /*public static function banIp($ip, $userID, $reason, $email) {
-        // Zuerst fehlgeschlagene Login-Versuche für diese IP löschen
-        $query = "DELETE FROM `failed_login_attempts` WHERE `ip_address` = '" . self::escape($ip) . "'";
-        safe_query($query);
-
-        // IP sperren
-        $query = "INSERT INTO `banned_ips` (`ip`, `deltime`, `reason`, `userID`, `email`) 
-                  VALUES ('" . self::escape($ip) . "', NOW(), '" . self::escape($reason) . "', '" . self::escape($userID) . "', '" . self::escape($email) . "')";
-        safe_query($query);
-    }*/
 
     public static function isIpAlreadyBanned($ip): bool {
         $query = "SELECT 1 FROM `banned_ips` WHERE `ip` = '" . self::escape($ip) . "' LIMIT 1";
         $result = safe_query($query);
         return mysqli_num_rows($result) > 0;
     }
-
-    /*public static function trackFailedLogin($userID, $email, $ip) {
-        $failCount = self::getFailCount($ip);
-
-        // Wenn die Anzahl der Fehlversuche 5 erreicht, und die IP noch nicht gesperrt ist:
-        if ($failCount >= 5 && !self::isIpAlreadyBanned($ip)) {
-            self::banIp($ip, $userID, "Zu viele Fehlversuche", $email);
-        }
-    }*/
 
     // Funktion zum Speichern der Session nach erfolgreichem Login
     public static function saveSession(int $userID): void {

@@ -53,9 +53,9 @@ echo'<!-- ======= Navigation ======= -->
             </div>
             <nav id="navbar" class="navbar '.$ds[ 'nav_text_alignment' ].'">
                 <ul>';
-                    include("./includes/modules/navigation.php");
-                    include("./includes/modules/navigation_login.php");
-                    include("./includes/modules/language.php");                        
+                    require_once("./includes/modules/navigation.php");
+                    require_once("./includes/modules/navigation_login.php");
+                    require_once("./includes/modules/language.php");                      
             echo'</ul>
                 <i class="bi bi-list mobile-nav-toggle"></i>
             </nav><!-- .navbar -->

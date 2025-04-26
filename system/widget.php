@@ -29,6 +29,8 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
  */
 
+use webspell\PluginSettings;
+
 $ergebnis = safe_query("SELECT * FROM settings_themes WHERE active= 1");
 $dx = mysqli_fetch_array($ergebnis);
 
@@ -46,10 +48,6 @@ class widgets
         include_once("settings.php");
         return safe_query($query);
     }
-
-    /*private string $_modulname;
-    private string $_widget;
-    private string $_widgetname;*/
 
     private string $_modulname;
     private string $_widgetname;
@@ -74,33 +72,9 @@ class widgets
         $getsite = 'startpage'; #Wird auf der Startseite angezeigt index.php
         if (isset($qs_arr['site'])) {
             $getsite = $qs_arr['site'];
-        }
+        }        
 
-        if (
-            @$getsite == 'contact'
-            || @$getsite == 'imprint'
-            || @$getsite == 'privacy_policy'
-            || @$getsite == 'profile'
-            || @$getsite == 'myprofile'
-            || @$getsite == 'error_404'
-            || @$getsite == 'report'
-            || @$getsite == 'static'
-            || @$getsite == 'loginoverview'
-            || @$getsite == 'register'
-            || @$getsite == 'lostpassword'
-            || @$getsite == 'login'
-            || @$getsite == 'logout'
-            || @$getsite == 'footer'
-            || @$getsite == 'navigation'
-            || @$getsite == 'topbar'
-            || @$getsite == 'articles_comments'
-            || @$getsite == 'blog_comments'
-            || @$getsite == 'gallery_comments'
-            || @$getsite == 'news_comments'
-            || @$getsite == 'news_recomments'
-            || @$getsite == 'polls_comments'
-            || @$getsite == 'videos_comments'
-        ) {
+        if (PluginSettings::load_widget_settings_css($getsite)) {
 
             $query = safe_query("SELECT * FROM `settings_plugins_widget_settings` WHERE widgetname='" . $widgetname . "'");
             $db = mysqli_fetch_array($query);
@@ -141,32 +115,7 @@ class widgets
             $getsite = $qs_arr['site'];
         }
 
-        if (
-            @$getsite == 'contact'
-            || @$getsite == 'imprint'
-            || @$getsite == 'privacy_policy'
-            || @$getsite == 'profile'
-            || @$getsite == 'myprofile'
-            || @$getsite == 'error_404'
-            || @$getsite == 'report'
-            || @$getsite == 'static'
-            || @$getsite == 'loginoverview'
-            || @$getsite == 'register'
-            || @$getsite == 'lostpassword'
-            || @$getsite == 'login'
-            || @$getsite == 'logout'
-            || @$getsite == 'footer'
-            || @$getsite == 'navigation'
-            || @$getsite == 'topbar'
-            || @$getsite == 'articles_comments'
-            || @$getsite == 'blog_comments'
-            || @$getsite == 'gallery_comments'
-            || @$getsite == 'news_comments'
-            || @$getsite == 'news_recomments'
-            || @$getsite == 'polls_comments'
-            || @$getsite == 'videos_comments'
-        ) {
-
+        if (PluginSettings::load_widget_settings_css($getsite)) {    
             global $themes_modulname;
             $select_all_widgets = "SELECT * FROM settings_plugins_widget_settings
             WHERE position LIKE '$position'

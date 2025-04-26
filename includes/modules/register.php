@@ -1,6 +1,7 @@
 <?php
 
-use webspell\SecurityHelper;
+use webspell\LoginSecurity;
+use webspell\Email;
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -12,43 +13,45 @@ $_language->readModule('register');
 // Fehler- und Feldspeicher
 $form_data = $_POST ?? [];
 
-
-
 // CSRF vorbereiten
 if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
-
 $csrf_token = $_SESSION['csrf_token'];
-$ip_address = $_SERVER['REMOTE_ADDR'];
+
+// Formulardaten erfassen
 $username = $_POST['username'] ?? '';
 $email = $_POST['email'] ?? '';
-$terms = isset($_POST['terms']);
 $password = $_POST['password'] ?? '';
 $password_repeat = $_POST['password_repeat'] ?? '';
+$terms = isset($_POST['terms']);
+$ip_address = $_SERVER['REMOTE_ADDR'];
 
-// Versuchszähler (letzte 30 Min)
-$stmt = $_database->prepare("SELECT COUNT(*) FROM register_attempts WHERE ip_address = ? AND attempt_time > (NOW() - INTERVAL 30 MINUTE)");
+$registrierung_erfolgreich = false;
+$isreg = false;
+$message = '';
+
+// Zu viele Registrierungsversuche?
+$stmt = $_database->prepare("
+    SELECT COUNT(*) FROM register_attempts 
+    WHERE ip_address = ? AND attempt_time > (NOW() - INTERVAL 30 MINUTE)
+");
 $stmt->bind_param("s", $ip_address);
 $stmt->execute();
 $stmt->bind_result($attempt_count);
 $stmt->fetch();
 $stmt->close();
 
-if ($attempt_count >= 5) {
-    $_SESSION['error_message'] = "Zu viele Registrierungsversuche. Bitte versuche es später erneut.";
-    header("Location: index.php?site=register");
-    exit;
-}
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+// Registrierung verarbeiten
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if ($_POST['csrf_token'] !== $_SESSION['csrf_token']) {
         die("Ungültiges Formular (CSRF-Schutz).");
     }
 
     // reCAPTCHA prüfen (optional)
-    if (!empty($_POST['g-recaptcha-response'])) {
+    /*if (!empty($_POST['g-recaptcha-response'])) {
         $response = $_POST['g-recaptcha-response'];
         $verify = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=DEIN_SECRET_KEY&response={$response}&remoteip={$ip_address}");
         $captcha_result = json_decode($verify);
@@ -57,33 +60,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header("Location: index.php?site=register");
             exit;
         }
-    }
+    }*/
+
+
+    $captcha_valid = true; // Standardwert für Tests
+
+    // Validierungen
+    $errors = false;
 
     // Validierungen
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $_SESSION['error_message'] = "Ungültige E-Mail-Adresse.";
+        $errors = true;
     } elseif (!preg_match('/^[a-zA-Z0-9_-]{3,30}$/', $username)) {
         $_SESSION['error_message'] = "Benutzername enthält ungültige Zeichen.";
+        $errors = true;
     } elseif (strlen($password) < 8 || !preg_match('/[A-Z]/', $password) || !preg_match('/[0-9]/', $password)) {
         $_SESSION['error_message'] = "Passwort muss mindestens 8 Zeichen lang sein, eine Zahl und einen Großbuchstaben enthalten.";
+        $errors = true;
     } elseif ($password !== $password_repeat) {
         $_SESSION['error_message'] = "Passwörter stimmen nicht überein.";
+        $errors = true;
     } elseif (!$terms) {
         $_SESSION['error_message'] = "Bitte akzeptiere die Nutzungsbedingungen.";
+        $errors = true;
     }
 
-    if (isset($_SESSION['error_message'])) {
-        header("Location: index.php?site=register");
-        exit;
-    }
-
-    // E-Mail bereits registriert?
+    // E-Mail prüfen
     $stmt = $_database->prepare("SELECT userID FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $stmt->store_result();
     if ($stmt->num_rows > 0) {
-        $_SESSION['error_message'] = "E-Mail wird bereits verwendet.";
+        $errors[] = "E-Mail wird bereits verwendet.";
+    }
+    $stmt->close();
+
+    // Wenn Fehler vorhanden
+    if (!empty($errors)) {
+        $_SESSION['error_message'] = implode("<br>", $errors);
         header("Location: index.php?site=register");
         exit;
     }
@@ -100,92 +115,113 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $userID = $_database->insert_id;
-    $pepper_plain = SecurityHelper::generatePepper();
-    $pepper_encrypted = openssl_encrypt($pepper_plain, 'aes-256-cbc', SecurityHelper::AES_KEY, 0, SecurityHelper::AES_IV);
-    $password_hash = SecurityHelper::createPasswordHash($password, $email, $pepper_plain);
+    $pepper_plain = LoginSecurity::generatePepper();
+    $pepper_encrypted = openssl_encrypt($pepper_plain, 'aes-256-cbc', LoginSecurity::AES_KEY, 0, LoginSecurity::AES_IV);
+    $password_hash = LoginSecurity::createPasswordHash($password, $email, $pepper_plain);
 
     $stmt = $_database->prepare("UPDATE users SET password_hash = ?, password_pepper = ? WHERE userID = ?");
     $stmt->bind_param("ssi", $password_hash, $pepper_encrypted, $userID);
     $stmt->execute();
 
     // Versuch loggen
-    $_database->prepare("INSERT INTO register_attempts (ip_address) VALUES (?)")->bind_param("s", $ip_address)->execute();
+    $stmt = $_database->prepare("
+        INSERT INTO user_register_attempts (ip_address, status, reason, username, email)
+        VALUES (?, ?, ?, ?, ?)
+    ");
 
-    $_SESSION['success_message'] = "Registrierung erfolgreich.";
-    header("Location: index.php?site=login");
-    exit;
+    if ($captcha_valid && !$errors) {
+        $status = 'success';
+        $reason = null;
+    } else {
+        $status = 'failed';
+        $reason = !$captcha_valid ? 'Captcha falsch' : 'Unbekannter Fehler';
+    }
+
+    $stmt->bind_param("sssss", $ip_address, $status, $reason, $username, $email);
+    $stmt->execute();
+    $stmt->close();
+
+    $activation_code = bin2hex(random_bytes(32)); // 64 Zeichen sicherer Code
+
+    $stmt = $_database->prepare("UPDATE users SET activation_code = ? WHERE userID = ?");
+    $stmt->bind_param("si", $activation_code, $userID);
+    $stmt->execute();
+
+    $activation_link = 'https://' . $_SERVER['HTTP_HOST'] . '/index.php?site=activate&code=' . urlencode($activation_code);
+
+    $settings_result = safe_query("SELECT * FROM `settings`");
+    $settings = mysqli_fetch_assoc($settings_result);
+    $hp_title = $settings['title'] ?? 'Webspell-RM';
+    $hp_url = $settings['hpurl'] ?? 'https://' . $_SERVER['HTTP_HOST'];
+    $admin_email = $settings['adminemail'] ?? 'info@' . $_SERVER['HTTP_HOST'];
+
+    $vars = ['%username%', '%activation_link%', '%hp_title%', '%hp_url%'];
+    $repl = [$username, $activation_link, $hp_title, $hp_url];
+
+    $subject = str_replace($vars, $repl, $_language->module['mail_subject']);
+    $message = str_replace($vars, $repl, $_language->module['mail_text']);
+   
+    $module = 'Aktiviere deinen Account';            // Modulname für Absenderbezeichnung
+                      // Optional: POP3 vor SMTP verwenden (kann auch weggelassen werden, Standard ist true)
+    $sendmail = Email::sendEmail($admin_email, $module, $email, $subject, $message);
+
+    if (is_array($sendmail) && isset($sendmail['result']) && $sendmail['result'] === 'done') {
+        $_SESSION['success_message'] = $_language->module['register_successful'];
+        $registrierung_erfolgreich = true;
+    } else {
+        $_SESSION['error_message'] = 'Fehler beim Senden der Bestätigungs-E-Mail.';
+    }
+
+    $isreg = true;
+}
+
+$errormessage = '';
+$successmessage = '';
+
+// Meldung aus Session übernehmen, falls vorhanden
+if (isset($_SESSION['error_message'])) {
+    $errormessage = '' . $_SESSION['error_message'] . '';
+    unset($_SESSION['error_message']);
+}
+
+if (isset($_SESSION['success_message'])) {
+    $successmessage = '' . $_SESSION['success_message'] . '';
+    unset($_SESSION['success_message']);
 }
 
 
-
+if ($registrierung_erfolgreich) {
+    $isreg = true;
+}
 // Vorbefüllung aus Session
 $values = $_SESSION['formdata'] ?? [];
 unset($_SESSION['formdata']);
+
+$registration_successful = !$isreg;  // <<< Diese Zeile hinzufügen
+
+$data_array = [
+    'csrf_token' => htmlspecialchars($csrf_token),
+    'error_message' => $errormessage,
+    'success_message' => $successmessage,
+    /*'success_message' => $registrierung_erfolgreich ? $message : '',*/
+    'message_zusatz' => '',
+    'isreg' => $registrierung_erfolgreich,
+    'username' => $username,
+    'email' => $email,
+    'password_repeat' => $password_repeat,
+    'recaptcha_site_key' => 'DEIN_SITE_KEY'
+];
+
+// Wenn die Registrierung abgeschlossen ist
+// Wenn die Registrierung abgeschlossen ist
+
+
+echo $tpl->loadTemplate("register", "content", $data_array);
+
+
+
 ?>
-
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow rounded">
-                <div class="card-body">
-                    <h4 class="card-title mb-4">Registrieren</h4>
-
-                    <?php if (isset($_SESSION['error_message'])): ?>
-                        <div class="alert alert-danger"><?= $_SESSION['error_message']; unset($_SESSION['error_message']); ?></div>
-                    <?php endif; ?>
-                    <?php if (isset($_SESSION['success_message'])): ?>
-                        <div class="alert alert-success"><?= $_SESSION['success_message']; unset($_SESSION['success_message']); ?></div>
-                    <?php endif; ?>
-
-                    <form action="index.php?site=register" method="POST" novalidate>
-                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
-
-                        <div class="mb-3">
-                            <label for="username" class="form-label">Benutzername</label>
-                            <input type="text" name="username" class="form-control" id="username" required
-                                   pattern="[a-zA-Z0-9_-]{3,20}"
-                                   value="<?= htmlspecialchars($values['username'] ?? '') ?>">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="email" class="form-label">E-Mail-Adresse</label>
-                            <input type="email" name="email" class="form-control" id="email" value="<?= htmlspecialchars($email) ?>" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Passwort</label>
-                            <input type="password" name="password" class="form-control" id="password" required>
-                            <small class="form-text text-muted">Mind. 8 Zeichen, ein Großbuchstabe, eine Zahl</small>
-                            <div id="passwordStrength" class="mt-2 bg-secondary"></div> <!-- Hier wird die Passwortstärke angezeigt -->
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="password_repeat" class="form-label">Passwort wiederholen</label>
-                            <input type="password" name="password_repeat" class="form-control" id="password_repeat" required>
-                        </div>
-
-                        <div class="form-check mb-3">
-                            <input class="form-check-input" type="checkbox" name="terms" id="terms" required
-                                   <?= isset($values['terms']) ? 'checked' : '' ?>>
-                            <label class="form-check-label" for="terms">
-                                Ich akzeptiere die <a href="#">Nutzungsbedingungen</a>.
-                            </label>
-                        </div>
-
-                        <!-- reCAPTCHA (optional) -->
-                        <div class="mb-3">
-                            <div class="g-recaptcha" data-sitekey="DEIN_SITE_KEY"></div>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary w-100">Registrieren</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<!--<script src="https://www.google.com/recaptcha/api.js" async defer></script>-->
 
 <script>
 document.getElementById("password").addEventListener("input", function () {
@@ -208,4 +244,3 @@ document.getElementById("password").addEventListener("input", function () {
     strengthText.style.color = colors[strength - 1] || "#f44336"; // Standardfarbe ist Rot
 });
 </script>
-

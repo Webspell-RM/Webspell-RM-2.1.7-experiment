@@ -25,6 +25,10 @@
  *                                                                                                                                    *
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
  */
+use webspell\Template;
+
+$template = new Template($theme->get_active_theme()); 
+
 
 $_language->readModule('index');
 
@@ -36,87 +40,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-/*
 
-// Debug-Ausgabe
-echo '<pre>';
-print_r($_SESSION);
-echo '</pre>';
-
-echo 'Aktiver Session-Name: ' . session_name() . '<br>';
-echo 'Session-ID: ' . session_id() . '<br>';
-
-echo "Role gesetzt: " . $_SESSION['role'] . '<br>';
-
-
-// Login-Status anzeigen
-if (!isset($_SESSION['userID'])) {
-    echo "NICHT eingeloggt<br>";
-} else {
-    echo "Eingeloggt als: " . htmlspecialchars($_SESSION['username']) . "<br>";
-    echo "✅ Eingeloggt als Benutzer #{$_SESSION['userID']}<br>";
-}
-
-
-
-// Beispiel-Datenbankwerte
-$storedPepper = '$2y$12$5r3fk8F2IzjujRl0341AwOYb/jIwOmTw1SemV56yhLTceAK.eQQ5q';
-$storedPasswordHash = '$2y$12$GDF0ITCfluygz5OGeCCC1uNfrZZ6LBBJmx3iR/J2qUzNGu4l4iM1C'; // Der Hash des Passworts in der DB
-
-// Eingabe des Benutzers
-$inputPassword = 'kJrgvPot9u'; // Eingabe des Benutzers
-
-// Überprüfen des Passworts
-if (verifyPassword($inputPassword, $storedPasswordHash, $storedPepper)) {
-    echo "Login erfolgreich!";
-} else {
-    echo "Falsches Passwort!";
-}
-
-
-$username = 'T-Seven';
-$password = 'kJrgvPot9u';
-
-$result = safe_query("SELECT * FROM `users` WHERE `username` = 'T-Seven'");
-if (mysqli_num_rows($result)) {
-    $user = mysqli_fetch_assoc($result);
-    
-    // Passwort prüfen
-    $inputPasswordWithPepper = $password . $user['password_pepper'];
-    
-    if (password_verify($inputPasswordWithPepper, $user['password_hash'])) {
-        $_SESSION['userID'] = $user['userID'];
-        $_SESSION['username'] = $user['username'];
-        echo "Login erfolgreich!";
-    } else {
-        echo "Falsches Passwort!";
-    }
-} else {
-    echo "Benutzer nicht gefunden!";
-}
-
-$inputPasswordWithPepper = $inputPassword . $user['password_pepper']; // Passworteingabe mit Pepper kombinieren
-
-if (password_verify($inputPasswordWithPepper, $user['password_hash'])) {
-    // Login erfolgreich
-    $_SESSION['userID'] = $user['userID'];
-    $_SESSION['username'] = $user['username'];
-    echo "Login erfolgreich!xxxxx";
-} else {
-    echo "Falsches Passwort!xxxx";
-}
-
-echo "Eingegebenes Passwort: " . $inputPassword . "<br>";
-echo "Kombiniertes Passwort mit Pepper: " . $inputPasswordWithPepper . "<br>";
-echo "Gespeicherter Hash: " . $user['password_hash'] . "<br>";
-
-echo'<br><br>';
-$result = safe_query("SELECT * FROM `users` WHERE `email` = 'info@webspell-rm.de'");
-$user = mysqli_fetch_array($result);
-
-echo "Abgerufenes Passwort-Hash: " . $user['password_hash'] . "<br>";
-echo "Abgerufener Pepper: " . $user['password_pepper'] . "<br>";
-*/
 header('X-UA-Compatible: IE=edge');
 ?>
 <!DOCTYPE html>

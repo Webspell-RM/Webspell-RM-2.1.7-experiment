@@ -1,14 +1,45 @@
 <?php
+/**
+ *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
+ *                  Webspell-RM      /                        /   /                                          *
+ *                  -----------__---/__---__------__----__---/---/-----__---- _  _ -                         *
+ *                   | /| /  /___) /   ) (_ `   /   ) /___) /   / __  /     /  /  /                          *
+ *                  _|/_|/__(___ _(___/_(__)___/___/_(___ _/___/_____/_____/__/__/_                          *
+ *                               Free Content / Management System                                            *
+ *                                           /                                                               *
+ *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
+ * @version         webspell-rm                                                                              *
+ *                                                                                                           *
+ * @copyright       2018-2023 by webspell-rm.de                                                              *
+ * @support         For Support, Plugins, Templates and the Full Script visit webspell-rm.de                 *
+ * @website         <https://www.webspell-rm.de>                                                             *
+ * @forum           <https://www.webspell-rm.de/forum.html>                                                  *
+ * @wiki            <https://www.webspell-rm.de/wiki.html>                                                   *
+ *                                                                                                           *
+ *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
+ * @license         Script runs under the GNU GENERAL PUBLIC LICENCE                                         *
+ *                  It's NOT allowed to remove this copyright-tag                                            *
+ *                  <http://www.fsf.org/licensing/licenses/gpl.html>                                         *
+ *                                                                                                           *
+ *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
+ * @author          Code based on WebSPELL Clanpackage (Michael Gruber - webspell.at)                        *
+ * @copyright       2005-2011 by webspell.org / webspell.info                                                *
+ *                                                                                                           *
+ *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
+*/
 
-namespace webspell;
-
-class TemplateEngine
+class Template
 {
     public string $themes_path;
     public string $template_path;
 
-    public function __construct(string $themes_path = "includes/themes/default/", string $template_path = "templates/")
-    {
+    /**
+     * Konstruktor zur Initialisierung der Theme- und Template-Pfade.
+     */
+    public function __construct(
+        string $themes_path = "includes/themes/default/",
+        string $template_path = "templates/"
+    ) {
         $this->themes_path = $themes_path;
         $this->template_path = $template_path;
     }
@@ -25,60 +56,73 @@ class TemplateEngine
      * @throws \Exception Wenn Datei oder Block nicht gefunden wird
      */
     public function loadTemplate(string $file, string $content, array $replaces = []): string
-{
-    $html_file_path = $this->themes_path . $this->template_path . $file . ".html";
+    {
+        $html_file_path = $this->themes_path . $this->template_path . $file . ".html";
 
-    if (!file_exists($html_file_path)) {
-        throw new \Exception("Template-Datei nicht gefunden: $html_file_path");
+        if (!file_exists($html_file_path)) {
+            throw new \Exception("Template-Datei nicht gefunden: $html_file_path");
+        }
+
+        $file_content = file_get_contents($html_file_path);
+
+        // Template-Block anhand von Kommentaren extrahieren
+        $start_marker = "<!-- " . $file . "_" . $content . " -->";
+        $parts = explode($start_marker, $file_content);
+
+        if (!isset($parts[1])) {
+            throw new \Exception("Blockmarker '$start_marker' nicht gefunden!");
+        }
+
+        $block_parts = explode("<!-- END -->", $parts[1]);
+        $template_block = $block_parts[0];
+
+        // Platzhalter ersetzen: {{ name }} → Wert
+        if (!empty($replaces)) {
+            $converted = [];
+            foreach ($replaces as $key => $value) {
+                $converted["{{ " . $key . " }}"] = $value;
+            }
+            $template_block = strtr($template_block, $converted);
+        }
+
+        // Verarbeite Bedingungen im Block
+        $template_block = $this->parseConditions($template_block, $replaces);
+
+        return $template_block;
     }
 
-    $file_content = file_get_contents($html_file_path);
-
-    // Template-Block anhand von Kommentaren extrahieren
-    $start_marker = "<!-- " . $file . "_" . $content . " -->";
-    $parts = explode($start_marker, $file_content);
-
-    if (!isset($parts[1])) {
-        throw new \Exception("Blockmarker '$start_marker' nicht gefunden!");
-    }
-
-    $block_parts = explode("<!-- END -->", $parts[1]);
-    $template_block = $block_parts[0];
-
-    // Rekursive Verarbeitung verschachtelter Bedingungen
-    $template_block = $this->parseConditions($template_block, $replaces);
-
-    // Platzhalter ersetzen
-    foreach ($replaces as $key => $value) {
-        $value = is_null($value) ? '' : $value;
-        $template_block = str_replace('{{ ' . $key . ' }}', $value, $template_block);
-    }
-
-    return $template_block;
-}
-
-
+    /**
+     * Verarbeitet Bedingungen im Template (z.B. {{ if condition }} ... {{ endif }}).
+     *
+     * @param string $template Inhalt des Templates
+     * @param array  $data     Die Daten, die überprüft werden (z. B. ['condition' => true])
+     *
+     * @return string Das Template mit verarbeiteten Bedingungen
+     */
     public function parseConditions(string $template, array $data): string
     {
-        // Verarbeitung rekursiv für verschachtelte IFs
-        $pattern = '/{{\s*if\s+(\w+)\s*}}(.*?)(({{\s*else\s*}}(.*?))?){{\s*endif\s*}}/s';
+        // Regular Expression für die Bedingung {{ if <Bedingung> }} ... {{ endif }}
+        $pattern = '/{{\s*if\s+(\w+)\s*}}(.*?){{\s*endif\s*}}/s';
 
         while (preg_match($pattern, $template)) {
             $template = preg_replace_callback($pattern, function ($matches) use ($data) {
-                $condition = $matches[1];
-                $trueBlock = $matches[2];
-                $falseBlock = isset($matches[5]) ? $matches[5] : '';
+                $condition = $matches[1];   // Die Bedingung wie "isLoggedIn"
+                $trueBlock = $matches[2];   // Der Block, der bei erfüllter Bedingung angezeigt wird
+                $falseBlock = '';           // Der "else"-Block (falls vorhanden)
 
-                $block = !empty($data[$condition]) ? $trueBlock : $falseBlock;
+                // Falls ein "else"-Teil vorhanden ist
+                if (strpos($trueBlock, '{{ else }}') !== false) {
+                    list($trueBlock, $falseBlock) = explode('{{ else }}', $trueBlock);
+                }
 
-                // Rekursiv verarbeiten, falls weitere Bedingungen im Block enthalten sind
+                // Bedingung prüfen und den entsprechenden Block auswählen
+                $block = isset($data[$condition]) && $data[$condition] ? $trueBlock : $falseBlock;
+
+                // Rekursiv weiterverarbeiten, wenn der Block weitere Bedingungen enthält
                 return $this->parseConditions($block, $data);
             }, $template);
         }
 
         return $template;
     }
-
-
-
 }

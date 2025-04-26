@@ -279,6 +279,40 @@ table.dataTable thead .sorting:after {
     color: rgba(50,50,50,.5);
 }
 
+/* neu */
+.table, .table th, .table td {
+    font-size: 12px; /* Schriftgröße für die gesamte Tabelle */
+}
+
+.table-sm th, .table-sm td {
+    padding: 0.5rem 0.75rem;
+    vertical-align: middle;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f8f9fa;
+}
+
+.table thead th {
+    background-color: #f1f1f1;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.table tbody td {
+    color: #555;
+}
+
+.btn-sm {
+    font-size: 10px; /* Noch kleinere Schriftgröße für Buttons */
+    padding: 0.25rem 0.5rem; /* Weniger Padding */
+    line-height: 1.2; /* Geringerer Zeilenabstand */
+    border-radius: 0.25rem; /* Optionale Abrundung der Ecken */
+}
+
+
+/* end */
+
 .btn-circle {
     width: 30px;
     height: 30px;
@@ -376,23 +410,31 @@ table.dataTable thead .sorting:after {
     color: #df8a13;
 }
 
-.pagination>li>a,.pagination>li>span{
-    position:relative;
-    float:left;padding:6px 12px;
-    margin-left:-1px;
-    line-height:1.42857143;
-    color:#fe821d;
-    text-decoration:none;
-    background-color:#fff;
-    border:1px solid #ddd
+.pagination > li > a, 
+.pagination > li > span {
+    position: relative;
+    float: left;
+    padding: 4px 8px; /* Reduziertes Padding für kleinere Schaltflächen */
+    margin-left: -1px;
+    line-height: 1.42857143;
+    color: #fe821d; /* Textfarbe */
+    text-decoration: none;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    font-size: 12px; /* Schriftgröße angepasst auf 12px */
 }
 
-.pagination>.active>a,.pagination>.active>a:focus,.pagination>.active>a:hover,.pagination>.active>span,.pagination>.active>span:focus,.pagination>.active>span:hover{
-    z-index:3;
-    color:#fff;
-    cursor:default;
-    background-color:#fe821d;
-    border-color:#fe821d
+.pagination > .active > a, 
+.pagination > .active > a:focus, 
+.pagination > .active > a:hover, 
+.pagination > .active > span, 
+.pagination > .active > span:focus, 
+.pagination > .active > span:hover {
+    z-index: 3;
+    color: #fff;
+    cursor: default;
+    background-color: #fe821d; /* Hintergrundfarbe der aktiven Seite */
+    border-color: #fe821d;
 }
 
 blockquote {

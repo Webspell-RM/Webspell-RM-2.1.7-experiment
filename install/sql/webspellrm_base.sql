@@ -1019,6 +1019,23 @@ INSERT INTO `user_role_permissions` (`roleID`, `permission_key`) VALUES
 (3, 'view_dashboard_only');
 -- Ende der Tabelle 'user_role_permissions'
 
+-- Tabellenstruktur für Tabelle `user_register_attempts`
+CREATE TABLE IF NOT EXISTS `user_register_attempts` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `ip_address` varchar(45) NOT NULL,
+  `attempt_time` datetime NOT NULL DEFAULT current_timestamp(),
+  `status` enum('success','failed') NOT NULL DEFAULT 'failed',
+  `reason` text DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `ip_address` (`ip_address`),
+  KEY `attempt_time` (`attempt_time`),
+  KEY `username` (`username`),
+  KEY `email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+-- Ende der Tabelle 'user_register_attempts'
+
 -- Tabellenstruktur für Tabelle `user_groups`
 CREATE TABLE IF NOT EXISTS `user_groups` (
   `usgID` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,

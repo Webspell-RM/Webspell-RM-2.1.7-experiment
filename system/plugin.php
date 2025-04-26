@@ -29,6 +29,8 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
  */
 
+use webspell\PluginSettings;
+
 global $modRewrite;
 if ($modRewrite && !empty($GLOBALS['site']))
 	$_SERVER['QUERY_STRING'] = 'site=' . $GLOBALS['site'];
@@ -177,38 +179,22 @@ class plugin_manager
 				$getsite = $qs_arr['site'];
 			}
 
-			if (
-				@$getsite == 'contact'
-				|| @$getsite == 'imprint'
-				|| @$getsite == 'privacy_policy'
-				|| @$getsite == 'profile'
-				|| @$getsite == 'myprofile'
-				|| @$getsite == 'error_404'
-				|| @$getsite == 'report'
-				|| @$getsite == 'static'
-				|| @$getsite == 'loginoverview'
-				|| @$getsite == 'register'
-				|| @$getsite == 'lostpassword'
-				|| @$getsite == 'login'
-				|| @$getsite == 'logout'
-				|| @$getsite == 'footer'
-				|| @$getsite == 'navigation'
-				|| @$getsite == 'topbar'
-				|| @$getsite == 'news_comments'
-				|| @$getsite == 'articles_comments'
-				|| @$getsite == 'blog_comments'
-				|| @$getsite == 'gallery_comments'
-				|| @$getsite == 'news_comments'
-				|| @$getsite == 'news_recomments'
-				|| @$getsite == 'polls_comments'
-				|| @$getsite == 'videos_comments'
-			) {
-				$query = safe_query("SELECT * FROM settings_plugins_widget_settings WHERE id='" . intval($id) . "'");
-			} elseif (@$getsite == 'forum_topic') {
-				$query = safe_query("SELECT * FROM plugins_forum_settings_widgets WHERE id='" . intval($id) . "'");
+			$id = isset($id) ? intval($id) : 0;
+
+			if (PluginSettings::load_widget_settings($getsite)) {
+			    $query = safe_query("SELECT * FROM settings_plugins_widget_settings WHERE id='$id'");
+
+			} elseif ($getsite === 'forum_topic') {
+			    $query = safe_query("SELECT * FROM plugins_forum_settings_widgets WHERE id='$id'");
+
+			} elseif (tableExists("plugins_" . $getsite . "_settings_widgets")) {
+			    $query = safe_query("SELECT * FROM plugins_" . $getsite . "_settings_widgets WHERE id='$id'");
+
 			} else {
-				$query = safe_query("SELECT * FROM plugins_" . $getsite . "_settings_widgets WHERE id='" . intval($id) . "'");
+			    header("Location: ./index.php?site=error_404");
+			    exit;
 			}
+			
 		} else {
 			echo 'leer';
 		}
@@ -419,45 +405,18 @@ class plugin_manager
 			$getsite = $qs_arr['site'];
 		}
 		$pluginpath = "includes/plugins/";
-
 		$css = "\n";
-		if (
-			@$getsite == 'contact'
-			|| @$getsite == 'imprint'
-			|| @$getsite == 'privacy_policy'
-			|| @$getsite == 'profile'
-			|| @$getsite == 'myprofile'
-			|| @$getsite == 'error_404'
-			|| @$getsite == 'report'
-			|| @$getsite == 'static'
-			|| @$getsite == 'loginoverview'
-			|| @$getsite == 'register'
-			|| @$getsite == 'lostpassword'
-			|| @$getsite == 'login'
-			|| @$getsite == 'logout'
-			|| @$getsite == 'footer'
-			|| @$getsite == 'navigation'
-			|| @$getsite == 'topbar'
-			|| @$getsite == 'news_comments'
-			|| @$getsite == 'articles_comments'
-			|| @$getsite == 'blog_comments'
-			|| @$getsite == 'gallery_comments'
-			|| @$getsite == 'news_comments'
-			|| @$getsite == 'news_recomments'
-			|| @$getsite == 'polls_comments'
-			|| @$getsite == 'videos_comments'
-		) {
-			$query = safe_query("SELECT * FROM settings_plugins_widget_settings");
-		} elseif (@$getsite == 'forum_topic') {
-			$query = safe_query("SELECT * FROM plugins_forum_settings_widgets");
+
+		if (PluginSettings::load_widget_settings_css($getsite)) {
+		    $query = safe_query("SELECT * FROM settings_plugins_widget_settings");
+		} elseif ($getsite == 'forum_topic') {
+		    $query = safe_query("SELECT * FROM plugins_forum_settings_widgets");
 		} elseif (tableExists("plugins_" . $getsite . "_settings_widgets")) {
-			$query = safe_query("SELECT * FROM plugins_" . $getsite . "_settings_widgets");
+		    $query = safe_query("SELECT * FROM plugins_" . $getsite . "_settings_widgets");
 		} else {
-			header("Location: ./index.php?site=error_404");
-			exit;
+		    header("Location: ./index.php?site=error_404");
+		    exit;
 		}
-
-
 
 		while ($res = mysqli_fetch_array($query)) {
 
@@ -502,38 +461,18 @@ class plugin_manager
 		$pluginpath = "includes/plugins/";
 
 		$js = "\n";
-		if (
-			@$getsite == 'contact'
-			|| @$getsite == 'imprint'
-			|| @$getsite == 'privacy_policy'
-			|| @$getsite == 'profile'
-			|| @$getsite == 'myprofile'
-			|| @$getsite == 'error_404'
-			|| @$getsite == 'report'
-			|| @$getsite == 'static'
-			|| @$getsite == 'loginoverview'
-			|| @$getsite == 'register'
-			|| @$getsite == 'lostpassword'
-			|| @$getsite == 'login'
-			|| @$getsite == 'logout'
-			|| @$getsite == 'footer'
-			|| @$getsite == 'navigation'
-			|| @$getsite == 'topbar'
-			|| @$getsite == 'news_comments'
-			|| @$getsite == 'articles_comments'
-			|| @$getsite == 'blog_comments'
-			|| @$getsite == 'gallery_comments'
-			|| @$getsite == 'news_comments'
-			|| @$getsite == 'news_recomments'
-			|| @$getsite == 'polls_comments'
-			|| @$getsite == 'videos_comments'
-		) {
-			$query = safe_query("SELECT * FROM settings_plugins_widget_settings");
-		} elseif (@$getsite == 'forum_topic') {
-			$query = safe_query("SELECT * FROM plugins_forum_settings_widgets");
+
+		if (PluginSettings::load_widget_settings_css($getsite)) {
+		    $query = safe_query("SELECT * FROM settings_plugins_widget_settings");
+		} elseif ($getsite == 'forum_topic') {
+		    $query = safe_query("SELECT * FROM plugins_forum_settings_widgets");
+		} elseif (tableExists("plugins_" . $getsite . "_settings_widgets")) {
+		    $query = safe_query("SELECT * FROM plugins_" . $getsite . "_settings_widgets");
 		} else {
-			$query = safe_query("SELECT * FROM plugins_" . $getsite . "_settings_widgets");
+		    header("Location: ./index.php?site=error_404");
+		    exit;
 		}
+
 		while ($res = mysqli_fetch_array($query)) {
 			if (is_dir($pluginpath . $res['modulname'] . "/css/")) {
 				$subf1 = "/js/";

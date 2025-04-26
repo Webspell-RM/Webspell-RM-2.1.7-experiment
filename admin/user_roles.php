@@ -941,8 +941,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ban_user'])) {
     $userID = $_POST['userID'];
     $userID = intval($userID);  // Sicherheit: Umwandlung in eine ganze Zahl
 
-    // Bann den Benutzer (Setze das Feld 'banned' auf 1)
-    $query = "UPDATE users SET banned = 1 WHERE userID = $userID";
+    // Bann den Benutzer (Setze das Feld 'is_locked' auf 1)
+    $query = "UPDATE users SET is_locked = 1 WHERE userID = $userID";
     if (safe_query($query)) {
         $_SESSION['success_message'] = "Benutzer wurde erfolgreich gebannt.";
     } else {
@@ -959,8 +959,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['unban_user'])) {
     $userID = $_POST['userID'];
     $userID = intval($userID);  // Sicherheit: Umwandlung in eine ganze Zahl
 
-    // Hebe den Bann des Benutzers auf (Setze das Feld 'banned' auf 0)
-    $query = "UPDATE users SET banned = 0 WHERE userID = $userID";
+    // Hebe den Bann des Benutzers auf (Setze das Feld 'is_locked' auf 0)
+    $query = "UPDATE users SET is_locked = 0 WHERE userID = $userID";
     if (safe_query($query)) {
         $_SESSION['success_message'] = "Benutzer wurde erfolgreich entbannt.";
     } else {
@@ -1022,11 +1022,11 @@ $users = safe_query("SELECT * FROM users ORDER BY userID LIMIT $offset, $users_p
                 <?php while ($user = mysqli_fetch_assoc($users)) : ?>
                     <tr>
                         <td><?= htmlspecialchars($user['userID']) ?></td>
-                        <td><?= htmlspecialchars($user['username']) ?> - <?= $user['banned'] ? $_language->module['banned'] : $_language->module['not_banned'] ?></td>
+                        <td><?= htmlspecialchars($user['username']) ?> - <?= $user['is_locked'] ? $_language->module['banned'] : $_language->module['not_banned'] ?></td>
                         <td><?= htmlspecialchars($user['email']) ?></td>
                         <td><?= date('d.m.Y H:i:s', $user['registerdate']) ?></td>
                         <td>
-                            <?php if ($user['banned']) : ?>
+                            <?php if ($user['is_locked']) : ?>
                                 <form method="POST" action="" class="d-inline">
                                     <input type="hidden" name="userID" value="<?= $user['userID'] ?>">
                                     <button type="submit" name="unban_user" class="btn btn-success btn-sm">

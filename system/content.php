@@ -53,7 +53,7 @@ function get_mainContent()
     #global $cookievalue, $userID, $date, $loggedin, $_language, $tpl, $myclanname, $hp_url, $imprint_type, $admin_email, $admin_name;
     global $cookievalue, $userID, $date, $loggedin, $_language, $tpl, $hp_url, $imprint_type, $admin_email, $admin_name;
     global $maxtopics, $plugin_path, $maxposts, $page, $action, $preview, $message, $topicID, $_database, $maxmessages, $new_chmod;
-    global $hp_title, $default_format_date, $default_format_time, $register_per_ip, $rewriteBase;
+    global $hp_title, $default_format_date, $default_format_time, $register_per_ip, $rewriteBase, $activate;
 
     $settings = safe_query("SELECT * FROM `settings`");
     if (!$settings) {
@@ -130,7 +130,7 @@ function get_left_side_modul()
         'report', 'static', 'loginoverview', 'register', 'lostpassword', 'login',
         'logout', 'footer', 'navigation', 'topbar', 'articles_comments', 'blog_comments',
         'gallery_comments', 'news_comments', 'news_recomments', 'polls_comments',
-        'videos_comments'
+        'videos_comments', 'activate'
     ];
 
     if (in_array($getsite, $noWidgetPages)) {
@@ -165,7 +165,7 @@ function get_right_side_modul()
         'report', 'static', 'loginoverview', 'register', 'lostpassword', 'login',
         'logout', 'footer', 'navigation', 'topbar', 'articles_comments', 'blog_comments',
         'gallery_comments', 'news_comments', 'news_recomments', 'polls_comments',
-        'videos_comments'
+        'videos_comments', 'activate'
     ];
 
     if (in_array($getsite, $noWidgetPages)) {

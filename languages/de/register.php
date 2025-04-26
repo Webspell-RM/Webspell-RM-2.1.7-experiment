@@ -15,14 +15,15 @@ $language_array = array(
     'mail_activation_successful'    => 'Das Freischalten deiner Mailadresse war erfolgreich.',
     'mail_failed'                   => 'Die Freischaltmail konnte nicht versandt werden, bitte informiere den Webmaster darüber.',
     'mail_inuse'                    => 'Es existiert bereits eine Anmeldung für diese Mailadresse.',
-    'mail_subject'                  => 'Anmeldebestätigung für %homepage_url%',
-    'mail_text'                     => 'Hallo %nickname%!
-<p>Deine Anmeldung auf %pagetitle% (%homepage_url%) war erfolgreich. Hier noch einmal deine Zugangsdaten:</p>
-<p>Dein Benutzername: %nickname%</p>
-<p>Um deine Registrierung jetzt abzuschließen, aktiviere deinen Account, indem du folgenden Link besuchst:<br>
-%activationlink%</p>
+    'mail_subject'                  => 'Anmeldebestätigung für %hp_title%',
+    'mail_text'                     => 'Hallo %username%,
+<p>vielen Dank für deine Registrierung!</p>
+<p>Bitte bestätige deine Registrierung, indem du folgenden Link anklickst:<br></p>
+<p>%activation_link%</p>
+</p><i>Falls du dich nicht registriert hast, kannst du diese E-Mail ignorieren.</i></p>
 <p>Vielen Dank für deine Anmeldung</p>
-%pagetitle% - %homepage_url%',
+<p>Dein Team von %hp_title%</p>
+%hp_title% - %hp_url%',
     'nickname'                      => 'Nickname',
     'nickname_inuse'                => 'Der Nickname ist bereits vergeben.',
     'no_register_when_loggedin'     => 'Du hast bereits einen Accout auf %pagename%.',
@@ -30,7 +31,7 @@ $language_array = array(
     'profile_info'                  => 'Anmeldeinformationen',
     'privacy_policy'                => 'Datenschutz-Bestimmungen',
     'register_now'                  => 'Konto anlegen',
-    'register_successful'           => '<blockquote>Deine Anmeldung wurde erfolgreich abgeschlossen. Du wirst in wenigen Minuten eine E-Mail mit dem Freischaltcode erhalten, damit du deinen Account aktivieren kannst. Danach ist die Registrierung vollständig.</blockquote>',
+    'register_successful'           => 'Deine Anmeldung wurde erfolgreich abgeschlossen. Du wirst in wenigen Minuten eine E-Mail mit dem Freischaltcode erhalten, damit du deinen Account aktivieren kannst. Danach ist die Registrierung vollständig.',
     'registration'                  => 'Registrierung',
     'repeat'                        => 'Passwort wiederholen',
     'repeat_invalid'                => 'Die Passwortwiederholung ist falsch.',

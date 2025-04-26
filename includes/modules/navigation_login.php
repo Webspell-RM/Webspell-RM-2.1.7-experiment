@@ -28,7 +28,7 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
 */
 
-#session_name("rm_session");
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -40,11 +40,11 @@ GLOBAL $userID, $board_topics, $split, $array;
 
 $_language->readModule('index');
 
-$template = $tpl->loadTemplate("navigation", "login_head", []);
-echo $template;
+// Lade das Template für den Header der Navigation
+$html = $template->loadTemplate("navigation", "login_head", []);
+echo $html;
 
 if ($loggedin) {
-
     $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='forum' AND activate=1"));
     if (!isset($dx['modulname']) || $dx['modulname'] != 'forum') {
         $new_forum_posts = '';
@@ -145,8 +145,9 @@ if ($loggedin) {
     }
 
     // Ausgabe des Dashboards (je nach Berechtigung)
-    echo $dashboard ? $dashboard : '';
+    $html = $dashboard ? $dashboard : '';
 
+    // Array mit den Variablen für das Template
     $data_array = [
         'modulepath' => substr(MODULE, 0, -1),
         'icon' => $icon,
@@ -154,7 +155,7 @@ if ($loggedin) {
         'userID' => $userID,
         'l_avatar' => $l_avatar,
         'nickname' => getusername($userID),
-        'dashboard' => $dashboard,
+        'dashboard' => $html,
         'lang_log_off' => $_language->module['log_off'],
         'lang_overview' => $index_language['overview'],
         'to_profil' => $index_language['to_profil'],
@@ -162,20 +163,22 @@ if ($loggedin) {
         'lang_edit_profile' => $index_language['edit_profile']
     ];
 
-    $template = $tpl->loadTemplate("navigation", "login_loggedin", $data_array);
-    echo $template;
+    // Template laden und in $html speichern
+    $html = $template->loadTemplate("navigation", "login_loggedin", $data_array);
+    echo $html;
 
 } else {
-
+    // Wenn der Benutzer nicht eingeloggt ist
     $data_array = [
         'modulepath' => substr(MODULE, 0, -1),
         'lang_login' => $_language->module['login']
     ];
 
-    $template = $tpl->loadTemplate("navigation", "login_login", $data_array);
-    echo $template;
+    // Template laden und in $html speichern
+    $html = $template->loadTemplate("navigation", "login_login", $data_array);
+    echo $html;
 }
 
-$template = $tpl->loadTemplate("navigation", "login_foot", []);
-echo $template;
-?>
+// Template für den Footer laden und in $html speichern
+$html = $template->loadTemplate("navigation", "login_foot", []);
+echo $html;

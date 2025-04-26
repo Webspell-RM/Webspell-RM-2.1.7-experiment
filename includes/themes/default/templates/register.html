@@ -1,204 +1,72 @@
 <!-- register_content -->
-<div class="container-fluid">
-    <div class="row no-gutter">
-        <!-- The image half -->
-        <div class="col-md-6 d-none d-md-flex bg-image row signup-greeting overlay">
-            <h4 class="reg_pic_text">$info1</h4>
-            <p class="reg_pic_text">$info2</p>
-        </div>
-        <!-- The content half -->
+<div class="container mt-5">
+    <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="login d-flex align-items-center py-5">
-                <!-- Demo content-->
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-10 col-xl-7 mx-auto">
+            <div class="card shadow rounded">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Registrieren</h4>
+
+                    <!-- Fehlermeldungen anzeigen -->
+                    {{ if error_message }}
+                        <div class="alert alert-danger">{{ error_message }}</div>
+                    {{ endif }}
+
+                    {{ if success_message }}
+                        <div class="alert alert-success">{{ success_message }}</div>
+                    {{ endif }}
+
+                    <!-- Zusätzliche Nachrichten -->
+                    {{ if message_zusatz }}
+                        <p>{{ message_zusatz }}</p>
+                    {{ endif }}
+
+                    {{ if isreg }}
+                        
+                    {{ else }}
+                        <!-- Formular -->
+                        <form action="index.php?site=register" method="POST" novalidate>
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
                             <div class="mb-3">
-                                <h3 class="display-6">$registration</h3>
-                                <p class="float-end mb-4">$already_account
-                                <a href="index.php?site=login">$login</a></p>
-                            </div><br><br>
-                            <!-- Error Box -->
-                            $showerror
-                            <!--<form action="" method="post" id="registration">-->
-                                <form action="" method="post" role="form" id="registration" onsubmit="return validate()" class="form-horizontal needs-validation" novalidate>
-                            <nav>
-                                <div class="nav nav-pills nav-fill" id="nav-tab" role="tablist">
-                                    <a class="nav-link active" id="step1-tab" data-bs-toggle="tab" href="#step1">Step 1</a>
-                                    <a class="nav-link" id="step2-tab" data-bs-toggle="tab" href="#step2">Step 2</a>
-                                    <a class="nav-link" id="step3-tab" data-bs-toggle="tab" href="#step3">Step 3</a>
-                                </div>
-                            </nav>
-                            <div class="tab-content py-4">
-                                <form onsubmit="loading ('btn-response')" autocomplete="off" id="signup-form" method="POST">    
-                                <div class="tab-pane fade show active" id="step1">
-                                    <h4>$login_data</h4>
-
-                                    
-                                    <br>
-                                    <div class="form-group mb-3">
-                                        <label>$nickname: <font color="#DD0000">*</font></label>
-                                        <input type="text" name="nickname" class="form-control" id="fullName" placeholder="$enter_your_name" required="true">
-                                    </div>
-                                    
-                                    <div class="form-group mb-3">
-                                    <label>$email_address: <font color="#DD0000">*</font></label>
-                                        <input type="email" name="mail" class="form-control" id="emailAddress" placeholder="$enter_your_email" autocomplete="email" required="true">
-                                        <small>($for_login)</small>
-                                    </div>                                    
-
-                                    <div class="form-group mb-3">
-                                        <label>$password: <font color="#DD0000">*</font> <span style="font-size: 13px;"><i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="$pass_text"></i></span></label>
-                                        <link rel="stylesheet" href="/components/css/passtrength.css" media="screen" title="no title">
-                                        <script type="text/javascript" src="/components/js/passtrength.js"></script>
-                                        <input id="input-password" type="password" name="password" class="form-control" placeholder="$password" required="true">
-                                    </div>
-                                    <script type="text/javascript">
-                                        $(document).ready(function($) {
-                                            $('#input-password').passtrength({
-                                                passwordToggle: true,
-                                                tooltip: true
-                                            });
-                                        });
-                                    </script>
-
-                                    <div class="form-group mb-3">
-                                        <label>$repeat <font color="#DD0000">*</font> <span style="font-size: 13px;"><i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="$pass_text"></i></span></label>
-                                        <link rel="stylesheet" href="/components/css/passtrength.css" media="screen" title="no title">
-                                        <script type="text/javascript" src="/components/js/passtrength.js"></script>
-                                        <input id="reinput-password" type="password" name="password2" class="form-control" placeholder="$repeat" required="true">
-                                     </div> 
-
-                                     <script type="text/javascript">
-                                        $(document).ready(function($) {
-                                            $('#reinput-password').passtrength({
-                                                passwordToggle: true,
-                                                tooltip: true
-                                            });
-                                        });
-                                    </script>
-                                </div>
-                                <!-- step2 -->
-                                <div class="tab-pane fade" id="step2">
-                                    <h4>$personal_data</h4>
-                                    <div class="mb-3">
-                                        <label>$firstname: <font color="#DD0000">*</font></label>
-                                        <input type="text" class="form-control" name="firstname" placeholder="$enter_your_firstname" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label>$lastname:</label>
-                                        <input type="text" class="form-control" name="lastname" placeholder="$enter_your_lastname">
-                                    </div>    
-                                    <div class="mb-3">
-                                        <label>$date_of_birth: <font color="#DD0000">*</font></label>
-                                        <input type="date" class="form-control" name="birthday" placeholder="yyyy-mm-dd" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label>$lang_gender: <font color="#DD0000">*</font></label>
-                                        <select id="gender" class="form-select" name="gender" required>$gender</select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label>$lang_town1</label>
-                                        <input type="text" class="form-control" name="town"  placeholder="$lang_town2">  
-                                     </div>
-                                    <div class="mb-3">
-                                        <label>$homepage1:</label>
-                                        <input type="url" class="form-control" name="homepage" placeholder="$homepage2">    
-                                     </div>                                     
-                                </div>
-                                <!-- step3 -->
-                                <div class="tab-pane fade" id="step3">
-                                    <h4>$social_&_security_code</h4>
-                                    <div class="mb-3">
-                                        <label>Twitch</label>
-                                        <input type="text" class="form-control" name="twitch" placeholder="Twitch" />
-                                        
-                                    </div>
-                                    <div class="mb-3">
-                                        <label>Youtube</label>
-                                        <input type="text" class="form-control" name="youtube" placeholder="YouTube" />
-                                    </div>
-                                    <div class="mb-3">
-                                        <label>Twitter</label>
-                                        <input type="text" class="form-control" name="twitter" placeholder="Twitter" />
-                                    </div>
-                                    <div class="mb-3">
-                                        <label>Instagram</label>
-                                        <input type="text" class="form-control" name="instagram" placeholder="Instagram" />
-                                    </div>
-                                    <div class="mb-3">
-                                        <label>Facebook</label>
-                                        <input type="text" class="form-control" name="facebook" placeholder="Facebook" />
-                                    </div>
-                                    <div class="mb-3">
-                                        <label>Stream</label>
-                                        <input type="text" class="form-control" name="steam" placeholder="Steam">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label>$security_code:</label>
-                                        <span class="input-group-text" style="width: 100%;">$_captcha</span>            
-                                    </div>
-                                    <!-- GDPR Box -->
-                                    <div class="mb-3">
-                                        <div class="alert alert-info" role="alert">
-                                        $lang_GDPRinfo <span style="font-size: 13px;"><i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="$lang_GDPRterm"></i></span>
-                                        <p><font color="#DD0000">*</font>$fields_star_required</p>
-                                        </div>
-                                    </div>
-                                </div>
+                                <label for="username" class="form-label">Benutzername</label>
+                                <input type="text" name="username" class="form-control" id="username" required
+                                       pattern="[a-zA-Z0-9_-]{3,20}"
+                                       value="{{ username }}">
                             </div>
-                            <!-- next Button -->
-                            <div class="row justify-content-between">
-                                <div class="col-auto">
-                                    <button type="button" class="btn btn-secondary" data-enchanter="previous">$previous</button>
-                                </div>
-                                <div class="col-auto">
-                                    <button type="button" class="btn btn-primary" data-enchanter="next">$next</button>
-                                    <button type="submit" name="save" class="btn btn-success" data-enchanter="finish">$register_now</button>
-                                </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">E-Mail</label>
+                                <input type="email" name="email" class="form-control" id="email" required
+                                       value="{{ email }}">
                             </div>
-                            </form>
-                        </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Passwort</label>
+                                <input type="password" name="password" class="form-control" id="password" required>
+                                <small class="form-text text-muted">Mind. 8 Zeichen, ein Großbuchstabe, eine Zahl</small>
+                                <div id="passwordStrength" class="mt-2 bg-secondary"></div> <!-- Passwortstärke -->
+                            </div>
+                            <div class="mb-3">
+                                <label for="password_repeat" class="form-label">Passwort wiederholen</label>
+                                <input type="password" name="password_repeat" class="form-control" id="password_repeat" required
+                                       value="{{ password_repeat }}">
+                            </div>
+
+                            <div class="form-check mb-3">
+                                <input type="checkbox" name="terms" class="form-check-input" id="terms" required>
+                                <label for="terms" class="form-check-label">Ich akzeptiere die <a href="#">Nutzungsbedingungen</a></label>
+                            </div>
+
+                            <!-- Optional reCAPTCHA -->
+                            <div class="mb-3">
+                                <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Registrieren</button>
                         </form>
-                    </div>
+                    {{ endif }}
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-
-<!-- Our script! :) -->
-
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    document.querySelectorAll("[data-enchanter='next']").forEach(button => {
-        button.addEventListener("click", function() {
-            let activeTab = document.querySelector(".tab-pane.active");
-            let nextTab = activeTab.nextElementSibling;
-            if (nextTab && nextTab.classList.contains("tab-pane")) {
-                let nextTabId = nextTab.id;
-                let nextNav = document.querySelector(`[href='#${nextTabId}']`);
-                if (nextNav) {
-                    nextNav.click();
-                }
-            }
-        });
-    });
-
-    document.querySelectorAll("[data-enchanter='previous']").forEach(button => {
-        button.addEventListener("click", function() {
-            let activeTab = document.querySelector(".tab-pane.active");
-            let prevTab = activeTab.previousElementSibling;
-            if (prevTab && prevTab.classList.contains("tab-pane")) {
-                let prevTabId = prevTab.id;
-                let prevNav = document.querySelector(`[href='#${prevTabId}']`);
-                if (prevNav) {
-                    prevNav.click();
-                }
-            }
-        });
-    });
-});
-</script>
 <!-- END -->
