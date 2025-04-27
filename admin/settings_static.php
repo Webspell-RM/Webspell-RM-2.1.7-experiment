@@ -48,7 +48,7 @@ if (isset($_POST[ 'save' ])) {
             print_r($_POST[ "displayed" ]);
             safe_query(
                 "UPDATE
-                    `" . PREFIX . "settings_static`
+                    `settings_static`
                 SET
                     title='" . $_POST[ 'title' ] . "',
                     accesslevel='" . $_POST[ 'accesslevel' ] . "',
@@ -71,7 +71,7 @@ if (isset($_POST[ 'save' ])) {
 
             safe_query(
                 "INSERT INTO
-                    `" . PREFIX . "settings_static` (
+                    `settings_static` (
                         `title`, `accesslevel`,`content`,`date`,`displayed`
                     )
                    VALUES(
@@ -88,7 +88,7 @@ if (isset($_POST[ 'save' ])) {
     $CAPCLASS = new \webspell\Captcha;
     if ($CAPCLASS->checkCaptcha(0, $_GET[ 'captcha_hash' ])) {
         \webspell\Tags::removeTags('static', $_GET[ 'staticID' ]);
-        safe_query("DELETE FROM `" . PREFIX . "settings_static` WHERE staticID='" . $_GET[ 'staticID' ] . "'");
+        safe_query("DELETE FROM `settings_static` WHERE staticID='" . $_GET[ 'staticID' ] . "'");
     } else {
         echo $_language->module[ 'transaction_invalid' ];
     }
@@ -180,7 +180,7 @@ if (isset($_GET[ 'action' ]) && $_GET[ 'action' ] == "add") {
     $_language->readModule('bbcode', true, true);
 
     $staticID = $_GET[ 'staticID' ];
-    $ergebnis = safe_query("SELECT * FROM `" . PREFIX . "settings_static` WHERE staticID='" . $staticID . "'");
+    $ergebnis = safe_query("SELECT * FROM `settings_static` WHERE staticID='" . $staticID . "'");
     $ds = mysqli_fetch_array($ergebnis);
     $content = $ds[ 'content' ];
 
@@ -320,7 +320,7 @@ if (isset($_GET[ 'action' ]) && $_GET[ 'action' ] == "add") {
     </div>
   </div>';
 
-    $ergebnis = safe_query("SELECT * FROM " . PREFIX . "settings_static ORDER BY staticID");
+    $ergebnis = safe_query("SELECT * FROM settings_static ORDER BY staticID");
 	
   echo'<table class="table table-striped">
     <thead>

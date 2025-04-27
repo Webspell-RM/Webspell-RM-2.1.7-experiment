@@ -15,7 +15,7 @@ $is_locked = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
-    $password = $_POST['password'];
+    $password_hash = $_POST['password_hash'];
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $_SESSION['error_message'] = "Ungültige E-Mail-Adresse.";
@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Login-Versuch prüfen
-    $loginResult = LoginSecurity::verifyLogin($email, $password, $ip, $is_active, $is_locked);
+    $loginResult = LoginSecurity::verifyLogin($email, $password_hash, $ip, $is_active, $is_locked);
 
     if ($loginResult['success']) {
         // Überprüfen, ob die IP des Benutzers gebannt ist

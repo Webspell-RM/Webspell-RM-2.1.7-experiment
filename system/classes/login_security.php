@@ -29,30 +29,30 @@ class LoginSecurity {
         return $encrypted ?: null;
     }
 
-    public static function createPasswordHash(string $password, string $email, string $pepper): string {
-        return password_hash($password . $email . $pepper, PASSWORD_DEFAULT);
+    public static function createPasswordHash(string $password_hash, string $email, string $pepper): string {
+        return password_hash($password_hash . $email . $pepper, PASSWORD_DEFAULT);
     }
 
-    public static function verifyPassword(string $password, string $email, string $pepper, string $hash): bool {
-        return password_verify($password . $email . $pepper, $hash);
+    public static function verifyPassword(string $password_hash, string $email, string $pepper, string $hash): bool {
+        return password_verify($password_hash . $email . $pepper, $hash);
     }
 
     // Methode zum Generieren eines lesbaren Passworts
     public static function generateReadablePassword(int $length = 10): string
     {
         $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789'; // gut lesbare Zeichen
-        $password = '';
+        $password_hash = '';
 
         for ($i = 0; $i < $length; $i++) {
-            $password .= $chars[random_int(0, strlen($chars) - 1)];
+            $password_hash .= $chars[random_int(0, strlen($chars) - 1)];
         }
 
-        return $password;
+        return $password_hash;
     }
 
     
 
-    public static function verifyLogin($email, $password, $ip, $is_active ,$banned): array {
+    public static function verifyLogin($email, $password_hash, $ip, $is_active ,$banned): array {
         // Zuerst prüfen, ob IP gesperrt ist
         $isIpBanned = self::isIpBanned($ip); // IP-Überprüfung
         if ($isIpBanned) {
@@ -83,7 +83,7 @@ class LoginSecurity {
             }
 
             // Passwort mit E-Mail und Pepper kombinieren und überprüfen
-            if (password_verify($password . $email . $pepper_plain, $user['password_hash'])) {
+            if (password_verify($password_hash . $email . $pepper_plain, $user['password_hash'])) {
                 // Erfolgreiches Login
                 return ['success' => true, 'ip_banned' => false];
             } else {

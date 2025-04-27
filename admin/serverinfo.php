@@ -90,6 +90,7 @@ function getBadgeClass($value, $goodThreshold, $warningThreshold = null) {
 
 
 // RAM Verbrauch
+// RAM Verbrauch
 $currentMemory = memory_get_usage(true); // in Bytes
 $peakMemory = memory_get_peak_usage(true); // in Bytes
 
@@ -99,91 +100,159 @@ $peakMemoryMB = $peakMemory / 1024 / 1024;
 
 // Annahme Max Memory Limit aus PHP (für Balkenanzeige)
 $memoryLimit = ini_get('memory_limit');
-$memoryLimitBytes = (is_numeric($memoryLimit)) ? (int)$memoryLimit * 1024 * 1024 : 128 * 1024 * 1024; // Default 128MB
-if (strpos($memoryLimit, 'M') !== false) {
-    $memoryLimitBytes = (int)$memoryLimit * 1024 * 1024;
-} elseif (strpos($memoryLimit, 'G') !== false) {
-    $memoryLimitBytes = (int)$memoryLimit * 1024 * 1024 * 1024;
+$memoryLimitBytes = 128 * 1024 * 1024; // Default 128MB, falls memory_limit nicht gesetzt oder ungültig ist
+
+if ($memoryLimit !== false) {
+    // Prüfung, ob die Größe in MB oder GB angegeben ist
+    if (strpos($memoryLimit, 'M') !== false) {
+        $memoryLimitBytes = (int)$memoryLimit * 1024 * 1024;
+    } elseif (strpos($memoryLimit, 'G') !== false) {
+        $memoryLimitBytes = (int)$memoryLimit * 1024 * 1024 * 1024;
+    } elseif (strpos($memoryLimit, 'K') !== false) {
+        $memoryLimitBytes = (int)$memoryLimit * 1024;
+    } else {
+        // Annahme, dass die Zahl in Bytes vorliegt
+        $memoryLimitBytes = (int)$memoryLimit;
+    }
 }
+
+// Berechnung der prozentualen Nutzung
 $currentMemoryPercent = ($currentMemory / $memoryLimitBytes) * 100;
 $peakMemoryPercent = ($peakMemory / $memoryLimitBytes) * 100;
 
 // Server Load (nur wenn Funktion vorhanden)
 $serverLoad = function_exists('sys_getloadavg') ? sys_getloadavg() : null;
+
+
+
+
+
+
+
+
+
+
+
+
+// Beispielhafte Initialisierung von $ramUsage (dies sollte durch die tatsächliche Logik ersetzt werden)
+$ramUsage = [
+    'current' => 1024, // Aktueller Verbrauch in MB (Beispielwert)
+    'usagePercentage' => 75 // Prozentualer Verbrauch (Beispielwert)
+];
+
+// Sicherstellen, dass $ramUsage gesetzt ist
+if (isset($ramUsage) && is_array($ramUsage) && isset($ramUsage['current']) && isset($ramUsage['usagePercentage'])) {
+    $currentRam = number_format($ramUsage['current'], 2); // Formatieren der RAM-Verbrauchswerte
+    $ramUsagePercentage = number_format($ramUsage['usagePercentage'], 1);
+} else {
+    $currentRam = '0.00'; // Standardwert bei Fehler
+    $ramUsagePercentage = '0'; // Standardwert bei Fehler
+}
 ?>
 
 
 
-<div class="container mt-5">
-    <h2>Systemübersicht</h2>
-    <div class="row">
-        <!-- PHP & Server -->
-        <div class="col-md-6 mb-4">
-            <div class="card">
-                <div class="card-header">
-                    <h5>PHP und Serverinformationen</h5>
-                </div>
-                <div class="card-body">
-                    <ul class="list-group">
-                        <li class="list-group-item">PHP Version: <span class="text-success"><?= htmlspecialchars($phpversion) ?></span></li>
-                        <li class="list-group-item">Zend Version: <span class="text-success"><?= htmlspecialchars($zendversion) ?></span></li>
-                        <li class="list-group-item">MySQL Version: <span class="text-success"><?= htmlspecialchars($mysqlversion) ?></span></li>
-                        <li class="list-group-item">max_execution_time: <span class="<?= $get_max_execution_time < 30 ? 'text-danger' : 'text-success' ?>"><?= (int)$get_max_execution_time ?>s</span></li>
-                        <li class="list-group-item">file_uploads: <span class="<?= $get_file_uploads ? 'text-success' : 'text-danger' ?>"><?= $get_file_uploads ? 'Aktiviert' : 'Deaktiviert' ?></span></li>
-                        <li class="list-group-item">register_globals: <span class="<?= $get_register_globals ? 'text-danger' : 'text-success' ?>"><?= $get_register_globals ? 'Aktiviert' : 'Deaktiviert' ?></span></li>
-                        <li class="list-group-item">upload_max_filesize: <span class="<?= $get_upload_max_filesize > 16 ? 'text-warning' : 'text-success' ?>"><?= htmlspecialchars($get_upload_max_filesize) ?> MB</span></li>
-                        <li class="list-group-item">post_max_size: <span class="<?= $get_post_max_size > 8 ? 'text-warning' : 'text-success' ?>"><?= htmlspecialchars($get_post_max_size) ?> MB</span></li>
-                        <li class="list-group-item">open_basedir: <span class="<?= $get_open_basedir ? 'text-success' : 'text-warning' ?>"><?= $get_open_basedir ? 'Aktiviert' : 'Deaktiviert' ?></span></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+<div class="container py-5">
+    <h1 class="mb-5 text-center fw-bold display-5">Systemstatus</h1>
 
-        <!-- GD & cURL -->
-        <div class="col-md-6 mb-4">
-            <div class="card">
-                <div class="card-header">
-                    <h5>GD und cURL Informationen</h5>
-                </div>
+    <div class="row g-4">
+        <!-- PHP Infos -->
+        <div class="col-md-6 col-xl-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100 transition hover-shadow">
                 <div class="card-body">
-                    <ul class="list-group">
-                        <li class="list-group-item">GD Bibliothek: <span class="<?= $gd_installed ? 'text-success' : 'text-danger' ?>"><?= $gd_installed ? 'Aktiviert' : 'Deaktiviert' ?></span></li>
-                        <li class="list-group-item">cURL: <span class="<?= $curl_installed ? 'text-success' : 'text-danger' ?>"><?= $curl_installed ? 'Aktiviert' : 'Deaktiviert' ?></span></li>
-                        <li class="list-group-item">GD unterstützte Formate: <span class="text-success"><?= $gd_installed ? htmlspecialchars(implode(', ', $get_gdtypes)) : 'n/a' ?></span></li>
-                        <li class="list-group-item">short_open_tag: <span class="<?= $get_short_open_tag ? 'text-success' : 'text-warning' ?>"><?= $get_short_open_tag ? 'Aktiviert' : 'Deaktiviert' ?></span></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <footer class="text-center mt-4">
-        <small>Datenbank: <?= htmlspecialchars($db) ?></small>
-    </footer>
-</div>
-
-<div class="container my-4">
-    <h3>Systeminformationen</h3>
-    
-    <div class="row">
-        <!-- PHP & MySQL Infos -->
-        <div class="col-md-6">
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header">
-                    <h5>PHP & MySQL</h5>
-                </div>
-                <div class="card-body">
-                    <ul class="list-group">
+                    <h5 class="card-title mb-4">
+                        <i class="bi bi-code-slash me-2"></i> PHP & Server
+                    </h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="bi bi-chevron-right text-primary me-2"></i> PHP Version: 
+                            <span class="badge bg-light text-dark"><?= htmlspecialchars($phpversion) ?></span>
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-chevron-right text-primary me-2"></i> Zend Version: 
+                            <span class="badge bg-light text-dark"><?= htmlspecialchars($zendversion) ?></span>
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-chevron-right text-primary me-2"></i> MySQL Version: 
+                            <span class="badge bg-light text-dark"><?= htmlspecialchars($mysqlversion) ?></span>
+                        </li>
                         <li class="list-group-item">
-                            PHP-Version: 
-                            <span class="badge bg-<?php echo version_compare($phpVersion, '8.0', '>=') ? 'success' : 'warning'; ?>">
-                                <?php echo $phpVersion; ?>
+                            <i class="bi bi-chevron-right text-primary me-2"></i> max_execution_time: 
+                            <span class="badge bg-light text-<?= $get_max_execution_time < 30 ? 'danger' : 'success' ?>">
+                                <?= (int)$get_max_execution_time ?>s
                             </span>
                         </li>
                         <li class="list-group-item">
-                            MySQL-Version: 
-                            <span class="badge bg-<?php echo version_compare($mysqlVersion, '8.0', '>=') ? 'success' : 'warning'; ?>">
-                                <?php echo $mysqlVersion; ?>
+                            <i class="bi bi-chevron-right text-primary me-2"></i> file_uploads: 
+                            <span class="badge bg-light text-<?= $get_file_uploads ? 'success' : 'danger' ?>">
+                                <?= $get_file_uploads ? 'Aktiviert' : 'Deaktiviert' ?>
+                            </span>
+                        </li>
+                        <li class="list-group-item">
+                            <i class="bi bi-chevron-right text-primary me-2"></i> register_globals: 
+                            <span class="badge bg-light text-<?= $get_register_globals ? 'danger' : 'success' ?>">
+                                <?= $get_register_globals ? 'Aktiviert' : 'Deaktiviert' ?>
+                            </span>
+                        </li>
+                        <li class="list-group-item">
+                            <i class="bi bi-chevron-right text-primary me-2"></i> upload_max_filesize: 
+                            <span class="badge bg-light text-<?= $get_upload_max_filesize > 16 ? 'warning' : 'success' ?>">
+                                <?= htmlspecialchars($get_upload_max_filesize) ?> MB
+                            </span>
+                        </li>
+                        <li class="list-group-item">
+                            <i class="bi bi-chevron-right text-primary me-2"></i> post_max_size: 
+                            <span class="badge bg-light text-<?= $get_post_max_size > 8 ? 'warning' : 'success' ?>">
+                                <?= htmlspecialchars($get_post_max_size) ?> MB
+                            </span>
+                        </li>
+                        <li class="list-group-item">
+                            <i class="bi bi-chevron-right text-primary me-2"></i> open_basedir: 
+                            <span class="badge bg-light text-<?= $get_open_basedir ? 'success' : 'warning' ?>">
+                                <?= $get_open_basedir ? 'Aktiviert' : 'Deaktiviert' ?>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- GD Infos -->
+        <div class="col-md-6 col-xl-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100 transition hover-shadow">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">
+                        <i class="bi bi-image me-2"></i> GD & cURL
+                    </h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="bi bi-check2-circle text-success me-2"></i> GD Bibliothek:
+                            <span class="badge <?= $gd_installed ? 'bg-success' : 'bg-danger' ?>">
+                                <?= $gd_installed ? 'Aktiviert' : 'Deaktiviert' ?>
+                            </span>
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check2-circle text-success me-2"></i> cURL:
+                            <span class="badge <?= $curl_installed ? 'bg-success' : 'bg-danger' ?>">
+                                <?= $curl_installed ? 'Aktiviert' : 'Deaktiviert' ?>
+                            </span>
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check2-circle text-success me-2"></i> GD Bibliothek:
+                            <span class="badge bg-light text-<?= $gd_installed ? 'success' : 'danger' ?>"><?= $gd_installed ? 'Aktiviert' : 'Deaktiviert' ?></span>
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check2-circle text-success me-2"></i> cURL:
+                            <span class="badge bg-light text-<?= $curl_installed ? 'success' : 'danger' ?>"><?= $curl_installed ? 'Aktiviert' : 'Deaktiviert' ?></span>
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check2-circle text-success me-2"></i> GD unterstützte Formate:
+                            <span class="text-success small"><?= $gd_installed ? htmlspecialchars(implode(', ', $get_gdtypes)) : 'n/a' ?></span>
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check2-circle text-success me-2"></i> short_open_tag:
+                            <span class="badge bg-light text-<?= $get_short_open_tag ? 'success' : 'warning' ?>">
+                                <?= $get_short_open_tag ? 'Aktiviert' : 'Deaktiviert' ?>
                             </span>
                         </li>
                     </ul>
@@ -192,144 +261,352 @@ $serverLoad = function_exists('sys_getloadavg') ? sys_getloadavg() : null;
         </div>
 
         <!-- Server Infos -->
-        <div class="col-md-6">
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header">
-                    <h5>Server</h5>
-                </div>
+        <div class="col-md-6 col-xl-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100 transition hover-shadow">
                 <div class="card-body">
-                    <ul class="list-group">
-                        <li class="list-group-item">
-                            Server-Software: 
-                            <span class="text-info"><?php echo htmlspecialchars($serverSoftware); ?></span>
+                    <h5 class="card-title mb-4">
+                        <i class="bi bi-server me-2"></i> Server Details
+                    </h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="bi bi-hdd-network text-warning me-2"></i> Server-Software:
+                            <span class="text-muted"><?= htmlspecialchars($serverSoftware) ?></span>
                         </li>
-                        <li class="list-group-item">
-                            Betriebssystem: 
-                            <span class="text-info"><?php echo htmlspecialchars($serverOS); ?></span>
+                        <li class="mb-2">
+                            <i class="bi bi-cpu text-warning me-2"></i> Betriebssystem:
+                            <span class="text-muted"><?= htmlspecialchars($serverOS) ?></span>
                         </li>
                     </ul>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Weitere Server Infos -->
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card shadow-sm">
-                <div class="card-header">
-                    <h5>Weitere Server-Einstellungen</h5>
+        <!-- Serverauslastung -->
+        <div class="col-md-6 col-xl-4">
+            <?php if ($serverLoad): ?>
+                <div class="card border-0 shadow-sm rounded-4 h-100 transition hover-shadow">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">
+                            <i class="bi bi-speedometer2 me-2"></i> Serverauslastung
+                        </h5>
+                        <ul class="list-unstyled">
+                            <?php foreach ($serverLoad as $minutes => $load): ?>
+                                <li class="mb-2">
+                                    <?= $minutes === 0 ? "1 Minute" : ($minutes === 1 ? "5 Minuten" : "15 Minuten") ?>:
+                                    <span class="badge bg-<?= ($load < 1.0) ? 'success' : (($load < 5.0) ? 'warning' : 'danger') ?>">
+                                        <?= number_format($load, 2) ?>
+                                    </span>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
                 </div>
+            <?php endif; ?>
+        </div>
+
+        <!-- Speicher -->
+        <div class="col-md-6 col-xl-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100 transition hover-shadow">
                 <div class="card-body">
-                    <ul class="list-group">
-                        <li class="list-group-item">
-                            Memory Limit: 
-                            <span class="badge bg-<?php echo getBadgeClass($phpMemoryLimit, 134217728, 67108864); ?>">
-                                <?php echo $phpMemoryLimit; ?>
-                            </span>
-                        </li>
-                        <li class="list-group-item">
-                            POST Max Size: 
-                            <span class="badge bg-<?php echo getBadgeClass($phpPostMaxSize, 8388608, 4194304); ?>">
-                                <?php echo $phpPostMaxSize; ?>
-                            </span>
-                        </li>
-                        <li class="list-group-item">
-                            Session Save Path: 
-                            <span class="text-info"><?php echo htmlspecialchars($phpSessionSavePath); ?></span>
-                        </li>
-                        <li class="list-group-item">
-                            Default Charset: 
-                            <span class="badge bg-<?php echo strtolower($phpDefaultCharset) === 'utf-8' ? 'success' : 'warning'; ?>">
-                                <?php echo htmlspecialchars($phpDefaultCharset); ?>
-                            </span>
-                        </li>
-                        <li class="list-group-item">
-                            Zeitzone: 
-                            <span class="badge bg-<?php echo $phpTimezone !== 'Nicht gesetzt' ? 'success' : 'danger'; ?>">
-                                <?php echo htmlspecialchars($phpTimezone); ?>
-                            </span>
-                        </li>
-                        <li class="list-group-item">
-                            Deaktivierte Funktionen: 
-                            <span class="text-secondary small"><?php echo htmlspecialchars($phpDisabledFunctions); ?></span>
-                        </li>
-                    </ul>
+                    <h5 class="card-title mb-4">
+                        <i class="bi bi-memory me-2"></i> Speicherverbrauch
+                    </h5>
+                    
+                    <!-- Aktueller Verbrauch -->
+                    <div class="mt-4">
+                        <p class="mb-1 text-muted">Aktueller Verbrauch: </p>
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar bg-<?= ($currentMemoryPercent < 50) ? 'success' : (($currentMemoryPercent < 80) ? 'warning' : 'danger') ?>"
+                             role="progressbar" style="width: <?= number_format($currentMemoryPercent, 1) ?>%;" 
+                             aria-valuenow="<?= number_format($currentMemoryPercent, 1) ?>" aria-valuemin="0" aria-valuemax="100">
+                            <?= number_format($currentMemoryPercent, 1) ?>%
+                        </div>
+
+                    </div>
+                    <span><?= number_format($currentMemoryMB, 2) ?> MB</span>
+                </div>
+
+                    <!-- Maximaler RAM-Verbrauch -->
+                    <div class="mt-4">
+                        <p class="mb-1 text-muted">Maximaler RAM-Verbrauch:</p>
+                        <div class="progress" style="height: 20px;">
+                            <div class="progress-bar bg-info" role="progressbar" style="width: <?= number_format($peakMemoryPercent, 1) ?>%;" 
+                                 aria-valuenow="<?= number_format($peakMemoryPercent, 1) ?>" aria-valuemin="0" aria-valuemax="100">
+                            </div>
+                        </div>
+                        <span><?= number_format($peakMemoryMB, 2) ?> MB</span>
+                    </div>
+
+                    <!-- Memory Limit -->
+                    <div class="mt-3">
+                        <p class="mb-1 text-muted">Memory Limit:</p>
+                        <div class="progress" style="height: 20px;">
+                            <div class="progress-bar bg-secondary" role="progressbar" style="width: <?= number_format(($currentMemoryPercent / 100) * 100, 1) ?>%;" 
+                                 aria-valuenow="<?= number_format(($currentMemoryPercent / 100) * 100, 1) ?>" aria-valuemin="0" aria-valuemax="100">
+                            </div>
+                        </div>
+                        <span><?= number_format($memoryLimitBytes / 1024 / 1024, 2) ?> MB</span>
+                    </div>
+
+                    <!-- Server Load Anzeige -->
+                    <?php if ($serverLoad !== null): ?>
+                        <div class="mt-4">
+                            <p class="mb-1 text-muted">Server Load (1, 5, 15 Minuten):</p>
+                            <div class="d-flex justify-content-between">
+                                <span><strong><?= implode(", ", $serverLoad) ?></strong></span>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <!-- Arbeitsspeicher (RAM) -->
+        <div class="col-md-6 col-xl-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100 transition hover-shadow">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">
+                        <i class="bi bi-stack me-2"></i> Arbeitsspeicher (RAM)
+                    </h5>
+                    <p>Aktueller Verbrauch: <?= number_format($ramUsage['current'], 2) ?> MB</p>
+                    <div class="progress">
+                        <div class="progress-bar bg-success" style="width: <?= $ramUsage['usagePercentage'] ?>%;" aria-valuenow="<?= $ramUsage['usagePercentage'] ?>" aria-valuemin="0" aria-valuemax="100">
+                            <?= $ramUsage['usagePercentage'] ?>%
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
 </div>
 
-<?php if ($serverLoad): ?>
-<div class="container my-4">
-    <h3>Server Auslastung</h3>
 
-    <div class="card shadow-sm">
-        <div class="card-header">
-            <h5>Load Average (1 / 5 / 15 Minuten)</h5>
+
+<?
+
+
+
+/*<div class="container py-5">
+    <h1 class="mb-5 text-center fw-bold display-5">Systemstatus</h1>
+
+    <div class="row g-4">
+        <!-- PHP Infos -->
+        <div class="col-md-6 col-xl-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100 transition hover-shadow">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">
+                        <i class="bi bi-code-slash me-2"></i> PHP & Server
+                    </h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="bi bi-chevron-right text-primary me-2"></i> PHP Version: 
+                            <span class="badge bg-light text-dark"><?= htmlspecialchars($phpversion) ?></span>
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-chevron-right text-primary me-2"></i> Zend Version: 
+                            <span class="badge bg-light text-dark"><?= htmlspecialchars($zendversion) ?></span>
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-chevron-right text-primary me-2"></i> MySQL Version: 
+                            <span class="badge bg-light text-dark"><?= htmlspecialchars($mysqlversion) ?></span>
+                        </li>
+                        <li class="list-group-item">PHP Version: <span class="badge bg-success"><?= htmlspecialchars($phpversion) ?></span></li>
+                        <li class="list-group-item">Zend Version: <span class="badge bg-success"><?= htmlspecialchars($zendversion) ?></span></li>
+                        <li class="list-group-item">MySQL Version: <span class="badge bg-success"><?= htmlspecialchars($mysqlversion) ?></span></li>
+                        <li class="list-group-item">max_execution_time: <span class="badge bg-<?= $get_max_execution_time < 30 ? 'danger' : 'success' ?>"><?= (int)$get_max_execution_time ?>s</span></li>
+                        <li class="list-group-item">file_uploads: <span class="badge bg-<?= $get_file_uploads ? 'success' : 'danger' ?>"><?= $get_file_uploads ? 'Aktiviert' : 'Deaktiviert' ?></span></li>
+                        <li class="list-group-item">register_globals: <span class="badge bg-<?= $get_register_globals ? 'danger' : 'success' ?>"><?= $get_register_globals ? 'Aktiviert' : 'Deaktiviert' ?></span></li>
+                        <li class="list-group-item">upload_max_filesize: <span class="badge bg-<?= $get_upload_max_filesize > 16 ? 'warning' : 'success' ?>"><?= htmlspecialchars($get_upload_max_filesize) ?> MB</span></li>
+                        <li class="list-group-item">post_max_size: <span class="badge bg-<?= $get_post_max_size > 8 ? 'warning' : 'success' ?>"><?= htmlspecialchars($get_post_max_size) ?> MB</span></li>
+                        <li class="list-group-item">open_basedir: <span class="badge bg-<?= $get_open_basedir ? 'success' : 'warning' ?>"><?= $get_open_basedir ? 'Aktiviert' : 'Deaktiviert' ?></span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- GD Infos -->
+        <div class="col-md-6 col-xl-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100 transition hover-shadow">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">
+                        <i class="bi bi-image me-2"></i> GD & cURL
+                    </h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="bi bi-check2-circle text-success me-2"></i> GD Bibliothek:
+                            <span class="badge <?= $gd_installed ? 'bg-success' : 'bg-danger' ?>">
+                                <?= $gd_installed ? 'Aktiviert' : 'Deaktiviert' ?>
+                            </span>
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check2-circle text-success me-2"></i> cURL:
+                            <span class="badge <?= $curl_installed ? 'bg-success' : 'bg-danger' ?>">
+                                <?= $curl_installed ? 'Aktiviert' : 'Deaktiviert' ?>
+                            </span>
+                        </li>
+                        <li class="list-group-item">GD Bibliothek: <span class="badge bg-<?= $gd_installed ? 'success' : 'danger' ?>"><?= $gd_installed ? 'Aktiviert' : 'Deaktiviert' ?></span></li>
+                        <li class="list-group-item">cURL: <span class="badge bg-<?= $curl_installed ? 'success' : 'danger' ?>"><?= $curl_installed ? 'Aktiviert' : 'Deaktiviert' ?></span></li>
+                        <li class="list-group-item">GD unterstützte Formate: <span class="text-success small"><?= $gd_installed ? htmlspecialchars(implode(', ', $get_gdtypes)) : 'n/a' ?></span></li>
+                        <li class="list-group-item">short_open_tag: <span class="badge bg-<?= $get_short_open_tag ? 'success' : 'warning' ?>"><?= $get_short_open_tag ? 'Aktiviert' : 'Deaktiviert' ?></span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Server Infos -->
+        <div class="col-md-6 col-xl-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100 transition hover-shadow">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">
+                        <i class="bi bi-server me-2"></i> Server Details
+                    </h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="bi bi-hdd-network text-warning me-2"></i> Server-Software: 
+                            <span class="text-muted"><?= htmlspecialchars($serverSoftware) ?></span>
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-cpu text-warning me-2"></i> Betriebssystem: 
+                            <span class="text-muted"><?= htmlspecialchars($serverOS) ?></span>
+                        </li>
+                    
+                        <li class="list-group-item">PHP-Version: 
+                            <span class="badge bg-<?= version_compare($phpVersion, '8.0', '>=') ? 'success' : 'warning'; ?>">
+                                <?= $phpVersion ?>
+                            </span>
+                        </li>
+                        <li class="list-group-item">MySQL-Version: 
+                            <span class="badge bg-<?= version_compare($mysqlVersion, '8.0', '>=') ? 'success' : 'warning'; ?>">
+                                <?= $mysqlVersion ?>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Average -->
+    <?php if ($serverLoad): ?>
+    <div class="row g-4 mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-4 h-100 transition hover-shadow">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">
+                        <i class="bi bi-speedometer2 me-2"></i> Serverauslastung
+                    </h5>
+                    <ul class="list-unstyled">
+                        <?php foreach ($serverLoad as $minutes => $load): ?>
+                            <li class="mb-2">
+                                <?= $minutes === 0 ? "1 Minute" : ($minutes === 1 ? "5 Minuten" : "15 Minuten") ?>:
+                                <span class="badge bg-<?= ($load < 1.0) ? 'success' : (($load < 5.0) ? 'warning' : 'danger') ?>">
+                                    <?= number_format($load, 2) ?>
+                                </span>
+                            </li>
+                        <?php endforeach; ?>
+
+                <li class="list-group-item">Memory Limit: 
+                    <span class="badge bg-<?= getBadgeClass($phpMemoryLimit, 134217728, 67108864) ?>">
+                        <?= $phpMemoryLimit ?>
+                    </span>
+                </li>
+                <li class="list-group-item">POST Max Size: 
+                    <span class="badge bg-<?= getBadgeClass($phpPostMaxSize, 8388608, 4194304) ?>">
+                        <?= $phpPostMaxSize ?>
+                    </span>
+                </li>
+                <li class="list-group-item">Session Save Path: <span class="text-info"><?= htmlspecialchars($phpSessionSavePath) ?></span></li>
+                <li class="list-group-item">Default Charset: 
+                    <span class="badge bg-<?= strtolower($phpDefaultCharset) === 'utf-8' ? 'success' : 'warning' ?>">
+                        <?= htmlspecialchars($phpDefaultCharset) ?>
+                    </span>
+                </li>
+                <li class="list-group-item">Zeitzone: 
+                    <span class="badge bg-<?= $phpTimezone !== 'Nicht gesetzt' ? 'success' : 'danger' ?>">
+                        <?= htmlspecialchars($phpTimezone) ?>
+                    </span>
+                </li>
+                <li class="list-group-item">Deaktivierte Funktionen: 
+                    <span class="text-secondary small"><?= htmlspecialchars($phpDisabledFunctions) ?></span>
+                </li>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+
+    <!-- Speicher -->
+    <div class="row g-4 mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-4 h-100 transition hover-shadow">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">
+                        <i class="bi bi-memory me-2"></i> Speicherverbrauch
+                    </h5>
+                    <p class="mb-2">Aktueller Verbrauch: <strong><?= number_format($currentMemoryMB, 2) ?> MB</strong></p>
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar bg-<?= ($currentMemoryPercent < 50) ? 'success' : (($currentMemoryPercent < 80) ? 'warning' : 'danger') ?>"
+                             role="progressbar" style="width: <?= number_format($currentMemoryPercent, 1) ?>%;" aria-valuenow="<?= number_format($currentMemoryPercent, 1) ?>" aria-valuemin="0" aria-valuemax="100">
+                            <?= number_format($currentMemoryPercent, 1) ?>%
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php if ($serverLoad): ?>
+<div class="container my-5">
+    <h3 class="mb-4 text-center">Serverauslastung</h3>
+
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-header bg-warning text-dark rounded-top-4">
+            <h5 class="mb-0">Load Average (1 / 5 / 15 Minuten)</h5>
         </div>
         <div class="card-body">
             <ul class="list-group list-group-flush">
-                <li class="list-group-item">
-                    1 Minute: 
-                    <span class="badge bg-<?php echo ($serverLoad[0] < 1.0) ? 'success' : (($serverLoad[0] < 5.0) ? 'warning' : 'danger'); ?>">
-                        <?php echo number_format($serverLoad[0], 2); ?>
-                    </span>
-                </li>
-                <li class="list-group-item">
-                    5 Minuten: 
-                    <span class="badge bg-<?php echo ($serverLoad[1] < 1.0) ? 'success' : (($serverLoad[1] < 5.0) ? 'warning' : 'danger'); ?>">
-                        <?php echo number_format($serverLoad[1], 2); ?>
-                    </span>
-                </li>
-                <li class="list-group-item">
-                    15 Minuten: 
-                    <span class="badge bg-<?php echo ($serverLoad[2] < 1.0) ? 'success' : (($serverLoad[2] < 5.0) ? 'warning' : 'danger'); ?>">
-                        <?php echo number_format($serverLoad[2], 2); ?>
-                    </span>
-                </li>
+                <?php foreach ($serverLoad as $minutes => $load): ?>
+                    <li class="list-group-item">
+                        <?= $minutes === 0 ? "1 Minute" : ($minutes === 1 ? "5 Minuten" : "15 Minuten") ?>:
+                        <span class="badge bg-<?= ($load < 1.0) ? 'success' : (($load < 5.0) ? 'warning' : 'danger') ?>">
+                            <?= number_format($load, 2) ?>
+                        </span>
+                    </li>
+                <?php endforeach; ?>
             </ul>
-            <small class="text-muted mt-2 d-block">
-                Werte &lt; 1.0 sind optimal. Hohe Werte deuten auf Serverauslastung hin.
+            <small class="text-muted d-block mt-2">
+                Werte unter 1.0 sind optimal. Hohe Werte deuten auf Serverbelastung hin.
             </small>
         </div>
     </div>
 </div>
 <?php endif; ?>
 
-<div class="container my-4">
-    <h3>Speicherverbrauch</h3>
+<div class="container my-5">
+    <h3 class="mb-4 text-center">Speicherverbrauch</h3>
 
-    <div class="card shadow-sm">
-        <div class="card-header">
-            <h5>Arbeitsspeicher (RAM)</h5>
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-header bg-success text-white rounded-top-4">
+            <h5 class="mb-0">Arbeitsspeicher (RAM)</h5>
         </div>
         <div class="card-body">
-
-            <p>Aktueller Verbrauch: <?php echo number_format($currentMemoryMB, 2); ?> MB</p>
+            <p>Aktueller Verbrauch: <?= number_format($currentMemoryMB, 2) ?> MB</p>
             <div class="progress mb-3" style="height: 25px;">
-                <div class="progress-bar <?php echo ($currentMemoryPercent < 50) ? 'bg-success' : (($currentMemoryPercent < 80) ? 'bg-warning' : 'bg-danger'); ?>"
-                     role="progressbar" style="width: <?php echo number_format($currentMemoryPercent, 1); ?>%;" 
-                     aria-valuenow="<?php echo number_format($currentMemoryPercent, 1); ?>" aria-valuemin="0" aria-valuemax="100">
-                    <?php echo number_format($currentMemoryPercent, 1); ?> %
+                <div class="progress-bar bg-<?= ($currentMemoryPercent < 50) ? 'success' : (($currentMemoryPercent < 80) ? 'warning' : 'danger') ?>" role="progressbar" style="width: <?= number_format($currentMemoryPercent, 1) ?>%;" aria-valuenow="<?= number_format($currentMemoryPercent, 1) ?>" aria-valuemin="0" aria-valuemax="100">
+                    <?= number_format($currentMemoryPercent, 1) ?> %
                 </div>
             </div>
 
-            <p>Maximaler Verbrauch: <?php echo number_format($peakMemoryMB, 2); ?> MB</p>
+            <p>Maximaler Verbrauch: <?= number_format($peakMemoryMB, 2) ?> MB</p>
             <div class="progress" style="height: 25px;">
-                <div class="progress-bar <?php echo ($peakMemoryPercent < 50) ? 'bg-success' : (($peakMemoryPercent < 80) ? 'bg-warning' : 'bg-danger'); ?>"
-                     role="progressbar" style="width: <?php echo number_format($peakMemoryPercent, 1); ?>%;" 
-                     aria-valuenow="<?php echo number_format($peakMemoryPercent, 1); ?>" aria-valuemin="0" aria-valuemax="100">
-                    <?php echo number_format($peakMemoryPercent, 1); ?> %
+                <div class="progress-bar bg-<?= ($peakMemoryPercent < 50) ? 'success' : (($peakMemoryPercent < 80) ? 'warning' : 'danger') ?>" role="progressbar" style="width: <?= number_format($peakMemoryPercent, 1) ?>%;" aria-valuenow="<?= number_format($peakMemoryPercent, 1) ?>" aria-valuemin="0" aria-valuemax="100">
+                    <?= number_format($peakMemoryPercent, 1) ?> %
                 </div>
             </div>
-
-            <small class="text-muted mt-2 d-block">
-                Basierend auf PHP Memory Limit: <?php echo ini_get('memory_limit'); ?>
-            </small>
-
         </div>
     </div>
 </div>
+</div>
+*/

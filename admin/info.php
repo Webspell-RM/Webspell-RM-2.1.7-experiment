@@ -305,7 +305,7 @@ echo'<div class="card">
 
 
 // Beispiel: CKEditor für Super-Admin (1) und Admin (2)
-    if (hasrole($userID, [1, 2])) {
+#    if (hasrole($userID, [1, 2])) {
 
 
 
@@ -508,9 +508,9 @@ echo'<div class="card" style="margin-left: 50px; margin-right: 50px">
       </div>
     </div>';
 
-    } else {
+    #} else {
       
-    }
+    #}
 echo'
 
   </div>

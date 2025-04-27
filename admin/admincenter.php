@@ -212,7 +212,7 @@ function getplugincatID($catname)
 
 
 
-function dashnavi() {
+/*function dashnavi() {
     global $userID;  // Stellen Sie sicher, dass $userID korrekt gesetzt ist
 
     $links = '';
@@ -246,7 +246,86 @@ function dashnavi() {
     }
 
     return $links ? $links : '<li>Keine Zugriffsberechtigten Links gefunden.</li>';
+}*/
+
+
+function dashnavi() {
+    global $userID;
+
+    $links = '';
+    // aktuelle URL ermitteln
+    $current_script = basename($_SERVER['PHP_SELF']);
+    $current_query = isset($_GET['site']) ? $_GET['site'] : '';
+
+    // Kategorien holen
+    $ergebnis = safe_query("SELECT * FROM navigation_dashboard_categories ORDER BY sort");
+
+    while ($ds = mysqli_fetch_array($ergebnis)) {
+        $catID = (int)$ds['catID'];
+        $name = $ds['name'];
+        $fa_name = $ds['fa_name'];
+
+        $translate = new multiLanguage(detectCurrentLanguage());
+        $translate->detectLanguages($name);
+        $name = $translate->getTextByLanguage($name);
+
+        if (checkAccessRights($userID, $catID)) {
+
+            // Prüfen ob ein Link dieser Kategorie aktiv ist
+            $catlinks = safe_query("SELECT * FROM navigation_dashboard_links WHERE catID='" . $catID . "' ORDER BY sort");
+
+            $cat_active = false; // merken ob irgendwas aktiv ist
+            $cat_links_html = '';
+
+            while ($db = mysqli_fetch_array($catlinks)) {
+                $linkID = (int)$db['linkID'];
+                $url = $db['url'];
+
+                $translate->detectLanguages($db['name']);
+                $link_name = $translate->getTextByLanguage($db['name']);
+
+                if (checkAccessRights($userID, null, $linkID)) {
+
+                    // Ist der Link aktiv?
+                    $url_parts = parse_url($url);
+                    parse_str($url_parts['query'] ?? '', $url_query);
+
+                    $is_active = false;
+                    if (isset($url_query['site']) && $url_query['site'] == $current_query) {
+                        $is_active = true;
+                        $cat_active = true; // Sobald einer aktiv, ganze Kategorie merken
+                    }
+
+                    $active_class = $is_active ? 'active' : '';
+
+                    $cat_links_html .= '<li class="' . $active_class . '"><a href="' . $url . '"><i class="bi bi-plus-lg ac-link"></i> ' . $link_name . '</a></li>';
+                }
+            }
+
+            if ($cat_links_html != '') {
+                $expand_class = $cat_active ? 'mm-active' : ''; // mm-active hält Menü offen
+                $aria_expanded = $cat_active ? 'true' : 'false';
+                $show_class = $cat_active ? 'style="display:block;"' : '';
+
+                $links .= '<li class="' . $expand_class . '">
+                    <a class="has-arrow" aria-expanded="' . $aria_expanded . '" href="#">
+                        <i class="' . $fa_name . '" style="font-size: 1rem;"></i> ' . $name . '
+                    </a>
+                    <ul class="nav nav-third-level" ' . $show_class . '>
+                        ' . $cat_links_html . '
+                    </ul>
+                </li>';
+            }
+        }
+    }
+
+    return $links ? $links : '<li>Keine zugriffsberechtigten Links gefunden.</li>';
 }
+
+
+
+
+
 
 if ($userID && !isset($_GET['userID']) && !isset($_POST['userID'])) {
 	$ds = mysqli_fetch_array(safe_query("SELECT registerdate FROM `users` WHERE userID='" . $userID . "'"));
@@ -334,57 +413,56 @@ if ($getavatar = getavatar($userID)) {
 		<!-- /.navbar-top-links -->
 		<!-- sidebar-links -->
 		<nav class="navbar-default sidebar navbar-dark" role="navigation" style="margin-top: -30px;">
-			<div style="padding: 0 0 10px 0;" id="ws-image">
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-					<span class="navbar-toggler-icon"></span>
-				</button>
-				<a class="navbar-brand" href="/admin/admincenter.php">
-					<img src="/admin/images/rm.png" style="width: 230px;margin-top: 7px; margin-bottom: 7px;" alt="setting">
-				</a><br>
-				<img id="avatar-big" style="height: 90px;margin-top: 9px;margin-bottom: 9px; -webkit-box-shadow: 2px 2px 15px 3px rgba(0,0,0,0.54);box-shadow: 2px 2px 15px 3px rgba(0,0,0,0.54);border: 3px solid #fe821d;border-radius: 25px;--bs-tooltip-bg: #fe821d;" src="/images/avatars/<?php echo $l_avatar ?>" data-toggle="tooltip" data-html="true" data-bs-placement="right" data-bs-original-title="<?php echo getusername($userID) ?>" class="rounded-circle profile_img">
-				<div class="sidebar-nav col1lapse navbar-collapse" id="navbarNavDropdown">
-					<ul class="nav metismenu text-start navbar-nav" id="side-bar">
-						<li class="sidebar-head mm-active">
-							<a class="nav-link link-head" href="admincenter.php"> <i class="bi bi-house-door"></i> Dashboard</a>
-						</li>
-						<?php
-						echo dashnavi();
-						?>
-					</ul>
-				</div>
-				<!-- Copy -->
-				<div class="copy">
-					<em>Admin Template by <a href="https://www.webspell-rm.de" target="_blank" rel="noopener">Webspell-RM</a></em>					
-				</div>
-			</div>
-		</nav>
+    <div style="padding: 0 0 10px 0;" id="ws-image">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="navbar-brand" href="/admin/admincenter.php">
+            <img src="/admin/images/rm.png" style="width: 230px;margin-top: 7px; margin-bottom: 7px;" alt="setting">
+        </a><br>
+        <img id="avatar-big" style="height: 90px;margin-top: 9px;margin-bottom: 9px; -webkit-box-shadow: 2px 2px 15px 3px rgba(0,0,0,0.54);box-shadow: 2px 2px 15px 3px rgba(0,0,0,0.54);border: 3px solid #fe821d;border-radius: 25px;--bs-tooltip-bg: #fe821d;" src="/images/avatars/<?php echo $l_avatar ?>" data-toggle="tooltip" data-html="true" data-bs-placement="right" data-bs-original-title="<?php echo getusername($userID) ?>" class="rounded-circle profile_img">
+        <div class="sidebar-nav col1lapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="nav metismenu text-start navbar-nav" id="side-bar">
+                <li class="sidebar-head mm-active">
+                    <a class="nav-link link-head" href="admincenter.php"> <i class="bi bi-house-door"></i> Dashboard</a>
+                </li>
+                <?php echo dashnavi(); ?>
+            </ul>
+        </div>
+        <div class="copy">
+            <em>Admin Template by <a href="https://www.webspell-rm.de" target="_blank" rel="noopener">Webspell-RM</a></em>					
+        </div>
+    </div>
+</nav>
+
 		<!-- /.navbar-static-side -->
 
 		<div id="page-wrapper">
 			<?php
 			if (isset($site) && $site != "news") {
-			    $invalide = array('\\', '/', '//', ':', '.');
-			    $site = str_replace($invalide, ' ', $site); // Entferne ungültige Zeichen
-			    if (file_exists($site . '.php')) {
-			        include($site . '.php');
-			    } else {
-			        // Load Plugins-Admin-File (if exists)
-			        chdir("../");
-			        $plugin = $load->plugin_data($site, 0, true);
-			        $plugin_path = @$plugin['path'];
-			        @$ifiles = $plugin['admin_file'];
-			        @$tfiles = explode(",", $ifiles);
-			        if (file_exists($plugin_path . "admin/" . $site . ".php")) {
-			            include($plugin_path . "admin/" . $site . ".php");
-			        } else {
-			            chdir("admin");
-			            echo '<div class="alert alert-danger" role="alert">' . $_language->module['plugin_not_found'] . '</div>';
-			            include('info.php');
-			        }
-				}
-			} else {
-				include('info.php');
-			}
+    $invalide = array('\\', '/', '//', ':', '.');
+    $site = str_replace($invalide, ' ', $site); // Entferne ungültige Zeichen
+
+    if (file_exists($site . '.php')) {
+        include($site . '.php');
+    } else {
+        chdir("../"); // <<< WICHTIG: Hier wechselst du ins Elternverzeichnis (aus admin/ raus)
+        
+        $plugin = $load->plugin_data($site, 0, true);
+        $plugin_path = @$plugin['path'];  // z.B. "includes/plugins/news/"
+        @$ifiles = $plugin['admin_file']; // z.B. "news.php"
+        @$tfiles = explode(",", $ifiles);
+
+        if (file_exists($plugin_path . "admin/" . $site . ".php")) {
+            include($plugin_path . "admin/" . $site . ".php");
+        } else {
+            echo '<div class="alert alert-danger" role="alert">' . $_language->module['plugin_not_found'] . '</div>';
+            include('info.php');
+        }
+    }
+} else {
+    include('info.php');
+}
 			?>
 		</div><!-- /#wrapper -->
 		<!--</div>-->

@@ -111,6 +111,37 @@
   transform: rotate(225deg) translate(0, -50%);
 }
 
+
+.sidebar .has-arrow.active {
+    color: #007bff;  /* Beispiel: Setze die Farbe auf blau */
+}
+
+.sidebar .has-arrow.active::after {
+    transform: rotate(-135deg) translate(0, -50%);  /* Drehe den Pfeil */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .sidebar {
   color: #ffffff;
   background: linear-gradient(0deg, rgba(44,53,61,1) 0%, rgba(58,70,81,1) 100%);
