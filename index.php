@@ -42,6 +42,7 @@ include_once("system/template.php");
 include_once("system/plugin.php");
 include_once("system/widget.php");
 include_once("system/multi_language.php");
+include_once('system/classes/track_visitor.php');
 
 // INITIALIZE
 // Theme

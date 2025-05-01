@@ -2,9 +2,11 @@
 
 use webspell\LoginSecurity;
 
-echo'<h2>Registrierungs- und Login-Aktivitäten</h2>';
-
-echo '<div class="card"><div class="card-body"><div class="container py-5">';
+echo '<div class="card">
+<div class="card-header">
+        <i class="bi bi-paragraph"></i> Registrierungs- und Login-Aktivitäten
+    </div>
+    <div class="card-body"><div class="container py-5">';
 echo '<h4>Registrierungsversuche (Erfolgreich & Fehlgeschlagen)</h4>';
 
 // Pagination-Einstellungen
@@ -66,8 +68,8 @@ if ($totalPages > 1) {
     echo '</ul></nav>';
 }
 
-echo '</div></div></div>';
-echo '<div class="card"><div class="card-body"><div class="container py-5">';
+
+echo '';
 echo '<h4>Benutzer</h4>';
 
 // Pagination-Einstellungen
@@ -126,7 +128,6 @@ if ($totalPages > 1) {
     echo '</ul></nav>';
 }
 
-echo '</div></div></div>';
 
 
 // ------------------------------------
@@ -171,10 +172,9 @@ $getSessions = $_database->query("
 
 ?>
 
-<div class="card mt-4">
-    <div class="card-body"><div class="container py-5">
+
         <h4>Aktive Sessions</h4>
-        <div id="session-table-container">
+        
             <table class="table table-bordered table-striped bg-white shadow-sm">
                 <thead class="table-light">
                     <tr>
@@ -213,7 +213,7 @@ $getSessions = $_database->query("
                 ?>
                 </tbody>
             </table>
-        </div>
+      
 
         <?php if ($totalPages > 1) : ?>
             <nav>
@@ -228,8 +228,7 @@ $getSessions = $_database->query("
                 </ul>
             </nav>
         <?php endif; ?>
-    </div>
-</div></div>
+   
 
 <script>
 // AJAX-Funktion für das Nachladen der Sessions
@@ -348,7 +347,7 @@ if (isset($_POST['ban_ip']) && filter_var($_POST['ban_ip'], FILTER_VALIDATE_IP))
 }
 
 // Fehlgeschlagene Login-Versuche (letzte 15 Minuten) - Anzeige
-echo '<div class="card mt-4"><div class="card-body"><div class="container py-5">';
+
 echo '<h4>Fehlgeschlagene Login-Versuche (letzte 15 Minuten)</h4>';
 
 // Pagination-Einstellungen
@@ -408,7 +407,7 @@ if ($totalPages > 1) {
     echo '</ul></nav>';
 }
 
-echo '</div></div></div>';
+
 
 // JavaScript für AJAX-Handling (Sperren-Button)
 ?>
@@ -447,7 +446,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <?php
 
-echo '<div class="card mt-4"><div class="card-body"><div class="container py-5">';
+
 echo '<h4>Gesperrte IPs</h4>';
 
 // Pagination-Einstellungen für gebannte IPs

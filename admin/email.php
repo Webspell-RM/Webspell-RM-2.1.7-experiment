@@ -1,37 +1,36 @@
 <?php
 /**
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- *                  Webspell-RM      /                        /   /                                          *
- *                  -----------__---/__---__------__----__---/---/-----__---- _  _ -                         *
- *                   | /| /  /___) /   ) (_ `   /   ) /___) /   / __  /     /  /  /                          *
- *                  _|/_|/__(___ _(___/_(__)___/___/_(___ _/___/_____/_____/__/__/_                          *
- *                               Free Content / Management System                                            *
- *                                           /                                                               *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @version         webspell-rm                                                                              *
- *                                                                                                           *
- * @copyright       2018-2025 by webspell-rm.de                                                              *
- * @support         For Support, Plugins, Templates and the Full Script visit webspell-rm.de                 *
- * @website         <https://www.webspell-rm.de>                                                             *
- * @forum           <https://www.webspell-rm.de/forum.html>                                                  *
- * @wiki            <https://www.webspell-rm.de/wiki.html>                                                   *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @license         Script runs under the GNU GENERAL PUBLIC LICENCE                                         *
- *                  It's NOT allowed to remove this copyright-tag                                            *
- *                  <http://www.fsf.org/licensing/licenses/gpl.html>                                         *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @author          Code based on WebSPELL Clanpackage (Michael Gruber - webspell.at)                        *
- * @copyright       2005-2011 by webspell.org / webspell.info                                                *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
-*/
+ *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*  
+ *                                    Webspell-RM      /                        /   /                                                 *
+ *                                    -----------__---/__---__------__----__---/---/-----__---- _  _ -                                *
+ *                                     | /| /  /___) /   ) (_ `   /   ) /___) /   / __  /     /  /  /                                 *
+ *                                    _|/_|/__(___ _(___/_(__)___/___/_(___ _/___/_____/_____/__/__/_                                 *
+ *                                                 Free Content / Management System                                                   *
+ *                                                             /                                                                      *
+ *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
+ * @version         Webspell-RM                                                                                                       *
+ *                                                                                                                                    *
+ * @copyright       2018-2022 by webspell-rm.de <https://www.webspell-rm.de>                                                          *
+ * @support         For Support, Plugins, Templates and the Full Script visit webspell-rm.de <https://www.webspell-rm.de/forum.html>  *
+ * @WIKI            webspell-rm.de <https://www.webspell-rm.de/wiki.html>                                                             *
+ *                                                                                                                                    *
+ *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
+ * @license         Script runs under the GNU GENERAL PUBLIC LICENCE                                                                  *
+ *                  It's NOT allowed to remove this copyright-tag <http://www.fsf.org/licensing/licenses/gpl.html>                    *
+ *                                                                                                                                    *
+ * @author          Code based on WebSPELL Clanpackage (Michael Gruber - webspell.at)                                                 *
+ * @copyright       2005-2018 by webspell.org / webspell.info                                                                         *
+ *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
+ *                                                                                                                                    *
+ *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
+ */
+
 
 $_language->readModule('email', false, true);
 
 use webspell\AccessControl;
-// Den Admin-Zugriff für das Modul überprüfen
+
+// Admin-Zugriff für das Modul prüfen
 AccessControl::checkAdminAccess('ac_email');
 
 if (isset($_GET[ 'action' ])) {
@@ -45,7 +44,7 @@ if (isset($_POST[ 'submit' ])) {
     if ($CAPCLASS->checkCaptcha(0, $_POST[ 'captcha_hash' ])) {
         safe_query(
             "UPDATE
-                " . PREFIX . "email
+                email
             SET
                 host='" . $_POST[ 'host' ] . "',
                 user='" . $_POST[ 'user' ] . "',
@@ -97,31 +96,48 @@ if (isset($_POST[ 'submit' ])) {
     $CAPCLASS->createTransaction();
     $hash = $CAPCLASS->getHash();
 
-    echo '<div class="card">
-        <div class="card-header">
-            ' . $_language->module[ 'email' ] . '
-        </div><div class="card-body">';
+    echo'<div class="card">
+            <div class="card-header">
+                ' . $_language->module['email'] . '
+            </div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb t-5 p-2 bg-light">
+                    <li class="breadcrumb-item"><a href="admincenter.php?site=email">' . $_language->module[ 'email' ] . '</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">New / Edit</li>
+                </ol>
+            </nav>
+            <div class="card-body">
+                <div class="container py-5">
+                    <form method="post" action="admincenter.php?site=email&amp;action=test" enctype="multipart/form-data">
+                        <div class="mb-3 row">
+                            <label class="col-sm-2 col-form-label">
+                                ' . $_language->module['email'] . ':
+                            </label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" name="email" />
+                            </div>
+                        </div>
 
-    echo '<form method="post" action="admincenter.php?site=email&amp;action=test" enctype="multipart/form-data">
-  <table width="100%" border="0" cellspacing="1" cellpadding="3">
-    <tr>
-      <td width="15%"><b>' . $_language->module[ 'email' ] . '</b><br></td>
-      <td width="85%"><input class="form-control" name="email" type="text" size="35" /><br></td>
-    </tr>
+                        <input type="hidden" name="captcha_hash" value="' . $hash . '" />
 
-    <tr>
-      <td><input type="hidden" name="captcha_hash" value="' . $hash . '" /></td>
-      <td><input class="btn btn-success" type="submit" name="send" value="' . $_language->module[ 'send' ] . '" /></td>
-    </tr>
-  </table>
-  </form></div>
-  </div></div>';
+                        <div class="mb-3 row">
+                            <div class="offset-sm-2 col-sm-8">
+                                <button class="btn btn-success btn-sm" type="submit" name="send">
+                                    ' . $_language->module['send'] . '
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        ';
 } else {
     $CAPCLASS = new \webspell\Captcha;
     $CAPCLASS->createTransaction();
     $hash = $CAPCLASS->getHash();
 
-    $settings = safe_query("SELECT * FROM "email");
+    $settings = safe_query("SELECT * FROM email");
     $ds = mysqli_fetch_array($settings);
 
     if ($ds[ 'smtp' ] == '0') {
@@ -176,152 +192,196 @@ if (isset($_POST[ 'submit' ])) {
         <div class="card-header">
             ' . $_language->module[ 'email' ] . '
         </div>
-<nav aria-label="breadcrumb">
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item active" aria-current="page">' . $_language->module[ 'email' ] . '</li>
-  </ol>
-</nav>
+        <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb t-5 p-2 bg-light">
+            <li class="breadcrumb-item active" aria-current="page">' . $_language->module[ 'email' ] . '</li>
+          </ol>
+        </nav>
 
 <div class="card-body">
 
 <div class="mb-3 row">
     <label class="col-md-1 control-label">' . $_language->module['options'] . ':</label>
     <div class="col-md-8">
-      <a href="admincenter.php?site=email&amp;action=test" class="btn btn-primary" type="button">' . $_language->module[ 'test_email' ] . '</a>
+      <a href="admincenter.php?site=email&amp;action=test" class="btn btn-primary btn-sm" type="button">' . $_language->module[ 'test_email' ] . '</a>
     </div>
   </div>';
 
     echo '<script type="text/javascript">
-        function HideFields(state){
-            if(state == true){
+    function HideFields(state) {
+        if (state == true) {
+            document.getElementById(\'tr_user\').style.display = "";
+            document.getElementById(\'tr_password\').style.display = "";
+        } else {
+            document.getElementById(\'tr_user\').style.display = "none";
+            document.getElementById(\'tr_password\').style.display = "none";
+        }
+    }
+
+    function SetPort() {
+        var x = document.getElementById(\'select_secure\').selectedIndex;
+        switch (x) {
+            case 0:
+                var port = \'25\';
+                break;
+            case 1:
+                var port = \'587\';
+                break;
+            case 2:
+                var port = \'465\';
+                break;
+            default:
+                var port = \'25\';
+        }
+        document.getElementById(\'input_port\').value = port;
+    }
+
+    function HideFields2() {
+        var x = document.getElementById(\'select_smtp\').selectedIndex;
+        if (x == \'0\') {
+            document.getElementById(\'tr_user\').style.display = "none";
+            document.getElementById(\'tr_password\').style.display = "none";
+            document.getElementById(\'tr_auth\').style.display = "none";
+            document.getElementById(\'tr_host\').style.display = "none";
+            document.getElementById(\'tr_debug\').style.display = "none";
+            document.getElementById(\'tr_port\').style.display = "none";
+            document.getElementById(\'tr_secure\').style.display = "none";
+        } else {
+            var y = document.getElementById(\'check_auth\').checked;
+            if (y === true) {
                 document.getElementById(\'tr_user\').style.display = "";
                 document.getElementById(\'tr_password\').style.display = "";
-            }
-            else{
-                document.getElementById(\'tr_user\').style.display = "none";
-                document.getElementById(\'tr_password\').style.display = "none";
-            }
-        }
-
-        function SetPort(){
-            var x = document.getElementById(\'select_secure\').selectedIndex;
-            switch(x) {
-                case 0:
-                    var port = \'25\'
-                    break;
-                case 1:
-                    var port = \'587\'
-                    break;
-                case 2:
-                    var port = \'465\'
-                    break;
-                default:
-                    var port = \'25\'
-            }
-            document.getElementById(\'input_port\').value = port;
-        }
-
-        function HideFields2(){
-            var x = document.getElementById(\'select_smtp\').selectedIndex;
-            if(x == \'0\'){
-                document.getElementById(\'tr_user\').style.display = "none";
-                document.getElementById(\'tr_password\').style.display = "none";
-                document.getElementById(\'tr_auth\').style.display = "none";
-                document.getElementById(\'tr_host\').style.display = "none";
-                document.getElementById(\'tr_debug\').style.display = "none";
-                document.getElementById(\'tr_port\').style.display = "none";
-                document.getElementById(\'tr_secure\').style.display = "none";
-            }
-            else{
-                var y = document.getElementById(\'check_auth\').checked;
-                if(y === true){
-                    document.getElementById(\'tr_user\').style.display = "";
-                    document.getElementById(\'tr_password\').style.display = "";
-                    document.getElementById(\'tr_auth\').style.display = "";
-                    document.getElementById(\'tr_host\').style.display = "";
-                    document.getElementById(\'tr_port\').style.display = "";
-                    document.getElementById(\'tr_secure\').style.display = "";
-                    document.getElementById(\'tr_debug\').style.display = "";
-                } else {
-                    document.getElementById(\'tr_host\').style.display = "";
-                    document.getElementById(\'tr_auth\').style.display = "";
-                    document.getElementById(\'tr_port\').style.display = "";
-                    document.getElementById(\'tr_secure\').style.display = "";
-                    document.getElementById(\'tr_debug\').style.display = "";
-                }
+                document.getElementById(\'tr_auth\').style.display = "";
+                document.getElementById(\'tr_host\').style.display = "";
+                document.getElementById(\'tr_port\').style.display = "";
+                document.getElementById(\'tr_secure\').style.display = "";
+                document.getElementById(\'tr_debug\').style.display = "";
+            } else {
+                document.getElementById(\'tr_host\').style.display = "";
+                document.getElementById(\'tr_auth\').style.display = "";
+                document.getElementById(\'tr_port\').style.display = "";
+                document.getElementById(\'tr_secure\').style.display = "";
+                document.getElementById(\'tr_debug\').style.display = "";
             }
         }
-    </script>
-
+    }
+</script>
+<div class="container py-5">
     <form method="post" action="admincenter.php?site=email" enctype="multipart/form-data">
-    <!--<div class="tooltip" id="id1">' . $_language->module[ 'tooltip_1' ] . '</div>
-    <div class="tooltip" id="id2">' . $_language->module[ 'tooltip_2' ] . '</div>
-    <div class="tooltip" id="id3">' . $_language->module[ 'tooltip_3' ] . '</div>
-    <div class="tooltip" id="id4">' . $_language->module[ 'tooltip_4' ] . '</div>
-    <div class="tooltip" id="id5">' . $_language->module[ 'tooltip_5' ] . '</div>
-    <div class="tooltip" id="id6">' . $_language->module[ 'tooltip_6' ] . '</div>
-    <div class="tooltip" id="id7">' . $_language->module[ 'tooltip_7' ] . '</div>
-    <div class="tooltip" id="id8">' . $_language->module[ 'tooltip_8' ] . '</div>
-    <div class="tooltip" id="id9">' . $_language->module[ 'tooltip_9' ] . '</div>-->
 
-        <table width="50%" border="0" cellspacing="1" cellpadding="3">
-        <tr>
-            <td width="15%"><b>' . $_language->module[ 'type' ] . '</b></td>
-            <td width="35%"><select class="form-select" id="select_smtp" name="smtp" onchange="javascript:HideFields2();"
-                onmouseover="showWMTT(\'id1\')"
-                onmouseout="hideWMTT()">' . $smtp . '</select></td>
-        </tr>
-        <tr id="tr_auth"' . $show_auth2 . '>
-            <td width="15%"><b>' . $_language->module[ 'auth' ] . '</b></td>
-            <td width="35%"><div class="col-md-8 form-check form-switch"><input class="form-check-input" type="checkbox" id="check_auth" name="auth"
-                onchange="javascript:HideFields(this.checked);" onmouseover="showWMTT(\'id2\')"
-                onmouseout="hideWMTT()" value="1" ' . $auth . '/></div></td>
-        </tr>
-        <tr id="tr_user"' . $show_auth . '>
-            <td width="15%"><b>' . $_language->module[ 'user' ] . '</b></td>
-            <td width="35%"><input class="form-control row" name="user" type="text" value="' . getinput($ds[ 'user' ]) . '" size="35"
-                onmouseover="showWMTT(\'id3\')" onmouseout="hideWMTT()"/></td>
-        </tr>
-        <tr id="tr_password"' . $show_auth . '>
-            <td width="15%"><b>' . $_language->module[ 'password' ] . '</b></td>
-            <td width="35%"><input class="form-control row" type="password" name="password" value="' . getinput($ds[ 'password' ]) . '"
-                size="35" onmouseover="showWMTT(\'id4\')" onmouseout="hideWMTT()"/></td>
-        </tr>
-        <tr id="tr_host"' . $show_auth2 . '>
-            <td width="15%"><b>' . $_language->module[ 'host' ] . '</b></td>
-            <td width="35%"><input class="form-control row" type="text" name="host" value="' . getinput($ds[ 'host' ]) . '" size="35"
-                onmouseover="showWMTT(\'id6\')" onmouseout="hideWMTT()"/></td>
-        </tr>
-        <tr id="tr_port"' . $show_auth2 . '>
-            <td width="15%"><b>' . $_language->module[ 'port' ] . '</b></td>
-            <td width="35%"><input class="form-control row" id="input_port" type="text" name="port"
-                value="' . getinput($ds[ 'port' ]) . '" size="5"
-                onmouseover="showWMTT(\'id5\')" onmouseout="hideWMTT()"/></td>
-        </tr>
-        <tr id="tr_html">
-            <td width="15%"><b>' . $_language->module[ 'html' ] . '</b></td>
-            <td width="35%"><div class="col-md-8 form-check form-switch"><input class="form-check-input" type="checkbox" id="check_html" name="html"
-                onmouseover="showWMTT(\'id7\')"
-                onmouseout="hideWMTT()" value="1" ' . $html . '/></div></td>
-        </tr>
-        <tr id="tr_secure"' . $show_auth2 . '>
-            <td width="15%"><b>' . $_language->module[ 'secure' ] . '</b></td>
-            <td width="35%"><select class="form-select row" id="select_secure" name="secure" onmouseover="showWMTT(\'id8\')"
-                onchange="javascript:SetPort();"
-                onmouseout="hideWMTT()">' . $secure . '</select></td>
-        </tr>
-        <tr id="tr_debug"' . $show_auth2 . '>
-            <td width="15%"><b>' . $_language->module[ 'debug' ] . '</b></td>
-            <td width="35%"><select class="form-select row" id="select_debug" name="debug" onmouseover="showWMTT(\'id9\')"
-                onmouseout="hideWMTT()">' . $debug . '</select></td>
-        </tr>
+        <table class="table table-bordered table-striped">
+            <tr>
+                <td width="15%"><b>' . $_language->module['type'] . '</b></td>
+                <td width="35%">
+                    <div class="input-group">
+                        <select class="form-select" id="select_smtp" name="smtp" onchange="javascript:HideFields2();"
+                            onmouseover="showWMTT(\'id1\')" onmouseout="hideWMTT()">' . $smtp . '</select>
+                    </div>
+                </td>
+            </tr>
 
-    </table>
-    <br/><br/>
+            <tr id="tr_auth"' . $show_auth2 . '>
+                <td width="15%"><b>' . $_language->module['auth'] . '</b></td>
+                <td width="35%">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="check_auth" name="auth"
+                            onchange="javascript:HideFields(this.checked);" 
+                            onmouseover="showWMTT(\'id2\')" onmouseout="hideWMTT()" 
+                            value="1" ' . $auth . '/>
+                    </div>
+                </td>
+            </tr>
 
-    <div style="clear: both; padding-top: 20px;">
-        <input type="hidden" name="captcha_hash" value="' . $hash . '">
-        <input class="btn btn-success" type="submit" name="submit" value="' . $_language->module[ 'update' ] . '">
-    </div>
-    </form></div></div>';
+            <tr id="tr_user"' . $show_auth . '>
+                <td width="15%"><b>' . $_language->module['user'] . '</b></td>
+                <td width="35%">
+                    <div class="input-group">
+                        <input class="form-control" name="user" type="text" 
+                            value="' . getinput($ds['user']) . '" size="35"
+                            onmouseover="showWMTT(\'id3\')" onmouseout="hideWMTT()"/>
+                    </div>
+                </td>
+            </tr>
+
+            <tr id="tr_password"' . $show_auth . '>
+                <td width="15%"><b>' . $_language->module['password'] . '</b></td>
+                <td width="35%">
+                    <div class="input-group">
+                        <input class="form-control" type="password" name="password" 
+                            value="' . getinput($ds['password']) . '" size="35"
+                            onmouseover="showWMTT(\'id4\')" onmouseout="hideWMTT()"/>
+                    </div>
+                </td>
+            </tr>
+
+            <tr id="tr_host"' . $show_auth2 . '>
+                <td width="15%"><b>' . $_language->module['host'] . '</b></td>
+                <td width="35%">
+                    <div class="input-group">
+                        <input class="form-control" type="text" name="host" 
+                            value="' . getinput($ds['host']) . '" size="35"
+                            onmouseover="showWMTT(\'id6\')" onmouseout="hideWMTT()"/>
+                    </div>
+                </td>
+            </tr>
+
+            <tr id="tr_port"' . $show_auth2 . '>
+                <td width="15%"><b>' . $_language->module['port'] . '</b></td>
+                <td width="35%">
+                    <div class="input-group">
+                        <input class="form-control" id="input_port" type="text" name="port" 
+                            value="' . getinput($ds['port']) . '" size="5"
+                            onmouseover="showWMTT(\'id5\')" onmouseout="hideWMTT()"/>
+                    </div>
+                </td>
+            </tr>
+
+            <tr id="tr_html">
+                <td width="15%"><b>' . $_language->module['html'] . '</b></td>
+                <td width="35%">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="check_html" name="html"
+                            onmouseover="showWMTT(\'id7\')" onmouseout="hideWMTT()" 
+                            value="1" ' . $html . '/>
+                    </div>
+                </td>
+            </tr>
+
+            <tr id="tr_secure"' . $show_auth2 . '>
+                <td width="15%"><b>' . $_language->module['secure'] . '</b></td>
+                <td width="35%">
+                    <div class="input-group">
+                        <select class="form-select" id="select_secure" name="secure" 
+                            onmouseover="showWMTT(\'id8\')" onchange="javascript:SetPort();" onmouseout="hideWMTT()">
+                            ' . $secure . '
+                        </select>
+                    </div>
+                </td>
+            </tr>
+
+            <tr id="tr_debug"' . $show_auth2 . '>
+                <td width="15%"><b>' . $_language->module['debug'] . '</b></td>
+                <td width="35%">
+                    <div class="input-group">
+                        <select class="form-select" id="select_debug" name="debug" 
+                            onmouseover="showWMTT(\'id9\')" onmouseout="hideWMTT()">
+                            ' . $debug . '
+                        </select>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+
+        <div style="clear: both; padding-top: 20px;">
+            <input type="hidden" name="captcha_hash" value="' . $hash . '">
+            <input class="btn btn-success btn-sm" type="submit" name="submit" value="' . $_language->module['update'] . '">
+        </div>
+
+    </form>
+</div>
+
+
+
+</div></div>';
 }

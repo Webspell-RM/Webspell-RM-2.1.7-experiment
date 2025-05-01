@@ -147,110 +147,109 @@ $ret = mysqli_fetch_array($get);
 $db = $ret[ 0 ];
  ?>
 
-<div class="row">
-<div class="col-md-6">
-	<div class="card">
-        <div class="card-header">
-            <i class="bi bi-server"></i> <?php echo $_language->module['serverinfo']; ?>
-        </div>
-            
-            <div class="card-body">
 
-
-	<div class="row bt"><div class="col-md-6"><?php echo $_language->module['webspell_version']; ?>:</div><div class="col-md-6"><span class="pull-right text-muted small"><em><font color="#008000"><?php echo $version; ?></font></em></span></div></div>
-	<div class="row bt"><div class="col-md-6"><?php echo $_language->module['php_version']; ?>:</div><div class="col-md-6"><span class="pull-right text-muted small"><em><?php echo $phpversion; ?></em></span></div></div>
-	<div class="row bt"><div class="col-md-6"><?php echo $_language->module['zend_version']; ?>:</div><div class="col-md-6"><span class="pull-right text-muted small"><em><?php echo $zendversion; ?></em></span></div></div>
-	<div class="row bt"><div class="col-md-6"><?php echo $_language->module['mysql_version']; ?>:</div><div class="col-md-6"><span class="pull-right text-muted small"><em><?php echo $mysqlversion; ?></em></span></div></div>
-	<div class="row bt"><div class="col-md-6"><?php echo $_language->module['databasename']; ?>:</div><div class="col-md-6"><span class="pull-right text-muted small"><em><?php echo $db; ?></em></span></div></div>
-
-	<div class="row bt"><div class="col-md-6"><?php echo $_language->module['server_os']; ?>:</div><div class="col-md-6"><span class="pull-right text-muted small"><em><?php echo (($php_s = @php_uname('s')) ? $php_s : $info_na); ?></em></span></div></div>
-	<div class="row bt"><div class="col-md-6"><?php echo $_language->module['server_host']; ?>:</div><div class="col-md-6"><span class="pull-right text-muted small"><em><?php echo (($php_n = @php_uname('n')) ? $php_n : $info_na); ?></em></span></div></div>
-	<div class="row bt"><div class="col-md-6"><?php echo $_language->module['server_release']; ?>:</div><div class="col-md-6"><span class="pull-right text-muted small"><em><?php echo (($php_r = @php_uname('r')) ? $php_r : $info_na); ?></em></span></div></div>
-	<div class="row bt"><div class="col-md-6"><?php echo $_language->module['server_version']; ?>:</div><div class="col-md-6"><span class="pull-right text-muted small"><em><?php echo (($php_v = @php_uname('v')) ? $php_v : $info_na); ?></em></span></div></div>
-	<div class="row bt"><div class="col-md-6"><?php echo $_language->module['server_machine']; ?>:</div><div class="col-md-6"><span class="pull-right text-muted small"><em><?php echo (($php_m = @php_uname('m')) ? $php_m : $info_na); ?></em></span></div></div>
-
-</div>	
-</div>
-
-</div>
-
-<div class="col-md-6">
-	
-	<div class="card">
-        <div class="card-header">
-            <i class="bi bi-images"></i> GD Graphics Library
-        </div>
-            
-            <div class="card-body">
-
-    <div class="row bt"><div class="col-md-4">GD Graphics Library:</div><div class="col-md-8"><span class="pull-right text-muted small"><em><?php echo $get_gd_info; ?></em></span></div></div>
-    <div class="row bt"><div class="col-md-4"><?php echo $_language->module['supported_types']; ?>:</div><div class="col-md-8"><span class="pull-right text-muted small"><em><?php echo $get_gdtypes; ?></em></span></div></div>
-
-    <div class="row bt"><div class="col-md-4">GD Lib <?php echo $_language->module['version']; ?>:</div><div class="col-md-8"><span class="pull-right text-muted small"><em><?php echo $gdinfo['GD Version']; ?></em></span></div></div>
-
-</div>
-</div>
-
-
-
-	<div class="card">
-        <div class="card-header">
-            <i class="bi bi-info-square"></i> <?php echo $_language->module['interface']; ?>
-        </div>
-            
-            <div class="card-body">
-
-<div class="row">
-<div class="col-md-12">
-	<div class="row bt"><div class="col-md-6"><?php echo $_language->module['server_api']; ?>:</div><div class="col-md-6"><span class="pull-right text-muted small"><em><?php echo php_sapi_name(); ?></em></span></div></div>
-	<div class="row bt"><div class="col-md-6"><?php echo $_language->module['apache']; ?>:</div><div class="col-md-6"><span class="pull-right text-muted small"><em><?php if(function_exists("apache_get_version")) echo apache_get_version(); else echo $_language->module['na']; ?></em></span></div></div>
-	<div class="row bt"><div class="col-md-6"><?php echo $_language->module['apache_modules']; ?>:</div><div class="col-md-6"><span class="pull-right text-muted small"><em><?php if(function_exists("apache_get_modules")){if(count(apache_get_modules()) > 1) $get_apache_modules = implode(", ",apache_get_modules()); echo $get_apache_modules;} else{ echo $_language->module['na'];} ?></em></span></div></div>
-</div>	
-</div>
-</div>
-
-
-</div>
-
-</div>
-
-<div class="col-md-12">
 <div class="card">
-        <div class="card-header">
-            <i class="bi bi-filetype-php"></i> <?php echo $_language->module['php_settings']; ?>
-        </div>
-            
-            <div class="card-body">
+<div class="card-header">
+        <?php echo $_language->module['system_information']; ?>
+    </div>
+    <div class="card-body"><div class="container py-5">
 
-<div class="row bt">
-<div class="col-md-12"><?php echo $_language->module['legend']; ?>::&nbsp; &nbsp;<font color="#008000"><?php echo $_language->module['green']; ?>:</font> <?php echo $_language->module['setting_ok']; ?>&nbsp; - &nbsp;<font color="#FFA500"><?php echo $_language->module['orange']; ?>:</font> <?php echo $_language->module['setting_notice']; ?>&nbsp; - &nbsp;<font color="#FF0000"><?php echo $_language->module['red']; ?>:</font> <?php echo $_language->module['setting_error']; ?></div>
-</div><div class="row bt"></div>
+<!-- Serverinfo und GD Graphics -->
 <div class="row">
-<div class="col-md-6">
-	<div class="row bt"><div class="col-md-6">php.ini <?php echo $_language->module['path']; ?>:</div><div class="col-md-6"><span class="pull-right text-muted small"><em><?php echo $get_phpini_path; ?></em></span></div></div>
-	<div class="row bt"><div class="col-md-6">Allow URL fopen:</div><div class="col-md-6"><span class="pull-right text-muted small"><em><?php echo $get_allow_url_fopen; ?></em></span></div></div>
-	<div class="row bt"><div class="col-md-6">Allow URL Include:</div><div class="col-md-6"><span class="pull-right text-muted small"><em><?php echo $get_allow_url_include; ?></em></span></div></div>
-	<div class="row bt"><div class="col-md-6">Display Errors:</div><div class="col-md-6"><span class="pull-right text-muted small"><em><?php echo $get_display_errors; ?></em></span></div></div>
-	<div class="row bt"><div class="col-md-6">Error Log:</div><div class="col-md-6"><span class="pull-right text-muted small"><em><?php echo $get_log_errors; ?></em></span></div></div>
-	<div class="row bt"><div class="col-md-6">File Uploads:</div><div class="col-md-6"><span class="pull-right text-muted small"><em><?php echo $get_file_uploads; ?></em></span></div></div>
-	<!--<div class="row bt"><div class="col-md-6">Magic Quotes:</div><div class="col-md-6"><span class="pull-right text-muted small"><em><?php echo $get_magic_quotes; ?></em></span></div></div>-->
-	<div class="row bt"><div class="col-md-6">max. Execution Time:</div><div class="col-md-6"><span class="pull-right text-muted small"><em><?php echo $get_max_execution_time; ?></em></span></div></div>
-	<div class="row bt"><div class="col-md-6">Open Basedir:</div><div class="col-md-6"><span class="pull-right text-muted small"><em><?php echo $get_open_basedir; ?></em></span></div></div>
-	
+    <div class="col-md-6">
+        <h4 class="mb-3"><?php echo $_language->module['serverinfo']; ?></h4>
+        <table class="table table-bordered table-striped">
+            <thead class="table-light">
+                <tr>
+                    <th><?php echo $_language->module['property']; ?></th>
+                    <th><?php echo $_language->module['value']; ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><?php echo $_language->module['webspell_version']; ?></td><td><em class="text-success"><?php echo $version; ?></em></td></tr>
+                <tr><td><?php echo $_language->module['php_version']; ?></td><td><em><?php echo $phpversion; ?></em></td></tr>
+                <tr><td><?php echo $_language->module['zend_version']; ?></td><td><em><?php echo $zendversion; ?></em></td></tr>
+                <tr><td><?php echo $_language->module['mysql_version']; ?></td><td><em><?php echo $mysqlversion; ?></em></td></tr>
+                <tr><td><?php echo $_language->module['databasename']; ?></td><td><em><?php echo $db; ?></em></td></tr>
+                <tr><td><?php echo $_language->module['server_os']; ?></td><td><em><?php echo (($php_s = @php_uname('s')) ? $php_s : $info_na); ?></em></td></tr>
+                <tr><td><?php echo $_language->module['server_host']; ?></td><td><em><?php echo (($php_n = @php_uname('n')) ? $php_n : $info_na); ?></em></td></tr>
+                <tr><td><?php echo $_language->module['server_release']; ?></td><td><em><?php echo (($php_r = @php_uname('r')) ? $php_r : $info_na); ?></em></td></tr>
+                <tr><td><?php echo $_language->module['server_version']; ?></td><td><em><?php echo (($php_v = @php_uname('v')) ? $php_v : $info_na); ?></em></td></tr>
+                <tr><td><?php echo $_language->module['server_machine']; ?></td><td><em><?php echo (($php_m = @php_uname('m')) ? $php_m : $info_na); ?></em></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="col-md-6">
+        <h4 class="mb-3">GD Graphics Library</h4>
+        <table class="table table-bordered table-striped">
+            <thead class="table-light">
+                <tr>
+                    <th><?php echo $_language->module['property']; ?></th>
+                    <th><?php echo $_language->module['value']; ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>GD Graphics Library</td><td><em><?php echo $get_gd_info; ?></em></td></tr>
+                <tr><td><?php echo $_language->module['supported_types']; ?></td><td><em><?php echo $get_gdtypes; ?></em></td></tr>
+                <tr><td>GD Lib <?php echo $_language->module['version']; ?></td><td><em><?php echo $gdinfo['GD Version']; ?></em></td></tr>
+            </tbody>
+        </table>
+
+        <h4 class="mb-3"><?php echo $_language->module['interface']; ?></h4>
+        <table class="table table-bordered table-striped">
+            <thead class="table-light">
+                <tr>
+                    <th><?php echo $_language->module['property']; ?></th>
+                    <th><?php echo $_language->module['value']; ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><?php echo $_language->module['server_api']; ?></td><td><em><?php echo php_sapi_name(); ?></em></td></tr>
+                <tr><td><?php echo $_language->module['apache']; ?></td><td><em><?php if(function_exists("apache_get_version")) echo apache_get_version(); else echo $_language->module['na']; ?></em></td></tr>
+                <tr><td><?php echo $_language->module['apache_modules']; ?></td><td><em><?php if(function_exists("apache_get_modules")){if(count(apache_get_modules()) > 1) $get_apache_modules = implode(", ", apache_get_modules()); echo $get_apache_modules;} else{ echo $_language->module['na'];} ?></em></td></tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 
-<div class="col-md-6">
-	<div class="row bt"><div class="col-md-6">max. Upload (Filesize):</div><div class="col-md-6"><span class="pull-right text-muted small"><em><?php echo $get_upload_max_filesize; ?></em></span></div></div>
-	<!--<div class="row bt"><div class="col-md-6">Memory Limit:</div><div class="col-md-6"><span class="pull-right text-muted small"><em><?php echo $get_memory_limit; ?></em></span></div></div>-->
-	<div class="row bt"><div class="col-md-6">Post max Size:</div><div class="col-md-6"><span class="pull-right text-muted small"><em><?php echo $get_post_max_size; ?></em></span></div></div>
-	<div class="row bt"><div class="col-md-6">Register Globals:</div><div class="col-md-6"><span class="pull-right text-muted small"><em><?php echo $get_register_globals; ?></em></span></div></div>
-	<!--<div class="row bt"><div class="col-md-6">Safe Mode:</div><div class="col-md-6"><span class="pull-right text-muted small"><em><?php echo $get_safe_mode; ?></em></span></div></div>-->
-	<div class="row bt"><div class="col-md-6">Short Open Tag:</div><div class="col-md-6"><span class="pull-right text-muted small"><em><?php echo $get_short_open_tag; ?></em></span></div></div>
-	<div class="row bt"><div class="col-md-6">Curl Unterst&uuml;tzung:</div><div class="col-md-6"><span class="pull-right text-muted small"><em><?=$curl_check; ?></em></span></div></div>
-        <div class="row bt"><div class="col-md-6">Curl-Exec Unterst&uuml;tzung:</div><div class="col-md-6"><span class="pull-right text-muted small"><em><?=$curlexec_check; ?></em></span></div></div>
-</div>
-</div>
-</div>
+<!-- PHP Settings -->
+<div class="row">
+    <div class="col-md-12">
+        <h4 class="mb-3"></i> <?php echo $_language->module['php_settings']; ?></h4>
+        <table class="table table-bordered table-striped">
+            <thead class="table-light">
+                <tr>
+                    <th><?php echo $_language->module['property']; ?></th>
+                    <th><?php echo $_language->module['value']; ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="2">
+                        <?php echo $_language->module['legend']; ?>:
+                        <span class="text-success"><?php echo $_language->module['green']; ?>:</span> <?php echo $_language->module['setting_ok']; ?> -
+                        <span class="text-warning"><?php echo $_language->module['orange']; ?>:</span> <?php echo $_language->module['setting_notice']; ?> -
+                        <span class="text-danger"><?php echo $_language->module['red']; ?>:</span> <?php echo $_language->module['setting_error']; ?>
+                    </td>
+                </tr>
+                <tr><td>php.ini <?php echo $_language->module['path']; ?></td><td><em><?php echo $get_phpini_path; ?></em></td></tr>
+                <tr><td>Allow URL fopen</td><td><em><?php echo $get_allow_url_fopen; ?></em></td></tr>
+                <tr><td>Allow URL Include</td><td><em><?php echo $get_allow_url_include; ?></em></td></tr>
+                <tr><td>Display Errors</td><td><em><?php echo $get_display_errors; ?></em></td></tr>
+                <tr><td>Error Log</td><td><em><?php echo $get_log_errors; ?></em></td></tr>
+                <tr><td>File Uploads</td><td><em><?php echo $get_file_uploads; ?></em></td></tr>
+                <tr><td>max. Execution Time</td><td><em><?php echo $get_max_execution_time; ?></em></td></tr>
+                <tr><td>Open Basedir</td><td><em><?php echo $get_open_basedir; ?></em></td></tr>
+                <tr><td>max. Upload (Filesize)</td><td><em><?php echo $get_upload_max_filesize; ?></em></td></tr>
+                <tr><td>Post max Size</td><td><em><?php echo $get_post_max_size; ?></em></td></tr>
+                <tr><td>Register Globals</td><td><em><?php echo $get_register_globals; ?></em></td></tr>
+                <tr><td>Short Open Tag</td><td><em><?php echo $get_short_open_tag; ?></em></td></tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 
-</div></div>
+</div>
+</div>
+</div>

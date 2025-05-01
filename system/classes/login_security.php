@@ -19,14 +19,29 @@ class LoginSecurity {
     const AES_IV = 'initialivektor12'; // 16 Byte IV
 
     // Entschlüsseln des Peppers
-    public static function decryptPepper(string $encrypted_pepper): ?string {
+    /*public static function decryptPepper(string $encrypted_pepper): ?string {
         $pepper = openssl_decrypt($encrypted_pepper, 'aes-256-cbc', self::AES_KEY, 0, self::AES_IV);
         return $pepper ?: null;
-    }
+    }*/
 
-    public static function encryptPepper(string $plain_pepper): ?string {
+    /*public static function encryptPepper(string $plain_pepper): ?string {
         $encrypted = openssl_encrypt($plain_pepper, 'aes-256-cbc', self::AES_KEY, 0, self::AES_IV);
         return $encrypted ?: null;
+    }*/
+    public static function encryptPepper(string $plain_pepper): ?string {
+        $iv_length = openssl_cipher_iv_length('aes-256-cbc');
+        $iv = openssl_random_pseudo_bytes($iv_length);
+        $encrypted = openssl_encrypt($plain_pepper, 'aes-256-cbc', self::AES_KEY, 0, $iv);
+        if ($encrypted === false) return null;
+        return base64_encode($iv . $encrypted);
+    }
+
+    public static function decryptPepper(string $encrypted_pepper): ?string {
+        $data = base64_decode($encrypted_pepper);
+        $iv_length = openssl_cipher_iv_length('aes-256-cbc');
+        $iv = substr($data, 0, $iv_length);
+        $ciphertext = substr($data, $iv_length);
+        return openssl_decrypt($ciphertext, 'aes-256-cbc', self::AES_KEY, 0, $iv);
     }
 
     public static function createPasswordHash(string $password_hash, string $email, string $pepper): string {
@@ -131,6 +146,19 @@ class LoginSecurity {
             'isIpBanned' => $isIpBanned,
             'message_zusatz' => $message_zusatz
         ];
+    }
+
+    public static function logFailedLogin(int $userID, string $ip, string $reason, ?string $email = null): void
+    {
+        global $_database;
+
+        $stmt = $_database->prepare("
+            INSERT INTO failed_login_attempts (userID, ip, attempt_time, status, reason, email)
+            VALUES (?, ?, NOW(), 'failed', ?, ?)
+        ");
+        $stmt->bind_param("isss", $userID, $ip, $reason, $email);
+        $stmt->execute();
+        $stmt->close();
     }
 
     public static function isEmailBanned(string $email, string $ip): bool
@@ -344,9 +372,17 @@ class LoginSecurity {
         return ($count >= $max);
     }
 
+
+
     public static function escape(?string $value): string
     {
         return htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
     }
     
+    public static function generateRandomPepper($length = 32): string
+{
+    return bin2hex(random_bytes($length / 2));
+}
+
+
 }

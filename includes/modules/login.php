@@ -14,21 +14,22 @@ $is_active ='';
 $is_locked = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // E-Mail und Passwort-Hash aus POST-Daten holen und sicherstellen, dass die E-Mail gültig ist
     $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
     $password_hash = $_POST['password_hash'];
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $_SESSION['error_message'] = "Ungültige E-Mail-Adresse.";
+        $_SESSION['error_message'] = "❌ Ungültige E-Mail-Adresse.";
         header("Location: index.php?site=login");
         exit;
     }
 
     // Login-Versuch prüfen
+    $ip = $_SERVER['REMOTE_ADDR'];  // IP-Adresse des Benutzers
     $loginResult = LoginSecurity::verifyLogin($email, $password_hash, $ip, $is_active, $is_locked);
 
     if ($loginResult['success']) {
         // Überprüfen, ob die IP des Benutzers gebannt ist
-        $ip = $_SERVER['REMOTE_ADDR'];  // IP des Benutzers
         if (LoginSecurity::isIpBanned($ip)) {
             $message = '<div class="alert alert-danger" role="alert">Diese IP-Adresse wurde gesperrt. Bitte kontaktiere den Support.</div>';
             $isIpBanned = true;
@@ -55,6 +56,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // Session speichern
                 LoginSecurity::saveSession($user['userID']);
+                // Jetzt lastlogin setzen
+                $now = date('Y-m-d H:i:s');
+                $updateStmt = $_database->prepare("UPDATE users SET lastlogin = ? WHERE userID = ?");
+                $updateStmt->bind_param("si", $now, $user['userID']);
+                $updateStmt->execute();
 
                 $_SESSION['success_message'] = "Login erfolgreich!";
                 header("Location: index.php");
@@ -110,7 +116,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = '<div class="alert alert-danger" role="alert">' . $_SESSION['error_message'] . '</div>';
         unset($_SESSION['error_message']);
     }
-
 }
 
 // Prüfen, ob E-Mail gebannt ist

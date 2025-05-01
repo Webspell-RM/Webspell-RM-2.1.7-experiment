@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 // Sprach-Array für das Modul 'contact'
 $language_array = Array(

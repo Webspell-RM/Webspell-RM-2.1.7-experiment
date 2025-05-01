@@ -38,20 +38,20 @@ $qs_arr = array();
           $getsite = $qs_arr['site'];
         }
 
-    $ergebnis=safe_query("SELECT * FROM settings_expansion WHERE active = '1'");
+    $ergebnis=safe_query("SELECT * FROM settings_themes WHERE active = '1'");
     $ds=mysqli_fetch_array($ergebnis);
 
 echo'<!-- ======= Navigation ======= -->
     <header id="header" class="sticky-top d-flex align-items-center header-transparent header-underscore">
         <div class="container d-flex justify-content-between">
             <div class="logo">
-                <a href="#"><img class="img-fluid" src="../includes/expansion/'.$ds[ 'pfad' ].'/images/'.$ds[ 'logo_pic' ].'" alt=""></a>
+                <a href="#"><img class="img-fluid" src="../includes/themes/' . htmlspecialchars($theme_name, ENT_QUOTES, 'UTF-8') . '/images/'.$ds[ 'logo_pic' ].'" alt=""></a>
             </div>
             <div class="box">
                 <span class="webspell">'.$ds[ 'logotext1' ].'</span>
                 <span class="slogan">'.$ds[ 'logotext2' ].'</span>
             </div>
-            <nav id="navbar" class="navbar '.$ds[ 'nav_text_alignment' ].'">
+            <nav id="navbar" class="navbar order-last order-lg-0">
                 <ul>';
                     require_once("./includes/modules/navigation.php");
                     require_once("./includes/modules/navigation_login.php");

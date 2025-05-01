@@ -54,7 +54,7 @@ if (isset($_POST[ 'underscore_aktiv' ])) {
     if ($CAPCLASS->checkCaptcha(0, $_POST[ 'captcha_hash' ])) {        
 
         safe_query(
-            "UPDATE " . PREFIX . "settings_expansion SET underscore='" . $underscore . "' WHERE modulname = '".$_POST['themes_modulname']."'");
+            "UPDATE settings_themes SET underscore='" . $underscore . "' WHERE modulname = '".$_POST['themes_modulname']."'");
 
         $errors = array();        
 
@@ -76,11 +76,11 @@ if(isset($_GET[ 'delete' ])) {
     $dir = $_GET['modulname'];
     $name = $_GET['modulname'];
     // Name Tabelle | Where Klause | ID name
-    DeleteData("settings_expansion","modulname",$name);
+    DeleteData("settings_themes","modulname",$name);
     DeleteData("settings_buttons","modulname",$name);
     DeleteData("navigation_website_sub","themes_modulname",$name);
-    recursiveRemoveDirectory('../includes/expansion/'. $dir);
-    safe_query("UPDATE `".PREFIX."settings_expansion` SET active = 1 WHERE modulname = 'default'");   
+    recursiveRemoveDirectory('../includes/themes'. $dir);
+    safe_query("UPDATE settings_themes SET active = 1 WHERE modulname = 'default'");   
     header('Location: ?site=settings_themes');
     exit;
 
@@ -89,8 +89,8 @@ if(isset($_GET[ 'delete' ])) {
     $CAPCLASS = new \webspell\Captcha;
     if ($CAPCLASS->checkCaptcha(0, $_GET['captcha_hash'])) {
         $themeID = (int)$_GET[ 'themeID' ];
-        $filepath = "../includes/expansion/".$dx['pfad']."/images/";
-        if (safe_query("UPDATE `" . PREFIX . "settings_expansion` SET `background_pic` = '' WHERE `themeID` = '" . $themeID . "'")) {
+        $filepath = "../includes/themes/".$dx['pfad']."/images/";
+        if (safe_query("UPDATE settings_themes SET `background_pic` = '' WHERE `themeID` = '" . $themeID . "'")) {
             if (file_exists($filepath . 'background_bg.jpg')) {
                 unlink($filepath . 'background_bg.jpg');
             }
@@ -122,7 +122,7 @@ if(isset($_GET[ 'delete' ])) {
         $sort = $_POST[ 'sort' ];
         foreach ($sort as $sortstring) {
             $sorter = explode("-", $sortstring);
-            safe_query("UPDATE " . PREFIX . "settings_expansion SET sort='".$sorter[1]."' WHERE themeID='".$sorter[0]."' ");
+            safe_query("UPDATE settings_themes SET sort='".$sorter[1]."' WHERE themeID='".$sorter[0]."' ");
         }
     } else {
         echo $_language->module[ 'transaction_invalid' ];
@@ -170,8 +170,8 @@ if(isset($_GET[ 'delete' ])) {
         }
         
         if($active == '1') {
-          $sql = safe_query("SELECT `themeID` FROM `".PREFIX."settings_expansion` WHERE `active` = 1 LIMIT 1");
-          safe_query("UPDATE `".PREFIX."settings_expansion` SET active = 0 WHERE `themeID` = themeID");
+          $sql = safe_query("SELECT `themeID` FROM settings_themes WHERE `active` = 1 LIMIT 1");
+          safe_query("UPDATE settings_themes SET active = 0 WHERE `themeID` = themeID");
         }
 
         $themeID = (int)$_POST[ 'themeID' ];
@@ -180,14 +180,14 @@ if(isset($_GET[ 'delete' ])) {
 
     $themeID = $_GET[ 'themeID' ];
 
-    $ergebnis = safe_query("SELECT * FROM " . PREFIX . "settings_expansion WHERE themeID='$themeID'");
+    $ergebnis = safe_query("SELECT * FROM settings_themes WHERE themeID='$themeID'");
     $dx = mysqli_fetch_array($ergebnis);
     $modulname = $dx[ 'modulname' ];
 
     
         safe_query(
             "UPDATE
-                `" . PREFIX . "settings_expansion`
+                settings_themes
             SET
                
                 `express_active` = '" . $express_active . "',
@@ -241,11 +241,11 @@ if(isset($_GET[ 'delete' ])) {
         );
 
 
-        $ergebnis = safe_query("SELECT * FROM "settings_buttons");
+        $ergebnis = safe_query("SELECT * FROM settings_buttons");
         $dy = mysqli_fetch_array($ergebnis);
         safe_query(
             "UPDATE
-                `" . PREFIX . "settings_buttons`
+                `settings_buttons`
             SET                
                 `active` = '" . $active . "',                
                 `version`='" . $_POST[ 'version' ] . "',
@@ -308,16 +308,16 @@ if(isset($_GET[ 'delete' ])) {
             echo '</ul>';
         } else {
             
-            $file = ("../includes/expansion/".$dx['pfad']."/css/stylesheet.css");
+            $file = ("../includes/themes/".$dx['pfad']."/css/stylesheet.css");
             $fp = fopen($file, "w");
             fwrite($fp, stripslashes(str_replace('\r\n', "\n", $_POST[ 'stylesheet' ])));
             fclose($fp);
         }
 
 
-		$filepath = "../includes/expansion/".$dx['pfad']."/images/";
+		$filepath = "../includes/themes/".$dx['pfad']."/images/";
 
-        $ergebnis = safe_query("SELECT * FROM " . PREFIX . "settings_expansion WHERE themeID='$themeID'");
+        $ergebnis = safe_query("SELECT * FROM settings_themes WHERE themeID='$themeID'");
         $dx = mysqli_fetch_array($ergebnis);
         $modulname = $dx[ 'modulname' ];
         $upload = new \webspell\HttpUpload('logo_pic');
@@ -368,7 +368,7 @@ if(isset($_GET[ 'delete' ])) {
                             if ($upload->saveAs($filepath.$file)) {
                                 @chmod($filepath.$file, $new_chmod);
                                 safe_query(
-                                    "UPDATE " . PREFIX . "settings_expansion
+                                    "UPDATE settings_themes
                                     SET logo_pic='" . $file . "' WHERE themeID='" . $id . "'"
                                 );
                             }
@@ -388,7 +388,7 @@ if(isset($_GET[ 'delete' ])) {
 
 
         $upload = new \webspell\HttpUpload('reg_pic');
-        $ergebnis = safe_query("SELECT * FROM " . PREFIX . "settings_expansion WHERE themeID='$themeID'");
+        $ergebnis = safe_query("SELECT * FROM settings_themes WHERE themeID='$themeID'");
         $dx = mysqli_fetch_array($ergebnis);
         $modulname = $dx[ 'modulname' ];
         if ($upload->hasFile()) {
@@ -437,7 +437,7 @@ if(isset($_GET[ 'delete' ])) {
                             if ($upload->saveAs($filepath.$file)) {
                                 @chmod($filepath.$file, $new_chmod);
                                 safe_query(
-                                    "UPDATE " . PREFIX . "settings_expansion
+                                    "UPDATE settings_themes
                                     SET reg_pic='" . $file . "' WHERE themeID='" . $id . "'"
                                 );
                             }
@@ -457,7 +457,7 @@ if(isset($_GET[ 'delete' ])) {
 
 
         $upload = new \webspell\HttpUpload('background_pic');
-        $ergebnis = safe_query("SELECT * FROM " . PREFIX . "settings_expansion WHERE themeID='$themeID'");
+        $ergebnis = safe_query("SELECT * FROM settings_themes WHERE themeID='$themeID'");
         $dx = mysqli_fetch_array($ergebnis);
         $modulname = $dx[ 'modulname' ];
         if ($upload->hasFile()) {
@@ -506,7 +506,7 @@ if(isset($_GET[ 'delete' ])) {
                             if ($upload->saveAs($filepath.$file)) {
                                 @chmod($filepath.$file, $new_chmod);
                                 safe_query(
-                                    "UPDATE " . PREFIX . "settings_expansion
+                                    "UPDATE settings_themes
                                     SET background_pic='" . $file . "' WHERE themeID='" . $id . "'"
                                 );
                             }
@@ -525,7 +525,7 @@ if(isset($_GET[ 'delete' ])) {
         }
 
 
-        $ergebnis = safe_query("SELECT * FROM " . PREFIX . "settings_expansion WHERE themeID='$themeID'");
+        $ergebnis = safe_query("SELECT * FROM settings_themes WHERE themeID='$themeID'");
         $dx = mysqli_fetch_array($ergebnis);
         $modulname = $dx[ 'modulname' ];
 
@@ -593,8 +593,8 @@ if(isset($_GET[ 'delete' ])) {
         }      
 
 
-        $filepath = "../includes/expansion/".$dx['pfad']."/images/";
-        $ergebnis = safe_query("SELECT * FROM " . PREFIX . "settings_expansion WHERE themeID='$themeID'");
+        $filepath = "../includes/themes/".$dx['pfad']."/images/";
+        $ergebnis = safe_query("SELECT * FROM settings_themes WHERE themeID='$themeID'");
         $dx = mysqli_fetch_array($ergebnis);
         $modulname = $dx[ 'modulname' ];
 
@@ -675,21 +675,21 @@ if ($action == "edit") {
 
 
     $themeID = $_GET[ 'themeID' ];
-    $ergebnis = safe_query("SELECT * FROM " . PREFIX . "settings_expansion WHERE themeID='$themeID'");
+    $ergebnis = safe_query("SELECT * FROM settings_themes WHERE themeID='$themeID'");
     $ds = mysqli_fetch_array($ergebnis);
 
-    if(file_exists('../includes/expansion/'.$ds['pfad'].'/images/'.$ds['modulname'].'.jpg')){
-            $themepic='<img style="height: 100px" src="../includes/expansion/'.$ds['pfad'].'/images/'.$ds['modulname'].'.jpg" alt="">';
-        } elseif(file_exists('../includes/expansion/'.$ds['pfad'].'/images/'.$ds['modulname'].'.jpeg')){
-            $themepic='<img style="height: 100px" src="../includes/expansion/'.$ds['pfad'].'/images/'.$ds['modulname'].'.jpeg" alt="">';
-        } elseif(file_exists('../includes/expansion/'.$ds['pfad'].'/images/'.$ds['modulname'].'.png')){
-            $themepic='<img style="height: 100px" src="../includes/expansion/'.$ds['pfad'].'/images/'.$ds['modulname'].'.png" alt="">';
-        } elseif(file_exists('../includes/expansion/'.$ds['pfad'].'/images/'.$ds['modulname'].'.gif')){
-            $themepic='<img style="height: 100px" src="../includes/expansion/'.$ds['pfad'].'/images/'.$ds['modulname'].'.gif" alt="">';
-		} elseif(file_exists('../includes/expansion/'.$ds['pfad'].'/images/'.$ds['modulname'].'.avif')){
-            $themepic='<img style="height: 100px" src="../includes/expansion/'.$ds['pfad'].'/images/'.$ds['modulname'].'.avif" alt="">';
-		} elseif(file_exists('../includes/expansion/'.$ds['pfad'].'/images/'.$ds['modulname'].'.webp')){
-            $themepic='<img style="height: 100px" src="../includes/expansion/'.$ds['pfad'].'/images/'.$ds['modulname'].'.webp" alt="">';
+    if(file_exists('../includes/themes/'.$ds['pfad'].'/images/'.$ds['modulname'].'.jpg')){
+            $themepic='<img style="height: 100px" src="../includes/themes/'.$ds['pfad'].'/images/'.$ds['modulname'].'.jpg" alt="">';
+        } elseif(file_exists('../includes/themes/'.$ds['pfad'].'/images/'.$ds['modulname'].'.jpeg')){
+            $themepic='<img style="height: 100px" src="../includes/themes/'.$ds['pfad'].'/images/'.$ds['modulname'].'.jpeg" alt="">';
+        } elseif(file_exists('../includes/themes/'.$ds['pfad'].'/images/'.$ds['modulname'].'.png')){
+            $themepic='<img style="height: 100px" src="../includes/themes/'.$ds['pfad'].'/images/'.$ds['modulname'].'.png" alt="">';
+        } elseif(file_exists('../includes/themes/'.$ds['pfad'].'/images/'.$ds['modulname'].'.gif')){
+            $themepic='<img style="height: 100px" src="../includes/themes/'.$ds['pfad'].'/images/'.$ds['modulname'].'.gif" alt="">';
+		} elseif(file_exists('../includes/themes/'.$ds['pfad'].'/images/'.$ds['modulname'].'.avif')){
+            $themepic='<img style="height: 100px" src="../includes/themes/'.$ds['pfad'].'/images/'.$ds['modulname'].'.avif" alt="">';
+		} elseif(file_exists('../includes/themes/'.$ds['pfad'].'/images/'.$ds['modulname'].'.webp')){
+            $themepic='<img style="height: 100px" src="../includes/themes/'.$ds['pfad'].'/images/'.$ds['modulname'].'.webp" alt="">';
         } else{
            $themepic='<img style="height: 100px" src="../images/no-image.jpg" alt="">';
         }
@@ -721,7 +721,7 @@ echo'<form class="form-horizontal" method="post" action="admincenter.php?site=se
   <div class="mb-3 row">
     <label class="col-md-2 control-label">'.$_language->module['folder_themes'].':</label>
     <div class="col-md-8"><span class="text-muted small"><em>
-      <input type="text" class="form-control" placeholder=" /includes/expansion/'.getinput($ds['pfad']).'" / disabled></em></span>
+      <input type="text" class="form-control" placeholder=" /includes/themes/'.getinput($ds['pfad']).'" / disabled></em></span>
     </div>
   </div>
 
@@ -774,14 +774,14 @@ echo'<form class="form-horizontal" method="post" action="admincenter.php?site=se
     $hash = $CAPCLASS->getHash(); 
 
 
-$file = ("../includes/expansion/".$ds['pfad']."/css/stylesheet.css");
+$file = ("../includes/themes/".$ds['pfad']."/css/stylesheet.css");
     $size = filesize($file);
     $fp = fopen($file, "r");
     $stylesheet = fread($fp, $size);
     fclose($fp);    
 
 
-$filepath = "../includes/expansion/".$ds['pfad']."/images/";
+$filepath = "../includes/themes/".$ds['pfad']."/images/";
 if (!empty($ds[ 'logo_pic' ])) {
         $pic1 = '<img id="img-upload" class="" style="width: 100%; max-width: 150px" src="../' . $filepath . $ds[ 'logo_pic' ] . '" alt="">';
     } else {
@@ -1308,7 +1308,7 @@ echo'
 
 
 $themeID = $_GET[ 'themeID' ];
-    $ergebnis = safe_query("SELECT * FROM " . PREFIX . "settings_expansion WHERE themeID='$themeID'");
+    $ergebnis = safe_query("SELECT * FROM settings_themes WHERE themeID='$themeID'");
     $dy = mysqli_fetch_array($ergebnis);
 
 if ($dy[ 'headlines' ] == 'headlines_01.css') {
@@ -1488,7 +1488,7 @@ echo'
       <!-- ================Button=========================== -->
       ';
 
-    $ergebnis = safe_query("SELECT * FROM " . PREFIX . "settings_buttons WHERE modulname='".getinput($ds['modulname'])."'");
+    $ergebnis = safe_query("SELECT * FROM settings_buttons WHERE modulname='".getinput($ds['modulname'])."'");
     $db = mysqli_fetch_array($ergebnis);
 echo'
       <div class="col-md-12 row">
@@ -2104,7 +2104,7 @@ echo'
 
 <h4>'.$_language->module['plugin_foot_set'].'</h4>';
 
-$dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='footer'"));
+$dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='footer'"));
         if (@$dx[ 'modulname' ] != 'footer') {
         echo 'No Plugin';
         } else {
@@ -2169,7 +2169,7 @@ echo'
 
 <h4>Calendar Plugin Settings</h4>';
 
-$dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='calendar'"));
+$dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='calendar'"));
         if (@$dx[ 'modulname' ] != 'calendar') {
         echo 'No Plugin';
         } else {
@@ -2205,7 +2205,7 @@ echo'
 
 <h4>'.$_language->module['plugin_carousel_set'].'</h4>';
 
-$dx = mysqli_fetch_array(safe_query("SELECT * FROM " . PREFIX . "settings_plugins WHERE modulname='carousel'"));
+$dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='carousel'"));
         if (@$dx[ 'modulname' ] != 'carousel') {
         echo 'No Plugin';
         } else {
@@ -2271,7 +2271,7 @@ echo'
       <div class="accordion-body">
 
       <div class="mb-3 row">
-    <label class="col-md-3">'.$_language->module['stylesheet_info'].'<br><br><small>'.$_language->module['folder_themes'].': <b>/includes/expansion/'.$ds['pfad'].'/css/</b>stylesheet.css</small></label>
+    <label class="col-md-3">'.$_language->module['stylesheet_info'].'<br><br><small>'.$_language->module['folder_themes'].': <b>/includes/themes/'.$ds['pfad'].'/css/</b>stylesheet.css</small></label>
     <div class="col-md-8">
         <textarea class="form-control" name="stylesheet" rows="20" cols="">'.$stylesheet.'</textarea>
     </div>
@@ -2329,8 +2329,8 @@ if (isset($_POST[ 'addedit' ])) {
     }
         
     if($active == '1') {
-      $sql = safe_query("SELECT `themeID` FROM `".PREFIX."settings_expansion` WHERE `active` = 1 LIMIT 1");
-      safe_query("UPDATE `".PREFIX."settings_expansion` SET active = 0 WHERE `themeID` = themeID");
+      $sql = safe_query("SELECT `themeID` FROM settings_themes WHERE `active` = 1 LIMIT 1");
+      safe_query("UPDATE settings_themes SET active = 0 WHERE `themeID` = themeID");
     }
 
         $themeID = (int)$_POST[ 'themeID' ];
@@ -2338,7 +2338,7 @@ if (isset($_POST[ 'addedit' ])) {
 
         safe_query(
             "UPDATE
-                `" . PREFIX . "settings_expansion`
+                settings_themes
             SET
                 
                 `active` = '" . $active . "'
@@ -2380,8 +2380,8 @@ echo'<div class="card">
   </div>-->';
 
 
-    $row = safe_query("SELECT * FROM "settings_expansion");
-    $tmp = mysqli_fetch_assoc(safe_query("SELECT count(themeID) as cnt FROM "settings_expansion"));
+    $row = safe_query("SELECT * FROM settings_themes");
+    $tmp = mysqli_fetch_assoc(safe_query("SELECT count(themeID) as cnt FROM settings_themes"));
     $anzpartners = $tmp[ 'cnt' ];
     $CAPCLASS = new \webspell\Captcha;
     $CAPCLASS->createTransaction();
@@ -2398,19 +2398,19 @@ echo'<div class="card">
     
    $i = 1;
     while ($db = mysqli_fetch_array($row)) {
-                if (file_exists("../includes/expansion/".getinput($db['pfad'])."/images/".getinput($db['modulname']).".jpg")) {
+                if (file_exists("../includes/themes/".getinput($db['pfad'])."/images/".getinput($db['modulname']).".jpg")) {
                     $bannerpic = ".jpg";
                     $pic_info = $db[ 'modulname' ];
-                } elseif (file_exists("../includes/expansion/".getinput($db['pfad'])."/images/".getinput($db['modulname']).".gif")) {
+                } elseif (file_exists("../includes/themes/".getinput($db['pfad'])."/images/".getinput($db['modulname']).".gif")) {
                     $bannerpic = ".gif";
                     $pic_info = $db[ 'modulname' ];
-                } elseif (file_exists("../includes/expansion/".getinput($db['pfad'])."/images/".getinput($db['modulname']).".png")) {
+                } elseif (file_exists("../includes/themes/".getinput($db['pfad'])."/images/".getinput($db['modulname']).".png")) {
                     $bannerpic = ".png";
                     $pic_info = $db[ 'modulname' ];
-				} elseif (file_exists("../includes/expansion/".getinput($db['pfad'])."/images/".getinput($db['modulname']).".avif")) {
+				} elseif (file_exists("../includes/themes/".getinput($db['pfad'])."/images/".getinput($db['modulname']).".avif")) {
                     $bannerpic = ".avif";
                     $pic_info = $db[ 'modulname' ];
-				} elseif (file_exists("../includes/expansion/".getinput($db['pfad'])."/images/".getinput($db['modulname']).".webp")) {
+				} elseif (file_exists("../includes/themes/".getinput($db['pfad'])."/images/".getinput($db['modulname']).".webp")) {
                     $bannerpic = ".webp";
                     $pic_info = $db[ 'modulname' ];
                 } else {
@@ -2424,7 +2424,7 @@ echo'<div class="card">
         <td>
 
 <div class="imageHold">
-    <div><img class="featured-image img-thumbnail" src="../includes/expansion/'.getinput($db['pfad']).'/images/'.$pic_info.''.$bannerpic.'" alt="Bannerpic"></div>
+    <div><img class="featured-image img-thumbnail" src="../includes/themes/'.getinput($db['pfad']).'/images/'.$pic_info.''.$bannerpic.'" alt="Bannerpic"></div>
 </div>
 
         </td>
@@ -2432,7 +2432,7 @@ echo'<div class="card">
         <td style="width: 45%"><h5>'.getinput($db['name']).'</h5><br>
         '.$_language->module['themes_name'].': '.getinput($db['name']).'
         <br>'.$_language->module['modulname'].': '.$db['modulname'].'
-        <br>'.$_language->module['folder_themes'].': /includes/expansion/'.getinput($db['pfad']).'
+        <br>'.$_language->module['folder_themes'].': /includes/themes/'.getinput($db['pfad']).'
         <br>'.$_language->module['version'].': '.$db['version'].'';
         
 

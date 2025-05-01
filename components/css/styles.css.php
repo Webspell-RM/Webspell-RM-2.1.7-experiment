@@ -23,19 +23,19 @@ header('Content-type: text/css');
 
     
 
-    $ergebnis = safe_query("SELECT * FROM settings_expansion WHERE active = '1'");
+    $ergebnis = safe_query("SELECT * FROM settings_themes WHERE active = '1'");
     $ds = mysqli_fetch_array($ergebnis);
 
-    if(@$ds["background_pic"] == $ds["pfad"].'_background_bg.jpg') {
-        $rm_body_pic = "/includes/expansion/".$ds["pfad"]."/images/".$ds["background_pic"]."";
+    if(@$ds["background_pic"] == 'background_bg.jpg') {
+        $rm_body_pic = "/includes/themes/".$ds["pfad"]."/images/".$ds["background_pic"]."";
         $content_style =  substr($ds["card1"], 4, -1);
     }else{
-        $rm_body_pic = "/includes/expansion/default/images/no_background.png";
+        $rm_body_pic = "/includes/themes/default/images/no_background.png";
         $content_style =  "transparent";
     }
 
     #if(@$ds["reg_pic"] == $ds["pfad"].'_reg_pic.jpg') {
-        $rm_reg_pic = "/includes/expansion/".$ds["pfad"]."/images/".$ds["reg_pic"]."";
+        $rm_reg_pic = "/includes/".$ds["pfad"]."/images/".$ds["reg_pic"]."";
     #}else{
     #    $rm_reg_pic = "/includes/expansion/default/images/default_login_bg.jpg";
     #}

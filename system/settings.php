@@ -270,7 +270,7 @@ function systeminc($file) {
 $headlines = '';
 
 // Führe eine Abfrage aus, um die aktiven Einstellungen zu holen
-$result = safe_query("SELECT * FROM `settings_expansion` WHERE `active` = '1'");
+$result = safe_query("SELECT * FROM `settings_themes` WHERE `active` = '1'");
 
 // Fehlerbehandlung für das Abfrageergebnis
 if ($result && mysqli_num_rows($result) > 0) {
@@ -370,7 +370,7 @@ if (empty($maxmessages)) {
 
 // Zusätzliche Einstellungen
 $hp_url = $ds['hpurl'];
-$hp_title = stripslashes($ds['title']);
+$hp_title = stripslashes($ds['hptitle']);
 $register_per_ip = $ds['register_per_ip'];
 $admin_name = $ds['adminname'];
 $admin_email = $ds['adminemail'];
@@ -450,22 +450,16 @@ if ($dx && mysqli_num_rows($dx) > 0) {
     $logo = 'default_logo.png'; // Setze Standardlogo, wenn nichts gefunden wurde
 }
 
-// Erweiterte Einstellungen - partners
-$row = safe_query("SELECT * FROM settings_expansion WHERE active = '1'");
-
-// Fehlerbehandlung für Erweiterungsabfrage
-if ($row && mysqli_num_rows($row) > 0) {
-    while ($ds = mysqli_fetch_assoc($row)) {
-        // Annahme: Nur das letzte `pfad` wird benötigt
-        $theme_name = isset($ds['pfad']) ? $ds['pfad'] : 'default_theme'; // Fallback-Wert
-    }
-} else {
-    // Fehlerbehandlung, wenn keine Daten für Erweiterungen gefunden wurden
-    $theme_name = 'default_theme'; // Setze Standardtheme, wenn nichts gefunden wurde
+$row = safe_query("SELECT * FROM settings_themes WHERE active = '1'");
+$tmp = mysqli_fetch_assoc(safe_query("SELECT count(themeID) as cnt FROM settings_themes"));
+$anzpartners = $tmp[ 'cnt' ];
+while ($ds = mysqli_fetch_array($row)) {
+       $theme_name = $ds['pfad'];
+       #print_r($theme_name);
 }
 
 // Abfrage für Partneranzahl
-$tmp = safe_query("SELECT count(themeID) as cnt FROM settings_expansion");
+$tmp = safe_query("SELECT count(themeID) as cnt FROM settings_themes");
 
 // Fehlerbehandlung für Partneranzahl
 if ($tmp && mysqli_num_rows($tmp) > 0) {

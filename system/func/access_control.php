@@ -109,6 +109,5 @@ class AccessControl
     }*/
 /*}*/
 
-function escape($input) {
-    return mysqli_real_escape_string($GLOBALS['_database'], $input);
-}
+
+

@@ -331,8 +331,8 @@ if ($userID && !isset($_GET['userID']) && !isset($_POST['userID'])) {
 	$ds = mysqli_fetch_array(safe_query("SELECT registerdate FROM `users` WHERE userID='" . $userID . "'"));
 	$username = '<a class="nav-link nav-link-3" href="../index.php?site=profile&amp;id=' . $userID . '">' . getusername($userID) . '</a>';
 	#$lastlogin = getformatdatetime($_SESSION['ws_lastlogin']);
-	$lastlogin = 'fehlt noch';
-	$registerdate = getformatdatetime($ds['registerdate']);
+	$lastlogin = !empty($ds['lastlogin']) ? getformatdatetime($ds['lastlogin']) : '-';
+    $registerdate = getformatdatetime($ds['registerdate']);
 
 	$data_array = array();
 	$data_array['$username'] = $username;
@@ -390,50 +390,54 @@ if ($getavatar = getavatar($userID)) {
 	<div id="wrapper">
 		<!-- Navigation -->
 
-		<ul class="nav justify-content-end" style="margin-bottom: 25px;margin-top: 5px;">
-			<li class="nav-item">
-				<a class="nav-link nav-link-2"><?php echo $_language->module['welcome'] ?> </a>
-			</li>
-			<li class="nav-item">
-				<?php echo @$username ?>
-			</li>
-			<li class="nav-item dropdown">
-				<a class="nav-link nav-link-3 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-					<?php echo $_language->module['logout'] ?>
-				</a>
-				<ul class="dropdown-menu">
-					<li><a class="dropdown-item" href="../index.php"><i class="bi bi-arrow-clockwise text-success"></i> <?php echo $_language->module['back_to_website'] ?></a></li>
-					<li><a class="dropdown-item" href="/admin/admincenter.php?site=logout"><i class="bi bi-x-lg text-danger"></i> <?php echo $_language->module['logout'] ?></a></li>
-				</ul>
-			</li>
-		</ul>
+		<ul class="nav justify-content-between" style="width: 100%; margin-bottom: 25px; margin-top: 5px;background: #3a4651;">
+   
+    <li class="nav-item" style="width: 80%;margin-left: 6px;">
+        <a class="navbar-brand" href="/admin/admincenter.php">
+		            <img src="/admin/images/rm.png" style="width: 230px;margin-top: 7px; margin-bottom: 7px;" alt="setting">
+		        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link nav-link-2"><?php echo $_language->module['welcome'] ?> </a>
+    </li>
+    <li class="nav-item">
+        <?php echo @$username ?>
+    </li>
+    <li class="nav-item dropdown" style="margin-right: 18px;">
+        <a class="nav-link nav-link-3 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <?php echo $_language->module['logout'] ?>
+        </a>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="../index.php"><i class="bi bi-arrow-clockwise text-success"></i> <?php echo $_language->module['back_to_website'] ?></a></li>
+            <li><a class="dropdown-item" href="/admin/admincenter.php?site=logout"><i class="bi bi-x-lg text-danger"></i> <?php echo $_language->module['logout'] ?></a></li>
+        </ul>
+    </li>
+</ul>
 
 
 
 		<!-- /.navbar-top-links -->
 		<!-- sidebar-links -->
-		<nav class="navbar-default sidebar navbar-dark" role="navigation" style="margin-top: -30px;">
-    <div style="padding: 0 0 10px 0;" id="ws-image">
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <a class="navbar-brand" href="/admin/admincenter.php">
-            <img src="/admin/images/rm.png" style="width: 230px;margin-top: 7px; margin-bottom: 7px;" alt="setting">
-        </a><br>
-        <img id="avatar-big" style="height: 90px;margin-top: 9px;margin-bottom: 9px; -webkit-box-shadow: 2px 2px 15px 3px rgba(0,0,0,0.54);box-shadow: 2px 2px 15px 3px rgba(0,0,0,0.54);border: 3px solid #fe821d;border-radius: 25px;--bs-tooltip-bg: #fe821d;" src="/images/avatars/<?php echo $l_avatar ?>" data-toggle="tooltip" data-html="true" data-bs-placement="right" data-bs-original-title="<?php echo getusername($userID) ?>" class="rounded-circle profile_img">
-        <div class="sidebar-nav col1lapse navbar-collapse" id="navbarNavDropdown">
-            <ul class="nav metismenu text-start navbar-nav" id="side-bar">
-                <li class="sidebar-head mm-active">
-                    <a class="nav-link link-head" href="admincenter.php"> <i class="bi bi-house-door"></i> Dashboard</a>
-                </li>
-                <?php echo dashnavi(); ?>
-            </ul>
-        </div>
-        <div class="copy">
-            <em>Admin Template by <a href="https://www.webspell-rm.de" target="_blank" rel="noopener">Webspell-RM</a></em>					
-        </div>
-    </div>
-</nav>
+		<nav class="navbar-default sidebar navbar-dark" role="navigation" style="margin-top: 5px;">
+		    <div style="padding: 0 0 10px 0;" id="ws-image">
+		        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+		            <span class="navbar-toggler-icon"></span>
+		        </button>
+		        
+		        <img id="avatar-big" style="height: 90px;margin-top: 9px;margin-bottom: 9px; -webkit-box-shadow: 2px 2px 15px 3px rgba(0,0,0,0.54);box-shadow: 2px 2px 15px 3px rgba(0,0,0,0.54);border: 3px solid #fe821d;border-radius: 25px;--bs-tooltip-bg: #fe821d;" src="/images/avatars/<?php echo $l_avatar ?>" data-toggle="tooltip" data-html="true" data-bs-placement="right" data-bs-original-title="<?php echo getusername($userID) ?>" class="rounded-circle profile_img">
+		        <div class="sidebar-nav col1lapse navbar-collapse" id="navbarNavDropdown">
+		            <ul class="nav metismenu text-start navbar-nav" id="side-bar">
+		                <li class="sidebar-head mm-active">
+		                    <a class="nav-link link-head" href="admincenter.php"> <i class="bi bi-house-door"></i> Dashboard</a>
+		                </li>
+		                <?php echo dashnavi(); ?>
+		            </ul>
+		        </div>
+		        <div class="copy">
+		            <em>Admin Template by <a href="https://www.webspell-rm.de" target="_blank" rel="noopener">Webspell-RM</a></em>					
+		        </div>
+		    </div>
+		</nav>
 
 		<!-- /.navbar-static-side -->
 
@@ -481,7 +485,6 @@ if ($getavatar = getavatar($userID)) {
 if ($roleID !== null && RoleManager::roleHasPermission($roleID, 'ckeditor_full')) {
     echo '<script src="../components/ckeditor/ckeditor.js"></script>';
     echo '<script src="../components/ckeditor/config.js"></script>';
-    echo 'admin';
 } else {
     echo '<script src="../components/ckeditor/ckeditor.js"></script>';
     echo '<script src="../components/ckeditor/user_config.js"></script>';
@@ -558,6 +561,7 @@ if ($roleID !== null && RoleManager::roleHasPermission($roleID, 'ckeditor_full')
 				})
 			});
 		</script>
+        admin_users.php
 </body>
 
 </html>

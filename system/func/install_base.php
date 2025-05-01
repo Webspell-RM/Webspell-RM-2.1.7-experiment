@@ -124,7 +124,7 @@ function addtable($table) {
         echo "<div class='alert alert-danger'><b>Database ".$str.":</b><br>Database ".$str." installation failed <br />";
         echo "Send the following line to the support team:<br />";
         echo "Invia la seguente riga al team di supporto:<br /><br /><br />";
-        echo "<pre>".$x->message()."</pre>";     
+        echo "<pre>".$x->getMessage()."</pre>";     
         echo"</div>";
       }
     }
@@ -157,7 +157,7 @@ function add_insert_table($table) {
         echo "<div class='alert alert-danger'><b>Database ".$str.":</b><br>Database ".$str." installation failed <br />";
         echo "Send the following line to the support team:<br />";
         echo "Invia la seguente riga al team di supporto:<br /><br /><br />";
-        echo "<pre>".$x->message()."</pre>";     
+        echo "<pre>".$x->getMessage()."</pre>";     
         echo"</div>";
       }
     }
@@ -190,7 +190,7 @@ function add_insert_plugin($table) {
         echo "<div class='alert alert-danger'><b>Plugineinträge:</b><br>Database ".$str." installation failed <br />";
         echo "Send the following line to the support team:<br />";
         echo "Invia la seguente riga al team di supporto:<br /><br /><br />";
-        echo "<pre>".$x->message()."</pre>";     
+        echo "<pre>".$x->getMessage()."</pre>";     
         echo"</div>";
       }
     }
@@ -221,7 +221,7 @@ function add_insert_plugin_2($table) {
         echo "<div class='alert alert-danger'><b>Plugineinträge:</b><br>Database ".$str." installation failed <br />";
         echo "Send the following line to the support team:<br />";
         echo "Invia la seguente riga al team di supporto:<br /><br /><br />";
-        echo "<pre>".$x->message()."</pre>";     
+        echo "<pre>".$x->getMessage()."</pre>";     
         echo"</div>";
       }
     }
@@ -252,7 +252,7 @@ function add_insert_plugin_3($table) {
         echo "<div class='alert alert-danger'><b>Plugineinträge:</b><br>Database ".$str." installation failed <br />";
         echo "Send the following line to the support team:<br />";
         echo "Invia la seguente riga al team di supporto:<br /><br /><br />";
-        echo "<pre>".$x->message()."</pre>";     
+        echo "<pre>".$x->getMessage()."</pre>";     
         echo"</div>";
       }
     }
@@ -285,7 +285,7 @@ function add_insert_plugins_widget($table) {
         echo "<div class='alert alert-danger'><b>Plugin Widget Einträge:</b><br>Database ".$str." installation failed <br />";
         echo "Send the following line to the support team:<br />";
         echo "Invia la seguente riga al team di supporto:<br /><br /><br />";
-        echo "<pre>".$x->message()."</pre>";     
+        echo "<pre>".$x->getMessage()."</pre>";     
         echo"</div>";
       }
     }
@@ -318,7 +318,7 @@ function add_insert_navi_dashboard($table) {
         echo "<div class='alert alert-danger'><b>Dashboard Navigation:</b><br>".$str." installation failed <br />";
         echo "Send the following line to the support team:<br />";
         echo "Invia la seguente riga al team di supporto:<br /><br /><br />";
-        echo "<pre>".$x->message()."</pre>";     
+        echo "<pre>".$x->getMessage()."</pre>";     
         echo"</div>";
       }
     }
@@ -347,7 +347,7 @@ function add_insert_navi_dashboard_2($table) {
         echo "<div class='alert alert-danger'><b>Dashboard Navigation:</b><br>".$str." installation failed <br />";
         echo "Send the following line to the support team:<br />";
         echo "Invia la seguente riga al team di supporto:<br /><br /><br />";
-        echo "<pre>".$x->message()."</pre>";     
+        echo "<pre>".$x->getMessage()."</pre>";     
         echo"</div>";
       }
     }
@@ -378,7 +378,7 @@ function add_insert_navigation($table) {
         echo "<div class='alert alert-danger'><b>Website Navigation:</b><br>".$str." installation failed <br />";
         echo "Send the following line to the support team:<br />";
         echo "Invia la seguente riga al team di supporto:<br /><br /><br />";
-        echo "<pre>".$x->message()."</pre>";     
+        echo "<pre>".$x->getMessage()."</pre>";     
         echo"</div>";
       }
     }
@@ -407,7 +407,7 @@ function add_insert_navigation_2($table) {
         echo "<div class='alert alert-danger'><b>Website Navigation:</b><br>".$str." installation failed <br />";
         echo "Send the following line to the support team:<br />";
         echo "Invia la seguente riga al team di supporto:<br /><br /><br />";
-        echo "<pre>".$x->message()."</pre>";     
+        echo "<pre>".$x->getMessage()."</pre>";     
         echo"</div>";
       }
     }

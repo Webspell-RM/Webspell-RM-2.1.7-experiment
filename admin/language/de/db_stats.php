@@ -3,6 +3,13 @@
 // Sprach-Array für das Modul 'page_statistic'
 $language_array = array(
     'access_denied' => 'Zugriff verweigert',
+    'database' => 'Datenbank',
+    'database' => 'Datenbankstatistiken',
+    'demos' => 'Demos',
+    'mysql_version' => 'MySQL Version',
+    'optimize' => 'jetzt optimieren!',
+    'overhead' => 'Überschuss',
+    'page_stats' => 'Tabellenzeilen-Statistiken',
     'plugins_about_us' => 'About Us',
     'plugins_articles' => 'Artikel',
     'plugins_awards' => 'Auszeichnungen',
@@ -13,8 +20,6 @@ $language_array = array(
     'comments' => 'Kommentare',
     'contact' => 'Kontakte',
     'settings_countries' => 'Länder',
-    'database' => 'Datenbank',
-    'demos' => 'Demos',
     'plugins_faq' => 'FAQs',
     'plugins_faq_categories' => 'FAQ Kategorien',
     'plugins_files' => 'Dateien',
@@ -36,14 +41,10 @@ $language_array = array(
     'plugins_links_categorys' => 'Link Kategorien',
     'plugins_linkus' => 'Verlinke uns Banner',
     'plugins_messenger' => 'gesendete Nachrichten',
-    'mysql_version' => 'MySQL Version',
     'plugins_news' => 'Neuigkeiten',
     'news_languages' => 'Neuigkeiten-Sprachen',
     'plugins_news_rubrics' => 'Neuigkeiten Rubriken',
     'plugins_news_comments' => 'Neuigkeiten Kommentare',
-    'optimize' => 'jetzt optimieren!',
-    'overhead' => 'Überschuss',
-    'page_stats' => 'Seiten Statistiken',
     'plugins_partners' => 'Partner',
     'plugins_poll' => 'Umfragen',
     'plugins_servers' => 'Server',
@@ -62,30 +63,12 @@ $language_array = array(
     'plugins_todo' => 'Todo',
     'plugins_streams' => 'Streams',
     'plugins_pic_update' => 'Bilder update',
-
-    'property' => 'Property', 
-    'value' => 'Value',
-    'table_size_chart' => 'Tabellen-Größen Diagramm',
-
-
-
-    'last_db_operations' => 'Letzte Datenbankoperationen',
-        'operation' => 'Operation',
-        'timestamp' => 'Zeitstempel',
-        'status' => 'Status',
-        'no_recent_operations' => 'Keine letzten Operationen',
-        'error_logs' => 'Fehlerprotokolle',
-        'error_message' => 'Fehlermeldung',
-        'no_error_logs' => 'Keine Fehlerprotokolle',
-        'user_statistics' => 'Benutzerstatistiken',
-        'total_users' => 'Gesamtbenutzer',
-        'active_users' => 'Aktive Benutzer',
-        'inactive_users' => 'Inaktive Benutzer',
-        'table_statistics' => 'Tabellenstatistiken',
-        'table_name' => 'Tabellenname',
-        'query_count' => 'Anzahl der Abfragen',
-        'no_statistics_available' => 'Keine Statistiken verfügbar',
+    'property' => 'Eigenschaft',
+    'value' => 'Wert',
+    'table_size_chart' => 'Tabellengrößen-Diagramm',
+    'serverinfo' => 'Server-Informationen',
 );
+
 
 ?>
 

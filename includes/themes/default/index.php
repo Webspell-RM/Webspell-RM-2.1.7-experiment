@@ -52,7 +52,7 @@ header('X-UA-Compatible: IE=edge');
     <meta name="copyright" content="Copyright &copy; 2018-2025 by webspell-rm.de">
     <meta name="author" content="webspell-rm.de">
     <meta name="distribution" content="global">
-    <link rel="SHORTCUT ICON" href="./includes/expansion/<?php echo htmlspecialchars($theme_name, ENT_QUOTES, 'UTF-8'); ?>/images/favicon.ico">
+    <link rel="SHORTCUT ICON" href="./includes/themes/<?php echo htmlspecialchars($theme_name, ENT_QUOTES, 'UTF-8'); ?>/images/favicon.ico">
 
     <!-- Head & Title include -->
     <title><?= get_sitetitle(); ?></title>
@@ -73,7 +73,7 @@ header('X-UA-Compatible: IE=edge');
     echo ($_pluginmanager->plugin_loadheadfile_widget_css());
     echo '<!--Widget css END-->' . PHP_EOL;
     ?>
-    <link type="text/css" rel="stylesheet" href="./includes/expansion/<?php echo htmlspecialchars($theme_name, ENT_QUOTES, 'UTF-8'); ?>/css/stylesheet.css" />
+    <link type="text/css" rel="stylesheet" href="./includes/themes/<?php echo htmlspecialchars($theme_name, ENT_QUOTES, 'UTF-8'); ?>/css/stylesheet.css" />
 </head>
 
 <body>

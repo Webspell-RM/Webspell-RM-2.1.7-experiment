@@ -40,9 +40,8 @@ GLOBAL $userID, $board_topics, $split, $array;
 
 $_language->readModule('index');
 
-// Lade das Template für den Header der Navigation
-$html = $template->loadTemplate("navigation", "login_head", []);
-echo $html;
+echo $tpl->loadTemplate("navigation", "login_head", $data_array);
+
 
 if ($loggedin) {
     $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='forum' AND activate=1"));
@@ -160,12 +159,12 @@ if ($loggedin) {
         'lang_overview' => $index_language['overview'],
         'to_profil' => $index_language['to_profil'],
         'lang_user_information' => $index_language['user_information'],
-        'lang_edit_profile' => $index_language['edit_profile']
+        'lang_edit_profile' => $index_language['edit_profile'],
+        'my_account' => $index_language['my_account']
     ];
 
     // Template laden und in $html speichern
-    $html = $template->loadTemplate("navigation", "login_loggedin", $data_array);
-    echo $html;
+    echo $tpl->loadTemplate("navigation", "login_loggedin", $data_array);
 
 } else {
     // Wenn der Benutzer nicht eingeloggt ist
@@ -180,5 +179,5 @@ if ($loggedin) {
 }
 
 // Template für den Footer laden und in $html speichern
-$html = $template->loadTemplate("navigation", "login_foot", []);
-echo $html;
+echo $tpl->loadTemplate("navigation", "login_foot", []);
+

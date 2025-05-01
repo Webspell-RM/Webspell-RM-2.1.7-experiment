@@ -1,4 +1,16 @@
 <?php
+
+use webspell\LoginSecurity;
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+#require_once('../system/classes/login_security.php');
+
+#$_language->readModule('login');
+
+global $_database;
+
 #session_start();
 include('../system/config.inc.php');  // config.inc.php einbinden (anstelle von sql.php)
 include('../system/settings.php');
@@ -8,87 +20,118 @@ include('../system/widget.php');
 include('../system/version.php');
 include('../system/multi_language.php');
 
-// Wenn der Benutzer bereits eingeloggt ist, weiterleiten zum Admincenter
-if (isset($_SESSION['userID'])) {
-    header("Location: admincenter.php");
-    exit;
-}
-
-function escape($string) {
-    global $_database;
-    return $_database->real_escape_string($string);
-}
 
 
+$ip = $_SERVER['REMOTE_ADDR'];
+$message = '';
+$isIpBanned = false;
+$email = '';
 
+// Login-Handling
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
+    $password_hash = $_POST['password'];
 
-$message = null;
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $_SESSION['error_message'] = "❌ Ungültige E-Mail-Adresse.";
+        header("Location: login.php");
+        exit;
+    }
 
-// POST-Login-Versuch
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'], $_POST['password'])) {
-    $email = trim($_POST['email']);
-    $password = $_POST['password'];
+    $loginResult = LoginSecurity::verifyLogin($email, $password_hash, $ip, $is_active, $is_locked);
 
-    // Benutzer anhand der E-Mail holen
-    $result = safe_query("SELECT * FROM `users` WHERE `email` = '" . escape($email) . "'");
-    
-    if (mysqli_num_rows($result)) {
-        $user = mysqli_fetch_assoc($result);
+    if ($loginResult['success']) {
+        if (LoginSecurity::isIpBanned($ip)) {
+            $message = 'Diese IP-Adresse wurde gesperrt. Bitte kontaktiere den Support.';
+            $isIpBanned = true;
+        }
 
-        if (!empty($user['password_hash']) && !empty($user['password_pepper'])) {
-            $inputPasswordWithPepper = $password . $user['password_pepper'];
+        $stmt = $_database->prepare("SELECT userID, username, email, is_locked FROM users WHERE email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $user = $stmt->get_result()->fetch_assoc();
 
-            if (password_verify($inputPasswordWithPepper, $user['password_hash'])) {
-                // Erfolgreich eingeloggt
-                $_SESSION['userID'] = $user['userID'];
-                $_SESSION['username'] = $user['username'];
-
-                // Session in DB speichern
-                saveSessionToDatabase($user['userID'], $_SESSION);
-
-                $redirect_url = $_SESSION['login_redirect'] ?? '/admin/admincenter.php';
-                unset($_SESSION['login_redirect']);
-                // Erfolgreiche Anmeldung
-                $message = '<div class="alert alert-success" role="alert">✅ Login erfolgreich!</div>';
-                
-                header("Location: /admin/admincenter.php"); // oder Weiterleitung ins Dashboard
-                exit;
+        if ($user) {
+            if ((int)$user['is_locked'] === 1) {
+                $message = 'Dein Konto wurde gesperrt. Bitte kontaktiere den Support.';
+                $isIpBanned = true;
             } else {
-                // Fehler: Passwort falsch
-                $message = '<div class="alert alert-danger" role="alert">⚠️ Falsches Passwort!</div>';
+                $_SESSION['userID'] = (int)$user['userID'];
+                $_SESSION['username'] = $user['username'];
+                $_SESSION['email'] = $user['email'];
+
+                LoginSecurity::saveSession($user['userID']);
+
+                $_SESSION['success_message'] = "Login erfolgreich!";
+                header("Location: admincenter.php");
+                exit;
             }
         } else {
-            // Fehler: Kein gültiges Passwort gespeichert
-            $message = '<div class="alert alert-warning" role="alert">⚠️ Benutzer hat kein gültiges Passwort gespeichert.</div>';
+            $message = 'Benutzer nicht gefunden oder falsche E-Mail-Adresse.';
         }
     } else {
-        // Fehler: Benutzer nicht gefunden
-        $message = '<div class="alert alert-danger" role="alert">⚠️ Benutzer nicht gefunden!</div>';
+        $stmt = $_database->prepare("SELECT userID, is_active FROM users WHERE email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $res = $stmt->get_result();
+
+        if ($res && $res->num_rows > 0) {
+            $row = $res->fetch_assoc();
+            $userID = (int)$row['userID'];
+
+            if ((int)$row['is_active'] === 0) {
+                $message = 'Dein Konto wurde noch nicht aktiviert. Bitte überprüfe deine E-Mail.';
+                $isIpBanned = true;
+            } else {
+                if (!LoginSecurity::isEmailOrIpBanned($email, $ip)) {
+                    LoginSecurity::trackFailedLogin($userID, $email, $ip);
+                    $failCount = LoginSecurity::getFailCount($ip, $email);
+
+                    if ($failCount >= 5) {
+                        LoginSecurity::banIp($ip, $userID, "Zu viele Fehlversuche", $email);
+                        $_SESSION['error_message'] = "Zu viele Fehlversuche – Deine IP wurde gesperrt.";
+                    } else {
+                        $_SESSION['error_message'] = "Falsche E-Mail oder Passwort. Versuche: $failCount / 5";
+                    }
+                } else {
+                    $message = 'Diese E-Mail-Adresse oder IP wurde gesperrt. Bitte kontaktiere den Support.';
+                    $isIpBanned = true;
+                }
+            }
+        } else {
+            $message = 'Benutzer nicht gefunden oder falsche E-Mail.';
+            $isIpBanned = true;
+        }
+    }
+
+    if (isset($_SESSION['error_message'])) {
+        $message = $_SESSION['error_message'];
+        unset($_SESSION['error_message']);
     }
 }
 
-$_language->readModule('admincenter', false, true);
+// Letzte Prüfung auf gebannte E-Mail
+if (!empty($email) && LoginSecurity::isEmailBanned($ip, $email)) {
+    $message = 'Diese E-Mail-Adresse wurde gesperrt. Bitte kontaktiere den Support.';
+    $isIpBanned = true;
+}
 
-// HTML-Ausgabe
-echo '
+
+?>
+
 <!DOCTYPE html>
-<html lang="'.$_language->language.'">
+<html lang="<?= $_language->language ?>">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Website using webSPELL-RM CMS">
-    <meta name="copyright" content="Copyright &copy; 2017-2023 by webspell-rm.de">
-    <meta name="author" content="webspell-rm.de">
-    <link rel="SHORTCUT ICON" href="./favicon.ico">
-    
-    <!-- CSS einbinden -->
-    <link href="/admin/css/bootstrap.min.css" rel="stylesheet">    
-    <link href="/admin/css/style.css" rel="stylesheet">
-    <link type="text/css" rel="stylesheet" href="../components/css/styles.css.php" />
-    <link rel="stylesheet" href="../components/cookies/css/cookieconsent.css" media="print" onload="this.media=\'all\'">
-    <link rel="stylesheet" href="../components/cookies/css/iframemanager.css" media="print" onload="this.media=\'all\'">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="webSPELL-RM CMS Admin Login">
     <title>webSpell | RM - Admin Login</title>
+
+    <link href="/admin/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/admin/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="../components/css/styles.css.php" />
+    <link rel="stylesheet" href="../components/cookies/css/cookieconsent.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="../components/cookies/css/iframemanager.css" media="print" onload="this.media='all'">
 </head>
 <body>
 
@@ -96,8 +139,8 @@ echo '
   <div class="row no-gutter">
     <div class="d-none d-md-flex col-md-4 col-lg-6 bg-image">
         <div class="logo">
-            <img class="mw-100 mh-100" src="/admin/images/logo.png" width="auto" height="auto">
-            <p class="text1">webspell <span>rm</span>
+            <img class="mw-100 mh-100" src="/admin/images/logo.png" alt="Logo">
+            <p class="text1">webspell <span>rm</span></p>
         </div>
     </div>
     <div class="col-md-8 col-lg-6 no-bg">
@@ -105,34 +148,33 @@ echo '
         <div class="container">
           <div class="row">
             <div class="col-md-9 col-lg-8 mx-auto">
-                <h2 class="login-heading mb-4"><span>'.$_language->module[ 'signup' ].'</span></h2>
+                <h2 class="login-heading mb-4"><span><?= $_language->module['signup'] ?></span></h2>
                 <div>
-                    <h5>'.$_language->module[ 'dashboard' ].'</h5><br />
-                    <div class="alert alert-info" role="alert">
-                    '.$_language->module[ 'welcome2' ].' '.$version.' Login.<br><br>
-                    '.$_language->module[ 'insertmail' ].'                        
+                    <h5><?= $_language->module['dashboard'] ?></h5><br />
+                    <div class="alert alert-info">
+                        <?= $_language->module['welcome2'] ?> Login<br><br>
+                        <?= $_language->module['insertmail'] ?>
                     </div>
                 </div>
-              <form method="POST" action="">
-                <div class="form-label-group">
-                    <label for="exampleInputEmail1">'.$_language->module[ 'email_address' ].'</label>
-                  <input class="form-control" name="email" type="text" placeholder="Email Address" id="login" required>
-                </div>
-                  
-                <div class="form-label-group">
-                    <label for="exampleInputPassword1">Password</label>
-                  <input class="form-control" name="password" type="password" placeholder="Password" id="password" required>
-                </div>
 
-                <input type="submit" name="submit" value="'.$_language->module[ 'signup' ].'" class="fourth btn btn-lg btn-primary btn-block btn-login text-uppercase font-weight-bold mb-2">
-              </form>
-              ';
+                <form method="POST" action="">
+                    <div class="form-group">
+                        <label for="email"><?= $_language->module['email_address'] ?></label>
+                        <input class="form-control" name="email" type="email" placeholder="Email" required>
+                    </div>
 
-if ($message) {
-    echo '<div class="alert alert-danger mt-3" role="alert">' . htmlspecialchars($message) . '</div>';
-}
+                    <div class="form-group">
+                        <label for="password">Passwort</label>
+                        <input class="form-control" name="password" type="password" placeholder="Passwort" required>
+                    </div>
 
-echo '
+                    <input type="submit" name="submit" value="<?= $_language->module['signup'] ?>" class="btn btn-primary btn-block">
+                </form>
+
+                <?php if (!empty($message)) : ?>
+                    <div class="alert alert-danger mt-3"><?= htmlspecialchars($message) ?></div>
+                <?php endif; ?>
+
             </div>
           </div>
         </div>
@@ -141,12 +183,11 @@ echo '
   </div>
 </div>
 
-    <!-- Cookies Abfrage -->
-    <script defer src="../components/cookies/js/iframemanager.js"></script>
-    <script defer src="../components/cookies/js/cookieconsent.js"></script>
-    <script defer src="../components/cookies/js/cookieconsent-init.js"></script>
-    <script defer src="../components/cookies/js/app.js"></script>
+<!-- Cookie-Skripte -->
+<script defer src="../components/cookies/js/iframemanager.js"></script>
+<script defer src="../components/cookies/js/cookieconsent.js"></script>
+<script defer src="../components/cookies/js/cookieconsent-init.js"></script>
+<script defer src="../components/cookies/js/app.js"></script>
 
 </body>
 </html>
-';

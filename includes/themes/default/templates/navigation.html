@@ -32,9 +32,9 @@
 <li class="dropdown">{{ icon }}</li>
 <li class="dropdown">
     <a class="nav-link" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <img class="avatar_small" style="height: 21px;width: 28px;margin-left: -5px;" src="../images/avatars/{{ l_avatar }}" alt="{{ nickname }}" title="{{ nickname }}" data-toggle="tooltip" data-html="true" data-bs-placement="right" data-bs-original-title="{{ nickname }}"/><i class="bi bi-chevron-down"></i>
+        <img class="avatar_small" style="height: 21px;width: 28px;margin-left: -5px;" src="../images/avatars/{{ l_avatar }}" alt="{{ nickname }}" title="{{ nickname }}" data-toggle="tooltip" data-html="true" data-bs-placement="right" data-bs-original-title="{{ nickname }}"/>&nbsp;{{ my_account }} <i class="bi bi-chevron-down"></i>
     </a>
-    <ul style="margin-top: 4px;">
+    <ul style="margin-top: 0px;">
         <li><a class="dropdown-item" href="index.php?site=profile&userID={{ userID }}">{{ to_profil }}</a></li>
         {{ dashboard }}
         <li><a class="dropdown-item" href="index.php?site=logout">{{ lang_log_off }}</a></li>

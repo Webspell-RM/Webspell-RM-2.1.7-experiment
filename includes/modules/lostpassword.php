@@ -1,5 +1,5 @@
 <?php
-use webspell\SecurityHelper;
+use webspell\LoginSecurity;
 use webspell\Email;
 
 $_language->readModule('lostpassword');
@@ -27,17 +27,23 @@ if ($success && isset($_SESSION['success_message'])) {
 }
 
 if (isset($_POST['submit'])) {
-    $email = SecurityHelper::escape(trim($_POST['email']));
+    // E-Mail aus POST-Daten holen und sicherstellen, dass sie nicht leer ist
+    $email = LoginSecurity::escape(trim($_POST['email']));
 
     if ($email !== '') {
+        // Datenbankabfrage, um den Benutzer zu finden
         $result = safe_query("SELECT * FROM `users` WHERE `email` = '" . $email . "'");
 
         if (mysqli_num_rows($result)) {
             $ds = mysqli_fetch_array($result);
 
+            // Überprüfen, ob ein Pepper vorhanden ist
             if (!empty($ds['password_pepper'])) {
-                $new_password_plain = SecurityHelper::generateReadablePassword();
-                $pepper_plain = SecurityHelper::decryptPepper($ds['password_pepper']);
+                // Neues lesbares Passwort generieren
+                $new_password_plain = LoginSecurity::generateReadablePassword();
+                
+                // Pepper entschlüsseln
+                $pepper_plain = LoginSecurity::decryptPepper($ds['password_pepper']);
 
                 if ($pepper_plain === false || $pepper_plain === '') {
                     $_SESSION['error_message'] = '❌ Fehler beim Entschlüsseln des Peppers.';
@@ -45,42 +51,52 @@ if (isset($_POST['submit'])) {
                     exit;
                 }
 
+                // Neues Passwort hashen
                 $new_password_hash = password_hash($new_password_plain . $ds['email'] . $pepper_plain, PASSWORD_BCRYPT);
 
+                // Passwort in der Datenbank aktualisieren
                 safe_query("
                     UPDATE `users`
-                    SET `password_hash` = '" . SecurityHelper::escape($new_password_hash) . "'
+                    SET `password_hash` = '" . LoginSecurity::escape($new_password_hash) . "'
                     WHERE `userID` = '" . intval($ds['userID']) . "'
                 ");
 
+                // Platzhalter und Ersetzungen für E-Mail-Versand vorbereiten
                 $vars = ['%pagetitle%', '%email%', '%new_password%', '%homepage_url%'];
                 $repl = [$hp_title, $ds['email'], $new_password_plain, $hp_url];
 
+                // Betreff und Nachricht der E-Mail
                 $subject = str_replace($vars, $repl, $_language->module['email_subject']);
                 $message = str_replace($vars, $repl, $_language->module['email_text']);
 
+                // E-Mail senden
                 $sendmail = Email::sendEmail($admin_email, 'Passwort zurückgesetzt', $ds['email'], $subject, $message);
 
                 if ($sendmail['result'] === 'fail') {
+                    // Fehler bei der E-Mail-Zustellung
                     $_SESSION['error_message'] = $_language->module['email_failed'] . ' ' . $sendmail['error'];
                     header("Location: index.php?site=lostpassword");
                     exit;
                 } else {
+                    // Erfolgreiche Passwortzurücksetzung
                     $_SESSION['success_message'] = str_replace($vars, $repl, $_language->module['successful']);
                     header("Location: index.php?site=lostpassword&success=1");
                     exit;
                 }
             } else {
+                // Kein Pepper in der Datenbank vorhanden
                 $_SESSION['error_message'] = '❌ Kein Pepper in der Datenbank.';
                 header("Location: index.php?site=lostpassword");
                 exit;
             }
         } else {
+            // Benutzer nicht gefunden
             $_SESSION['error_message'] = $_language->module['no_user_found'];
             header("Location: index.php?site=lostpassword");
             exit;
         }
     } else {
+        // Keine E-Mail eingegeben
         $_SESSION['error_message'] = $_language->module['no_mail_given'];
         header("Location: index.php?site=lostpassword");
         exit;

@@ -25,6 +25,7 @@ $language_array = array(
     'more_new_forum_post'   => 'Neue Beiträge im Forum',
     'select_lang'           => 'Auswahl',
     'to_profil'             => 'Mein Profil',
+    'my_account' => 'Mein Konto',
 );
 
 

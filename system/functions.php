@@ -477,11 +477,11 @@ function checkforempty($valuearray)
 
 // -- DATE-TIME INFORMATION -- //
 // Einbinden der Datums- und Zeit-Funktionen, je nach Dateipfad
-if (file_exists('func/datetime.php')) {
-    systeminc('func/datetime');
-} else {
-    systeminc('../system/func/datetime');
-}
+#if (file_exists('func/datetime.php')) {
+#    systeminc('func/datetime');
+#} else {
+#    systeminc('../system/func/datetime');
+#}
 
 // -- USER INFORMATION -- //
 // Einbinden der Benutzerinformations-Funktionen
@@ -663,6 +663,13 @@ if (file_exists('classes/plugin_manager.php')) {
 } else {
     systeminc('../system/classes/plugin_manager');
 }
+
+if (file_exists('classes/plog_admin_action.php')) {
+    systeminc('classes/log_admin_action');
+} else {
+    systeminc('../system/classes/log_admin_action');
+}
+
 // ModRewrite-Objekt initialisieren und aktivieren
 $GLOBALS['_modRewrite'] = new \webspell\ModRewrite();
 if (!stristr($_SERVER['SCRIPT_NAME'], '/admin/') && $modRewrite) {
@@ -979,3 +986,33 @@ function tableExists($table) {
     $result = safe_query("SHOW TABLES LIKE '" . $table . "'");
     return $result && mysqli_num_rows($result) > 0;
 }
+
+function generate_csrf_token(): string {
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+function verify_csrf_token(string $token): bool {
+    return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
+}
+
+function get_all_settings() {
+    global $_database;
+
+    $result = safe_query("SELECT * FROM settings LIMIT 1");
+    if ($result && mysqli_num_rows($result)) {
+        return mysqli_fetch_assoc($result);
+    }
+    return [];
+}
+
+function escape($input) {
+    return mysqli_real_escape_string($GLOBALS['_database'], $input);
+}
+function getformatdatetime($datetime, $format = 'd.m.Y H:i') {
+    if (empty($datetime) || $datetime == '0000-00-00 00:00:00') return '-';
+    return date($format, strtotime($datetime));
+}
+

@@ -42,7 +42,6 @@ $stmt->bind_result($attempt_count);
 $stmt->fetch();
 $stmt->close();
 
-
 // Registrierung verarbeiten
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
@@ -61,7 +60,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             exit;
         }
     }*/
-
 
     $captcha_valid = true; // Standardwert für Tests
 
@@ -143,8 +141,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $activation_code = bin2hex(random_bytes(32)); // 64 Zeichen sicherer Code
 
-    $stmt = $_database->prepare("UPDATE users SET activation_code = ? WHERE userID = ?");
-    $stmt->bind_param("si", $activation_code, $userID);
+    $activation_expires = time() + 86400; // Ablauf nach 24 Stunden
+
+    $stmt = $_database->prepare("UPDATE users SET activation_code = ?, activation_expires = ? WHERE userID = ?");
+    $stmt->bind_param("sii", $activation_code, $activation_expires, $userID);
     $stmt->execute();
 
     $activation_link = 'https://' . $_SERVER['HTTP_HOST'] . '/index.php?site=activate&code=' . urlencode($activation_code);
@@ -162,7 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $message = str_replace($vars, $repl, $_language->module['mail_text']);
    
     $module = 'Aktiviere deinen Account';            // Modulname für Absenderbezeichnung
-                      // Optional: POP3 vor SMTP verwenden (kann auch weggelassen werden, Standard ist true)
+    // Optional: POP3 vor SMTP verwenden (kann auch weggelassen werden, Standard ist true)
     $sendmail = Email::sendEmail($admin_email, $module, $email, $subject, $message);
 
     if (is_array($sendmail) && isset($sendmail['result']) && $sendmail['result'] === 'done') {
@@ -203,7 +203,6 @@ $data_array = [
     'csrf_token' => htmlspecialchars($csrf_token),
     'error_message' => $errormessage,
     'success_message' => $successmessage,
-    /*'success_message' => $registrierung_erfolgreich ? $message : '',*/
     'message_zusatz' => '',
     'isreg' => $registrierung_erfolgreich,
     'username' => $username,

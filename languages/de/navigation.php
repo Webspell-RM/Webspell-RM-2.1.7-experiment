@@ -38,6 +38,6 @@ $language_array = array(
     'whoisonline'       => 'Wer ist online?',
     'login'             => 'Anmelden',
     'overview'          => 'Übersicht',
-    'team'              => 'Team'
+    'team'              => 'Team',
 );
 

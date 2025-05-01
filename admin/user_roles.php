@@ -33,12 +33,14 @@
 $_language->readModule('access_rights', false, true);
 $_language->readModule('user_roles', false, true);
 
-use webspell\AccessControl;
+#use webspell\AccessControl;
 // Den Admin-Zugriff für das Modul überprüfen
-AccessControl::checkAdminAccess('ac_user_roles');
+#AccessControl::checkAdminAccess('ac_user_roles');
 
 use webspell\LoginSecurity;
 use webspell\Email;
+
+
 
 if (isset($_GET[ 'action' ])) {
     $action = $_GET[ 'action' ];
@@ -613,181 +615,182 @@ if (isset($_SESSION['csrf_error'])): ?>
 
 } elseif ($action == "edit_user") {
 
-/*    $pepper_plain = LoginSecurity::generatePepper();
-$pepper_encrypted = LoginSecurity::encryptPepper($pepper_plain);
+    global $_language;
+    $_language->readModule('user_roles');
 
-// in Datenbank speichern:
-safe_query("
-    UPDATE `users`
-    SET `password_pepper` = '" . escape($pepper_encrypted) . "'
-    WHERE `userID` = '" . intval($userID) . "'
-");
-*/
+    // Benutzer-ID aus der URL holen
+    $userID = isset($_GET['userID']) ? intval($_GET['userID']) : 0;
 
-global $_language;
-$_language->readModule('user_roles');
+    if ($userID > 0) {
+        $result = safe_query("SELECT * FROM users WHERE userID = $userID");
 
-// Benutzer-ID aus der URL holen
-$userID = isset($_GET['userID']) ? intval($_GET['userID']) : 0;
+        if ($result && mysqli_num_rows($result) > 0) {
+            $user = mysqli_fetch_assoc($result);
+            $username = $user['username'];
+            $email = $user['email'];
 
-if ($userID > 0) {
-    // Benutzer aus der Datenbank holen
-    $result = safe_query("SELECT * FROM users WHERE userID = $userID");
-
-    if ($result && mysqli_num_rows($result) > 0) {
-        // Benutzerdaten holen
-        $user = mysqli_fetch_assoc($result);
-        $username = $user['username'];
-        $email = $user['email'];
-    } else {
-        // Fehlerbehandlung: Benutzer nicht gefunden
-        echo "Benutzer nicht gefunden.";
-        exit();
-    }
-
-    if (isset($_POST['submit'])) {
-        // Eingabedaten aus POST holen und absichern
-        $username = mysqli_real_escape_string($_database, $_POST['username']);
-        $email = mysqli_real_escape_string($_database, $_POST['email']);
-        $new_password_plain = trim($_POST['password']);
-
-        // Entscheiden, ob das Passwort zurückgesetzt werden soll
-        $reset_password = isset($_POST['reset_password']) && $_POST['reset_password'] == "1";
-
-        if (!empty($new_password_plain) || $reset_password) {
-            if ($reset_password && empty($new_password_plain)) {
-                // Generiere temporäres Passwort
-                $new_password_plain = LoginSecurity::generateTemporaryPassword();
-            }
-
-            // Pepper und Passwort Hashing
-            $new_pepper = LoginSecurity::generateRandomPepper();
-            $pepper_encrypted = LoginSecurity::encryptPepper($new_pepper);
-            $password_hash = password_hash($new_password_plain . $new_pepper, PASSWORD_DEFAULT);
-
-            // Benutzer in der Datenbank mit Prepared Statement aktualisieren
-            $query = "UPDATE users SET username = ?, email = ?, password_hash = ?, password_pepper = ? WHERE userID = ?";
-            $stmt = $_database->prepare($query);
-            $stmt->bind_param("ssssi", $username, $email, $password_hash, $pepper_encrypted, $userID);
-            $stmt->execute();
-
-            if ($stmt->affected_rows > 0) {
-                // Admin-E-Mail und Name ermitteln
-                $adminID = $_SESSION['userID'];
-                $admin_query = safe_query("SELECT email, username FROM users WHERE userID = $adminID");
-                $admin = mysqli_fetch_assoc($admin_query);
-                $admin_email = $admin['email'];
-                $admin_name = $admin['username'];
-
-                // E-Mail Platzhalter für Nachricht
-                $vars = ['%pagetitle%', '%email%', '%new_password%', '%homepage_url%', '%admin_name%', '%admin_email%'];
-                $repl = [$hp_title, $email, $new_password_plain, $hp_url, $admin_name, $admin_email];
-
-                // Betreff und Nachricht
-                $subject = str_replace($vars, $repl, $_language->module['email_subject']);
-                $message = str_replace($vars, $repl, $_language->module['email_text']);
-
-                // E-Mail versenden
-                $sendmail = Email::sendEmail($admin_email, 'Passwort zurückgesetzt', $ds['email'], $subject, $message);
-
-                if ($sendmail['result'] === 'fail') {
-                    echo generateErrorBoxFromArray($_language->module['email_failed'], [$sendmail['error']]);
-                } else {
-                    echo $_language->module['password_reset_success'] ?? 'E-Mail wurde erfolgreich versendet.';
-                }
-
-                // Erfolgsnachricht in der Session speichern
-                $_SESSION['success_message'] = $_language->module['password_reset_success'] ?? 'Passwort wurde neu gesetzt und per E-Mail verschickt.';
-            } else {
-                echo generateErrorBoxFromArray($_language->module['user_update_failed'], []);
+            if ($user['is_active'] != 1) {
+                echo "Benutzerkonto ist noch nicht aktiviert.";
+                exit();
             }
         } else {
-            // Wenn kein neues Passwort gesetzt wurde, nur Name und E-Mail aktualisieren
-            $query = "UPDATE users SET username = ?, email = ? WHERE userID = ?";
-            $stmt = $_database->prepare($query);
-            $stmt->bind_param("ssi", $username, $email, $userID);
-            $stmt->execute();
-
-            if ($stmt->affected_rows > 0) {
-                $_SESSION['success_message'] = $_language->module['user_updated'];
-            } else {
-                $_SESSION['error_message'] = $_language->module['user_update_failed'];
-            }
+            echo "Benutzer nicht gefunden.";
+            exit();
         }
 
-        // Weiterleitung zur Benutzerrollen-Seite
-        header("Location: admincenter.php?site=user_roles");
+        if (isset($_POST['submit']) || isset($_POST['reset_password'])) {
+            // CSRF-Schutz
+            if (!function_exists('generate_csrf_token') || !function_exists('verify_csrf_token')) {
+                die("CSRF-Funktionen nicht verfügbar. Bitte sicherstellen, dass csrf_helper.php eingebunden ist.");
+            }
+
+            if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+                die("Ungültiges CSRF-Token.");
+            }
+
+            $username = mysqli_real_escape_string($_database, $_POST['username']);
+            $email = mysqli_real_escape_string($_database, $_POST['email']);
+            $new_password_plain = trim($_POST['password']);
+            $reset_password = isset($_POST['reset_password']) && $_POST['reset_password'] == "1";
+
+            // Seiteinstellungen
+            $hp_title = get_all_settings('hptitle');
+            $hp_url = get_all_settings('hp_url');
+
+            $send_password = false;
+
+            if (!empty($new_password_plain) || $reset_password) {
+                if ($reset_password && empty($new_password_plain)) {
+                    $new_password_plain = LoginSecurity::generateTemporaryPassword();
+                    $send_password = true;
+                }
+
+                $new_pepper = LoginSecurity::generateRandomPepper();
+                $pepper_encrypted = LoginSecurity::encryptPepper($new_pepper); // <-- geändert!
+                $password_hash = password_hash($new_password_plain . $new_pepper, PASSWORD_DEFAULT);
+
+                $query = "UPDATE users SET username = ?, email = ?, password_hash = ?, password_pepper = ? WHERE userID = ?";
+                $stmt = $_database->prepare($query);
+
+                if ($stmt === false) {
+                    die("SQL-Fehler: " . $_database->error);
+                }
+
+                $stmt->bind_param("ssssi", $username, $email, $password_hash, $pepper_encrypted, $userID);
+                $stmt->execute();
+
+                if ($stmt->affected_rows > 0) {
+                    $adminID = $_SESSION['userID'];
+                    $admin_query = safe_query("SELECT email, username FROM users WHERE userID = $adminID");
+                    $admin = mysqli_fetch_assoc($admin_query);
+                    $admin_email = $admin['email'];
+                    $admin_name = $admin['username'];
+
+                    if ($send_password) {
+                        $vars = ['%pagetitle%', '%email%', '%new_password%', '%homepage_url%', '%admin_name%', '%admin_email%'];
+                        $repl = [$hp_title, $email, $new_password_plain, $hp_url, $admin_name, $admin_email];
+
+                        $subject = str_replace($vars, $repl, $_language->module['email_subject']);
+                        $message = str_replace($vars, $repl, $_language->module['email_text']);
+
+                        $sendmail = Email::sendEmail($admin_email, 'Passwort zurückgesetzt', $email, $subject, $message);
+
+                        if ($sendmail['result'] === 'fail') {
+                            echo generateErrorBoxFromArray($_language->module['email_failed'], [$sendmail['error']]);
+                        } else {
+                            echo $_language->module['password_reset_success'] ?? 'E-Mail wurde erfolgreich versendet.';
+                        }
+                    }
+
+                    $_SESSION['success_message'] = $_language->module['password_reset_success'] ?? 'Passwort wurde neu gesetzt.';
+                } else {
+                    echo generateErrorBoxFromArray($_language->module['user_update_failed'], []);
+                }
+            } else {
+                $query = "UPDATE users SET username = ?, email = ? WHERE userID = ?";
+                $stmt = $_database->prepare($query);
+
+                if ($stmt === false) {
+                    die("SQL-Fehler: " . $_database->error);
+                }
+
+                $stmt->bind_param("ssi", $username, $email, $userID);
+                $stmt->execute();
+
+                if ($stmt->affected_rows > 0) {
+                    $_SESSION['success_message'] = $_language->module['user_updated'];
+                } else {
+                    $_SESSION['error_message'] = $_language->module['user_update_failed'];
+                }
+            }
+
+            header("Location: admincenter.php?site=user_roles");
+            exit();
+        }
+
+        // HTML-Ausgabe
+        $csrf_token = generate_csrf_token();
+        ?>
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-paragraph"></i> <?= $_language->module['regular_users'] ?>
+            </div>
+
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb t-5 p-2 bg-light">
+                    <li class="breadcrumb-item">
+                        <a href="admincenter.php?site=user_roles"><?= $_language->module['regular_users'] ?></a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page"><?= $_language->module['user_edit'] ?></li>
+                </ol>
+            </nav>
+
+            <div class="card-body">
+                <div class="container py-5">
+                    <h2 class="mb-4"><?= $_language->module['user_edit'] ?></h2>
+
+                    <form method="post" class="row g-3">
+                        <input type="hidden" name="userID" value="<?= htmlspecialchars($user['userID']) ?>">
+                        <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
+
+                        <div class="col-md-6">
+                            <label for="username" class="form-label"><?= $_language->module['username'] ?></label>
+                            <input type="text" id="username" name="username" class="form-control" value="<?= htmlspecialchars($user['username']) ?>" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="email" class="form-label"><?= $_language->module['email'] ?></label>
+                            <input type="email" id="email" name="email" class="form-control" value="<?= htmlspecialchars($user['email']) ?>" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="password" class="form-label"><?= $_language->module['set_password_manually'] ?? 'Neues Passwort manuell setzen (optional)' ?></label>
+                            <input type="password" id="password" name="password" class="form-control">
+                            <div class="form-text"><?= $_language->module['manual_password_info'] ?? 'Nur ausfüllen, wenn du selbst ein neues Passwort setzen möchtest.' ?></div>
+                        </div>
+
+                        <div class="col-md-6 d-flex align-items-end">
+                            <button type="submit" name="reset_password" value="1" class="btn btn-danger w-100"
+                                onclick="return confirm('<?= $_language->module['confirm_reset_password'] ?? 'Automatisch neues Passwort setzen?' ?>');">
+                                🔄 <?= $_language->module['reset_password'] ?? 'Passwort automatisch zurücksetzen' ?>
+                            </button>
+                        </div>
+
+                        <div class="col-md-12">
+                            <button type="submit" name="submit" class="btn btn-warning"><?= $_language->module['save_user'] ?></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <?php
+    } else {
+        echo "Ungültige Benutzer-ID.";
         exit();
     }
-} else {
-    echo "Ungültige Benutzer-ID.";
-    exit();
 }
 
-?>
 
-<!-- HTML -->
-<div class="card">
-    <div class="card-header">
-        <i class="bi bi-paragraph"></i> <?= $_language->module['regular_users'] ?>
-    </div>
-
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb t-5 p-2 bg-light">
-            <li class="breadcrumb-item">
-                <a href="admincenter.php?site=user_roles"><?= $_language->module['regular_users'] ?></a>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page"><?= $_language->module['user_edit'] ?></li>
-        </ol>
-    </nav>
-
-    <div class="card-body">
-        <div class="container py-5">
-            <h2 class="mb-4"><?= $_language->module['user_edit'] ?></h2>
-
-            <form method="post" class="row g-3">
-                <input type="hidden" name="userID" value="<?= htmlspecialchars($user['userID']) ?>">
-
-                <div class="col-md-6">
-                    <label for="username" class="form-label"><?= $_language->module['username'] ?></label>
-                    <input type="text" id="username" name="username" class="form-control" value="<?= htmlspecialchars($user['username']) ?>" required>
-                </div>
-
-                <div class="col-md-6">
-                    <label for="email" class="form-label"><?= $_language->module['email'] ?></label>
-                    <input type="email" id="email" name="email" class="form-control" value="<?= htmlspecialchars($user['email']) ?>" required>
-                </div>
-
-                <div class="col-md-6">
-                    <label for="password" class="form-label">
-                        <?= $_language->module['set_password_manually'] ?? 'Neues Passwort manuell setzen (optional)' ?>
-                    </label>
-                    <input type="password" id="password" name="password" class="form-control">
-                    <div class="form-text">
-                        <?= $_language->module['manual_password_info'] ?? 'Nur ausfüllen, wenn du selbst ein neues Passwort setzen möchtest.' ?>
-                    </div>
-                </div>
-
-                <div class="col-md-6 d-flex align-items-end">
-                    <button type="submit" name="reset_password" value="1" class="btn btn-danger w-100"
-                        onclick="return confirm('<?= $_language->module['confirm_reset_password'] ?? 'Automatisch neues Passwort setzen?' ?>');">
-                        🔄 <?= $_language->module['reset_password'] ?? 'Passwort automatisch zurücksetzen' ?>
-                    </button>
-                </div>
-
-                <div class="col-md-12">
-                    <button type="submit" class="btn btn-warning"><?= $_language->module['save_user'] ?></button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-
-
-
-<?php
-}
  elseif ($action == "user_create") {
 
 
@@ -795,64 +798,79 @@ if ($userID > 0) {
 
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Eingaben validieren und sanitieren
+
     $username = htmlspecialchars(trim($_POST['username']));
     $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
     $password = $_POST['password'];
 
-    // Stelle sicher, dass E-Mail gültig ist
+    // Validierung
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $_SESSION['error_message'] = "Ungültige E-Mail-Adresse.";
+        $_SESSION['error_message'] = "❌ Ungültige E-Mail-Adresse.";
         header("Location: admincenter.php?site=user_roles");
         exit();
     }
 
-    // Überprüfe, ob die E-Mail bereits existiert
-    $query = "SELECT * FROM users WHERE email = ?";
+    if (strlen($password) < 8) {
+        $_SESSION['error_message'] = "❌ Das Passwort muss mindestens 8 Zeichen lang sein.";
+        header("Location: admincenter.php?site=user_roles");
+        exit();
+    }
+
+    // Prüfen, ob E-Mail bereits vorhanden ist
+    $query = "SELECT userID FROM users WHERE email = ?";
     if ($stmt = $_database->prepare($query)) {
         $stmt->bind_param('s', $email);
         $stmt->execute();
         $stmt->store_result();
+
         if ($stmt->num_rows > 0) {
-            $_SESSION['error_message'] = "Diese E-Mail-Adresse wird bereits verwendet.";
+            $_SESSION['error_message'] = "❌ Diese E-Mail-Adresse wird bereits verwendet.";
             header("Location: admincenter.php?site=user_roles");
             exit();
         }
     }
 
-    // Benutzer in die Datenbank einfügen, um userID zu erhalten
-    $query = "INSERT INTO users (username, email, registerdate) VALUES (?, ?, UNIX_TIMESTAMP())";
+    // Benutzer einfügen (registerdate als DATETIME)
+    $query = "INSERT INTO users (username, email, registerdate) VALUES (?, ?, NOW())";
     if ($stmt = $_database->prepare($query)) {
         $stmt->bind_param('ss', $username, $email);
         $stmt->execute();
         $userID = $_database->insert_id;
 
-        // Klartext-Pepper erzeugen, über LoginSecurity
-        $pepper_plain = LoginSecurity::generatePepper();
+        if ($userID > 0) {
+            // Pepper erzeugen und verschlüsseln
+            $pepper_plain = LoginSecurity::generatePepper();
+            $pepper_encrypted = LoginSecurity::encryptPepper($pepper_plain);
 
-        // Pepper verschlüsseln, über LoginSecurity
-        $pepper_encrypted = openssl_encrypt($pepper_plain, 'aes-256-cbc', LoginSecurity::AES_KEY, 0, LoginSecurity::AES_IV);
+            // Passwort-Hash erstellen
+            $password_hash = LoginSecurity::createPasswordHash($password, $email, $pepper_plain);
 
-        // Passwort mit Pepper hashen, über LoginSecurity
-        $password_with_pepper = $password . $pepper_plain;
-        $password_hash = password_hash($password_with_pepper, PASSWORD_BCRYPT);
+            // Passwort und verschlüsselten Pepper speichern
+            $query = "UPDATE users SET password_hash = ?, password_pepper = ?, is_active = 1 WHERE userID = ?";
+            if ($stmt = $_database->prepare($query)) {
+                $stmt->bind_param('ssi', $password_hash, $pepper_encrypted, $userID);
+                $stmt->execute();
 
-        // Passwort und Pepper in der Datenbank aktualisieren
-        $query = "UPDATE users SET password_hash = ?, password_pepper = ? WHERE userID = ?";
-        if ($stmt = $_database->prepare($query)) {
-            $stmt->bind_param('ssi', $password_hash, $pepper_encrypted, $userID);
-            $stmt->execute();
-
-            $_SESSION['success_message'] = $_language->module['user_created_successfully'];
-            header("Location: admincenter.php?site=user_roles");
-            exit();
+                $_SESSION['success_message'] = $_language->module['user_created_successfully'];
+                header("Location: admincenter.php?site=user_roles");
+                exit();
+            } else {
+                $_SESSION['error_message'] = "❌ Fehler beim Speichern des Passworts.";
+                header("Location: admincenter.php?site=user_roles");
+                exit();
+            }
         } else {
             $_SESSION['error_message'] = $_language->module['user_creation_error'];
+            header("Location: admincenter.php?site=user_roles");
+            exit();
         }
     } else {
-        $_SESSION['error_message'] = "Fehler bei der Benutzererstellung.";
+        $_SESSION['error_message'] = "❌ Fehler bei der Benutzererstellung.";
+        header("Location: admincenter.php?site=user_roles");
+        exit();
     }
 }
+
 
 
 
@@ -976,10 +994,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['unban_user'])) {
 // Abfrage der Benutzer für die aktuelle Seite
 $users = safe_query("SELECT * FROM users ORDER BY userID LIMIT $offset, $users_per_page");
 ?>
-
 <div class="card">
     <div class="card-header">
-        <i class="bi bi-paragraph"></i> <?= $_language->module['regular_users'] ?>
+        <i class="bi bi-paragraph"></i> Benutzer- und Rechteverwaltung
     </div>
 
     <nav aria-label="breadcrumb">
@@ -1022,9 +1039,9 @@ $users = safe_query("SELECT * FROM users ORDER BY userID LIMIT $offset, $users_p
                 <?php while ($user = mysqli_fetch_assoc($users)) : ?>
                     <tr>
                         <td><?= htmlspecialchars($user['userID']) ?></td>
-                        <td><?= htmlspecialchars($user['username']) ?> - <?= $user['is_locked'] ? $_language->module['banned'] : $_language->module['not_banned'] ?></td>
+                        <td><?= htmlspecialchars($user['username']) ?></td>
                         <td><?= htmlspecialchars($user['email']) ?></td>
-                        <td><?= date('d.m.Y H:i:s', $user['registerdate']) ?></td>
+                        <td><?= date('d.m.Y H:i:s', strtotime($user['registerdate'])) ?></td>
                         <td>
                             <?php if ($user['is_locked']) : ?>
                                 <form method="POST" action="" class="d-inline">

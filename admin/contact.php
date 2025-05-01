@@ -113,12 +113,13 @@ if (isset($_GET['action'])) {
         <div class="card">
             <div class="card-header">' . $_language->module['contact'] . '</div>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
+                <ol class="breadcrumb t-5 p-2 bg-light">
                     <li class="breadcrumb-item"><a href="admincenter.php?site=contact">' . $_language->module['contact'] . '</a></li>
                     <li class="breadcrumb-item active" aria-current="page">' . $_language->module['add_contact'] . '</li>
                 </ol>
             </nav>
             <div class="card-body">
+            <div class="container py-5">
                 <form method="post" action="admincenter.php?site=contact">
                     <div class="mb-3 row">
                         <label class="col-sm-2 col-form-label">' . $_language->module['contact_name'] . ':</label>
@@ -129,8 +130,9 @@ if (isset($_GET['action'])) {
                         <div class="col-sm-8"><input type="text" name="email" class="form-control" /></div>
                     </div>
                     <input type="hidden" name="captcha_hash" value="' . $hash . '" />
-                    <button class="btn btn-success" type="submit" name="save">' . $_language->module['add_contact'] . '</button>
+                    <button class="btn btn-success btn-sm" type="submit" name="save">' . $_language->module['add_contact'] . '</button>
                 </form>
+                </div>
             </div>
         </div>';
     } elseif ($_GET['action'] == "edit") {
@@ -142,12 +144,13 @@ if (isset($_GET['action'])) {
         <div class="card">
             <div class="card-header">' . $_language->module['contact'] . '</div>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
+                <ol class="breadcrumb t-5 p-2 bg-light">
                     <li class="breadcrumb-item"><a href="admincenter.php?site=contact">' . $_language->module['contact'] . '</a></li>
                     <li class="breadcrumb-item active" aria-current="page">' . $_language->module['edit_contact'] . '</li>
                 </ol>
             </nav>
             <div class="card-body">
+            <div class="container py-5">
                 <form method="post" action="admincenter.php?site=contact">
                     <div class="mb-3 row">
                         <label class="col-sm-2 col-form-label">' . $_language->module['contact_name'] . ':</label>
@@ -159,8 +162,9 @@ if (isset($_GET['action'])) {
                     </div>
                     <input type="hidden" name="captcha_hash" value="' . $hash . '" />
                     <input type="hidden" name="contactID" value="' . $contactID . '" />
-                    <button class="btn btn-warning" type="submit" name="saveedit">' . $_language->module['edit_contact'] . '</button>
+                    <button class="btn btn-warning btn-sm" type="submit" name="saveedit">' . $_language->module['edit_contact'] . '</button>
                 </form>
+            </div>
             </div>
         </div>';
     }
@@ -172,7 +176,7 @@ else {
     <div class="card">
         <div class="card-header">' . $_language->module['contact'] . '</div>
         <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
+            <ol class="breadcrumb t-5 p-2 bg-light">
                 <li class="breadcrumb-item active" aria-current="page">' . $_language->module['contact'] . '</li>
             </ol>
         </nav>
@@ -180,12 +184,13 @@ else {
             <div class="mb-3 row">
                 <label class="col-md-1 control-label">' . $_language->module['options'] . ':</label>
                 <div class="col-md-8">
-                    <a href="admincenter.php?site=contact&amp;action=add" class="btn btn-primary">' . $_language->module['new_contact'] . '</a>
+                    <a href="admincenter.php?site=contact&amp;action=add" class="btn btn-primary btn-sm">' . $_language->module['new_contact'] . '</a>
                 </div>
             </div>
+            <div class="container py-5">
             <form method="post" action="admincenter.php?site=contact">
-                <table class="table table-striped">
-                    <thead>
+                <table class="table table-bordered table-striped">
+                    <thead class="table-light">
                         <tr>
                             <th>' . $_language->module['contact_name'] . '</th>
                             <th>' . $_language->module['email'] . '</th>
@@ -209,10 +214,10 @@ else {
             <td>' . getinput($ds['name']) . '</td>
             <td>' . getinput($ds['email']) . '</td>
             <td>
-                <a href="admincenter.php?site=contact&amp;action=edit&amp;contactID=' . $ds['contactID'] . '" class="btn btn-warning">' . $_language->module['edit'] . '</a>
+                <a href="admincenter.php?site=contact&amp;action=edit&amp;contactID=' . $ds['contactID'] . '" class="btn btn-warning btn-sm">' . $_language->module['edit'] . '</a>
 
                 <!-- Button trigger modal -->
-                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirm-delete" data-href="admincenter.php?site=contact&amp;delete=true&amp;contactID=' . $ds['contactID'] . '&amp;captcha_hash=' . $hash . '">
+                <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirm-delete" data-href="admincenter.php?site=contact&amp;delete=true&amp;contactID=' . $ds['contactID'] . '&amp;captcha_hash=' . $hash . '">
                     ' . $_language->module['delete'] . '
                 </button>
                 <!-- Button trigger modal END -->
@@ -226,8 +231,8 @@ else {
                         </div>
                         <div class="modal-body"><p>' . $_language->module['really_delete'] . '</p></div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">' . $_language->module['close'] . '</button>
-                            <a class="btn btn-danger btn-ok">' . $_language->module['delete'] . '</a>
+                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">' . $_language->module['close'] . '</button>
+                            <a class="btn btn-danger btn-ok btn-sm">' . $_language->module['delete'] . '</a>
                         </div>
                     </div></div>
                 </div>
@@ -249,12 +254,13 @@ else {
                     <tr>
                         <td colspan="4" class="text-end">
                             <input type="hidden" name="captcha_hash" value="' . $hash . '" />
-                            <input class="btn btn-primary" type="submit" name="sortieren" value="' . $_language->module['to_sort'] . '" />
+                            <input class="btn btn-primary btn-sm" type="submit" name="sortieren" value="' . $_language->module['to_sort'] . '" />
                         </td>
                     </tr>
                     </tbody>
                 </table>
             </form>
+            </div>
         </div>
     </div>';
 }
