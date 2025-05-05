@@ -1,96 +1,113 @@
-![Demo](https://www.webspell-rm.de/includes/plugins/pic_update/images/179.png)
->											  
->### WEBSPELL-RM - Release: 2.1.5
->						   
->### WEBSPELL-RM - Release: 2.1.5 - https://www.webspell-rm.de
->
->### WIKI WEBSPELL-RM - Release: 2.1.5 - https://www.webspell-rm.de/wiki.html
->
-```
-/**
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- *                  Webspell-RM      /                        /   /                                          *
- *                  -----------__---/__---__------__----__---/---/-----__---- _  _ -                         *
- *                   | /| /  /___) /   ) (_ `   /   ) /___) /   / __  /     /  /  /                          *
- *                  _|/_|/__(___ _(___/_(__)___/___/_(___ _/___/_____/_____/__/__/_                          *
- *                               Free Content / Management System                                            *
- *                                           /                                                               *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @version         webspell-rm                                                                              *
- *                                                                                                           *
- * @copyright       2018-2024 by webspell-rm.de                                                              *
- * @support         For Support, Plugins, Templates and the Full Script visit webspell-rm.de                 *
- * @website         <https://www.webspell-rm.de>                                                             *
- * @forum           <https://www.webspell-rm.de/forum.html>                                                  *
- * @wiki            <https://www.webspell-rm.de/wiki.html>                                                   *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @license         Script runs under the GNU GENERAL PUBLIC LICENCE                                         *
- *                  It's NOT allowed to remove this copyright-tag                                            *
- *                  <http://www.fsf.org/licensing/licenses/gpl.html>                                         *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @author          Code based on WebSPELL Clanpackage (Michael Gruber - webspell.at)                        *
- * @copyright       2005-2011 by webspell.org / webspell.info                                                *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
-*/
-```
-	Webspell-RM is a free Content Management System (CMS) that is available free of charge at https://www.webspell-rm.de. The following information should give you a first impression of how it works.
+# Webspell-RM 3.0 – Next Generation (2025)
 
-###############################################
+**Webspell-RM 3.0** ist ein vollständig neu entwickeltes, modulares und sicheres Open-Source CMS für Communities, Clans und Teams – bereit für das Jahr 2025 und darüber hinaus.
 
-Webspell-RM ist ein CMS mit Plugin System
+![Webspell-RM Logo](https://www.webspell-rm.de/includes/plugins/pic_update/images/179.png)
 
-- installierbare Plugins
-- deinstallierbare Plugins
-- CKEditor
-- Multi-Language
-- Google reCAPTCHA
-- 404 Fehler Seite
-- Bootstrap 5
-- Bootstrap Icons
-- installierbare Themes
-- deinstallierbare Themes
-- Webspell-RM Update möglich im Admincenter
-- PHP 8.x kompatibel
-- DSGVO konform
+👉 Offizielle Website: [webspell-rm.de](https://www.webspell-rm.de)  
+👉 Forum & Support: [webspell-rm.de/forum.html](https://www.webspell-rm.de/forum.html)  
+👉 Dokumentation: [webspell-rm.de/wiki.html](https://www.webspell-rm.de/wiki.html)
 
-###############################################
+---
 
-For any questions try to use our Forum!
+## 🚀 Highlights
 
-Bei Fragen nutzen Sie unser Forum!
+- ✅ **Installer-basiertes Setup (1 Datei – alles drin!)**
+- 🔌 **Erweiterbares Plugin-System**
+- 🎨 **Moderne Themes mit Bootstrap 5**
+- 🌍 **Multilingual mit Sprachdateien**
+- 🔐 **DSGVO-konform & reCAPTCHA**
+- 🛡️ **Sicher: CSRF-, XSS- & IP-Schutz**
+- 📈 **Statistiken, Admincenter 2.0, Rollen & Rechte**
+- 📱 **100 % Responsive Design (Frontend & Admin)**
+- 📦 **PHP 8.x Unterstützung & saubere OOP-Struktur**
 
-###############################################
+---
 
-### 1. License
+## 📥 Installation in 6 Schritten
 
-	Webspell-RM is published under GNU General Public License (GPL). It guarantees the free usage, modification and distribution of the Webspell-RM script withing the rules of the GPL.
-	You are able to find additional information about license at http://www.fsf.org/licensing/licenses/gpl.html
+Die Installation erfolgt **ausschließlich über den neuen Web-Installer**.  
+Dieser lädt automatisch **alle Systemdateien und SQL-Strukturen** auf deinen Webserver – kein manuelles Hochladen notwendig.
 
-### 2. Installation
+### 🔧 Voraussetzungen
 
-	1. Requirements
-	2. Upload Webspell-RM to your web space
-	3. Run the Webspell-RM installation
+Bevor du den Installer startest, stellt Webspell-RM sicher, dass dein Webserver folgende Anforderungen erfüllt:
 
-	1. Requirements
+- PHP **≥ 8.1**
+- MySQL/MariaDB **≥ 10.3**
+- Schreibrechte für relevante Ordner (z. B. `/config`, `/uploads`, etc.)
+- Apache/Nginx mit mod_rewrite empfohlen
 
-	    * Webspace with PHP and mySQL support (MySQL >= 5.6, PHP >= 8.x)
-	    * (g)unzip/tar to extract the downloaded Webspell-RM release
-	    * A FTP program to upload the Webspell-RM files to your webspace - we recommend SmartFTP
+**⚠️ Wird eine Voraussetzung nicht erfüllt, wird die Installation blockiert!**
+
+---
+
+### 🛠️ Installationsschritte
+
+1. **Lade den offiziellen Installer herunter**  
+   👉 [Download Installer (.php)](https://www.webspell-rm.de/download)
+
+2. **Lade `installer.php` auf deinen Webserver (Root-Verzeichnis)**
+
+3. **Rufe im Browser auf:**  
 
 
+4. **Folge den 6 Installationsschritten:**
+- Schritt 1: Serverprüfung
+- Schritt 2: Datenbankzugang
+- Schritt 3: Systemdaten laden (automatisch)
+- Schritt 4: Administrator anlegen
+- Schritt 5: Sprache & Einstellungen
+- Schritt 6: Abschluss & Cleanup
 
-	2. Upload Webspell-RM to your webspace
+5. Nach der Installation wird:
+- Die komplette CMS-Struktur auf den Webserver entpackt
+- Alle Datenbanktabellen angelegt
+- Dein System konfiguriert
 
-	    * Start your above downloaded FTP programm
-	    * Connect with this FTP program to your webspace FTP server (you will get the access data for this from your webhoster)
-	    * Upload ALL the extracted Webspell-RM files and folders to your webspace
+6. **Entferne die `installer.php` danach aus Sicherheitsgründen**
 
-	3. Do the Webspell-RM install
+---
 
-	    * Open your webbrowser
-	    * Enter the path to the Webspell-RM install folder http://[hostnameofyouwebspace]/install (substitute [hostnameofyouwebspace] with the correct domain name  where you have uploaded Webspell-RM.
-	    * Follow the installation steps and enter the correct data
+## 📂 Systemstruktur (wird durch den Installer angelegt)
+
+```plaintext
+/admin/             → Adminbereich mit modularer Navigation  
+/includes/          → Kernfunktionen & Klassen  
+/plugins/           → Erweiterbare Plugins  
+/themes/            → Frontend-Themes  
+/system/            → Template-Engine, Auth, CSRF, Router  
+/config/            → Konfigurationen (wird automatisch erstellt)  
+/install/           → Nur während des Setups vorhanden  
+/uploads/           → Medien und Dateien  
+
+🧩 Erweiterbarkeit
+
+    Eigene Themes via /themes/
+
+    Eigene Plugins via /plugins/
+
+    Eigene Module mit Routing und Zugriffskontrolle
+
+    Template-System mit {{ platzhalter }}-Syntax
+
+    Vollständig objektorientiert mit modernen PHP-Strukturen
+
+📚 Dokumentation & Hilfe
+
+    📖 Webspell-RM Wiki
+
+    💬 Forum
+
+    🐛 Bug melden: GitHub Issues
+
+🤝 Mitwirken
+
+Pull Requests, Fehlerberichte und Feature-Vorschläge sind jederzeit willkommen.
+Bitte lies unseren Beitrag-Guide (folgt demnächst).
+
+📜 Lizenz
+
+Dieses Projekt steht unter der GNU General Public License v3.0.
+Copyright © 2025
+webspell-rm.de        
