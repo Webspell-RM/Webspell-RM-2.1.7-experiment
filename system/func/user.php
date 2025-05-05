@@ -65,7 +65,7 @@ function getuserdescription($userID)
             "SELECT userdescription FROM users WHERE `userID` = " . (int)$userID
         )
     );
-    return getinput($ds['userdescription']);
+    return htmlspecialchars($ds['userdescription']);
 }
 
 function getfirstname($userID)
@@ -75,7 +75,7 @@ function getfirstname($userID)
             "SELECT firstname FROM users WHERE `userID` = " . (int)$userID
         )
     );
-    return getinput($ds['firstname']);
+    return htmlspecialchars($ds['firstname']);
 }
 
 function getlastname($userID)
@@ -85,7 +85,7 @@ function getlastname($userID)
             "SELECT lastname FROM users WHERE `userID` = " . (int)$userID
         )
     );
-    return getinput($ds['lastname']);
+    return htmlspecialchars($ds['lastname']);
 }
 
 function getbirthday($userID)
@@ -101,33 +101,33 @@ function getbirthday($userID)
 function gettown($userID)
 {
     $ds = mysqli_fetch_array(safe_query("SELECT town FROM users WHERE `userID` = " . (int)$userID));
-    return getinput($ds['town']);
+    return htmlspecialchars($ds['town']);
 }
 
 function getemail($userID)
 {
     $ds = mysqli_fetch_array(safe_query("SELECT email FROM users WHERE `userID` = " . (int)$userID));
     if(isset($ds))
-    return getinput($ds['email']);
+    return htmlspecialchars($ds['email']);
 }
 
 function getemailhide($userID)
 {
     $ds = mysqli_fetch_array(safe_query("SELECT email_hide FROM users WHERE `userID` = " . (int)$userID));
-    return getinput(@$ds['email_hide']);
+    return htmlspecialchars(@$ds['email_hide']);
 }
 
 function gethomepage($userID)
 {
     $ds = mysqli_fetch_array(safe_query("SELECT homepage FROM users WHERE `userID` = " . (int)$userID));
     if(isset($ds))
-    return str_replace('https://', '', getinput($ds['homepage']));
+    return str_replace('https://', '', htmlspecialchars($ds['homepage']));
 }
 
 function getdiscord($userID)
 {
     $ds = mysqli_fetch_array(safe_query("SELECT discord FROM users WHERE `userID` = " . (int)$userID));
-    return getinput($ds['discord']);
+    return htmlspecialchars($ds['discord']);
 }
 
 function getcountries($selected = null)
@@ -159,13 +159,13 @@ function getcountries($selected = null)
 function getcountry($userID)
 {
     $ds = mysqli_fetch_array(safe_query("SELECT country FROM users WHERE `userID` = " . (int)$userID));
-    return getinput($ds['country']);
+    return htmlspecialchars($ds['country']);
 }
 
 function getuserlanguage($userID)
 {
     $ds = mysqli_fetch_array(safe_query("SELECT language FROM users WHERE `userID` = " . (int)$userID));
-    return getinput($ds['language']);
+    return htmlspecialchars($ds['language']);
 }
 
 function getuserpic($userID)
@@ -257,7 +257,7 @@ function getuserguestbookstatus($userID)
             "SELECT user_guestbook FROM users WHERE `userID` = " . (int)$userID
         )
     );
-    return getinput($ds['user_guestbook']);
+    return htmlspecialchars($ds['user_guestbook']);
 }
 
 function getusercomments($userID, $type)

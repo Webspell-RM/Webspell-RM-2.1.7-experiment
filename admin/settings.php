@@ -75,7 +75,7 @@ if(isset($_POST['submit'])) {
             "UPDATE
                 settings
             SET
-                title='" . $_POST[ 'title' ] . "',
+                hptitle='" . $_POST[ 'hptitle' ] . "',
                 hpurl='" . $_POST[ 'url' ] . "',
                 clanname='" . $_POST[ 'clanname' ] . "',
                 clantag='" . $_POST[ 'clantag' ] . "',
@@ -285,7 +285,7 @@ echo'<div class="">
                             </div>
 
                             <div class="col-md-8">
-                            <span class="text-muted mdall"><em data-toggle="tooltip" data-html="true" title="'.$_language->module['tooltip_2'].'"><input class="form-control" name="title" type="text" value="'.$ds['title'].'" size="35"></em></span>
+                            <span class="text-muted mdall"><em data-toggle="tooltip" data-html="true" title="'.$_language->module['tooltip_2'].'"><input class="form-control" name="hptitle" type="text" value="'.$ds['hptitle'].'" size="35"></em></span>
                             </div>
                         </div>
 
@@ -891,7 +891,7 @@ echo '<div class="card">
 
                 <div class="col-xs-12 col-md-10">
                     
-                    <input type="text" name="since" class="form-control" value="'.getinput($ds['since']).'">
+                    <input type="text" name="since" class="form-control" value="'.htmlspecialchars($ds['since']).'">
                 </div>
             </div>
 
@@ -900,7 +900,7 @@ echo '<div class="card">
 
                 <div class="col-xs-12 col-md-10">
                     
-                    <input type="text" name="gametracker" class="form-control" value="'.getinput($ds['gametracker']).'">
+                    <input type="text" name="gametracker" class="form-control" value="'.htmlspecialchars($ds['gametracker']).'">
                 </div>
             </div>            
 
@@ -909,7 +909,7 @@ echo '<div class="card">
 
                 <div class="col-xs-12 col-md-10">
                     
-                    <input type="text" name="discord" class="form-control" value="'.getinput($ds['discord']).'">
+                    <input type="text" name="discord" class="form-control" value="'.htmlspecialchars($ds['discord']).'">
                 </div>
             </div>
         </div>
@@ -929,7 +929,7 @@ echo '<div class="card">
 
                             <div class="col-xs-12 col-md-10">
                                     
-                                <input type="text" name="twitch" class="form-control" value="'.getinput($ds['twitch']).'">
+                                <input type="text" name="twitch" class="form-control" value="'.htmlspecialchars($ds['twitch']).'">
                             </div>
                         </div>
                         <div class="mb-3 row">            
@@ -937,7 +937,7 @@ echo '<div class="card">
 
                             <div class="col-xs-12 col-md-10">
                                 
-                                <input type="text" name="steam" class="form-control" value="'.getinput($ds['steam']).'">
+                                <input type="text" name="steam" class="form-control" value="'.htmlspecialchars($ds['steam']).'">
                             </div>
                         </div>             
 
@@ -946,7 +946,7 @@ echo '<div class="card">
 
                             <div class="col-xs-12 col-md-10">
                                     
-                                <input type="text" name="facebook" class="form-control" value="'.getinput($ds['facebook']).'">
+                                <input type="text" name="facebook" class="form-control" value="'.htmlspecialchars($ds['facebook']).'">
                             </div>
                         </div> 
 
@@ -955,7 +955,7 @@ echo '<div class="card">
 
                             <div class="col-xs-12 col-md-10">
                                     
-                                <input type="text" name="twitter" class="form-control" value="'.getinput($ds['twitter']).'">
+                                <input type="text" name="twitter" class="form-control" value="'.htmlspecialchars($ds['twitter']).'">
                             </div>
                         </div>
 
@@ -964,7 +964,7 @@ echo '<div class="card">
 
                             <div class="col-xs-12 col-md-10">
                                 
-                                <input type="text" name="youtube" class="form-control" value="'.getinput($ds['youtube']).'">
+                                <input type="text" name="youtube" class="form-control" value="'.htmlspecialchars($ds['youtube']).'">
                             </div>
                         </div>
                     </div>
@@ -985,7 +985,7 @@ echo '<div class="card">
 
                             <div class="col-xs-12 col-md-10">
                     
-                                <input type="text" name="rss" class="form-control" value="'.getinput($ds['rss']).'">
+                                <input type="text" name="rss" class="form-control" value="'.htmlspecialchars($ds['rss']).'">
                             </div>
                         </div>
 
@@ -994,7 +994,7 @@ echo '<div class="card">
 
                             <div class="col-xs-12 col-md-10">
                     
-                                <input type="text" name="vine" class="form-control" value="'.getinput($ds['vine']).'">
+                                <input type="text" name="vine" class="form-control" value="'.htmlspecialchars($ds['vine']).'">
                             </div>
                         </div>
 
@@ -1003,7 +1003,7 @@ echo '<div class="card">
 
                             <div class="col-xs-12 col-md-10">
                     
-                                <input type="text" name="flickr" class="form-control" value="'.getinput($ds['flickr']).'">
+                                <input type="text" name="flickr" class="form-control" value="'.htmlspecialchars($ds['flickr']).'">
                             </div>
                         </div>
 
@@ -1012,7 +1012,7 @@ echo '<div class="card">
 
                             <div class="col-xs-12 col-md-10">
                     
-                                <input type="text" name="linkedin" class="form-control" value="'.getinput($ds['linkedin']).'">
+                                <input type="text" name="linkedin" class="form-control" value="'.htmlspecialchars($ds['linkedin']).'">
                             </div>
                         </div>
 
@@ -1021,7 +1021,7 @@ echo '<div class="card">
 
                             <div class="col-xs-12 col-md-10">
                     
-                                <input type="text" name="instagram" class="form-control" value="'.getinput($ds['instagram']).'">
+                                <input type="text" name="instagram" class="form-control" value="'.htmlspecialchars($ds['instagram']).'">
                             </div>
                         </div>
 

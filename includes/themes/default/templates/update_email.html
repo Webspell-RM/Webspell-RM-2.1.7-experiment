@@ -1,4 +1,4 @@
-<!-- login_content -->
+<!-- update_email_content -->
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-xl-10">
@@ -32,30 +32,26 @@
                                     <!-- Begrüßung -->
                                     <div class="h4 fw-light">{{ welcome_back }}</div>
 
-                                    <!-- Login-Formular -->
-                                    <form method="post" action="">
-                                        <div class="mb-3">
-                                            <label for="email" class="form-label">{{ email_label }}</label>
-                                            <input type="email" class="form-control" id="email" name="email" placeholder="{{ your_email }}" required>
-                                        </div>
+                                    
 
-                                        <div class="mb-3">
-                                            <label for="password" class="form-label">{{ pass_label }}</label>
-                                            <input type="password" class="form-control" id="password" name="password_hash" placeholder="{{ your_pass }}" required>
-                                        </div>
 
-                                        <div class="mb-3 text-end">
-                                            <a href="index.php?site=lostpassword">{{ lostpassword_link }}</a>
-                                        </div>
 
-                                        <!--<div class="mb-3 form-check">
-                                            <input type="checkbox" class="form-check-input" id="remember" name="remember">
-                                            <label class="form-check-label" for="remember">{{ remember_me }}</label>
-                                        </div>-->
-                                        <div class="text-end">
-                                            <button type="submit" class="btn btn-primary w-100">{{ login_button }}</button>
-                                        </div>
-                                    </form>
+                                    <form method="POST">
+    <label for="current_email">Aktuelle E-Mail-Adresse:</label><br>
+    <input type="email" class="form-control" id="current_email" name="current_email" required><br><br>
+
+    <label for="new_email">Neue E-Mail-Adresse:</label><br>
+    <input type="email" class="form-control" id="new_email" name="new_email" required><br><br>
+
+    <label for="confirm_email">E-Mail-Adresse bestätigen:</label><br>
+    <input type="email" class="form-control" id="confirm_email" name="confirm_email" required><br><br>
+
+    <label for="password_hash">Passwort (für Bestätigung):</label><br>
+    <input type="password" class="form-control" id="password_hash" name="password_hash" required><br><br> <!-- Korrektur hier -->
+
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="submit" class="btn btn-primary w-100" value="E-Mail und Passwort ändern">
+</form>
 
                                     <hr>
                                     <p class="message">{{ login_text }}
@@ -70,5 +66,4 @@
         </div>
     </div>
 </div>
-
-<!-- END -->
+<!-- end -->

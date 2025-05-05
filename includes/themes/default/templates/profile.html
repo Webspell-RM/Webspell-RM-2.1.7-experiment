@@ -6,264 +6,143 @@
 </h2>
 <p class="head-boxes-foot">{{ subtitle }}</p>
 </div>
-{{ banned }}
 <!-- END -->
 
-<!-- profile_contentstart_one -->
-<div class="card">
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-12" style="margin-bottom: 10px;">
-                <div class="row">
-                    <div class="col-md-3 col-sm-12">
-                        <h5>{{ personal_info }}</h5>
-                    </div>
-                    <div class="col-md-9 col-sm-12 text-end">
-                        {{ usergallery }} {{ cash_box }} {{ new_messages_button }} {{ edit_account }} {{ admincenterpic }} {{ logout }}
-                    </div>
-                </div>    
-            </div>
-            <div class="col-md-12">
-                <div class="row">
-                    <div class="col-md-3" style="display: flex; 
-                        justify-content: center; 
-                        align-items: center;">{{ userpic }}
-                    </div>
-                    <div class="col-md-4">
-                        <table class="table">
-                            <tr>
-                                <td>{{ nick_name }}:</td>
-                                <td>{{ nickname }} {{ member }}</td>
-                            </tr>
-                            <tr>
-<!-- END -->
+<!-- profile_content -->
 
-<!-- profile_name -->
-    <td>{{ real_name }}:</td>
-        {{ firstname }} {{ lastname }}
-</tr>
-<tr>
-<!-- END -->  
-<!-- profile_birthday -->                          
-    <td>{{ lang_birthday }}:</td>
-        {{ birth_day }}
-</tr>
-<tr>
-<!-- END --> 
-<!-- profile_gender --> 
-    <td>{{ lang_gender }}:</td>
-        {{ gender }}
-</tr>
-<tr>
-<!-- END -->
-<!-- profile_town -->
-    <td>{{ location }}:</td>
-        {{ town }}
-</tr>
-<tr>                       
-<!-- END -->
-
-<!-- profile_pm -->
-    <td>{{ contact }} {{ message }}:</td>
-        {{ pm }}
-</tr>
-<tr>                                
-<!-- END -->
-<!-- profile_email -->
-    <td>{{ contact }} {{ iemail }}:</td>
-        {{ email }}                 
-<!-- END -->
-
-<!-- profile_contentstart_two --> 
-</tr>                           
-    </table>
-        </div>
-            <div class="" style="width: 40px"></div>
-                <div class="col-md-4">
-                    <table class="table">
-                        <tr>
-                            <td>{{ status_on_off }}:</td>
-                            <td>{{ status }}</td>
-                        </tr>
-                        <tr>
-                            <td>{{ last_login }}:</td>
-                            <td>{{ lastlogin }}</td>
-                        </tr>
-                        <tr>
-                            <td>{{ registered }}:</td>
-                            <td>{{ registerdate }}</td>
-                        </tr>
-                        <tr>
-<!-- END -->
-
-<!-- profile_usertitle -->
-    <td>{{ usertitle }}:</td>
-    <td>{{ rang }}<br><small>{{ usertype }}</small> {{ specialrank }}</td>                 
-<!-- END -->
-
-<!-- profile_contentstart_three -->
-</tr>                           
-    </table> 
-        </div>
-
-        <div class="ca1rd margin-top-lg">
-            <div class="profile-head">
-                <ul class="nav nav-tabs" id="myTab" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link active" id="about-tab" data-bs-toggle="tab" href="#about" role="tab" aria-controls="about" aria-selected="true">{{ lang_about }}</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="signature-tab" data-bs-toggle="tab" href="#signature" role="tab" aria-controls="signature" aria-selected="true">{{ lang_signature }}</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="social_media-tab" data-bs-toggle="tab" href="#social_media" role="tab" aria-controls="social_media" aria-selected="false">{{ social_media }}</a>
-                    </li>
-                    {{ last_post }}
-                    {{ gallery_link }}
-                    {{ squad_link }}
-                    {{ game_link }}
-                    {{ calendar_link }}
-                    <li class="nav-item">
-                        <a class="nav-link" id="statistics-tab" data-bs-toggle="tab" href="#statistics" role="tab" aria-controls="statistics" aria-selected="false">{{ statistics }}</a>
-                    </li>
-                    {{ user_award_link }}
-                    {{ user_award_list }}
-                </ul>
-                <div class="tab-content profile-tab" id="myTabContent">
-                    <div class="tab-pane fade show active" id="about" role="tabpanel" aria-current="about-tab">
-                                        
-                        <div class="col-12">
-                            <h4>{{ lang_about }}</h4><br>
-                            {{ about }}
-                        </div>
-                                        
-                        </div>
-                        <div class="tab-pane fade" id="signature" role="tabpanel" aria-current="signature-tab">
-                                        
-                        <div class="col-12">
-                            <h4>{{ lang_signature }}</h4><br>
-                            {{ signature }}
-                        </div>
-                                        
-                        </div>
-                        <div class="tab-pane fade" id="social_media" role="tabpanel" aria-current="social_media-tab">
-                                    
-                            <div class="col-md-12 text-center">
-                                <h4>{{ social-media }}</h4><br>
-                                {{ twitch }}
-                                {{ youtube }}
-                                {{ twitter }}
-                                {{ instagram }}
-                                {{ facebook }}
-                                {{ steam }}
-                                {{ discord }}
-                                {{ homepage }}
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="squad" role="tabpanel" aria-current="squad-tab">
-                            <div class="col-md-12 row d-flex justify-content-center">
-                                <h4 class="d-flex justify-content-center">{{ lang_squads }}</h4><br>
-                                {{ banner }}
-                            </div>
-                        </div> 
-                        <div class="tab-pane fade" id="games" role="tabpanel" aria-current="games-tab">
-                            <div class="col-md-12 text-center">
-                                <h4>{{ lang_games }}</h4><br>
-                                {{ games }}
-                            </div>
-                        </div> 
-                        <div class="tab-pane fade" id="calendar" role="tabpanel" aria-current="calendar-tab">
-                            <div class="col-md-12 text-center">
-                                <h4>{{ upcoming_events }}</h4><br>
-                                {{ kalender }}
-                            </div>
-                        </div> 
-                        <div class="tab-pane fade" id="statistics" role="tabpanel" aria-current="statistics-tab">
-                            <div class="col-md-12 row">
-                                <h4 class="d-flex justify-content-center">{{ statistics }}</h4><br>
-                                <div class="col-md-4">
-                                    <table class="table table-sm">
-                                        <tr><td colspan="2">
-                                        {{ latest_visitors }} ({{ anzvisits }})
-                                    </td></tr>
-                                        {{ lastvisits }}  
-                                    </table>
-                                </div>
-                                <div class="col-md-8 row">
-
-                                    <div class="col-md-4">
-                                    <ul class="list-group">
-                                    <li class="list-group-item activex" aria-current="true"><b>{{ comment }}</b></li>
-                                    <li class="list-group-item">{{ articlescomments }}: <b>{{ articles_comments }}</b></li>
-                                    <li class="list-group-item">{{ blogcomments }}: <b>{{ blog_comments }}</b></li>
-                                    <li class="list-group-item">{{ pollscomments }}: <b>{{ polls_comments }}</b></li>
-                                    <li class="list-group-item">{{ newscomments }}: <b>{{ news_comments }}</b></li>
-                                    <li class="list-group-item">{{ gallerycomments }}: <b>{{ gallery_comments }}</b></li>
-                                    <li class="list-group-item">{{ videoscomments }}: <b>{{ videos_comments }}</b></li>
-                                    </ul>
-                                    </div>
-
-                                    <div class="col-md-4">
-                                    <ul class="list-group">
-                                    <li class="list-group-item activex" aria-current="true"><b>{{ messages }}</b></li>
-                                    <li class="list-group-item">{{ newsposts }}: <b>{{ new_posts }}</b></li>
-                                    <li class="list-group-item">{{ forumtopics }}: <b>{{ new_forum_topics }}</b></li>
-                                    <li class="list-group-item">{{ forumposts }}: <b>{{ new_forum_posts }}</b></li>
-                                    <li class="list-group-item">{{ blogtopics }}: <b>{{ new_blog_topics }}</b></li>
-                                    <li class="list-group-item">{{ newspolls }}: <b>{{ new_polls }}</b></li>
-                                    </ul>   
-                                    </div>
-
-                                    <div class="col-md-4">
-                                    <ul class="list-group">
-                                    <li class="list-group-item activex" aria-current="true"><b>{{ news }}</b></li>
-                                    <li class="list-group-item">{{ messenger }} ({{ incoming }}): <b>{{ pm_got }}</b></li>
-                                    <li class="list-group-item">{{ messenger }} ({{ outgoing }}): <b>{{ pm_sent }}</b></li>
-                                    </ul>   
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>   
-                        
-                        <div class="tab-pane fade" id="awards" role="tabpanel" aria-current="awards-tab">
-                            <div class="col-md-12 text-center">
-                                <h4>{{ lang_awards }}</h4><br>
-                                {{ awards }}
-                            </div>
-                        </div>    
-                    </div>  
-                </div>
-<!-- END -->
-
-<!-- profile_contentend -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<!--    <div class="card text-center col-4">
+  <div class="card-body">
+    <img src="avatar.jpg" class="rounded-circle mb-3" width="100">
+    <h5 class="card-title">Max Mustermann</h5>
+    <p class="card-text">Webentwickler aus Berlin</p>
+    <a href="#" class="btn btn-primary">Profil ansehen</a>
+  </div>
 </div>
-<!-- END -->
 
-<!-- profile_lastposts -->
-    <div class="row">
-        <div class="col-sm-6">
-            <h5>{{ last_topics }}</h5>
-            <table class="table table-hover">
-                {{ topiclist }}
-            </table>                        
-        </div>
-        <div class="col-sm-6">
-            <h5>{{ last_posts }}</h5>
-            <table class="table table-hover">
-                {{ postlist }}
-            </table>
-        </div>
-    </div>  
-<!-- END -->
+<hr>
 
-<!-- profile_galleries -->
-    <div class="col card bildmitbildunterschrift" style="margin: 0px -5px 10px -5px;width: 220px">
-        {{ picture }}  
+<div class="row">
+  <div class="col-md-4 text-center">
+    <img src="avatar.jpg" class="rounded-circle mb-3" width="150">
+    <h4>Max Mustermann</h4>
+    <small>Administrator</small>
+  </div>
+  <div class="col-md-8">
+    <table class="table table-borderless">
+      <tr><th>Name</th><td>Max</td></tr>
+      <tr><th>Ort</th><td>Berlin</td></tr>
+      <tr><th>Website</th><td><a href="#">www.max.dev</a></td></tr>
+    </table>
+  </div>
+</div>
+
+<hr>-->
+<div class="card">
+  <div class="card-body">
+
+{{ banned }}
+    <div class="container my-4">
+      <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-4 text-center">
+          <img src="{{ user_picture }}" class="img-fluid mb-3" width="150" alt="Profilbild">
+          <h4>{{ username }}</h4>
+          <span class="badge bg-primary"><i class="bi bi-star-fill me-1"></i>{{ user_points }} Punkte</span>
+          <p class="text-muted mt-2">{{ user_role }}</p>
+
+          <!-- Level-Fortschritt -->
+          <div class="my-2">
+            <small class="text-muted">Level {{ user_level }}</small>
+            <div class="progress" style="height: 8px;">
+              <div class="progress-bar" role="progressbar" style="width: {{ level_progress }}%;" aria-valuenow="{{ level_progress }}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+          </div>
+
+          <!-- Social Icons mit Tooltips -->
+          <div class="d-flex justify-content-center gap-3 mt-3">
+            <a href="{{ github_url }}" target="_blank" data-bs-toggle="tooltip" title="GitHub">
+              <i class="bi bi-github fs-4 text-dark"></i>
+            </a>
+            <a href="{{ twitter_url }}" target="_blank" data-bs-toggle="tooltip" title="Twitter">
+              <i class="bi bi-twitter-x fs-4 text-primary"></i>
+            </a>
+            <a href="{{ instagram_url }}" target="_blank" data-bs-toggle="tooltip" title="Instagram">
+              <i class="bi bi-instagram fs-4 text-danger"></i>
+            </a>
+            <a href="{{ website_url }}" target="_blank" data-bs-toggle="tooltip" title="Website">
+              <i class="bi bi-globe fs-4 text-success"></i>
+            </a>
+          </div>
+
+          <!-- Profil bearbeiten -->
+          <div class="mt-4">
+            {{ edit_button }}
+          </div>
+        </div>
+
+        <!-- Main Content mit Tabs -->
+        <div class="col-md-8">
+          <ul class="nav nav-tabs mb-3" id="profileTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="about-tab" data-bs-toggle="tab" data-bs-target="#about" type="button" role="tab">Über mich</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="posts-tab" data-bs-toggle="tab" data-bs-target="#posts" type="button" role="tab">Beiträge</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="activity-tab" data-bs-toggle="tab" data-bs-target="#activity" type="button" role="tab">Aktivität</button>
+            </li>
+          </ul>
+
+          <div class="tab-content" id="profileTabContent">
+            <!-- Über mich -->
+            <div class="tab-pane fade show active" id="about" role="tabpanel">
+              <h5>Steckbrief</h5>
+              <table class="table table-sm">
+                <tr><th>Vorname</th><td>{{ user_name }}</td></tr>
+                <tr><th>Nachname</th><td>{{ user_surname }}</td></tr>
+                <tr><th>Alter</th><td>{{ user_age }}</td></tr>
+                <tr><th>Ort</th><td>{{ user_location }}</td></tr>
+                <tr><th>Sexualität</th><td>{{ user_sexuality }}</td></tr>
+                <tr><th>Registriert seit</th><td>{{ register_date }}</td></tr>
+                <!--<tr><th>Letzter Besuch</th><td>{{ last_visit }}</td></tr>
+                <tr><th>Anzahl Logins</th><td>{{ user_activity }}</td></tr>-->
+              </table>
+
+              <h6 class="mt-3">Über mich</h6>
+              <p>{{ user_about }}</p>
+
+              <h6>Signatur</h6>
+              <p class="text-muted fst-italic">{{ user_signature }}</p>
+            </div>
+
+            <!-- Beiträge -->
+            <div class="tab-pane fade" id="posts" role="tabpanel">
+              <h5>Letzte Beiträge</h5>
+              {{ user_posts }}
+            </div>
+
+            <!-- Aktivität -->
+            <div class="tab-pane fade" id="activity" role="tabpanel">
+              <h5>Letzte Aktivität</h5>
+              {{ user_activity }}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
+</div>
+
+
+<script>
+  // Bootstrap Tooltip aktivieren
+  document.addEventListener("DOMContentLoaded", function () {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+  });
+</script>
+
 <!-- END -->

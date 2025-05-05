@@ -114,8 +114,8 @@ try {
                     'dd_foot' => [],
                 ];
 
-                echo $tpl->loadTemplate("navigation", "dd_head", $data_array['head']);
-                echo $tpl->loadTemplate("navigation", "sub_open", $data_array['sub_open']);
+                echo $tpl->loadTemplate("navigation", "dd_head", $data_array['head'], 'theme');
+                echo $tpl->loadTemplate("navigation", "sub_open", $data_array['sub_open'], 'theme');
                 
                 while ($rox = mysqli_fetch_array($rex)) {
                     // Menüeinträge im Dropdown-Menü erzeugen
@@ -124,17 +124,24 @@ try {
                             'url' => strpos($rox['url'], 'http://') !== false ? $rox['url'] . '" target="_blank' : $rox['url'],
                             'name' => $translate->getTextByLanguage($rox['name'])
                         ];
-                        echo $tpl->loadTemplate("navigation", "sub_nav", $sub_array);
+                        echo $tpl->loadTemplate("navigation", "sub_nav", $sub_array, 'theme');
                     }
                 }
                 
-                echo $tpl->loadTemplate("navigation", "sub_close", $data_array['sub_close']);
-                echo $tpl->loadTemplate("navigation", "dd_foot", $data_array['dd_foot']);
+                echo $tpl->loadTemplate("navigation", "sub_close", $data_array['sub_close'], 'theme');
+                echo $tpl->loadTemplate("navigation", "dd_foot", $data_array['dd_foot'], 'theme');
             }
         } else {
             // Falls kein Dropdown-Menü, normalen Navigationseintrag ausgeben
-            $head_array['windows'] = $row['windows'] ? '' : '_blank';
-            echo $tpl->loadTemplate("navigation", "main_head", $head_array);
+            #$head_array['windows'] = $row['windows'] ? '' : '_blank';
+
+            $head_array = [
+                    'windows' => $row['windows'] ? '' : '_blank',
+                    'url' => strpos($rox['url'], 'http://') !== false ? $rox['url'] . '" target="_blank' : $rox['url'],
+                            'name' => $translate->getTextByLanguage($rox['name'])
+                ];
+
+            echo $tpl->loadTemplate("navigation", "main_head", $head_array, 'theme');
         }
     }
 } catch (Exception $e) {

@@ -380,9 +380,17 @@ class LoginSecurity {
     }
     
     public static function generateRandomPepper($length = 32): string
-{
-    return bin2hex(random_bytes($length / 2));
-}
+    {
+        return bin2hex(random_bytes($length / 2));
+    }
+
+    public static function generateCSRFToken()
+    {
+        if (!isset($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Erzeugt ein zufälliges Token
+        }
+        return $_SESSION['csrf_token'];
+    }
 
 
 }

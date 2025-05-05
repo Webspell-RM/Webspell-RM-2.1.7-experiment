@@ -154,11 +154,11 @@ if (isset($_GET['action'])) {
                 <form method="post" action="admincenter.php?site=contact">
                     <div class="mb-3 row">
                         <label class="col-sm-2 col-form-label">' . $_language->module['contact_name'] . ':</label>
-                        <div class="col-sm-8"><input type="text" class="form-control" name="name" value="' . getinput($ds['name']) . '" /></div>
+                        <div class="col-sm-8"><input type="text" class="form-control" name="name" value="' . htmlspecialchars($ds['name']) . '" /></div>
                     </div>
                     <div class="mb-3 row">
                         <label class="col-sm-2 col-form-label">' . $_language->module['email'] . ':</label>
-                        <div class="col-sm-8"><input type="text" name="email" class="form-control" value="' . getinput($ds['email']) . '" /></div>
+                        <div class="col-sm-8"><input type="text" name="email" class="form-control" value="' . htmlspecialchars($ds['email']) . '" /></div>
                     </div>
                     <input type="hidden" name="captcha_hash" value="' . $hash . '" />
                     <input type="hidden" name="contactID" value="' . $contactID . '" />
@@ -211,8 +211,8 @@ else {
     while ($ds = mysqli_fetch_array($result)) {
         echo '
         <tr>
-            <td>' . getinput($ds['name']) . '</td>
-            <td>' . getinput($ds['email']) . '</td>
+            <td>' . htmlspecialchars($ds['name']) . '</td>
+            <td>' . htmlspecialchars($ds['email']) . '</td>
             <td>
                 <a href="admincenter.php?site=contact&amp;action=edit&amp;contactID=' . $ds['contactID'] . '" class="btn btn-warning btn-sm">' . $_language->module['edit'] . '</a>
 

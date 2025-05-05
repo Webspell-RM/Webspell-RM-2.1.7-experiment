@@ -61,7 +61,7 @@ function get_mainContent()
     }
     $ds = mysqli_fetch_array($settings);
 
-    $site = isset($_GET['site']) ? getinput($_GET['site']) : $ds['startpage'];
+    $site = isset($_GET['site']) ? htmlspecialchars($_GET['site'], ENT_QUOTES, 'UTF-8') : $ds['startpage'];
 
     $invalide = array('\\', '/', '/\/', ':', '.');
     $site = str_replace($invalide, ' ', $site);

@@ -77,34 +77,10 @@ include('system/plugin.php');
 include('system/widget.php');
 include('system/version.php');
 include('system/multi_language.php');
+include('system/classes/Template.php');
+include('system/classes/TextFormatter.php');
 chdir('admin');
 
-
-
-
-
-
-
-
-
-/*
-echo '<pre>';
-print_r($_SESSION);
-echo '</pre>';
-
-if (!isset($_SESSION['userID'])) {
-    echo "NICHT eingeloggt";
-} else {
-    echo "Eingeloggt als: " . htmlspecialchars($_SESSION['username']);
-}
-
-
-// Überprüfen, ob die Session wirklich gelöscht wurde
-if (!isset($_SESSION['userID'])) {
-    echo "Die Session wurde erfolgreich beendet.";
-} else {
-    echo "Die Session ist immer noch aktiv.";
-}*/
 
 // Plugin-Manager laden und Sprachmodul für Admincenter einbinden
 $load = new plugin_manager();
@@ -157,23 +133,6 @@ if (!isset($_SESSION['userID']) || !checkUserRoleAssignment($_SESSION['userID'])
 
 $userID = $_SESSION['userID'];
 
-$result = safe_query("
-    SELECT ar.type, ar.accessID, ar.roleID
-    FROM user_role_admin_navi_rights AS ar
-    JOIN user_role_assignments AS ur ON ar.roleID = ur.roleID
-    WHERE ur.userID = '$userID'
-");
-
-/*if (mysqli_num_rows($result) == 0) {
-    echo '<div style="color:red;">⚠️ Du hast keine Rechte für Kategorien oder Links (Tabellen leer?)</div>';
-} else {
-    echo '<div style="color:green;">✅ Zugriffsrechte gefunden:</div>';
-    while ($row = mysqli_fetch_assoc($result)) {
-        #echo "Typ: {$row['type']} → accessID: {$row['accessID']} (Rolle {$row['roleID']})<br>";
-    }
-}*/
-
-
 if (!isset($_SERVER['REQUEST_URI'])) {
 	$arr = explode('/', $_SERVER['PHP_SELF']);
 	$_SERVER['REQUEST_URI'] = '/' . $arr[count($arr) - 1];
@@ -181,6 +140,7 @@ if (!isset($_SERVER['REQUEST_URI'])) {
 		$_SERVER['REQUEST_URI'] .= '?' . $_SERVER['argv'][0];
 	}
 }
+
 function getplugincatID($catname)
 {
     // Bereite die SQL-Anfrage vor, um SQL-Injection zu verhindern
@@ -210,43 +170,6 @@ function getplugincatID($catname)
     }
 }
 
-
-
-/*function dashnavi() {
-    global $userID;  // Stellen Sie sicher, dass $userID korrekt gesetzt ist
-
-    $links = '';
-    $ergebnis = safe_query("SELECT * FROM navigation_dashboard_categories ORDER BY sort");
-
-    while ($ds = mysqli_fetch_array($ergebnis)) {
-        $name = $ds['name'];
-        $fa_name = $ds['fa_name'];
-        $translate = new multiLanguage(detectCurrentLanguage());
-        $translate->detectLanguages($name);
-        $name = $translate->getTextByLanguage($name);
-
-        // Überprüfe den Zugriff auf die Kategorie
-        if (checkAccessRights($userID, $ds['catID'])) {  // Übergebe $userID an die Funktion
-            $links .= '<li><a class=\'has-arrow\' aria-expanded=\'false\' href=\'#\'><i class=\'' . $fa_name . '\' style="font-size: 1rem;"></i> ' . $name . '</a><ul class=\'nav nav-third-level\'>';
-
-            $catlinks = safe_query("SELECT * FROM navigation_dashboard_links WHERE catID='" . $ds['catID'] . "' ORDER BY sort");
-
-            while ($db = mysqli_fetch_array($catlinks)) {
-                $linkID = $db['linkID'];  // Setze die Link ID
-                $translate->detectLanguages($db['name']);
-                $name = $translate->getTextByLanguage($db['name']);
-
-                // Überprüfe den Zugriff auf den Link
-                if (checkAccessRights($userID, null, $linkID)) {  // Übergebe $userID an die Funktion
-                    $links .= '<li><a href=\'' . $db['url'] . '\'> <i class="bi bi-plus-lg ac-link"></i> ' . $name . '</a></li>';
-                }
-            }
-            $links .= '</ul></li>';
-        }
-    }
-
-    return $links ? $links : '<li>Keine Zugriffsberechtigten Links gefunden.</li>';
-}*/
 
 
 function dashnavi() {
@@ -323,14 +246,9 @@ function dashnavi() {
 }
 
 
-
-
-
-
 if ($userID && !isset($_GET['userID']) && !isset($_POST['userID'])) {
 	$ds = mysqli_fetch_array(safe_query("SELECT registerdate FROM `users` WHERE userID='" . $userID . "'"));
 	$username = '<a class="nav-link nav-link-3" href="../index.php?site=profile&amp;id=' . $userID . '">' . getusername($userID) . '</a>';
-	#$lastlogin = getformatdatetime($_SESSION['ws_lastlogin']);
 	$lastlogin = !empty($ds['lastlogin']) ? getformatdatetime($ds['lastlogin']) : '-';
     $registerdate = getformatdatetime($ds['registerdate']);
 
@@ -346,7 +264,7 @@ if ($getavatar = getavatar($userID)) {
 	$l_avatar = "noavatar.png";
 }
 
-
+header('Content-Type: text/html; charset=UTF-8');
 
 ?>
 <!DOCTYPE html>
@@ -382,6 +300,7 @@ if ($getavatar = getavatar($userID)) {
 
 	<!-- DataTables -->
 	<link href="/admin/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    
 
 </head>
 
@@ -469,26 +388,19 @@ if ($getavatar = getavatar($userID)) {
 }
 			?>
 		</div><!-- /#wrapper -->
-		<!--</div>-->
-
-		<!-- ckeditor -->
+		
 		<?php
-		// Beispiel: CKEditor für Super-Admin (1) und Admin (2)
-		#if (hasrole($userID, [1, 2])) {
-		#	echo '<script src="../components/ckeditor/ckeditor.js"></script><script src="../components/ckeditor/config.js"></script>';
-		#} else {
-		#	echo '<script src="../components/ckeditor/ckeditor.js"></script><script src="../components/ckeditor/user_config.js"></script>';
-		#}
+		
 
 		$roleID = RoleManager::getUserRoleID($userID);
 
-if ($roleID !== null && RoleManager::roleHasPermission($roleID, 'ckeditor_full')) {
-    echo '<script src="../components/ckeditor/ckeditor.js"></script>';
-    echo '<script src="../components/ckeditor/config.js"></script>';
-} else {
-    echo '<script src="../components/ckeditor/ckeditor.js"></script>';
-    echo '<script src="../components/ckeditor/user_config.js"></script>';
-}
+        if ($roleID !== null && RoleManager::roleHasPermission($roleID, 'ckeditor_full')) {
+            echo '<script src="../components/ckeditor/ckeditor.js"></script>';
+            echo '<script src="../components/ckeditor/config.js"></script>';
+        } else {
+            echo '<script src="../components/ckeditor/ckeditor.js"></script>';
+            echo '<script src="../components/ckeditor/user_config.js"></script>';
+        }
 		?>
 
 		<!-- jQuery -->
@@ -561,7 +473,7 @@ if ($roleID !== null && RoleManager::roleHasPermission($roleID, 'ckeditor_full')
 				})
 			});
 		</script>
-        admin_users.php
+        
 </body>
 
 </html>

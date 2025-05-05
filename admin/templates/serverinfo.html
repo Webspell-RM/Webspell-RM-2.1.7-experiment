@@ -1,36 +1,19 @@
 <!-- serverinfo_content -->
 
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <title>Serverinformationen</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        table { border-collapse: collapse; width: 60%; margin: auto; }
-        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        h1 { text-align: center; }
-    </style>
-</head>
-<body>
+
     <h1>Serverinformationen</h1>
     <table>
-        <tr><th>PHP-Version</th><td>{{ phpversion }}</td></tr>
-        <tr><th>Zend-Version</th><td>{{ zendversion }}</td></tr>
-        <tr><th>MySQL-Version</th><td>{{ mysqlversion }}</td></tr>
-        <tr><th>allow_url_fopen</th><td>{{ allow_url_fopen }}</td></tr>
-        <tr><th>register_globals</th><td>{{ register_globals }}</td></tr>
-        <tr><th>magic_quotes_gpc</th><td>{{ magic_quotes_gpc }}</td></tr>
-        <tr><th>magic_quotes_runtime</th><td>{{ magic_quotes_runtime }}</td></tr>
-        <tr><th>safe_mode</th><td>{{ safe_mode }}</td></tr>
-        <tr><th>file_uploads</th><td>{{ file_uploads }}</td></tr>
-        <tr><th>Session-Unterstützung</th><td>{{ session_start }}</td></tr>
-        <tr><th>cURL-Unterstützung</th><td>{{ curl_check }}</td></tr>
-        <tr><th>cURL exec Unterstützung</th><td>{{ curlexec_check }}</td></tr>
-        <tr><th>GDlib Unterstützung</th><td>{{ get_gd_info }}</td></tr>
-        <tr><th>GDlib Formate</th><td>{{ get_gdtypes_string }}</td></tr>
+        <tr><td>PHP-Version:</td><td>{{ phpversion }}</td></tr>
+<tr><td>Zend Engine:</td><td>{{ zendengine }}</td></tr>
+<tr><td>Server OS:</td><td>{{ os }}</td></tr>
+<tr><td>Webserver:</td><td>{{ webserver }}</td></tr>
+<tr><td>PHP API:</td><td>{{ phpapi }}</td></tr>
+<tr><td>Max. Ausführungszeit:</td><td>{{ max_exec_time }} Sekunden</td></tr>
+<tr><td>Memory-Limit:</td><td>{{ memory_limit }}</td></tr>
+<tr><td>Uploadgröße:</td><td>{{ upload_max_filesize }}</td></tr>
+<tr><td>POST-Größe:</td><td>{{ post_max_size }}</td></tr>
+<tr><td>MySQL-Version:</td><td>{{ mysql_version }}</td></tr>
+<tr><td>DB-Host:</td><td>{{ db_host }}</td></tr>
+<tr><td>User-Agent:</td><td>{{ user_agent }}</td></tr>
     </table>
-</body>
-</html>
 <!-- END -->

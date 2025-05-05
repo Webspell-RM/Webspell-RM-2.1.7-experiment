@@ -35,7 +35,7 @@ header('Content-type: text/css');
     }
 
     #if(@$ds["reg_pic"] == $ds["pfad"].'_reg_pic.jpg') {
-        $rm_reg_pic = "/includes/".$ds["pfad"]."/images/".$ds["reg_pic"]."";
+        $rm_reg_pic = "/includes/themes/".$ds["pfad"]."/images/".$ds["reg_pic"]."";
     #}else{
     #    $rm_reg_pic = "/includes/expansion/default/images/default_login_bg.jpg";
     #}
@@ -210,7 +210,7 @@ background-image: url(/includes/themes/'.$theme_name.'/images/'.$ds['reg_pic'].'
 ';
 
 
-$button = safe_query("SELECT * FROM settings_buttons WHERE modulname='".getinput($ds['modulname'])."'");
+$button = safe_query("SELECT * FROM settings_buttons WHERE modulname='".htmlspecialchars($ds['modulname'])."'");
     $db = mysqli_fetch_array($button);
 echo'
 

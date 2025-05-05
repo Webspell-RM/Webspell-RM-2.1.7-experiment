@@ -297,7 +297,7 @@ if (isset($_POST[ 'submit' ])) {
                 <td width="35%">
                     <div class="input-group">
                         <input class="form-control" name="user" type="text" 
-                            value="' . getinput($ds['user']) . '" size="35"
+                            value="' . htmlspecialchars($ds['user']) . '" size="35"
                             onmouseover="showWMTT(\'id3\')" onmouseout="hideWMTT()"/>
                     </div>
                 </td>
@@ -308,7 +308,7 @@ if (isset($_POST[ 'submit' ])) {
                 <td width="35%">
                     <div class="input-group">
                         <input class="form-control" type="password" name="password" 
-                            value="' . getinput($ds['password']) . '" size="35"
+                            value="' . htmlspecialchars($ds['password']) . '" size="35"
                             onmouseover="showWMTT(\'id4\')" onmouseout="hideWMTT()"/>
                     </div>
                 </td>
@@ -319,7 +319,7 @@ if (isset($_POST[ 'submit' ])) {
                 <td width="35%">
                     <div class="input-group">
                         <input class="form-control" type="text" name="host" 
-                            value="' . getinput($ds['host']) . '" size="35"
+                            value="' . htmlspecialchars($ds['host']) . '" size="35"
                             onmouseover="showWMTT(\'id6\')" onmouseout="hideWMTT()"/>
                     </div>
                 </td>
@@ -330,7 +330,7 @@ if (isset($_POST[ 'submit' ])) {
                 <td width="35%">
                     <div class="input-group">
                         <input class="form-control" id="input_port" type="text" name="port" 
-                            value="' . getinput($ds['port']) . '" size="5"
+                            value="' . htmlspecialchars($ds['port']) . '" size="5"
                             onmouseover="showWMTT(\'id5\')" onmouseout="hideWMTT()"/>
                     </div>
                 </td>

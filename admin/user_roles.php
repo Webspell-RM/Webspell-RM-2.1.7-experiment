@@ -760,7 +760,7 @@ if (isset($_SESSION['csrf_error'])): ?>
 
                         <div class="col-md-6">
                             <label for="email" class="form-label"><?= $_language->module['email'] ?></label>
-                            <input type="email" id="email" name="email" class="form-control" value="<?= htmlspecialchars($user['email']) ?>" required>
+                            <input type="email" id="email" name="email" class="form-control" value="<?= htmlspecialchars($user['email']) ?>" disabled>
                         </div>
 
                         <div class="col-md-6">

@@ -103,7 +103,7 @@ if (!empty(@$db['active'] == 1) !== false) {
         }
 
         # Creazione della tabella dinamica se non esiste
-        $table_name = PREFIX . "plugins_" . $_POST['modulname'] . "_settings_widgets";
+        $table_name = "plugins_" . $_POST['modulname'] . "_settings_widgets";
         safe_query(
             "CREATE TABLE IF NOT EXISTS `" . $table_name . "` (
                 `id` int(11) NOT NULL AUTO_INCREMENT,

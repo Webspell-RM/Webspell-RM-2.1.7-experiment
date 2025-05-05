@@ -28,7 +28,7 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
 */
 
-global $_language, $tpl, $_database;
+global $_language, $_database;
 
 $_language->readModule('index');
 
@@ -135,6 +135,5 @@ if (
         'it_languages' => $it_languages,
     ];
 
-    $template = $tpl->loadTemplate("navigation", "languages", $data_array);
-    echo $template;
+    echo $tpl->loadTemplate("navigation", "languages", $data_array, 'theme');
 }

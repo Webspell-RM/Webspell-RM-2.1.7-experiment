@@ -22,7 +22,7 @@ if ($success && isset($_SESSION['success_message'])) {
         'return_to_login' => '<a href="index.php?site=login" class="btn btn-success">' . $_language->module['login'] . '</a>'
     ];
     unset($_SESSION['success_message']);
-    echo $tpl->loadTemplate("lostpassword", "success", $data_array);
+    echo $tpl->loadTemplate("lostpassword", "success", $data_array, 'theme');
     return;
 }
 
@@ -124,7 +124,12 @@ $data_array = [
     'email-address' => $_language->module['email-address'],
     'reg' => $_language->module['reg'],
     'need_account' => $_language->module['need_account'],
-    'error_message' => $message
+    'error_message' => $message,
+    'lastpassword_txt' => $_language->module['lastpassword_txt'],
+    'register_link' =>  $_language->module['register_link'],
+    'welcome_back' =>  $_language->module['welcome_back'],    
+    'reg_text' =>  $_language->module['reg_text'],
+    'login_text' =>  $_language->module['login_text'],
 ];
 
-echo $tpl->loadTemplate("lostpassword", "content_area", $data_array);
+echo $tpl->loadTemplate("lostpassword", "content_area", $data_array, 'theme');

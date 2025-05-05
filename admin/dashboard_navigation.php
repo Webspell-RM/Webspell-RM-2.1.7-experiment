@@ -279,7 +279,7 @@ $hash = $_SESSION['captcha_hash'];
   </div>
   <div class="mb-3 row">
     <div class="col-md-offset-2 col-md-10">
-      <input type="hidden" name="captcha_hash" value="' . $hash . '"><button class="btn btn-success" type="submit" name="save"><i class="bi bi-box-arrow-down"></i> ' . $_language->module[ 'add_link' ] . '</button>
+      <input type="hidden" name="captcha_hash" value="' . $hash . '"><button class="btn btn-success btn-sm" type="submit" name="save"><i class="bi bi-box-arrow-down"></i> ' . $_language->module[ 'add_link' ] . '</button>
     </div>
   </div>
    
@@ -391,7 +391,7 @@ echo '<div class="card">
                 <div class="col-md-offset-2 col-md-10">
                     <input type="hidden" name="captcha_hash" value="' . $hash . '" />
                     <input type="hidden" name="linkID" value="' . $linkID . '">
-                    <button class="btn btn-warning" type="submit" name="saveedit">
+                    <button class="btn btn-warning btn-sm" type="submit" name="saveedit">
                         <i class="bi bi-box-arrow-down"></i> ' . $_language->module['edit_link'] . '
                     </button>
                 </div>
@@ -519,7 +519,7 @@ echo '<form class="form-horizontal" method="post">
   <div class="mb-3 row">
     <div class="col-md-offset-2 col-md-10">
       <input type="hidden" name="captcha_hash" value="' . $hash . '" />
-      <button class="btn btn-success" type="submit" name="savecat"><i class="bi bi-box-arrow-down"></i> ' . $_language->module['add_category'] . '</button>
+      <button class="btn btn-success btn-sm" type="submit" name="savecat"><i class="bi bi-box-arrow-down"></i> ' . $_language->module['add_category'] . '</button>
     </div>
   </div>
 
@@ -628,7 +628,7 @@ echo '<form class="form-horizontal" method="post">
           <div class="col-md-offset-2 col-md-10">
             <input type="hidden" name="captcha_hash" value="' . $hash . '" />
             <input type="hidden" name="catID" value="' . $catID . '">
-            <button class="btn btn-warning" type="submit" name="savecat">
+            <button class="btn btn-warning btn-sm" type="submit" name="savecat">
               <i class="bi bi-box-arrow-down"></i> ' . $_language->module['edit_category'] . '
             </button>
           </div>
@@ -755,9 +755,9 @@ echo '<div class="card">
         <div class="mb-3 row">
             <label class="col-md-1 control-label">' . $_language->module['options'] . ':</label>
             <div class="col-md-8">
-                <a class="btn btn-primary" href="admincenter.php?site=dashboard_navigation&amp;action=addcat" class="input"><i class="bi bi-plus-circle"></i> ' .
+                <a class="btn btn-primary btn-sm" href="admincenter.php?site=dashboard_navigation&amp;action=addcat" class="input"><i class="bi bi-plus-circle"></i> ' .
                     $_language->module[ 'new_category' ] . '</a>
-                <a class="btn btn-primary" href="admincenter.php?site=dashboard_navigation&amp;action=add" class="input"><i class="bi bi-plus-circle"></i> ' .
+                <a class="btn btn-primary btn-sm" href="admincenter.php?site=dashboard_navigation&amp;action=add" class="input"><i class="bi bi-plus-circle"></i> ' .
                     $_language->module[ 'new_link' ] . '</a>
             </div>
         </div>';
@@ -803,13 +803,13 @@ while ($ds = mysqli_fetch_array($ergebnis)) {
     } else {
         $sort = $list;
         $catactions = '
-            <a class="btn btn-warning" href="admincenter.php?site=dashboard_navigation&amp;action=editcat&amp;catID=' . $ds[ 'catID' ] .
+            <a class="btn btn-warning btn-sm" href="admincenter.php?site=dashboard_navigation&amp;action=editcat&amp;catID=' . $ds[ 'catID' ] .
             '" class="input"><i class="bi bi-pencil-square"></i> ' . $_language->module[ 'edit' ] . '</a>
 
             
 
             <!-- Button trigger modal -->
-<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirm-delete-link" 
+<button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirm-delete-link" 
         data-href="admincenter.php?site=dashboard_navigation&delcat=true&catID=' .$ds['catID'] . '&captcha_hash=' .$hash . '">
     <i class="bi bi-trash3"></i> 
     ' . $_language->module['delete'] . '
@@ -822,14 +822,14 @@ while ($ds = mysqli_fetch_array($ergebnis)) {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="confirm-delete-linkLabel"><i class="bi bi-menu-app"></i> ' . $_language->module['dashnavi'] . '</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="' . $_language->module['close'] . '"></button>
+                <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal" aria-label="' . $_language->module['close'] . '"></button>
             </div>
             <div class="modal-body">
                 <p><i class="bi bi-trash3"></i> ' . $_language->module['really_delete_category'] . '</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> ' . $_language->module['close'] . '</button>
-                <a class="btn btn-danger btn-ok"><i class="bi bi-trash3"></i> ' . $_language->module['delete'] . '</a>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> ' . $_language->module['close'] . '</button>
+                <a class="btn btn-danger btn-ok btn-sm"><i class="bi bi-trash3"></i> ' . $_language->module['delete'] . '</a>
             </div>
         </div>
     </div>
@@ -895,10 +895,10 @@ while ($ds = mysqli_fetch_array($ergebnis)) {
                 <td class="' . $td . '">&nbsp;-&nbsp;<b>' . $name . '</b></td>
                 <td class="' . $td . '"><small>' . $db[ 'url' ] . '</small></td>
                 <td class="' . $td . '">
-                    <a href="admincenter.php?site=dashboard_navigation&amp;action=edit&amp;linkID=' . $db[ 'linkID' ] .'" class="btn btn-warning"><i class="bi bi-pencil-square"></i> ' . $_language->module[ 'edit' ] . '</a>
+                    <a href="admincenter.php?site=dashboard_navigation&amp;action=edit&amp;linkID=' . $db[ 'linkID' ] .'" class="btn btn-warning btn-sm"><i class="bi bi-pencil-square"></i> ' . $_language->module[ 'edit' ] . '</a>
 
                    <!-- Button trigger modal -->
-<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirm-delete-link" data-href="admincenter.php?site=dashboard_navigation&delete=true&linkID=' . $db['linkID'] . '&captcha_hash=' . $hash . '"><i class="bi bi-trash3"></i> 
+<button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirm-delete-link" data-href="admincenter.php?site=dashboard_navigation&delete=true&linkID=' . $db['linkID'] . '&captcha_hash=' . $hash . '"><i class="bi bi-trash3"></i> 
   ' . $_language->module['delete'] . '
 </button>
 
@@ -908,14 +908,14 @@ while ($ds = mysqli_fetch_array($ergebnis)) {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="confirm-delete-linkLabel"><i class="bi bi-menu-app"></i> ' . $_language->module['dashnavi'] . '</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="' . $_language->module['close'] . '"></button>
+                <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal" aria-label="' . $_language->module['close'] . '"></button>
             </div>
             <div class="modal-body">
                 <p><i class="bi bi-trash3"></i> ' . $_language->module['really_delete_link'] . '</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> ' . $_language->module['close'] . '</button>
-                <a class="btn btn-danger btn-ok"><i class="bi bi-trash3"></i> ' . $_language->module['delete'] . '</a>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> ' . $_language->module['close'] . '</button>
+                <a class="btn btn-danger btn-ok btn-sm"><i class="bi bi-trash3"></i> ' . $_language->module['delete'] . '</a>
             </div>
         </div>
     </div>
@@ -951,7 +951,7 @@ while ($ds = mysqli_fetch_array($ergebnis)) {
 
 echo '  <tr>
             <td class="td_head" colspan="6" align="right">
-                <button class="btn btn-primary" type="submit" name="sortieren"><i class="bi bi-sort-numeric-up"></i>  ' . $_language->module[ 'to_sort' ] . '</button>
+                <button class="btn btn-primary btn-sm" type="submit" name="sortieren"><i class="bi bi-sort-numeric-up"></i>  ' . $_language->module[ 'to_sort' ] . '</button>
             </td>
         </tr>
     </table>

@@ -77,17 +77,6 @@ if (isset($_POST[ 'submit' ])) {
     $CAPCLASS->createTransaction();
     $hash = $CAPCLASS->getHash();
 
-    // Ausgabe des Formulars
-    echo '<script language="JavaScript" type="text/javascript">
-            <!--
-            function chkFormular() {
-                if(!validbbcode(document.getElementById(\'message\').value, \'admin\')){
-                    return false;
-                }
-            }
-            -->
-        </script>';
-
     echo '<div class="card">
             <div class="card-header">' . $_language->module['imprint'] . '</div>
             <nav aria-label="breadcrumb">
@@ -105,9 +94,9 @@ if (isset($_POST[ 'submit' ])) {
                                 <input class="form-check-input" type="radio" name="type" value="1" ' . $type1 . ' />&nbsp;&nbsp;' . $_language->module['manual'] . '<br /><br />
                             </div>
                             <b>' . $_language->module['imprint'] . '</b><br /><br />
-                            <textarea class="ckeditor" id="ckeditor" name="message" rows="15" style="width: 100%;">' . getinput($ds['imprint']) . '</textarea><br /><br />
+                            <textarea class="ckeditor" id="ckeditor" name="message" rows="15" style="width: 100%;">' . htmlspecialchars($ds['imprint']) . '</textarea><br /><br />
                             <b>' . $_language->module['disclaimer'] . '</b><br /><br />
-                            <textarea class="ckeditor" id="ckeditor" name="disclaimer_text" rows="15" style="width: 100%;">' . getinput($ds['disclaimer_text']) . '</textarea><br /><br />
+                            <textarea class="ckeditor" id="ckeditor" name="disclaimer_text" rows="15" style="width: 100%;">' . htmlspecialchars($ds['disclaimer_text']) . '</textarea><br /><br />
                             <input type="hidden" name="captcha_hash" value="' . $hash . '" />
                             <button class="btn btn-warning" type="submit" name="submit" />' . $_language->module['update'] . '</button>
                         </form>

@@ -3,13 +3,18 @@
  * For licensing, see https://ckeditor.com/legal/ckeditor-oss-license
  */
 
-CKEDITOR.editorConfig = function( config ) {
-	// Define changes to default configuration here. For example:
-	// config.language = 'fr';
-	// config.uiColor = '#AADC6E';
-	config.codeSnippet_theme = 'school_book';
-	//   config.enterMode = 2; //disabled <p> completely
-        config.enterMode = CKEDITOR.ENTER_BR; // pressing the ENTER KEY input <br/>
-        config.shiftEnterMode = CKEDITOR.ENTER_P; //pressing the SHIFT + ENTER KEYS input <p>
-        config.autoParagraph = false; // stops automatic insertion of <p> on focus
+CKEDITOR.editorConfig = function(config) {
+    config.codeSnippet_theme = 'school_book';
+    config.enterMode = CKEDITOR.ENTER_BR; // <br /> bei Enter
+    config.shiftEnterMode = CKEDITOR.ENTER_P; // <p> bei Shift + Enter
+    config.autoParagraph = false; // Verhindert automatische <p>-Tags
+    config.entities = false; // Verhindert HTML Entities wie &lt;br /&gt;
+    config.basicEntities = false; // Verhindert grundlegende Entitäten wie &lt; und &gt;
+    config.encodeEntities = false; // Verhindert die Kodierung von HTML-Zeichen
+    config.forceSimpleAmpersand = true; // Verhindert die Umwandlung von & zu &amp;
+    config.fillEmptyBlocks = false; // Verhindert das automatische Füllen leerer Blöcke
+    config.removePlugins = 'elementspath'; // Entfernt das unnötige "Elementspath"-Plugin
+    config.resize_enabled = false; // Deaktiviert das Größenänderungs-Feature im Editor
 };
+
+//CKEDITOR.replace('message');

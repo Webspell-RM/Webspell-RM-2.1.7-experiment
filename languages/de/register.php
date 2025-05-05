@@ -2,7 +2,8 @@
 
 $language_array = array(
 
-    'title'                         => 'Registrierung',
+    
+
     'info'                          => 'Bitte trage in den angezeigten Feldern die Grunddaten des Logins ein und drücke anschließend auf "Konto anlegen".',
     'activation_successful'         => '<blockquote>Deine Registrierung wurde erfolgreich abgeschlossen.<br>Du kannst dich jetzt anmelden.</blockquote>',
     'back'                          => 'zurück',
@@ -15,15 +16,7 @@ $language_array = array(
     'mail_activation_successful'    => 'Das Freischalten deiner Mailadresse war erfolgreich.',
     'mail_failed'                   => 'Die Freischaltmail konnte nicht versandt werden, bitte informiere den Webmaster darüber.',
     'mail_inuse'                    => 'Es existiert bereits eine Anmeldung für diese Mailadresse.',
-    'mail_subject'                  => 'Anmeldebestätigung für %hp_title%',
-    'mail_text'                     => 'Hallo %username%,
-<p>vielen Dank für deine Registrierung!</p>
-<p>Bitte bestätige deine Registrierung, indem du folgenden Link anklickst:<br></p>
-<p>%activation_link%</p>
-</p><i>Falls du dich nicht registriert hast, kannst du diese E-Mail ignorieren.</i></p>
-<p>Vielen Dank für deine Anmeldung</p>
-<p>Dein Team von %hp_title%</p>
-%hp_title% - %hp_url%',
+    
     'nickname'                      => 'Nickname',
     'nickname_inuse'                => 'Der Nickname ist bereits vergeben.',
     'no_register_when_loggedin'     => 'Du hast bereits einen Accout auf %pagename%.',
@@ -82,6 +75,39 @@ $language_array = array(
     'login_data'                    => 'Anmeldedaten',
     'next'                          => 'Next',
     'previous'                      => 'Previous',
+
+
+
+    'reg_title'                         => 'Registrierung',
+
+    'mail_subject'                  => 'Anmeldebestätigung für %hp_title%',
+    'mail_text'                     => 'Hallo %username%,
+<p>vielen Dank für deine Registrierung!</p>
+<p>Bitte bestätige deine Registrierung, indem du folgenden Link anklickst:<br></p>
+<p>%activation_link%</p>
+</p><i>Falls du dich nicht registriert hast, kannst du diese E-Mail ignorieren.</i></p>
+<p>Vielen Dank für deine Anmeldung</p>
+<p>Dein Team von %hp_title%</p>
+%hp_title% - %hp_url%',
+    'nickname'                      => 'Nickname',
+
+    'reg_info_text'                      => 'Ich willige ein, dass meine personenbezogene Angaben dauerhaft gespeichert werden.',
+    'login_link' => ' Login',
+'login_text' => 'Sie haben bereits ein Konto?',
+
+'mail'                          => 'E-Mail',
+'username'                      => 'Username',
+'password'                      => 'Passwort',
+'password_repeat'                        => 'Passwort wiederholen',
+'email_address'                 => 'Email Adresse',
+    'enter_your_email'              => 'Gib deine E-Mail Adresse ein',
+    'enter_your_name'               => 'Gib deinen Nickname ein',
+    'enter_password'                => 'Passwort eingeben',
+    'enter_password_repeat'                        => 'Passwort wiederholt eingeben',
+    'pass_text'                     => 'Mind. 8 Zeichen, ein Großbuchstabe, eine Zahl',
+    'register' => 'Registieren',
+    'terms_of_use_text' => 'Ich akzeptiere die',
+    'terms_of_use' => 'Nutzungsbedingungen',
 
 );
 

@@ -293,7 +293,7 @@ if(isset($_GET[ 'delete' ])) {
                 button42='" . $_POST[ 'button42' ] . "',
                 `btn_border_radius`='" . $_POST[ 'btn_border_radius' ] . "'
                 WHERE
-                `modulname` = '".getinput($dx['modulname'])."'"
+                `modulname` = '".htmlspecialchars($dx['modulname'])."'"
         );
 
         $error = array();
@@ -702,7 +702,7 @@ echo'<div class="card">
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="admincenter.php?site=settings_themes">'.$_language->module['themes'].'</a></li>
-    <li class="breadcrumb-item active" aria-current="page">'.getinput($ds['name']).'-'.$_language->module['themes_design'].'</li>
+    <li class="breadcrumb-item active" aria-current="page">'.htmlspecialchars($ds['name']).'-'.$_language->module['themes_design'].'</li>
   </ol>
 </nav>
 <div class="card-body">';   
@@ -714,21 +714,21 @@ echo'<form class="form-horizontal" method="post" action="admincenter.php?site=se
   <div class="mb-3 row">
     <label class="col-md-2 control-label">'.$_language->module['themes_name'].':</label>
     <div class="col-md-8"><span class="text-muted small"><em>
-      <input type="text" class="form-control" placeholder="'.getinput($ds['name']).'" / disabled></em></span>
+      <input type="text" class="form-control" placeholder="'.htmlspecialchars($ds['name']).'" / disabled></em></span>
     </div>
   </div>
 
   <div class="mb-3 row">
     <label class="col-md-2 control-label">'.$_language->module['folder_themes'].':</label>
     <div class="col-md-8"><span class="text-muted small"><em>
-      <input type="text" class="form-control" placeholder=" /includes/themes/'.getinput($ds['pfad']).'" / disabled></em></span>
+      <input type="text" class="form-control" placeholder=" /includes/themes/'.htmlspecialchars($ds['pfad']).'" / disabled></em></span>
     </div>
   </div>
 
   <div class="mb-3 row">
     <label class="col-md-2 control-label">'.$_language->module['modulname'].':</label>
     <div class="col-md-8"><span class="text-muted small"><em>
-      <input type="text" class="form-control" placeholder="'.getinput($ds['modulname']).'" / disabled></em></span>
+      <input type="text" class="form-control" placeholder="'.htmlspecialchars($ds['modulname']).'" / disabled></em></span>
     </div>
   </div>
 
@@ -748,7 +748,7 @@ echo'<form class="form-horizontal" method="post" action="admincenter.php?site=se
   <div class="mb-3 row">
     <label class="col-md-2 control-label">'.$_language->module['version'].':</label>
     <div class="col-md-8"><span class="text-muted small"><em>
-      <input type="text" class="form-control" name="version" value="'.getinput($ds['version']).'" /></em></span>
+      <input type="text" class="form-control" name="version" value="'.htmlspecialchars($ds['version']).'" /></em></span>
     </div>
   </div>
 
@@ -1488,7 +1488,7 @@ echo'
       <!-- ================Button=========================== -->
       ';
 
-    $ergebnis = safe_query("SELECT * FROM settings_buttons WHERE modulname='".getinput($ds['modulname'])."'");
+    $ergebnis = safe_query("SELECT * FROM settings_buttons WHERE modulname='".htmlspecialchars($ds['modulname'])."'");
     $db = mysqli_fetch_array($ergebnis);
 echo'
       <div class="col-md-12 row">
@@ -2398,19 +2398,19 @@ echo'<div class="card">
     
    $i = 1;
     while ($db = mysqli_fetch_array($row)) {
-                if (file_exists("../includes/themes/".getinput($db['pfad'])."/images/".getinput($db['modulname']).".jpg")) {
+                if (file_exists("../includes/themes/".htmlspecialchars($db['pfad'])."/images/".htmlspecialchars($db['modulname']).".jpg")) {
                     $bannerpic = ".jpg";
                     $pic_info = $db[ 'modulname' ];
-                } elseif (file_exists("../includes/themes/".getinput($db['pfad'])."/images/".getinput($db['modulname']).".gif")) {
+                } elseif (file_exists("../includes/themes/".htmlspecialchars($db['pfad'])."/images/".htmlspecialchars($db['modulname']).".gif")) {
                     $bannerpic = ".gif";
                     $pic_info = $db[ 'modulname' ];
-                } elseif (file_exists("../includes/themes/".getinput($db['pfad'])."/images/".getinput($db['modulname']).".png")) {
+                } elseif (file_exists("../includes/themes/".htmlspecialchars($db['pfad'])."/images/".htmlspecialchars($db['modulname']).".png")) {
                     $bannerpic = ".png";
                     $pic_info = $db[ 'modulname' ];
-				} elseif (file_exists("../includes/themes/".getinput($db['pfad'])."/images/".getinput($db['modulname']).".avif")) {
+				} elseif (file_exists("../includes/themes/".htmlspecialchars($db['pfad'])."/images/".htmlspecialchars($db['modulname']).".avif")) {
                     $bannerpic = ".avif";
                     $pic_info = $db[ 'modulname' ];
-				} elseif (file_exists("../includes/themes/".getinput($db['pfad'])."/images/".getinput($db['modulname']).".webp")) {
+				} elseif (file_exists("../includes/themes/".htmlspecialchars($db['pfad'])."/images/".htmlspecialchars($db['modulname']).".webp")) {
                     $bannerpic = ".webp";
                     $pic_info = $db[ 'modulname' ];
                 } else {
@@ -2424,15 +2424,15 @@ echo'<div class="card">
         <td>
 
 <div class="imageHold">
-    <div><img class="featured-image img-thumbnail" src="../includes/themes/'.getinput($db['pfad']).'/images/'.$pic_info.''.$bannerpic.'" alt="Bannerpic"></div>
+    <div><img class="featured-image img-thumbnail" src="../includes/themes/'.htmlspecialchars($db['pfad']).'/images/'.$pic_info.''.$bannerpic.'" alt="Bannerpic"></div>
 </div>
 
         </td>
 
-        <td style="width: 45%"><h5>'.getinput($db['name']).'</h5><br>
-        '.$_language->module['themes_name'].': '.getinput($db['name']).'
+        <td style="width: 45%"><h5>'.htmlspecialchars($db['name']).'</h5><br>
+        '.$_language->module['themes_name'].': '.htmlspecialchars($db['name']).'
         <br>'.$_language->module['modulname'].': '.$db['modulname'].'
-        <br>'.$_language->module['folder_themes'].': /includes/themes/'.getinput($db['pfad']).'
+        <br>'.$_language->module['folder_themes'].': /includes/themes/'.htmlspecialchars($db['pfad']).'
         <br>'.$_language->module['version'].': '.$db['version'].'';
         
 

@@ -553,28 +553,28 @@ $_language->setLanguage($default_language);
 
 // -- TEMPLATE SYSTEM -- //
 // Einbinden des Template-Systems
-if (file_exists('func/template.php')) {
-    systeminc('func/template');
-} else {
-    systeminc('../system/func/template');
-}
+#if (file_exists('func/template.php')) {
+#    systeminc('func/template');
+#} else {
+#    systeminc('../system/func/template');
+#}
 
 // -- PLUGIN SERVICE -- //
 // Einbinden des Plugin-Service
-if (file_exists('func/plugin_service.php')) {
-    systeminc('func/plugin_service');
-} else {
-    systeminc('../system/func/plugin_service');
-}
+#if (file_exists('func/plugin_service.php')) {
+#    systeminc('func/plugin_service');
+#} else {
+#    systeminc('../system/func/plugin_service');
+#}
 
 
 
 // Erstellen des Template-Objekts, je nachdem, ob es sich um das Admin-Verzeichnis handelt
-if (!stristr($_SERVER['SCRIPT_NAME'], '/admin/')) {
+/*if (!stristr($_SERVER['SCRIPT_NAME'], '/admin/')) {
     $_template = new \Webspell\Template();
 } else {
     $_template = new \Webspell\Template('../templates/');
-}
+}*/
 
 // -- SPAM -- //
 // Einbinden der Spam-Funktionen
@@ -646,28 +646,28 @@ if (file_exists('func/login_check.php')) {
 
 
 // Für Login unf Rollen
-if (file_exists('classes/login_security.php')) {
-    systeminc('classes/login_security');
+if (file_exists('classes/LoginSecurity.php')) {
+    systeminc('classes/LoginSecurity');
 } else {
-    systeminc('../system/classes/login_security');
+    systeminc('../system/classes/LoginSecurity');
 }
 
-if (file_exists('classes/role_manager.php')) {
-    systeminc('classes/role_manager');
+if (file_exists('classes/RoleManager.php')) {
+    systeminc('classes/RoleManager');
 } else {
-    systeminc('../system/classes/role_manager');
+    systeminc('../system/classes/RoleManager');
 }
 
-if (file_exists('classes/plugin_manager.php')) {
-    systeminc('classes/plugin_manager');
+if (file_exists('classes/PluginSettings.php')) {
+    systeminc('classes/PluginSettings');
 } else {
-    systeminc('../system/classes/plugin_manager');
+    systeminc('../system/classes/PluginSettings');
 }
 
-if (file_exists('classes/plog_admin_action.php')) {
-    systeminc('classes/log_admin_action');
+if (file_exists('classes/AdminLogger.php')) {
+    systeminc('classes/AdminLogger');
 } else {
-    systeminc('../system/classes/log_admin_action');
+    systeminc('../system/classes/AdminLogger');
 }
 
 // ModRewrite-Objekt initialisieren und aktivieren
@@ -684,11 +684,15 @@ if (!stristr($_SERVER['SCRIPT_NAME'], '/admin/') && $modRewrite) {
  * @param string $calledfrom Der Ursprung des Aufrufs (Standard ist 'root').
  * @return string Der bereinigte Text.
  */
-function cleartext($text, $bbcode = true, $calledfrom = 'root')
+/*function cleartext($text, $bbcode = true, $calledfrom = 'root')
 {
-    $text = htmlspecialchars($text);  // Wandelt Sonderzeichen in HTML-Entities um
-    $text = strip_tags($text);        // Entfernt HTML-Tags
-    $text = nl2br($text);             // Wandelt neue Zeilen in <br> um
+    // Entfernt HTML-Tags und wandelt Sonderzeichen in HTML-Entities um (mit UTF-8)
+    $text = htmlspecialchars(strip_tags($text), ENT_QUOTES, 'UTF-8');  
+    
+    // Wandelt Zeilenumbrüche in <br> um (nur wenn gewünscht)
+    if ($bbcode) {
+        $text = nl2br($text);             
+    }
 
     return $text;
 }
@@ -699,11 +703,10 @@ function cleartext($text, $bbcode = true, $calledfrom = 'root')
  * @param string $text Der zu bereinigende Text.
  * @return string Der bereinigte Text.
  */
-function getinput($text)
+/*function getinput($text)
 {
-    @$text = htmlspecialchars($text); // Wandelt Sonderzeichen in HTML-Entities um
-
-    return $text;
+    // Wandelt Sonderzeichen in HTML-Entities um (mit UTF-8)
+    return htmlspecialchars($text, ENT_QUOTES, 'UTF-8'); 
 }
 
 /**
@@ -712,11 +715,16 @@ function getinput($text)
  * @param string $text Der zu bereinigende Text.
  * @return string Der bereinigte Text.
  */
-function getforminput($text)
+/*function getforminput($text)
 {
-    $text = str_replace(array('\r', '\n'), array("\r", "\n"), $text); // Zeilenumbrüche richtig konvertieren
-    $text = stripslashes($text); // Entfernt Escape-Zeichen
-    $text = htmlspecialchars($text); // Wandelt Sonderzeichen in HTML-Entities um
+    // Entfernt Escape-Zeichen, falls erforderlich (nur wenn Magic Quotes aktiv waren)
+    $text = stripslashes($text);
+
+    // Wandelt Sonderzeichen in HTML-Entities um (mit UTF-8)
+    $text = htmlspecialchars($text, ENT_QUOTES, 'UTF-8'); 
+
+    // Korrigiert Zeilenumbrüche und entfernt unerwünschte Escape-Zeichen
+    $text = str_replace(["\r\n", "\r"], "\n", $text);
 
     return $text;
 }
@@ -1015,4 +1023,5 @@ function getformatdatetime($datetime, $format = 'd.m.Y H:i') {
     if (empty($datetime) || $datetime == '0000-00-00 00:00:00') return '-';
     return date($format, strtotime($datetime));
 }
+
 

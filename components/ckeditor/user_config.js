@@ -4,15 +4,14 @@
  */
 
 CKEDITOR.editorConfig = function( config ) {
-	// Define changes to default configuration here. For example:
-	// config.language = 'fr';
-	// config.uiColor = '#AADC6E';
 	config.codeSnippet_theme = 'school_book';
-	//   config.enterMode = 2; //disabled <p> completely
-        config.enterMode = CKEDITOR.ENTER_BR; // pressing the ENTER KEY input <br/>
-        config.shiftEnterMode = CKEDITOR.ENTER_P; //pressing the SHIFT + ENTER KEYS input <p>
-        config.autoParagraph = false; // stops automatic insertion of <p> on focus
-config.removeButtons = 'Source';
+    config.enterMode = CKEDITOR.ENTER_BR; // <br /> bei Enter
+    config.shiftEnterMode = CKEDITOR.ENTER_P; // <p> bei Shift + Enter
+    config.autoParagraph = false; // Verhindert automatische <p>-Tags
+    config.entities = false; // Verhindert HTML Entities wie &lt;br /&gt;
+    config.basicEntities = false; // Verhindert grundlegende Entitäten wie &lt; und &gt;
+    config.encodeEntities = false; // Verhindert die Kodierung von HTML-Zeichen
+		config.removeButtons = 'Source';
 
 
 };

@@ -130,7 +130,7 @@ if ($action == "send") {
     if (!count($fehler) && $run) {
         $message = stripslashes(
         'This mail was send over your webSPELL - Website (IP ' . $GLOBALS['ip'] . '): ' . $hp_url .
-        '<br><br><strong>' . getinput($name) . ' writes:</strong><br>' . $text
+        '<br><br><strong>' . htmlspecialchars($name) . ' writes:</strong><br>' . $text
         );
         $sendmail = \webspell\Email::sendEmail($from, 'Contact', $getemail, stripslashes($subject), $message);
 
@@ -189,8 +189,8 @@ if ($loggedin) {
     if (!isset($showerror)) {
         $showerror = '';
     }
-    $name = getinput(stripslashes(getusername($userID)));
-    $from = getinput(getemail($userID));
+    $name = htmlspecialchars(stripslashes(getusername($userID)));
+    $from = htmlspecialchars(getemail($userID));
     if (isset($_POST['subject'])) {
         $subject = getforminput($_POST['subject']);
     } else {

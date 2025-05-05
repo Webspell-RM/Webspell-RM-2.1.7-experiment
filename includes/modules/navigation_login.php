@@ -40,9 +40,7 @@ GLOBAL $userID, $board_topics, $split, $array;
 
 $_language->readModule('index');
 
-echo $tpl->loadTemplate("navigation", "login_head", $data_array);
-
-
+// Wenn der Benutzer eingeloggt ist
 if ($loggedin) {
     $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='forum' AND activate=1"));
     if (!isset($dx['modulname']) || $dx['modulname'] != 'forum') {
@@ -100,8 +98,10 @@ if ($loggedin) {
         }
     }
 
+    // Avatar laden
     $l_avatar = getavatar($userID) ?: "noavatar.png";
 
+    // Messenger-Plugin überprüfen
     $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='messenger' AND activate=1"));
     if (!isset($dx['modulname']) || $dx['modulname'] != 'messenger') {
         $newmessages = '';
@@ -130,13 +130,12 @@ if ($loggedin) {
         }
     }
 
-    // Benutzer-ID aus der Sitzung erhalten
+    // Benutzer-ID und Rollenprüfung für das Dashboard
     $userID = $_SESSION['userID'] ?? 0;
     $roleID_to_check = 1; // Die zu überprüfende Rolle
 
     // Überprüfen, ob der Benutzer die Rolle hat
     if (!$userID || !checkUserRoleAssignment($userID, $roleID_to_check)) {
-        // Kein Zugriff oder keine Rolle zugewiesen
         $dashboard = '';
     } else {
         // Zugriff gewährt, Dashboard-Link setzen
@@ -163,8 +162,8 @@ if ($loggedin) {
         'my_account' => $index_language['my_account']
     ];
 
-    // Template laden und in $html speichern
-    echo $tpl->loadTemplate("navigation", "login_loggedin", $data_array);
+    // Template für eingeloggte Benutzer laden
+    echo $tpl->loadTemplate("navigation", "login_loggedin", $data_array, 'theme');
 
 } else {
     // Wenn der Benutzer nicht eingeloggt ist
@@ -173,11 +172,10 @@ if ($loggedin) {
         'lang_login' => $_language->module['login']
     ];
 
-    // Template laden und in $html speichern
-    $html = $template->loadTemplate("navigation", "login_login", $data_array);
-    echo $html;
+    // Template für nicht eingeloggte Benutzer laden
+    echo $tpl->loadTemplate("navigation", "login_login", $data_array, 'theme');
 }
 
-// Template für den Footer laden und in $html speichern
-echo $tpl->loadTemplate("navigation", "login_foot", []);
-
+// Footer nur einmal nach der Bedingung laden
+#echo $tpl->loadTemplate("navigation", "login_foot", [], 'theme');
+?>

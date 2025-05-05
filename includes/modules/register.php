@@ -33,7 +33,7 @@ $message = '';
 
 // Zu viele Registrierungsversuche?
 $stmt = $_database->prepare("
-    SELECT COUNT(*) FROM register_attempts 
+    SELECT COUNT(*) FROM user_register_attempts 
     WHERE ip_address = ? AND attempt_time > (NOW() - INTERVAL 30 MINUTE)
 ");
 $stmt->bind_param("s", $ip_address);
@@ -208,7 +208,28 @@ $data_array = [
     'username' => $username,
     'email' => $email,
     'password_repeat' => $password_repeat,
-    'recaptcha_site_key' => 'DEIN_SITE_KEY'
+    'recaptcha_site_key' => 'DEIN_SITE_KEY',
+
+    'reg_title' =>  $_language->module['reg_title'],
+    'reg_info_text' =>  $_language->module['reg_info_text'],
+    'login_link' => $_language->module['login_link'],
+    'login_text' =>  $_language->module['login_text'],
+
+    'mail'                          => $_language->module['mail'],
+'username'                      => $_language->module['username'],
+'password'                      => $_language->module['password'],
+'password_repeat'                        => $_language->module['password_repeat'],
+'email_address'                 => $_language->module['email_address'],
+    'enter_your_email'              => $_language->module['enter_your_email'],
+    'enter_your_name'               => $_language->module['enter_your_name'],
+    'enter_password'                => $_language->module['enter_password'],
+    'enter_password_repeat'                        => $_language->module['enter_password_repeat'],
+    'pass_text'                     => $_language->module['pass_text'],
+
+    'register' => $_language->module['register'],
+
+    'terms_of_use_text' => $_language->module['terms_of_use_text'],
+    'terms_of_use' => $_language->module['terms_of_use'],
 ];
 
 // Wenn die Registrierung abgeschlossen ist

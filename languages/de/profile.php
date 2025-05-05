@@ -155,5 +155,8 @@ $language_array = array(
     'award_plus'                => 'Aktivit&auml;tsaward Plus - F&uuml;r mindestens 1000 Forenposts und Kommentare',
     'signature'                 => 'Signatur',
     'events'                    => 'Events',
+
+
+    'title' => 'Profil'
 );
 

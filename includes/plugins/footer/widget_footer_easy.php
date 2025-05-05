@@ -28,63 +28,102 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
 */
 
-// Holt die Daten für das Plugin
-$pluginData = \webspell\PluginService::getPluginData("footer", $plugin_path);
-// Zugriff auf die Sprachdateien und das Template
-$plugin_language = $pluginData['language'];
-$plugin_template = $pluginData['template'];
+# Sprachdateien aus dem Plugin-Ordner laden
+    $pm = new plugin_manager(); 
+    $plugin_language = $pm->plugin_language("easyfooter", $plugin_path);
 
-// Sicherstellen, dass $myclanname definiert ist, falls nicht, einen Standardwert setzen
-$myclanname = isset($myclanname) ? $myclanname : 'Unbekannter Clan';  // Standardwert: 'Unbekannter Clan'
+GLOBAL $myclanname;    
+       
+        
 
-// htmlspecialchars nur aufrufen, wenn der Wert nicht null oder leer ist
-$myclanname = htmlspecialchars($myclanname, ENT_QUOTES, 'UTF-8');  // Sicherstellen, dass der String sicher ist
-
-$ergebnis = safe_query("SELECT * FROM `plugins_footer`");
-if (mysqli_num_rows($ergebnis)) {
+$ergebnis = safe_query("SELECT * FROM plugins_footer");
+if(mysqli_num_rows($ergebnis)){
     while ($ds = mysqli_fetch_array($ergebnis)) {
 
         $settings = safe_query("SELECT * FROM plugins_footer_target");
         $db = mysqli_fetch_array($settings);
 
-        // Generiere target="_blank" für Links, falls benötigt
-        $windows = [];
-        for ($i = 14; $i <= 18; $i++) {
-            $windows[$i] = (empty($db["windows$i"])) ? 'target="_blank"' : '';
+        if ($db[ 'windows14' ]) {
+            $windows14 = '';
+        } else {
+            $windows14 = 'target="_blank"';
         }
 
-        // Generiere die Copyright-Links
-        $copyright_links = [];
-        for ($i = 1; $i <= 5; $i++) {
-            $link_name = 'copyright_link' . $i;
-            $link_url = 'copyright_link' . $i;
-            $link_title = 'copyright_link_name' . $i;
-
-            if (!empty($ds[$link_url])) {
-                $copyright_links[$i] = '<a class="foot_link" href="' . htmlspecialchars($ds[$link_url]) . '" ' . $windows[14 + $i] . ' rel="nofollow">' . htmlspecialchars($ds[$link_title]) . '</a>';
-            } else {
-                $copyright_links[$i] = '';
-            }
+        if ($db[ 'windows15' ]) {
+            $windows15 = '';
+        } else {
+            $windows15 = 'target="_blank"';
         }
 
-        // Holen der "since"-Daten aus den Social Media Einstellungen
-        $dx = mysqli_fetch_array(safe_query("SELECT * FROM `settings_social_media`"));
+        if ($db[ 'windows16' ]) {
+            $windows16 = '';
+        } else {
+            $windows16 = 'target="_blank"';
+        }
+
+        if ($db[ 'windows17' ]) {
+            $windows17 = '';
+        } else {
+            $windows17 = 'target="_blank"';
+        }
+
+        if ($db[ 'windows18' ]) {
+            $windows18 = '';
+        } else {
+            $windows18 = 'target="_blank"';
+        }
+
+
+        if ($ds[ 'copyright_link1' ] != '') {
+            $copyright_link1 = '<a class="foot_link" href="' . htmlspecialchars($ds[ 'copyright_link1' ]) . '" '.$windows14.' rel="nofollow">' . htmlspecialchars($ds[ 'copyright_link_name1' ]) . '</a>';
+        } else {
+            $copyright_link1 = '';
+        }
+
+        if ($ds[ 'copyright_link2' ] != '') {
+            $copyright_link2 = '<a class="foot_link" href="' . htmlspecialchars($ds[ 'copyright_link2' ]) . '" '.$windows15.' rel="nofollow">' . htmlspecialchars($ds[ 'copyright_link_name2' ]) . '</a>';
+        } else {
+            $copyright_link2 = '';
+        }
+
+        if ($ds[ 'copyright_link3' ] != '') {
+            $copyright_link3 = '<a class="foot_link" href="' . htmlspecialchars($ds[ 'copyright_link3' ]) . '" '.$windows16.' rel="nofollow">' . htmlspecialchars($ds[ 'copyright_link_name3' ]) . '</a>';
+        } else {
+            $copyright_link3 = '';
+        }
+
+        if ($ds[ 'copyright_link4' ] != '') {
+            $copyright_link4 = '<a class="foot_link" href="' . htmlspecialchars($ds[ 'copyright_link4' ]) . '" '.$windows17.' rel="nofollow">' . htmlspecialchars($ds[ 'copyright_link_name4' ]) . '</a>';
+        } else {
+            $copyright_link4 = '';
+        }
+
+        if ($ds[ 'copyright_link5' ] != '') {
+            $copyright_link5 = '<a class="foot_link" href="' . htmlspecialchars($ds[ 'copyright_link5' ]) . '" '.$windows18.' rel="nofollow">' . htmlspecialchars($ds[ 'copyright_link_name5' ]) . '</a>';
+        } else {
+            $copyright_link5 = '';
+        }  
+
+        $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_social_media"));
+
         $since = $dx['since'];
+            
 
-        // Bereite das Array mit den Template-Daten vor
+
         $data_array = [
             'myclanname' => $myclanname,
             'since' => $since,
-            'copyright_link1' => $copyright_links[1],
-            'copyright_link2' => $copyright_links[2],
-            'copyright_link3' => $copyright_links[3],
-            'copyright_link4' => $copyright_links[4],
-            'copyright_link5' => $copyright_links[5],
-            'date' => isset($plugin_language['date']) ? htmlspecialchars($plugin_language['date'], ENT_QUOTES, 'UTF-8') : 'N/A'  // Fallback auf 'N/A', wenn kein Wert gesetzt
-        ];
 
-        // Template laden und anzeigen
-        $template = $plugin_template->loadTemplate("footer_easy", "content", $data_array, $plugin_path);
-        echo $template;
+            'copyright_link1' => $copyright_link1,
+            'copyright_link2' => $copyright_link2,
+            'copyright_link3' => $copyright_link3,
+            'copyright_link4' => $copyright_link4,
+            'copyright_link5' => $copyright_link5
+        ];
+        
+        $tpl = Template::getInstance();
+        echo $tpl->loadTemplate("footer_easy", "content", $data_array, 'plugin');
+
     }
 }
+?>

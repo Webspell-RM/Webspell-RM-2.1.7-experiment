@@ -179,6 +179,16 @@ blockquote {
   background-size: cover;
 }
 
+.sign_pic_bg
+{
+    background: var(--bs-rm-reg-pic);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 555px;
+    /*min-height: 733px;*/    
+}
+
 .reg_pic_text {  
   color: rgba(var(--bs-login_color_pic_text-rgb), 1);
 }

@@ -144,6 +144,9 @@ $data_array = [
     'error_message' => $message,
     'message_zusatz' => $message_zusatz,
     'isIpBanned' => $isIpBanned,
+    'welcome_back' =>  $_language->module['welcome_back'],
+    'reg_text' =>  $_language->module['reg_text'],
+    'login_text' =>  $_language->module['login_text'],
 ];
 
-echo $tpl->loadTemplate("login", "content", $data_array);
+echo $tpl->loadTemplate("login", "content", $data_array, 'theme');

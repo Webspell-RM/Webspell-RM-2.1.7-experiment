@@ -43,20 +43,20 @@ if (isset($_POST['submit'])) {
     $CAPCLASS = new \webspell\Captcha;
     if ($CAPCLASS->checkCaptcha(0, $_POST['captcha_hash'])) {
         // Sichere SQL-Abfrage mit vorbereiteten Statements
-        $stmt = $_database->prepare("SELECT * FROM `" . PREFIX . "settings_privacy_policy`");
+        $stmt = $_database->prepare("SELECT * FROM settings_privacy_policy");
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
             // Datensatz existiert, also aktualisieren
-            $stmt = $_database->prepare("UPDATE `" . PREFIX . "settings_privacy_policy` SET date = ?, privacy_policy_text = ?");
+            $stmt = $_database->prepare("UPDATE settings_privacy_policy SET date = ?, privacy_policy_text = ?");
             $current_time = time(); // Aktuelle Zeit
             $stmt->bind_param("is", $current_time, $privacy_policy_text);
             $stmt->execute();
             $stmt->close();
         } else {
             // Datensatz existiert nicht, also neuen Eintrag erstellen
-            $stmt = $_database->prepare("INSERT INTO `" . PREFIX . "settings_privacy_policy` (date, privacy_policy_text) VALUES (?, ?)");
+            $stmt = $_database->prepare("INSERT INTO settings_privacy_policy (date, privacy_policy_text) VALUES (?, ?)");
             $current_time = time();
             $stmt->bind_param("is", $current_time, $privacy_policy_text);
             $stmt->execute();
@@ -71,7 +71,7 @@ if (isset($_POST['submit'])) {
 }
 
 // Abrufen der bestehenden Datenschutzrichtlinie
-$stmt = $_database->prepare("SELECT * FROM `" . PREFIX . "settings_privacy_policy`");
+$stmt = $_database->prepare("SELECT * FROM settings_privacy_policy");
 $stmt->execute();
 $result = $stmt->get_result();
 $ds = $result->fetch_array();
@@ -80,16 +80,6 @@ $ds = $result->fetch_array();
 $CAPCLASS = new \webspell\Captcha;
 $CAPCLASS->createTransaction();
 $hash = $CAPCLASS->getHash();
-
-echo '<script>
-        <!--
-        function chkFormular() {
-            if (!validbbcode(document.getElementById("message").value, "admin")) {
-                return false;
-            }
-        }
-        -->
-    </script>';
 
 echo '<div class="card">
         <div class="card-header">
@@ -106,7 +96,7 @@ echo '<div class="card">
                 <div class="col-md-12">
                     <form class="form-horizontal" method="post" id="post" name="post" action="admincenter.php?site=settings_privacy_policy" onsubmit="return chkFormular();">
                         <br /><br />
-                        <textarea class="ckeditor" id="ckeditor" rows="25" name="message" style="width: 100%;">' . getinput($ds['privacy_policy_text']) . '</textarea>
+                        <textarea class="ckeditor" id="ckeditor" rows="25" name="message" style="width: 100%;">' . htmlspecialchars($ds['privacy_policy_text']) . '</textarea>
                         <br /><br />
                         <input type="hidden" name="captcha_hash" value="' . $hash . '" />
                         <button class="btn btn-warning" type="submit" name="submit" />' . $_language->module['update'] . '</button>

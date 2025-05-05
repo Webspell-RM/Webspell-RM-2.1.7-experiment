@@ -23,5 +23,13 @@ $language_array = array(
     'reg'                       => 'Registrierung',
     'need_account'              => 'Brauche ein Konto?',
     'csrf_failed' => 'CSRF-Sicherheitsprüfung fehlgeschlagen. Bitte versuchen Sie es erneut.',
+
+
+    'lastpassword_txt' => '<b>Du hast dein Passwort vergessen?</b>
+Kein Problem. Du kannst Dein Passwort ganz einfach zurücksetzen und dir ein neues vergeben. Gib dazu Deine bestätigte E-Mail-Adresse in das obenstehenden Formular ein und du bekommst daraufhin eine Bestätigungs-Mail zugeschickt. In dieser E-Mail bekommst du ein neu generiertes Passwort, mit dem du dich anmelden kannst. In deinem Profil kannst du dann ein eigenes neues Passwort bestimmen. ',
+'register_link' => 'Registrieren',
+'reg_text' => 'Noch nicht registriert?',
+'welcome_back' => 'Willkommen zurück',
+'login_text' => 'Sie haben bereits ein Konto?',
 );
 
