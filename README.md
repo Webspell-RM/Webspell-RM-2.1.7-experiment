@@ -2,8 +2,8 @@
 
 **Webspell-RM 3.0** ist ein vollständig neu entwickeltes, modulares und sicheres Open-Source CMS für Communities, Clans und Teams – bereit für das Jahr 2025 und darüber hinaus.
 
-![Webspell-RM Banner 1](https://www.webspell-rm.de/includes/plugins/pic_update/images/390.png)  
-![Webspell-RM Banner 2](https://www.webspell-rm.de/includes/plugins/pic_update/images/369.png)
+![Webspell-RM Logo 1](https://www.webspell-rm.de/includes/plugins/pic_update/images/390.png)  
+![Webspell-RM Logo 2](https://www.webspell-rm.de/includes/plugins/pic_update/images/369.png)
 
 👉 Offizielle Website: [webspell-rm.de](https://www.webspell-rm.de)  
 👉 Forum & Support: [webspell-rm.de/forum.html](https://www.webspell-rm.de/forum.html)  
@@ -35,7 +35,7 @@ Dieser lädt automatisch **alle Systemdateien und SQL-Strukturen** auf deinen We
 Bevor du den Installer startest, stellt Webspell-RM sicher, dass dein Webserver folgende Anforderungen erfüllt:
 
 - PHP **≥ 8.1**
-- MySQL/MariaDB **≥ 10.3**
+- MySQL **8** / MariaDB **≥ 10.3**
 - Schreibrechte für relevante Ordner (z. B. `/config`, `/uploads`, etc.)
 - Apache/Nginx mit mod_rewrite empfohlen
 
@@ -48,7 +48,7 @@ Bevor du den Installer startest, stellt Webspell-RM sicher, dass dein Webserver 
 1. **Lade den offiziellen Installer herunter**  
    👉 [Download Installer (.php)](https://www.webspell-rm.de/download)
 
-2. **Lade `installer.php` auf deinen Webserver (Root-Verzeichnis)**
+2. **Lade den `Installer` auf deinen Webserver (Root-Verzeichnis)**
 
 3. **Rufe im Browser auf:**  
 
@@ -66,7 +66,7 @@ Bevor du den Installer startest, stellt Webspell-RM sicher, dass dein Webserver 
 - Alle Datenbanktabellen angelegt
 - Dein System konfiguriert
 
-6. **Entferne die `installer.php` danach aus Sicherheitsgründen**
+6. **Entferne den `Install Ordner` danach aus Sicherheitsgründen**
 
 ---
 
