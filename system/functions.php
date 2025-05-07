@@ -136,75 +136,6 @@ if (file_exists('ip.php')) {
 }
 
 
-// -- GLOBAL WEBSPELL FUNCTIONS -- //
-/*
-function makepagelink($link, $page, $pages, $sub = '')
-{
-    $page_link = '<nav>
-  <ul class="pagination pagination-sm">';
-
-    if ($page != 1) {
-        $page_link .=
-        '<li><a href="' . $link . '&amp;' . $sub . 'page=1">&laquo;</a></li> <li><a href="' . $link . '&amp;' . $sub .
-        'page=' . ($page - 1) . '">&lsaquo;</a></li>';
-    }
-    if ($page >= 6) {
-        $page_link .= '<li><a href="' . $link . '&amp;' . $sub . 'page=' . ($page - 5) . '">...</a></li>';
-    }
-    if ($page + 4 >= $pages) {
-        $pagex = $pages;
-    } else {
-        $pagex = $page + 4;
-    }
-    for ($i = $page - 4; $i <= $pagex; $i++) {
-        if ($i <= 0) {
-            $i = 1;
-        }
-        if ($i == $page) {
-            $page_link .= '<li class="active"><a href="#" aria-label="Previous"><span aria-hidden="true">' . $i . '</span></a></li>';
-        } else {
-            $page_link .= '<li><a href="' . $link . '&amp;' . $sub . 'page=' . $i . '">' . $i . '</a></li>';
-        }
-    }
-    if (($pages - $page) >= 5) {
-        $page_link .= '<li><a href="' . $link . '&amp;' . $sub . 'page=' . ($page + 5) . '">...</a></li>';
-    }
-    if ($page != $pages) {
-        $page_link .=
-        '<li><a href="' . $link . '&amp;' . $sub . 'page=' . ($page + 1) . '">&rsaquo;</a>&nbsp;<a href="' .
-        $link . '&amp;' . $sub . 'page=' . $pages . '">&raquo;</a></li>';
-    }
-    $page_link .= '</ul></nav>';
-
-    return $page_link;
-}
-
-// Text Kürzen
-function str_break($str, $maxlen)
-{
-    $nobr = 0;
-    $str_br = '';
-    $len = mb_strlen($str);
-    for ($i = 0; $i < $len; $i++) {
-        $char = mb_substr($str, $i, 1);
-        if (($char != ' ') && ($char != '-') && ($char != "\n")) {
-            $nobr++;
-        } else {
-            $nobr = 0;
-            if ($maxlen + $i > $len) {
-                $str_br .= mb_substr($str, $i);
-                break;
-            }
-        }
-        if ($nobr > $maxlen) {
-            $str_br .= '- ' . $char;
-            $nobr = 1;
-        } else {
-            $str_br .= $char;
-        }
-    }
-    return $str_br;
-}*/
 
 // Funktion zur Zählung des Vorkommens eines Substrings in einem mehrdimensionalen Array
 function substri_count_array($haystack, $needle)
@@ -347,13 +278,7 @@ function validate_email($email)
 
 // Funktion zur Kombination von zwei Arrays, wenn `array_combine` nicht existiert
 if (!function_exists('array_combine')) {
-    /**
-     * Kombiniert zwei Arrays in ein assoziatives Array, wobei das erste Array die Schlüssel und das zweite die Werte darstellt.
-     *
-     * @param array $keyarray  Ein Array von Schlüsseln.
-     * @param array $valuearray Ein Array von Werten.
-     * @return array Ein assoziatives Array, das die Schlüssel aus `$keyarray` und die Werte aus `$valuearray` kombiniert.
-     */
+    
     function array_combine($keyarray, $valuearray)
     {
         // Arrays für die Schlüssel und Werte initialisieren
@@ -383,13 +308,7 @@ if (!function_exists('array_combine')) {
 
 // Funktion zur sicheren Vergleich von zwei Hash-Werten, wenn `hash_equals` nicht existiert
 if (!function_exists("hash_equals")) {
-    /**
-     * Vergleicht zwei Strings sicher, ohne Timing-Angriffe zu ermöglichen.
-     *
-     * @param string $known_str Der bekannte String, der mit dem Benutzer-String verglichen wird.
-     * @param string $user_str Der vom Benutzer bereitgestellte String.
-     * @return bool `true`, wenn die Strings gleich sind, andernfalls `false`.
-     */
+    
     function hash_equals($known_str, $user_str)
     {
         $result = 0;
@@ -419,15 +338,7 @@ if (!function_exists("hash_equals")) {
 }
 
 
-/**
- * Zählt die leeren Variablen in einem Array.
- *
- * Diese Funktion prüft rekursiv jedes Element im übergebenen Array. 
- * Wenn das Element leer ist (nachdem es getrimmt wurde), wird es gezählt.
- *
- * @param array $checkarray Das Array, das auf leere Variablen überprüft werden soll.
- * @return int Die Anzahl der leeren Variablen im Array.
- */
+
 function countempty($checkarray)
 {
     $ret = 0;
@@ -447,15 +358,7 @@ function countempty($checkarray)
     return $ret;
 }
 
-/**
- * Überprüft, ob bestimmte Request-Variablen leer sind.
- *
- * Diese Funktion prüft, ob alle übergebenen Request-Variablen leer sind.
- * Wenn eine der Variablen leer ist, gibt sie `false` zurück, andernfalls `true`.
- *
- * @param array $valuearray Ein Array von Request-Variablen, die überprüft werden sollen.
- * @return bool `true`, wenn keine leeren Variablen gefunden wurden, andernfalls `false`.
- */
+
 function checkforempty($valuearray)
 {
     $check = array();
@@ -475,13 +378,7 @@ function checkforempty($valuearray)
 }
 
 
-// -- DATE-TIME INFORMATION -- //
-// Einbinden der Datums- und Zeit-Funktionen, je nach Dateipfad
-#if (file_exists('func/datetime.php')) {
-#    systeminc('func/datetime');
-#} else {
-#    systeminc('../system/func/datetime');
-#}
+
 
 // -- USER INFORMATION -- //
 // Einbinden der Benutzerinformations-Funktionen
@@ -493,7 +390,6 @@ if (file_exists('func/user.php')) {
 
 // -- ACCESS INFORMATION -- //
 // Einbinden der Zugriffssteuerungs-Funktionen
-#if(file_exists('func/useraccess.php')) { systeminc('func/useraccess'); } else { systeminc('../system/func/useraccess'); }
 if (file_exists('func/access_control.php')) {
     systeminc('func/access_control');
 } else {
@@ -505,8 +401,6 @@ if (file_exists('func/check_access.php')) {
 } else {
     systeminc('../system/func/check_access');
 }
-// # Admin-Check wird derzeit nicht eingebunden
-#if(file_exists('func/admincheck.php')) { systeminc('func/admincheck'); } else { systeminc('../system/func/admincheck'); }
 
 // -- MESSENGER INFORMATION -- //
 // Einbinden der Messenger-Funktionen
@@ -532,14 +426,6 @@ if (file_exists('func/page.php')) {
     systeminc('../system/func/page');
 }
 
-// -- CAPTCHA -- //
-// Einbinden der CAPTCHA-Funktionen
-if (file_exists('func/captcha.php')) {
-    systeminc('func/captcha');
-} else {
-    systeminc('../system/func/captcha');
-}
-
 // -- LANGUAGE SYSTEM -- //
 // Einbinden des Sprachsystems und Setzen der Standardsprache
 if (file_exists('func/language.php')) {
@@ -550,31 +436,6 @@ if (file_exists('func/language.php')) {
 
 $_language = new \webspell\Language;
 $_language->setLanguage($default_language);
-
-// -- TEMPLATE SYSTEM -- //
-// Einbinden des Template-Systems
-#if (file_exists('func/template.php')) {
-#    systeminc('func/template');
-#} else {
-#    systeminc('../system/func/template');
-#}
-
-// -- PLUGIN SERVICE -- //
-// Einbinden des Plugin-Service
-#if (file_exists('func/plugin_service.php')) {
-#    systeminc('func/plugin_service');
-#} else {
-#    systeminc('../system/func/plugin_service');
-#}
-
-
-
-// Erstellen des Template-Objekts, je nachdem, ob es sich um das Admin-Verzeichnis handelt
-/*if (!stristr($_SERVER['SCRIPT_NAME'], '/admin/')) {
-    $_template = new \Webspell\Template();
-} else {
-    $_template = new \Webspell\Template('../templates/');
-}*/
 
 // -- SPAM -- //
 // Einbinden der Spam-Funktionen
@@ -612,14 +473,6 @@ if (file_exists('func/urlupload.php')) {
     systeminc('../system/func/urlupload');
 }
 
-// -- Mod Rewrite -- //
-// Einbinden des ModRewrite-Systems
-if (file_exists('modrewrite.php')) {
-    systeminc('modrewrite');
-} else {
-    systeminc('../system/modrewrite');
-}
-
 // -- INDEX CONTENT -- //
 // Einbinden des Inhalts für die Startseite
 if (file_exists('content.php')) {
@@ -635,15 +488,6 @@ if (file_exists('func/install_base.php')) {
 } else {
     systeminc('../system/func/install_base');
 }
-
-
-
-if (file_exists('func/login_check.php')) {
-    systeminc('func/login_check');
-} else {
-    systeminc('../system/func/login_check');
-}
-
 
 // Für Login unf Rollen
 if (file_exists('classes/LoginSecurity.php')) {
@@ -669,74 +513,6 @@ if (file_exists('classes/AdminLogger.php')) {
 } else {
     systeminc('../system/classes/AdminLogger');
 }
-
-// ModRewrite-Objekt initialisieren und aktivieren
-$GLOBALS['_modRewrite'] = new \webspell\ModRewrite();
-if (!stristr($_SERVER['SCRIPT_NAME'], '/admin/') && $modRewrite) {
-    $GLOBALS['_modRewrite']->enable();
-}
-
-/**
- * Bereinigt den Text, indem HTML-Tags entfernt und Sonderzeichen umgewandelt werden.
- *
- * @param string $text Der zu bereinigende Text.
- * @param bool $bbcode Optional, wenn wahr wird BBCode beibehalten.
- * @param string $calledfrom Der Ursprung des Aufrufs (Standard ist 'root').
- * @return string Der bereinigte Text.
- */
-/*function cleartext($text, $bbcode = true, $calledfrom = 'root')
-{
-    // Entfernt HTML-Tags und wandelt Sonderzeichen in HTML-Entities um (mit UTF-8)
-    $text = htmlspecialchars(strip_tags($text), ENT_QUOTES, 'UTF-8');  
-    
-    // Wandelt Zeilenumbrüche in <br> um (nur wenn gewünscht)
-    if ($bbcode) {
-        $text = nl2br($text);             
-    }
-
-    return $text;
-}
-
-/**
- * Bereinigt die Eingabe aus einer normalen Anfrage.
- *
- * @param string $text Der zu bereinigende Text.
- * @return string Der bereinigte Text.
- */
-/*function getinput($text)
-{
-    // Wandelt Sonderzeichen in HTML-Entities um (mit UTF-8)
-    return htmlspecialchars($text, ENT_QUOTES, 'UTF-8'); 
-}
-
-/**
- * Bereinigt die Eingabe aus einem Formular.
- *
- * @param string $text Der zu bereinigende Text.
- * @return string Der bereinigte Text.
- */
-/*function getforminput($text)
-{
-    // Entfernt Escape-Zeichen, falls erforderlich (nur wenn Magic Quotes aktiv waren)
-    $text = stripslashes($text);
-
-    // Wandelt Sonderzeichen in HTML-Entities um (mit UTF-8)
-    $text = htmlspecialchars($text, ENT_QUOTES, 'UTF-8'); 
-
-    // Korrigiert Zeilenumbrüche und entfernt unerwünschte Escape-Zeichen
-    $text = str_replace(["\r\n", "\r"], "\n", $text);
-
-    return $text;
-}
-
-
-// -- LOGIN -- //
-// Überprüft, ob die Login-Datei existiert, und bindet sie ein
-/*if (file_exists('login.php')) {
-    systeminc('login');
-} else {
-    systeminc('../system/login');
-}*/
 
 // Sprachwahl aus Cookie, Session oder automatische Erkennung
 if (isset($_COOKIE['language'])) {
@@ -796,31 +572,6 @@ if (date("dh", $lastBanCheck) != date("dh")) {
     }
     safe_query("UPDATE settings SET bancheck='" . time() . "'");
 }
-
-// Prüft, ob der Benutzer oder seine IP gesperrt ist, und löscht die Sitzung bei Bann
-/*$banned = safe_query("SELECT userID, banned, ban_reason FROM users WHERE (userID='" . $userID . "' OR ip='" . $GLOBALS['ip'] . "') AND banned IS NOT NULL");
-while ($bq = mysqli_fetch_array($banned)) {
-    if ($bq['ban_reason']) {
-        $reason = '<div class="alert alert-warning" role="alert"><br>Grund / Reason: <br>' . $bq['ban_reason'] . '"</div>';
-    } else {
-        $reason = '';
-    }
-    if ($bq['banned']) {
-        $_SESSION = array();
-
-        // Entfernt das Session-Cookie
-        if (isset($_COOKIE[session_name()])) {
-            setcookie(session_name(), '', time() - 42000, '/');
-        }
-
-        session_destroy();
-
-        // Entfernt das Login-Cookie
-        webspell\LoginCookie::clear('ws_auth');
-        system_error('<div class="alert alert-warning" role="alert"><strong>Du wurdest gebannt!<br>You have been banned!</strong></div>' . $reason, 0);
-    }
-}*/
-
 // -- BANNED IPs -- //
 // Löscht abgelaufene Einträge in der Tabelle für gesperrte IPs
 safe_query("DELETE FROM banned_ips WHERE deltime < '" . time() . "'");
@@ -832,14 +583,6 @@ if (file_exists('help.php')) {
 } else {
     systeminc('../system/help');
 }
-
-// -- UPDATE LAST LOGIN -- //
-// Wenn die Seite gesetzt ist und der Benutzer angemeldet ist, wird das letzte Login-Datum aktualisiert
-/*if ($site) {
-    if ($userID) {
-        safe_query("UPDATE users SET lastlogin='" . time() . "' WHERE userID='" . $userID . "'");
-    }
-}*/
 
 // =======================
 // WHO IS / WAS ONLINE

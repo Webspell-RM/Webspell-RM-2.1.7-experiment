@@ -1,15 +1,15 @@
+# Deaktiviere automatische Dateierweiterungen
 Options -MultiViews
 
 <IfModule mod_rewrite.c>
-    RewriteEngine on
-    # Setze den Basis-Pfad auf das root-Verzeichnis
+    RewriteEngine On
     RewriteBase /
 
-    # Falls die angeforderte Datei oder das Verzeichnis nicht existiert, leite die Anfrage weiter
+    # Standard: Wenn Datei oder Verzeichnis existieren, lade sie direkt
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
 
-    # Leite alle Anfragen an das rewrite.php weiter
-    RewriteRule ^(.*)$ rewrite.php?url=$1 [L,QSA]
+    # Leite alle Anfragen an index.php (zentraler Einstiegspunkt)
+    RewriteRule ^ index.php [QSA,L]
 </IfModule>
 

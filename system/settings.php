@@ -67,17 +67,21 @@ if (DEBUG == "OFF" && file_exists('install/index.php')) {
 }
 
 // -- CONNECTION TO MYSQL -- //
-if (!isset($GLOBALS[ '_database' ])) {
-    // Überprüfen, ob die Datenbankverbindung bereits existiert
-    $_database = @new mysqli($host, $user, $pwd, $db); // Verbindung zur MySQL-Datenbank herstellen
+if (!defined('DB_HOST')) {
+    require_once __DIR__ . '/config.inc.php';
+}
+
+if (!isset($GLOBALS['_database'])) {
+    $_database = @new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
     if ($_database->connect_error) {
-        // Falls keine Verbindung zur Datenbank hergestellt werden kann, Fehler anzeigen
-        system_error('Cannot connect to MySQL-Server');
+        die("❌ Fehler bei der Verbindung zur Datenbank: " . $_database->connect_error);
     }
 
-    $_database->query("SET NAMES 'utf8mb4'"); // Zeichencodierung für die MySQL-Verbindung auf UTF-8MB4 setzen
-    $_database->query("SET sql_mode = ''"); // Den SQL-Modus zurücksetzen, um Fehler zu vermeiden
+    $_database->query("SET NAMES 'utf8mb4'");
+    $_database->query("SET sql_mode = ''");
+
+    $GLOBALS['_database'] = $_database; // in $GLOBALS registrieren, falls in anderen Bereichen benötigt
 }
 
 // -- GENERAL PROTECTIONS -- //
