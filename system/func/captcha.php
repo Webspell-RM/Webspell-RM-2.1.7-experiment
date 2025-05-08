@@ -10,7 +10,7 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
  * @version         webspell-rm                                                                              *
  *                                                                                                           *
- * @copyright       2018-2025 by webspell-rm.de                                                              *
+ * @copyright       2018-2023 by webspell-rm.de                                                              *
  * @support         For Support, Plugins, Templates and the Full Script visit webspell-rm.de                 *
  * @website         <https://www.webspell-rm.de>                                                             *
  * @forum           <https://www.webspell-rm.de/forum.html>                                                  *
@@ -28,68 +28,102 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
 */
 
+namespace webspell;
 
-$_language->readModule('imprint');
+class Captcha
+{
 
-// Daten für das Template
-$data_array = [
-    'title' => $_language->module['title'],
-    'subtitle' => 'Imprint'
-];
+ public function createCaptcha()
+    {
+        $this->hash = md5(time() . rand(0, 10000));
 
-$template = $tpl->loadTemplate("imprint", "head", $data_array);
-echo $template;
+        $captcha = $this->generateCaptchaText();
+        $captcha_result = $captcha[ 'result' ];
+        $captcha_text = $captcha[ 'text' ];
 
+        if ($this->type == 'g') {
+            $captcha_text = $this->createCatpchaImage($captcha_text);
+        }
 
-// Frontend: Auslesen der Impressumsdaten
-$stmt = $_database->prepare("SELECT * FROM settings_imprint LIMIT 1");
-$stmt->execute();
-$result = $stmt->get_result();
-$imprint_data = $result->fetch_assoc();
+        safe_query(
+            "INSERT INTO `captcha` (
+            `hash`,`captcha`,`deltime`
+            )VALUES (
+            '" . $this->hash . "',
+            '" . $captcha_result . "',
+            '" . (time() + ($this->valide_time * 60)) . "'
+            )"
+        );
+        return $captcha_text;
+    }
 
-$type_labels = [
-    'private' => $_language->module['private_option'],
-    'association' => $_language->module['association_option'],
-    'small_business' => $_language->module['small_business_option'],
-    'company' => $_language->module['company_option'],
-    'unknown' => 'Unbekannt'
-];
+    /* create transaction hash for formulars */
+    public function createTransaction()
+    {
 
-$data_array = [
-    // Labels – immer vorhanden, egal ob Daten fehlen oder nicht
-    'impressum_type_label' => $_language->module['impressum_type_label'],
-    'represented_by_label' => $_language->module['represented_by_company_label'] ?? $_language->module['represented_by_label'],
-    'tax_id_label' => $_language->module['tax_id_company_label'] ?? $_language->module['tax_id_label'],
-    'email_label' => $_language->module['email_label'],
-    'website_label' => $_language->module['website_label'],
-    'phone_label' => $_language->module['phone_label'],
-    'disclaimer_label' => $_language->module['disclaimer_label']
-];
+        $this->hash = md5(time() . rand(0, 10000));
+        safe_query(
+            "INSERT INTO `captcha`(
+            `hash`,`captcha`,`deltime`
+            )VALUES (
+            '" . $this->hash . "',
+            '0',
+            '" . (time() + ($this->valide_time * 60)) . "'
+            )"
+        );
+        return true;
+    }
 
-if ($imprint_data) {
-    $data_array += [
-        'impressum_type' => $type_labels[$imprint_data['type']] ?? $type_labels['unknown'],
-        'company_name' => $imprint_data['company_name'],
-        'represented_by' => $imprint_data['represented_by'],
-        'tax_id' => $imprint_data['tax_id'],
-        'email' => $imprint_data['email'],
-        'website' => $imprint_data['website'],
-        'phone' => $imprint_data['phone'],
-        'disclaimer' => $imprint_data['disclaimer'],
-    ];
-} else {
-    $data_array += [
-        'impressum_type' => $type_labels['unknown'],
-        'company_name' => 'Nicht verfügbar',
-        'represented_by' => '',
-        'tax_id' => '',
-        'email' => 'Nicht verfügbar',
-        'website' => '',
-        'phone' => '',
-        'disclaimer' => ''
-    ];
+    /* print created hash */
+    public function getHash()
+    {
+
+        return $this->hash;
+    }
+
+    /* check if input fits captcha */
+    public function checkCaptcha($input, $hash)
+    {
+
+        if (mysqli_num_rows(
+            safe_query(
+                "SELECT `hash`
+                    FROM `captcha`
+                    WHERE
+                        `captcha` = '" . $input . "' AND
+                        `hash` = '" . $hash . "'"
+            )
+        )
+        ) {
+            safe_query(
+                "DELETE FROM `captcha`
+                WHERE
+                    `captcha` = '" . $input . "' AND
+                    `hash` = '" . $hash . "'"
+            );
+            $file = 'tmp/' . $hash . '.jpg';
+            if (file_exists($file)) {
+                unlink($file);
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /* remove old captcha files */
+/*    public function clearOldCaptcha()
+    {
+        $time = time();
+        $ergebnis = safe_query("SELECT `hash` FROM `captcha` WHERE `deltime` < " . $time);
+        while ($ds = mysqli_fetch_array($ergebnis)) {
+            $file = 'tmp/' . $ds[ 'hash' ] . '.jpg';
+            if (file_exists($file)) {
+               @unlink($file);
+            } else {
+               @unlink('../' . $file);
+            }
+        }
+        safe_query("DELETE FROM `captcha` WHERE `deltime` < " . $time);
+    }*/
 }
-
-// Template für das Frontend laden
-echo $tpl->loadTemplate("imprint", "content", $data_array, 'theme');
-

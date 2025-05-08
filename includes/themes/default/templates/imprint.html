@@ -8,24 +8,68 @@
 </div>
 <!-- END -->
 <!-- imprint_content -->
-<div class="card">
+<div class="card shadow-sm mb-4">
     <div class="card-body">
-        <h4>{{ headline1 }}</h4>
-        {{ imprint_head }}
+        <h4 class="card-title mb-3">{{ company_name }}</h4>
+
+        <p class="mb-2">
+            <span class="fw-bold">{{ impressum_type_label }}:</span>
+            <span class="text-muted">{{ impressum_type }}</span>
+        </p>
+
+        {{ if represented_by }}
+        <p class="mb-2">
+            <span class="fw-bold">{{ represented_by_label }}:</span>
+            <span class="text-muted">{{ represented_by }}</span>
+        </p>
+        {{ endif }}
+
+        {{ if tax_id }}
+        <p class="mb-2">
+            <span class="fw-bold">{{ tax_id_label }}:</span>
+            <span class="text-muted">{{ tax_id }}</span>
+        </p>
+        {{ endif }}
+
+        <p class="mb-2">
+            <span class="fw-bold">{{ email_label }}:</span>
+            <a href="mailto:{{ email }}">{{ email }}</a>
+        </p>
+
+        {{ if website }}
+        <p class="mb-2">
+            <span class="fw-bold">{{ website_label }}:</span>
+            <a href="{{ website }}" target="_blank">{{ website }}</a>
+        </p>
+        {{ endif }}
+
+        {{ if phone }}
+        <p class="mb-2">
+            <span class="fw-bold">{{ phone_label }}:</span>
+            <span class="text-muted">{{ phone }}</span>
+        </p>
+        {{ endif }}
+
+        {{ if disclaimer }}
+        <div class="mt-3">
+            <p class="fw-bold mb-1">{{ disclaimer_label }}:</p>
+            <div class="text-muted">{{ disclaimer }}</div>
+        </div>
+        {{ endif }}
+
+        <hr><small>
+    Diese Website basiert auf <strong>Webspell-RM 3.0 (Next Generation)</strong>, einem modernen Open-Source-Content-Management-System (CMS), das unter der
+    <a href="https://www.gnu.org/licenses/gpl-2.0.html" target="_blank">GNU General Public License (GPL)</a> veröffentlicht wird.
+<br>
+    Webspell-RM wurde ursprünglich als Fork des <em>Webspell Clanpackages</em> von Michael Gruber (webspell.at) entwickelt und vollständig überarbeitet.
+<br>
+    Weitere Informationen und den Quellcode finden Sie unter
+    <a href="https://www.webspell-rm.de" target="_blank">www.webspell-rm.de</a>.
+<br>
+    Dieses System verwendet Drittanbieter-Bibliotheken wie <strong>jQuery</strong> und <strong>Bootstrap</strong>, die unter der MIT-Lizenz stehen.
+</small>
+
     </div>
 </div>
 
-<div class="card">
-    <div class="card-body">
-     <h4>{{ disclaimer }}</h4>
-        {{ disclaimer_text }}
-    </div>
-</div>
-
-<div class="card">
-    <div class="card-body">
-        <h4>{{ headline2 }}</h4>
-        <p>{{ coding_info }} {{ version }} {{ coding_info1 }}</p>
-    </div>
-</div>
 <!-- END -->

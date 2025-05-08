@@ -31,6 +31,7 @@
 
 use webspell\RoleManager;
 
+
 // Überprüfen, ob der Benutzer bereits eingeloggt ist
 if (isset($_SESSION['userID'])) {
     // Wenn der Benutzer eingeloggt ist, Weiterleitung zum Admincenter

@@ -378,7 +378,8 @@ function checkforempty($valuearray)
 }
 
 
-
+// -- CAPTCHA -- //
+if(file_exists('func/captcha.php')) { systeminc('func/captcha'); } else { systeminc('../system/func/captcha'); }
 
 // -- USER INFORMATION -- //
 // Einbinden der Benutzerinformations-Funktionen
@@ -408,14 +409,6 @@ if (file_exists('func/messenger.php')) {
     systeminc('func/messenger');
 } else {
     systeminc('../system/func/messenger');
-}
-
-// -- GAME INFORMATION -- //
-// Einbinden der Spiel-Funktionen
-if (file_exists('func/game.php')) {
-    systeminc('func/game');
-} else {
-    systeminc('../system/func/game');
 }
 
 // -- Page INFORMATION -- //
@@ -576,13 +569,7 @@ if (date("dh", $lastBanCheck) != date("dh")) {
 // Löscht abgelaufene Einträge in der Tabelle für gesperrte IPs
 safe_query("DELETE FROM banned_ips WHERE deltime < '" . time() . "'");
 
-// -- HELP MODE -- //
-// Überprüft, ob die Hilfeseite existiert und bindet sie ein
-if (file_exists('help.php')) {
-    systeminc('help');
-} else {
-    systeminc('../system/help');
-}
+
 
 // =======================
 // WHO IS / WAS ONLINE
