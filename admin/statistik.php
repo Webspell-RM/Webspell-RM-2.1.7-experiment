@@ -41,18 +41,18 @@
 #include 'db_connection.php'; // Beispiel für die Datenbankverbindung
 
 // Holen der Anzahl der Benutzer im letzten Monat
-$result = safe_query("SELECT COUNT(*) AS user_count FROM " . PREFIX . "user WHERE created_at >= NOW() - INTERVAL 1 MONTH");
+/*$result = safe_query("SELECT COUNT(*) AS user_count FROM users WHERE created_at >= NOW() - INTERVAL 1 MONTH");
 $row = mysqli_fetch_assoc($result);
 $user_count_last_month = $row['user_count'];
 
 // Holen der Benutzerregistrierungen nach Monat
-$monthly_users = safe_query("SELECT YEAR(created_at) AS year, MONTH(created_at) AS month, COUNT(*) AS user_count FROM " . PREFIX . "user GROUP BY year, month ORDER BY year DESC, month DESC");
+$monthly_users = safe_query("SELECT YEAR(created_at) AS year, MONTH(created_at) AS month, COUNT(*) AS user_count FROM user GROUP BY year, month ORDER BY year DESC, month DESC");
 
 // Holen der Benutzerrollen und -rechte
 $userID = $_SESSION['userID'] ?? 0;
 
 // Rolle des Benutzers ermitteln
-$role_query = "SELECT roleID FROM " . PREFIX . "user_role_assignments WHERE adminID = ?";
+$role_query = "SELECT roleID FROM user_role_assignments WHERE adminID = ?";
 $role_stmt = $_database->prepare($role_query);
 $role_stmt->bind_param("i", $userID);
 $role_stmt->execute();
@@ -64,7 +64,7 @@ while ($role_row = mysqli_fetch_assoc($role_result)) {
 $role_stmt->close();
 
 // Benutzerrechte ermitteln (z.B. für das Dashboard)
-$access_query = "SELECT modulname, roleID FROM " . PREFIX . "user_admin_access_rights WHERE roleID = ?";
+$access_query = "SELECT modulname, roleID FROM user_admin_access_rights WHERE roleID = ?";
 $access_stmt = $_database->prepare($access_query);
 $access_stmt->bind_param("i", $userID);
 $access_stmt->execute();
@@ -107,7 +107,7 @@ echo "</tbody></table>";
 
 
 #require_once("../system/sql_connect.php");
-
+/*
 
 require_once("../system/sql.php");
 
@@ -160,7 +160,7 @@ if ($log_path && file_exists($log_path)) {
 
 echo '</table>';
 
-
+*/
 
 
 
@@ -171,7 +171,7 @@ echo '<div class="card p-4 mb-4">';
 echo '<h3 class="mb-4">👤 Benutzerstatistiken</h3>';
 
 // Gesamtanzahl Benutzer
-$res = safe_query("SELECT COUNT(*) AS total_users FROM "user");
+$res = safe_query("SELECT COUNT(*) AS total_users FROM users");
 $total_users = mysqli_fetch_array($res)['total_users'];
 
 // Neue Benutzer
@@ -179,17 +179,17 @@ $today = strtotime(date('Y-m-d 00:00:00'));
 $weekly = strtotime('-7 days');
 $monthly = strtotime('-30 days');
 
-$today_users = mysqli_fetch_array(safe_query("SELECT COUNT(*) AS count FROM " . PREFIX . "user WHERE registerdate >= $today"))['count'];
-$week_users = mysqli_fetch_array(safe_query("SELECT COUNT(*) AS count FROM " . PREFIX . "user WHERE registerdate >= $weekly"))['count'];
-$month_users = mysqli_fetch_array(safe_query("SELECT COUNT(*) AS count FROM " . PREFIX . "user WHERE registerdate >= $monthly"))['count'];
+$today_users = mysqli_fetch_array(safe_query("SELECT COUNT(*) AS count FROM users WHERE registerdate >= $today"))['count'];
+$week_users = mysqli_fetch_array(safe_query("SELECT COUNT(*) AS count FROM users WHERE registerdate >= $weekly"))['count'];
+$month_users = mysqli_fetch_array(safe_query("SELECT COUNT(*) AS count FROM users WHERE registerdate >= $monthly"))['count'];
 
 // Aktive vs. inaktive Nutzer (letzte 30 Tage)
 $last30 = strtotime('-30 days');
-$active = mysqli_fetch_array(safe_query("SELECT COUNT(*) AS count FROM " . PREFIX . "user WHERE lastlogin >= $last30"))['count'];
+$active = mysqli_fetch_array(safe_query("SELECT COUNT(*) AS count FROM users WHERE lastlogin >= $last30"))['count'];
 $inactive = $total_users - $active;
 
 // Benutzer mit/ohne Avatar
-$with_avatar = mysqli_fetch_array(safe_query("SELECT COUNT(*) AS count FROM " . PREFIX . "user WHERE avatar != '' AND avatar IS NOT NULL"))['count'];
+$with_avatar = mysqli_fetch_array(safe_query("SELECT COUNT(*) AS count FROM users WHERE avatar != '' AND avatar IS NOT NULL"))['count'];
 $without_avatar = $total_users - $with_avatar;
 
 // Ausgabe
@@ -210,8 +210,8 @@ echo '<div class="card p-4 mb-4">';
 echo '<h4>👤 Benutzer nach Rollen</h4>';
 $result = safe_query("
     SELECT r.role_name, COUNT(*) AS count
-    FROM " . PREFIX . "user_role_assignments ura
-    JOIN " . PREFIX . "user_roles r ON ura.roleID = r.roleID
+    FROM user_role_assignments ura
+    JOIN user_roles r ON ura.roleID = r.roleID
     GROUP BY r.roleID
 ");
 echo "<ul class='list-group'>";
@@ -224,10 +224,10 @@ echo '</div>';
 // Letzte Logins
 echo '<div class="card p-4 mb-4">';
 echo '<h4>⏱ Letzte Logins</h4>';
-$result = safe_query("SELECT nickname, FROM_UNIXTIME(lastlogin) AS login_time FROM " . PREFIX . "user ORDER BY lastlogin DESC LIMIT 10");
+$result = safe_query("SELECT username, FROM_UNIXTIME(lastlogin) AS login_time FROM users ORDER BY lastlogin DESC LIMIT 10");
 echo "<ul class='list-group'>";
 while ($row = mysqli_fetch_array($result)) {
-    echo "<li class='list-group-item'>{$row['nickname']} – <small>{$row['login_time']}</small></li>";
+    echo "<li class='list-group-item'>{$row['username']} – <small>{$row['login_time']}</small></li>";
 }
 echo "</ul>";
 echo '</div>';
@@ -237,8 +237,8 @@ echo '<div class="card p-4 mb-4">';
 echo '<h4>🏆 Aktivste Benutzer (Kommentare)</h4>';
 /*$result = safe_query("
     SELECT u.nickname, COUNT(c.commentID) AS comments
-    FROM " . PREFIX . "comments c
-    JOIN " . PREFIX . "user u ON c.userID = u.userID
+    FROM comments c
+    JOIN user u ON c.userID = u.userID
     GROUP BY c.userID
     ORDER BY comments DESC
     LIMIT 10
@@ -256,7 +256,7 @@ echo '</div>';
 // Optional: Geo-Statistik
 //  echo '<div class="card p-4 mb-4">';
 //  echo '<h4>🌍 Geografische Verteilung</h4>';
-//  $geo = safe_query("SELECT country_code, COUNT(*) AS count FROM " . PREFIX . "user GROUP BY country_code");
+//  $geo = safe_query("SELECT country_code, COUNT(*) AS count FROM user GROUP BY country_code");
 //  while ($row = mysqli_fetch_array($geo)) {
 //      echo $row['country_code'] . ': ' . $row['count'] . ' Benutzer<br>';
 //  }
