@@ -34,76 +34,41 @@ $_language->readModule('privacy_policy', false, true);
 use webspell\AccessControl;
 // Den Admin-Zugriff für das Modul überprüfen
 AccessControl::checkAdminAccess('ac_privacy_policy');
+$CAPCLASS = new \webspell\Captcha;
 
-if (isset($_POST['submit'])) {
-    // Benutzereingabe
-    $privacy_policy_text = $_POST['message'];
-    
-    // CAPTCHA-Überprüfung
+// Verarbeitung und Speichern des Datenschutztexts
+if (isset($_POST[ 'submit' ])) {
+    $privacy_policy_text = $_POST[ 'message' ];
+    $current_datetime = date("Y-m-d H:i:s");
     $CAPCLASS = new \webspell\Captcha;
-    if ($CAPCLASS->checkCaptcha(0, $_POST['captcha_hash'])) {
-        // Sichere SQL-Abfrage mit vorbereiteten Statements
-        $stmt = $_database->prepare("SELECT * FROM settings_privacy_policy");
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($result->num_rows > 0) {
-            // Datensatz existiert, also aktualisieren
-            $stmt = $_database->prepare("UPDATE settings_privacy_policy SET date = ?, privacy_policy_text = ?");
-            $current_time = time(); // Aktuelle Zeit
-            $stmt->bind_param("is", $current_time, $privacy_policy_text);
-            $stmt->execute();
-            $stmt->close();
+    if ($CAPCLASS->checkCaptcha(0, $_POST[ 'captcha_hash' ])) {
+        if (mysqli_num_rows(safe_query("SELECT * FROM settings_privacy_policy"))) {
+            safe_query("UPDATE settings_privacy_policy SET date='" . $current_datetime . "', privacy_policy_text='" . $privacy_policy_text . "'");
         } else {
-            // Datensatz existiert nicht, also neuen Eintrag erstellen
-            $stmt = $_database->prepare("INSERT INTO settings_privacy_policy (date, privacy_policy_text) VALUES (?, ?)");
-            $current_time = time();
-            $stmt->bind_param("is", $current_time, $privacy_policy_text);
-            $stmt->execute();
-            $stmt->close();
+            safe_query("INSERT INTO settings_privacy_policy (date ,privacy_policy_text) values(NOW(), '" . $privacy_policy_text . "') ");
         }
-
-        // Erfolgreiche Speicherung: Weiterleitung oder Bestätigung
-        redirect("admincenter.php?site=settings_privacy_policy", "", 0);
     } else {
-        echo $_language->module['transaction_invalid'];  // Fehlermeldung bei ungültigem CAPTCHA
+        echo $_language->module[ 'transaction_invalid' ];
     }
 }
+$ergebnis = safe_query("SELECT * FROM settings_privacy_policy");
+$ds = mysqli_fetch_array($ergebnis);
 
-// Abrufen der bestehenden Datenschutzrichtlinie
-$stmt = $_database->prepare("SELECT * FROM settings_privacy_policy");
-$stmt->execute();
-$result = $stmt->get_result();
-$ds = $result->fetch_array();
-
-// CAPTCHA-Transaktion erstellen
-$CAPCLASS = new \webspell\Captcha;
+// Captcha generieren
 $CAPCLASS->createTransaction();
 $hash = $CAPCLASS->getHash();
 
-echo '<div class="card">
-        <div class="card-header">
-            ' . $_language->module['privacy_policy'] . '
-        </div>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="admincenter.php?site=settings_privacy_policy">' . $_language->module['privacy_policy'] . '</a></li>
-                <li class="breadcrumb-item active" aria-current="page">New / Edit</li>
-            </ol>
-        </nav>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-12">
-                    <form class="form-horizontal" method="post" id="post" name="post" action="admincenter.php?site=settings_privacy_policy" onsubmit="return chkFormular();">
-                        <br /><br />
-                        <textarea class="ckeditor" id="ckeditor" rows="25" name="message" style="width: 100%;">' . htmlspecialchars($ds['privacy_policy_text']) . '</textarea>
-                        <br /><br />
-                        <input type="hidden" name="captcha_hash" value="' . $hash . '" />
-                        <button class="btn btn-warning" type="submit" name="submit" />' . $_language->module['update'] . '</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>';
-    
+// Template laden
+$tpl = new Template();
+$data_array = [
+    'privacy_policy_label' => $_language->module['privacy_policy'] ?? 'Datenschutzerklärung',
+    'privacy_policy_text' => htmlspecialchars($ds['privacy_policy_text'], ENT_QUOTES, 'UTF-8'),
+    'captcha_hash' => $hash,
+    'update_button_label' => $_language->module['update'] ?? 'Aktualisieren'
+];
+
+echo $tpl->loadTemplate("privacy_policy", "content", $data_array, 'admin');
+
+
+   
 ?>

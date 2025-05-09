@@ -21,7 +21,7 @@ class AccessControl
             JOIN `user_role_assignments` ur ON ar.`roleID` = ur.`roleID`
             JOIN `user_roles` r ON ur.`roleID` = r.`roleID`
             WHERE ur.`userID` = '" . (int)$userID . "'
-            AND ar.`modulname` = '" . escape($modulname) . "'
+            AND ar.`modulname` = '" . $modulname . "'
             GROUP BY r.`role_name`, ar.`modulname`
         ";
 
@@ -40,7 +40,7 @@ class AccessControl
             $linkQuery = "
                 SELECT `name`
                 FROM `navigation_dashboard_links`
-                WHERE `modulname` = '" . escape($modulname) . "'
+                WHERE `modulname` = '" . $modulname . "'
             ";
             $linkResult = safe_query($linkQuery);
             $linkRow = mysqli_fetch_assoc($linkResult);

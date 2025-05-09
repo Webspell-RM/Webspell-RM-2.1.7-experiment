@@ -7,6 +7,12 @@ class TextFormatter
      */
     public static function toHtml($text)
     {
+        // Wenn der Text null oder leer ist, wird er als leerer String behandelt
+        if ($text === null) {
+            return ''; // Rückgabe einer leeren Zeichenkette
+        }
+
+        // Text wird zuerst entschärft, dann werden die Zeilenumbrüche in <br> umgewandelt
         return nl2br(htmlspecialchars($text));
     }
 
@@ -33,5 +39,10 @@ class TextFormatter
     {
         $normalized = self::normalizeNewlines($text);
         return explode("\n", $normalized);
+    }
+
+    public static function escape(?string $value): string
+    {
+        return htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
     }
 }

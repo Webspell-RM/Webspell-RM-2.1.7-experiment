@@ -7,7 +7,6 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 #require_once('../system/classes/login_security.php');
 
-#$_language->readModule('login');
 
 global $_database;
 
@@ -20,7 +19,8 @@ include('../system/widget.php');
 include('../system/version.php');
 include('../system/multi_language.php');
 
-
+// Sprachmodul laden
+$_language->readModule('login', false, true);
 
 $ip = $_SERVER['REMOTE_ADDR'];
 $message = '';

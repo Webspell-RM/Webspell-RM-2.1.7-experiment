@@ -1,16 +1,15 @@
-﻿<?php
+<?php
 
 // Sprach-Array für das Modul 'static'
 $language_array = array(
     "access_denied" => "Zugriff verweigert",
     "accesslevel" => "Zugriffsrecht",
     "actions" => "Aktionen",
-    "add_static_page" => "Statische Seite hinzufügen",
+    "add" => "Hinzufügen",
     "clanmember_only" => "nur Clanmitglieder",
     "content" => "Inhalt",
     "delete" => "löschen",
     "edit" => "Ändern",
-    "edit_static_page" => "Statische Seite ändern",
     "title" => "Titel",
     "id" => "ID",
     "new_static_page" => "neue Statische Seite",

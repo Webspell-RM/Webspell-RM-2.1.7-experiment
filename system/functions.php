@@ -379,7 +379,11 @@ function checkforempty($valuearray)
 
 
 // -- CAPTCHA -- //
-if(file_exists('func/captcha.php')) { systeminc('func/captcha'); } else { systeminc('../system/func/captcha'); }
+if(file_exists('classes/Captcha.php')) { 
+    systeminc('classes/Captcha'); 
+} else { 
+    systeminc('../system/classes/Captcha'); 
+}
 
 // -- USER INFORMATION -- //
 // Einbinden der Benutzerinformations-Funktionen
@@ -518,6 +522,28 @@ if (isset($_COOKIE['language'])) {
         $_language->setLanguage($lang);
         $_SESSION['language'] = $lang;
     }
+}
+
+// Funktion zur Bereinigung des Textes vor dem Speichern in der Datenbank
+function cleanTextForStorage($text) {
+    // Entferne alle Carriage-Return-Zeichen (\r)
+    $text = str_replace("\r", "", $text);
+
+    // Optional: Alle Zeilenumbrüche durch <br> ersetzen, wenn du HTML-Ausgabe möchtest
+    $text = str_replace("\n", "<br>", $text);
+
+    return $text;
+}
+
+// Funktion zur Bereinigung des Textes für die Anzeige
+function cleanTextForDisplay($text) {
+    // Falls du HTML-Zeilenumbrüche im Text hast, wandle sie in echte Zeilenumbrüche um
+    $text = str_replace("<br>", "\n", $text);
+
+    // Umwandlung von \n in HTML <br> für korrekte Darstellung im Browser
+    $text = nl2br($text);
+
+    return $text;
 }
 
 // -- SITE VARIABLE -- //
@@ -746,9 +772,9 @@ function get_all_settings() {
     return [];
 }
 
-function escape($input) {
-    return mysqli_real_escape_string($GLOBALS['_database'], $input);
-}
+#function escape($input) {
+#    return mysqli_real_escape_string($GLOBALS['_database'], $input);
+#}
 function getformatdatetime($datetime, $format = 'd.m.Y H:i') {
     if (empty($datetime) || $datetime == '0000-00-00 00:00:00') return '-';
     return date($format, strtotime($datetime));

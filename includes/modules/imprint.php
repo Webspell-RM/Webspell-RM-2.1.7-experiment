@@ -37,58 +37,65 @@ $data_array = [
     'subtitle' => 'Imprint'
 ];
 
-$template = $tpl->loadTemplate("imprint", "head", $data_array);
-echo $template;
+echo $tpl->loadTemplate("imprint", "head", $data_array, 'theme');
 
 
-// Frontend: Auslesen der Impressumsdaten
+// Impressum-Daten auslesen
 $stmt = $_database->prepare("SELECT * FROM settings_imprint LIMIT 1");
 $stmt->execute();
 $result = $stmt->get_result();
 $imprint_data = $result->fetch_assoc();
 
+// Typ-Bezeichnungen
 $type_labels = [
-    'private' => $_language->module['private_option'],
-    'association' => $_language->module['association_option'],
-    'small_business' => $_language->module['small_business_option'],
-    'company' => $_language->module['company_option'],
+    'private' => $_language->module['private_option'] ?? 'Privat',
+    'association' => $_language->module['association_option'] ?? 'Verein',
+    'small_business' => $_language->module['small_business_option'] ?? 'Kleinunternehmer',
+    'company' => $_language->module['company_option'] ?? 'Unternehmen',
     'unknown' => 'Unbekannt'
 ];
 
+// Basis-Labels (immer vorhanden)
 $data_array = [
-    // Labels – immer vorhanden, egal ob Daten fehlen oder nicht
-    'impressum_type_label' => $_language->module['impressum_type_label'],
-    'represented_by_label' => $_language->module['represented_by_company_label'] ?? $_language->module['represented_by_label'],
-    'tax_id_label' => $_language->module['tax_id_company_label'] ?? $_language->module['tax_id_label'],
-    'email_label' => $_language->module['email_label'],
-    'website_label' => $_language->module['website_label'],
-    'phone_label' => $_language->module['phone_label'],
-    'disclaimer_label' => $_language->module['disclaimer_label']
+    'impressum_type_label' => $_language->module['impressum_type_label'] ?? 'Typ',
+    'represented_by_label' => $_language->module['represented_by_company_label'] ?? $_language->module['represented_by_label'] ?? 'Vertreten durch',
+    'tax_id_label' => $_language->module['tax_id_company_label'] ?? $_language->module['tax_id_label'] ?? 'Steuernummer',
+    'email_label' => $_language->module['email_label'] ?? 'E-Mail',
+    'website_label' => $_language->module['website_label'] ?? 'Webseite',
+    'phone_label' => $_language->module['phone_label'] ?? 'Telefon',
+    'disclaimer_label' => $_language->module['disclaimer_label'] ?? 'Haftungsausschluss',
+    'association_label' => $_language->module['association_label'] ?? 'Vereinsname',
+    'imprint_info' => $_language->module['imprint_info'] ?? '',
 ];
 
-if ($imprint_data) {
-    $data_array += [
-        'impressum_type' => $type_labels[$imprint_data['type']] ?? $type_labels['unknown'],
-        'company_name' => $imprint_data['company_name'],
-        'represented_by' => $imprint_data['represented_by'],
-        'tax_id' => $imprint_data['tax_id'],
-        'email' => $imprint_data['email'],
-        'website' => $imprint_data['website'],
-        'phone' => $imprint_data['phone'],
-        'disclaimer' => $imprint_data['disclaimer'],
-    ];
-} else {
-    $data_array += [
-        'impressum_type' => $type_labels['unknown'],
-        'company_name' => 'Nicht verfügbar',
-        'represented_by' => '',
-        'tax_id' => '',
-        'email' => 'Nicht verfügbar',
-        'website' => '',
-        'phone' => '',
-        'disclaimer' => ''
-    ];
+// Dynamisches name_label je nach Typ setzen
+$type = $imprint_data['type'] ?? 'unknown';
+switch ($type) {
+    case 'association':
+        $data_array['name_label'] = $_language->module['association_label'] ?? 'Vereinsname';
+        break;
+    case 'company':
+    case 'small_business':
+        $data_array['name_label'] = $_language->module['company_name_label'] ?? 'Firmenname';
+        break;
+    default:
+        $data_array['name_label'] = $_language->module['name_label'] ?? 'Name';
+        break;
 }
+
+// Werte zuweisen (mit sicheren Fallbacks)
+$data_array += [
+    'impressum_type' => $type_labels[$type] ?? $type_labels['unknown'],
+    'company_name' => $imprint_data['company_name'] ?? '',
+    'represented_by' => $imprint_data['represented_by'] ?? '',
+    'tax_id' => $imprint_data['tax_id'] ?? '',
+    'email' => $imprint_data['email'] ?? '',
+    'website' => $imprint_data['website'] ?? '',
+    'phone' => $imprint_data['phone'] ?? '',
+    'disclaimer' => $imprint_data['disclaimer'] ?? ''
+];
+
+
 
 // Template für das Frontend laden
 echo $tpl->loadTemplate("imprint", "content", $data_array, 'theme');

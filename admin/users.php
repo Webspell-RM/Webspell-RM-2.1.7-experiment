@@ -30,13 +30,13 @@
 
 // Sprachmodul laden
 $_language->readModule('users', false, true);
-$_language->readModule('rank_special', true, true);
+#$_language->readModule('rank_special', true, true);
 
-use webspell\AccessControl;
+#use webspell\AccessControl;
 // Den Admin-Zugriff für das Modul überprüfen
-AccessControl::checkAdminAccess('ac_user_roles');
+#AccessControl::checkAdminAccess('ac_user_roles');
 
-if (isset($_POST[ 'edit' ])) {
+/*if (isset($_POST[ 'edit' ])) {
     $CAPCLASS = new \webspell\Captcha;
     if ($CAPCLASS->checkCaptcha(0, $_POST[ 'captcha_hash' ])) {
         $id = $_POST[ 'id' ];
@@ -1080,7 +1080,7 @@ $referer = "admincenter.php?site=users&action=user_rights";
     </div>
 </div>';
 
-} else {
+} else {*/
     echo'<div class="card">
             <div class="card-header">
                 ' . $_language->module[ 'users' ] . '
@@ -1101,14 +1101,14 @@ $referer = "admincenter.php?site=users&action=user_rights";
                     </div>
                 </div>';
 
-    if (isset($_GET[ 'page' ])) {
-        $page = (int)$_GET[ 'page' ];
-    } else {
-        $page = 1;
-    }
+    #if (isset($_GET[ 'page' ])) {
+    #    $page = (int)$_GET[ 'page' ];
+    #} else {
+    #    $page = 1;
+    #}
     $sort = "nickname";
     $status = false;
-    if (isset($_GET[ 'sort' ])) {
+    /*if (isset($_GET[ 'sort' ])) {
         if (($_GET[ 'sort' ] == 'nickname') || ($_GET[ 'sort' ] == 'registerdate')) {
             $sort = "u." . $_GET[ 'sort' ];
         } elseif ($_GET[ 'sort' ] == 'status') {
@@ -1125,17 +1125,17 @@ $referer = "admincenter.php?site=users&action=user_rights";
 	  			)";
             $status = true;
         }
-    }
+    }*/
 
-    $alle = safe_query("SELECT userID FROM user");
-    $gesamt = mysqli_num_rows($alle);
-    $pages = 1;
+    #$alle = safe_query("SELECT userID FROM user");
+    #$gesamt = mysqli_num_rows($alle);
+    #$pages = 1;
 
-    $pages = ceil($gesamt);
-    $ergebnis = safe_query("SELECT u.* FROM user u ORDER BY $sort");
+    #$pages = ceil($gesamt);
+    $ergebnis = safe_query("SELECT * FROM users");
     
-    $anz = mysqli_num_rows($ergebnis);
-    if ($anz) {
+    #$anz = mysqli_num_rows($ergebnis);
+    
         $CAPCLASS = new \webspell\Captcha;
         $CAPCLASS->createTransaction();
         $hash = $CAPCLASS->getHash();
@@ -1160,21 +1160,18 @@ echo'<table width="100%" border="0" cellspacing="1" cellpadding="3">
         </thead>
         <tbody>';
 
-        $n = 1;
-        $i = 1;
+       
         while ($ds = mysqli_fetch_array($ergebnis)) {
             
 
-            $id = $ds[ 'userID' ];
-            $registered = getformatdatetime($ds[ 'registerdate' ]);
-            $nickname = getnickname($ds[ 'userID' ]);
+            
 ################# anpassen ###########################
 
 #was für Adminechte hat der User
 
 #####################################################
 
-            $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='squads'"));
+        /*    $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='squads'"));
             if (@$dx[ 'modulname' ] != 'squads') {
                 
                 if (issuperadmin($ds[ 'userID' ])) {
@@ -1205,12 +1202,12 @@ echo'<table width="100%" border="0" cellspacing="1" cellpadding="3">
                 } else {
                     $status = $_language->module[ 'user' ];
                 } 
-            }
+            }*/
 
 #was für Adminechte hat der User END
-$referer = "admincenter.php?site=users";
 
-            if (isbanned($ds[ 'userID' ])) {
+
+           /* if (isbanned($ds[ 'userID' ])) {
                 $banned = '<a class="btn btn-success" href="admincenter.php?site=users&amp;action=ban&amp;id=' . $ds[ 'userID' ] .
                     '" class="input">' . $_language->module[ 'undo_ban' ] . '</a>';
             } else {
@@ -1243,12 +1240,12 @@ $referer = "admincenter.php?site=users";
                 $actions = '<a class="btn btn-info" href="admincenter.php?site=users&amp;action=activate&amp;id=' .
                     $ds[ 'userID' ] . '&amp;captcha_hash=' . $hash . '" class="input">' .
                     $_language->module[ 'activate' ] . '</a>';
-            }
+            }*/
 
             echo '<tr>
         <td>' . $registered . '</td>
         <td><a href="../index.php?site=profile&amp;id=' . $id . '" target="_blank">' .
-                strip_tags(stripslashes($nickname)) . '</a></td>
+                strip_tags(stripslashes($username)) . '</a></td>
         <td>' . $status . '</td>
         <td>' . $banned . '</td>
         <td>' . $actions . '</td>
@@ -1263,7 +1260,7 @@ $referer = "admincenter.php?site=users";
      </td>
         </tr>';
 
-            $i++;
+            
             echo'<!-- Button trigger modal END-->            
 
               <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -1284,13 +1281,11 @@ $referer = "admincenter.php?site=users";
                   </div>
               </div>
 <!-- Modal END -->';
-        }
+       
         echo '</tbody></table>';
-    } else {
-        echo $_language->module[ 'no_users' ];
-    }
+   
 echo '</div><div>';
 
-}
+#}
 
 ?>

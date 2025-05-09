@@ -1,18 +1,17 @@
 <?php
 $_language->readModule('imprint', false, true);
 $tpl = new Template();
+$CAPCLASS = new \webspell\Captcha;
 
 use webspell\AccessControl;
 
 // Admin-Zugriff überprüfen
 AccessControl::checkAdminAccess('ac_imprint');
 
-
-
 // Prüfen, ob das Formular abgeschickt wurde
 if (isset($_POST['submit'])) {
     // CAPTCHA-Überprüfung
-    #if ($CAPCLASS->checkCaptcha(0, $_POST['captcha_hash'])) {
+    if ($CAPCLASS->checkCaptcha(0, $_POST['captcha_hash'])) {
 
         // Formularfelder auslesen
         $type = $_POST['type'];
@@ -74,15 +73,22 @@ if (isset($_POST['submit'])) {
         echo "<div class='alert alert-success'>Impressum erfolgreich gespeichert.</div>";
         redirect("admincenter.php?site=settings_imprint", "", 0);
         exit;
-    #} else {
+    } else {
         // Fehler, falls CAPTCHA ungültig
-    #    echo "<div class='alert alert-danger'>" . $_language->module['transaction_invalid'] . "</div>";
-    #}
+        echo "<div class='alert alert-danger'>" . $_language->module['transaction_invalid'] . "</div>";
+    }
 }
+
+
+
+
 
 // Daten aus der settings_imprint-Tabelle holen
 $ergebnis = safe_query("SELECT * FROM settings_imprint");
 $ds = mysqli_fetch_array($ergebnis);
+
+$CAPCLASS->createTransaction();
+$hash = $CAPCLASS->getHash();
 
 // Werte aus der Datenbank zuweisen
 $company_name_private_value = $ds['company_name'];
@@ -118,6 +124,8 @@ $data_array = [
     'website_value'                    => $website_value,
     'phone_value'                      => $phone_value,
     'disclaimer_value'                 => $disclaimer_value,
+    'hash'                             => $hash,
+    'imprint'                          => $_language->module['imprint'],
     'private_option'                   => $_language->module['private_option'],
     'association_option'               => $_language->module['association_option'],
     'small_business_option'            => $_language->module['small_business_option'],

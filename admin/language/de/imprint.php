@@ -2,6 +2,7 @@
 
 // Sprach-Array für das Modul 'imprint'
 $language_array = array(
+    'imprint' => 'Impressum',
     'private_option' => 'Privatperson',
     'association_option' => 'Verein',
     'small_business_option' => 'Kleinunternehmer',

@@ -72,12 +72,12 @@ $language_array = array(
 
 
     'email_failed'              => 'Es trat ein Fehler beim Versenden der E-Mail auf, kontaktiere den Webmaster.',
-    'email_subject'             => 'Dein Konto für %pagetitle%',
-    'email_text'                => 'Dein Konto für %pagetitle%<p>ACHTUNG dein Passwort wurde vom Admin geändert</p><p>Deine E-Mail Adresse: %email%<br>Dein neues Passwort: %new_password%</p><p>Viel Spass auf unserer Webseite</p>%homepage_url%',
+    #'email_subject'             => 'Dein Konto für %pagetitle%',
+    #'email_text'                => 'Dein Konto für %pagetitle%<p>ACHTUNG dein Passwort wurde vom Admin geändert</p><p>Deine E-Mail Adresse: %email%<br>Dein neues Passwort: %new_password%</p><p>Viel Spass auf unserer Webseite</p>%homepage_url%',
 
 
 
-    $_language->module['email_text'] = "
+    'email_text' => '
 Hallo %email%,
 
 dein Passwort wurde zurückgesetzt. Dein neues Passwort lautet:
@@ -88,9 +88,9 @@ Diese Aktion wurde von %admin_name% (%admin_email%) durchgeführt.
 
 Viele Grüße,
 %pagetitle%
-";
+',
 
-$_language->module['email_subject'] = "Neues Passwort für %email% auf %pagetitle%";
+'email_subject' => 'Neues Passwort für %email% auf %pagetitle%',
 
 
 

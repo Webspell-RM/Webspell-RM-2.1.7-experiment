@@ -27,12 +27,12 @@
 
 $_language->readModule('startpage', false, true);
 
-
-
 use webspell\AccessControl;
 
 // Den Admin-Zugriff für das Modul überprüfen
 AccessControl::checkAdminAccess('ac_startpage');
+$CAPCLASS = new \webspell\Captcha;
+$tpl = new Template();
 
 // Wenn das Formular gesendet wurde
 if (isset($_POST['submit'])) {
@@ -47,58 +47,64 @@ if (isset($_POST['submit'])) {
     } else {
         $displayed = '';
     }
+    $current_datetime = date("Y-m-d H:i:s");
 
     $CAPCLASS = new \webspell\Captcha;
     if ($CAPCLASS->checkCaptcha(0, $_POST['captcha_hash'])) {
         if (mysqli_num_rows(safe_query("SELECT * FROM settings_startpage"))) {
-            safe_query("UPDATE settings_startpage SET title='" . $title . "', date='" . time() . "', startpage_text='" . $startpage_text . "', displayed='" . $displayed . "'");
+            safe_query("UPDATE settings_startpage SET date='" . $current_datetime . "', title='" . $title . "', startpage_text='" . $startpage_text . "', displayed='" . $displayed . "'");
         } else {
-            safe_query("INSERT INTO settings_startpage (date, startpage_text, displayed) VALUES ('" . time() . "', '" . $startpage_text . "', '" . $displayed . "')");
+            safe_query("INSERT INTO settings_startpage (date, startpage_text, displayed) VALUES (NOW(), '" . $startpage_text . "', '" . $displayed . "')");
         }
     } else {
         echo $_language->module['transaction_invalid'];
     }
 }
 
+// Daten abrufen
 $ergebnis = safe_query("SELECT * FROM settings_startpage");
 $ds = mysqli_fetch_array($ergebnis);
-// CAPTCHA-Transaktion erstellen
-$CAPCLASS = new \webspell\Captcha;
+
+// CAPTCHA vorbereiten
 $CAPCLASS->createTransaction();
 $hash = $CAPCLASS->getHash();
 
-// HTML-Formular anzeigen
-echo '<div class="card">
-        <div class="card-header">
-            ' . $_language->module['startpage'] . '
-        </div>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="admincenter.php?site=settings_startpage">' . $_language->module['startpage'] . '</a></li>
-                <li class="breadcrumb-item active" aria-current="page">New / Edit</li>
-            </ol>
-        </nav>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-12">
-                    <form class="form-horizontal" method="post" id="post" name="post" action="admincenter.php?site=settings_startpage">
-                        <div class="mb-3 row">
-                            <label class="col-sm-2 control-label">' . $_language->module['title_head'] . ':</label>
-                            <div class="col-sm-10">
-                                <input class="form-control" type="text" name="title" size="60" value="' . htmlspecialchars($ds['title']) . '" />
-                            </div>
-                        </div>
+// Template laden
+$data_array = [
+    'startpage_label' => $_language->module['startpage'],
+    'title_head' => $_language->module['title_head'],
+    'title' => htmlspecialchars($ds['title']),
+    'startpage_text' => htmlspecialchars($ds['startpage_text']),
+    'captcha_hash' => $hash,
+    'checkbox_checked' => ($ds['displayed'] == 'ckeditor') ? ' checked' : '',
+    'update_button_label' => $_language->module['update']
+];
 
-                        <div class="mb-3">
-                            <div class="col-sm-12">
-                                <textarea class="ckeditor" id="ckeditor" rows="25" name="message" style="width: 100%;">' . htmlspecialchars($ds['startpage_text']) . '</textarea>
-                            </div>
-                        </div>
+echo $tpl->loadTemplate("startpage", "content", $data_array, 'admin');
 
-                        <input type="hidden" name="captcha_hash" value="' . $hash . '" />
-                        <button class="btn btn-warning" type="submit" name="submit" />' . $_language->module['update'] . '</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>';
+?>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const toggle = document.getElementById('toggle-editor');
+    const textarea = document.getElementById('ckeditor');
+
+    // Funktion zum Editor aktivieren/deaktivieren
+    function toggleEditor() {
+        if (toggle.checked) {
+            if (!CKEDITOR.instances['ckeditor']) {
+                CKEDITOR.replace('ckeditor');
+            }
+        } else {
+            if (CKEDITOR.instances['ckeditor']) {
+                CKEDITOR.instances['ckeditor'].destroy(true);
+            }
+        }
+    }
+
+    // Initialer Zustand (z. B. bei Seiten-Reload)
+    toggleEditor();
+
+    // Reaktion auf Umschalten
+    toggle.addEventListener('change', toggleEditor);
+});
+</script>

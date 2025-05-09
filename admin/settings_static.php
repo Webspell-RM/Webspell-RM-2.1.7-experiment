@@ -108,7 +108,7 @@ if (isset($_GET[ 'action' ]) && $_GET[ 'action' ] == "add") {
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="admincenter.php?site=settings_static">' . $_language->module['static_pages'] . '</a></li>
-    <li class="breadcrumb-item active" aria-current="page">' . $_language->module['add_static_page'] . '</li>
+    <li class="breadcrumb-item active" aria-current="page">' . $_language->module['add'] . '</li>
   </ol>
 </nav>
      <div class="card-body">';  
@@ -169,7 +169,7 @@ if (isset($_GET[ 'action' ]) && $_GET[ 'action' ] == "add") {
   <div class="mb-3 row">
     <div class="col-md-12">
 		<input type="hidden" name="captcha_hash" value="' . $hash . '" />
-		<button class="btn btn-success" type="submit" name="save"  />' . $_language->module['add_static_page'] . '</button>
+		<button class="btn btn-success" type="submit" name="save"  />' . $_language->module['add'] . '</button>
     </div>
   </div>
 
@@ -226,7 +226,7 @@ if (isset($_GET[ 'action' ]) && $_GET[ 'action' ] == "add") {
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="admincenter.php?site=settings_static">' . $_language->module['static_pages'] . '</a></li>
-    <li class="breadcrumb-item active" aria-current="page">' . $_language->module['edit_static_page'] . '</li>
+    <li class="breadcrumb-item active" aria-current="page">' . $_language->module['edit'] . '</li>
   </ol>
 </nav>
      <div class="card-body">';  
@@ -293,7 +293,7 @@ if (isset($_GET[ 'action' ]) && $_GET[ 'action' ] == "add") {
     <div class="col-md-12">
 		<input type="hidden" name="captcha_hash" value="' . $hash . '" />
 	<input type="hidden" name="staticID" value="' . $staticID . '" />
-		<button class="btn btn-warning" type="submit" name="save"  />' . $_language->module['edit_static_page'] . '</button>
+		<button class="btn btn-warning" type="submit" name="save"  />' . $_language->module['edit'] . '</button>
     </div>
   </div>
 
@@ -306,24 +306,30 @@ if (isset($_GET[ 'action' ]) && $_GET[ 'action' ] == "add") {
             ' . $_language->module[ 'static_pages' ] . '
         </div>
 <nav aria-label="breadcrumb">
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item active" aria-current="page">' . $_language->module[ 'static_pages' ] . '</li>
+  <ol class="breadcrumb t-5 p-2 bg-light">
+    <li class="breadcrumb-item"><a href="admincenter.php?site=settings_static">' . $_language->module['static_pages'] . '</a></li>
+    <li class="breadcrumb-item active" aria-current="page">News / Edit</li>
   </ol>
 </nav>
 
 <div class="card-body">
-
 <div class="form-group row">
     <label class="col-md-1 control-label">' . $_language->module['options'] . ':</label>
     <div class="col-md-8">
       <a href="admincenter.php?site=settings_static&amp;action=add" class="btn btn-primary" type="button">' . $_language->module[ 'new_static_page' ] . '</a>
     </div>
-  </div>';
+  </div>
+
+<div class="container py-5">
+            <!-- Benutzerrolle zuweisen -->
+            <h3 class="mb-4">' . $_language->module[ 'static_pages' ] . '</h3>
+
+';
 
     $ergebnis = safe_query("SELECT * FROM settings_static ORDER BY staticID");
 	
-  echo'<table class="table table-striped">
-    <thead>
+  echo'<table class="table table-bordered table-striped bg-white shadow-sm">
+                <thead class="table-light">
       <th><b>' . $_language->module['id'] . '</b></th>
       <th><b>' . $_language->module['title'] . '</b></th>
       <th><b>' . $_language->module['accesslevel'] . '</b></th>
@@ -395,6 +401,6 @@ if (isset($_GET[ 'action' ]) && $_GET[ 'action' ] == "add") {
 	}
 	echo'</table>';
 }
-echo '</div></div>';
+echo '</div></div></div>';
 
 ?>

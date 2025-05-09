@@ -13,6 +13,10 @@ $language_array = array(
     'name_label' => 'Name',
     'name_placeholder' => 'Vor- und Nachname',
 
+    'company_name_label' => 'Firmenname',
+'association_name_label' => 'Vereinsname',
+
+
     'association_name_label' => 'Name des Vereins',
     'association_name_placeholder' => 'z.B. „Sportverein Musterstadt e.V.“',
     'represented_by_label' => 'Vertreten durch',
@@ -45,5 +49,19 @@ $language_array = array(
     'save_button' => 'Speichern',
     'company_alert' => 'Wichtiger Hinweis: Alle angegebenen Daten dienen ausschließlich Informationszwecken.',
 
+    'imprint_info' => '<small class="text-body-secondary">
+
+            Diese Website basiert auf <strong>Webspell-RM 3.0 (Next Generation)</strong>, einem modernen Open-Source-Content-Management-System (CMS),
+            das unter der <a href="https://www.gnu.org/licenses/gpl-2.0.html" target="_blank">GNU GPL</a> veröffentlicht wird.
+            <br>
+            Entwickelt als Fork von <em>Webspell Clanpackage</em> durch Michael Gruber (<a href="https://webspell.at" target="_blank">webspell.at</a>), vollständig modernisiert.
+            <br>
+            Mehr Infos und Quellcode: <a href="https://www.webspell-rm.de" target="_blank">www.webspell-rm.de</a>.
+            <br>
+            Verwendete Drittanbieter-Bibliotheken: <strong>jQuery</strong>, <strong>Bootstrap</strong> (MIT-Lizenz).
+        </small>'
+
+
+    
 );
 

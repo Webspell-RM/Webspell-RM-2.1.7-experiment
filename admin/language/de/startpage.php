@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 // Sprach-Array für das Modul 'startpage'
 $language_array = array(

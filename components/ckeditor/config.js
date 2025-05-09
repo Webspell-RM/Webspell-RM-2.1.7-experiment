@@ -15,6 +15,7 @@ CKEDITOR.editorConfig = function(config) {
     config.fillEmptyBlocks = false; // Verhindert das automatische Füllen leerer Blöcke
     config.removePlugins = 'elementspath'; // Entfernt das unnötige "Elementspath"-Plugin
     config.resize_enabled = false; // Deaktiviert das Größenänderungs-Feature im Editor
+    config.FormatOutput = false ;
 };
 
 //CKEDITOR.replace('message');

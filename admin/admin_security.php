@@ -108,7 +108,7 @@ while ($ds = $get->fetch_assoc()) {
         <td>' . htmlspecialchars($ds['username']) . '</td>
         <td>' . htmlspecialchars($ds['email']) . '</td>
         <td>' . ($ds['is_active'] ? '✔️' : '❌') . '</td>
-        <td>' . date("d.m.Y H:i", $ds['registerdate']) . '</td>
+        <td>' . $ds['registerdate'] . '</td>
     </tr>';
 }
 
