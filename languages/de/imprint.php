@@ -49,7 +49,7 @@ $language_array = array(
     'save_button' => 'Speichern',
     'company_alert' => 'Wichtiger Hinweis: Alle angegebenen Daten dienen ausschließlich Informationszwecken.',
 
-    'imprint_info' => '<small class="text-body-secondary">
+    'imprint_info' => '<small>
 
             Diese Website verwendet Webspell-RM 3.0 (Next Generation) – ein modernes, quelloffenes Content-Management-System.<br>
             Die Software basiert auf PHP 8.1 oder höher, MySQL 8 bzw. MariaDB 10 und nutzt Bootstrap 5 für das Frontend-Layout.<br>

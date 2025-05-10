@@ -15,60 +15,60 @@
 
         <p class="mb-2">
             <span class="fw-semibold">{{ impressum_type_label }}:</span>
-            <span class="text-body-secondary">{{ impressum_type }}</span>
+            <span>{{ impressum_type }}</span>
         </p>
 
         {{ if company_name }}
         <p class="mb-2">
             <span class="fw-bold">{{ name_label }}:</span>
-            <span class="text-muted">{{ company_name }}</span>
+            <span>{{ company_name }}</span>
         </p>
         {{ endif }}
 
         {{ if association }}
         <p class="mb-2">
             <span class="fw-bold">{{ association_label }}:</span>
-            <span class="text-muted">{{ association }}</span>
+            <span>{{ association }}</span>
         </p>
         {{ endif }}
 
         {{ if represented_by }}
         <p class="mb-2">
             <span class="fw-bold">{{ represented_by_label }}:</span>
-            <span class="text-muted">{{ represented_by }}</span>
+            <span>{{ represented_by }}</span>
         </p>
         {{ endif }}
 
         {{ if tax_id }}
         <p class="mb-2">
             <span class="fw-semibold">{{ tax_id_label }}:</span>
-            <span class="text-body-secondary">{{ tax_id }}</span>
+            <span>{{ tax_id }}</span>
         </p>
         {{ endif }}
 
         <p class="mb-2">
             <span class="fw-semibold">{{ email_label }}:</span>
-            <a href="mailto:{{ email }}" class="link-secondary">{{ email }}</a>
+            <a href="mailto:{{ email }}">{{ email }}</a>
         </p>
 
         {{ if website }}
         <p class="mb-2">
             <span class="fw-semibold">{{ website_label }}:</span>
-            <a href="{{ website }}" class="link-secondary" target="_blank">{{ website }}</a>
+            <a href="{{ website }}" target="_blank">{{ website }}</a>
         </p>
         {{ endif }}
 
         {{ if phone }}
         <p class="mb-2">
             <span class="fw-semibold">{{ phone_label }}:</span>
-            <span class="text-body-secondary">{{ phone }}</span>
+            <span>{{ phone }}</span>
         </p>
         {{ endif }}
 
         {{ if disclaimer }}
         <div class="mt-4">
             <p class="fw-semibold mb-2">{{ disclaimer_label }}:</p>
-            <div class="text-body-secondary">{{ disclaimer }}</div>
+            <div>{{ disclaimer }}</div>
         </div>
         {{ endif }}
 
