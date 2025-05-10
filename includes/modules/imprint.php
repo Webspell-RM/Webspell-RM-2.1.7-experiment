@@ -55,6 +55,9 @@ $type_labels = [
     'unknown' => 'Unbekannt'
 ];
 
+
+$translate = new multiLanguage(detectCurrentLanguage());
+$translate->detectLanguages($imprint_data['disclaimer']);
 // Basis-Labels (immer vorhanden)
 $data_array = [
     'impressum_type_label' => $_language->module['impressum_type_label'] ?? 'Typ',
@@ -92,7 +95,8 @@ $data_array += [
     'email' => $imprint_data['email'] ?? '',
     'website' => $imprint_data['website'] ?? '',
     'phone' => $imprint_data['phone'] ?? '',
-    'disclaimer' => $imprint_data['disclaimer'] ?? ''
+    #'disclaimer' => $imprint_data['disclaimer'] ?? ''
+    'disclaimer' => $translate->getTextByLanguage($imprint_data['disclaimer'])
 ];
 
 

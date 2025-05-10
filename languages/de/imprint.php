@@ -51,12 +51,12 @@ $language_array = array(
 
     'imprint_info' => '<small class="text-body-secondary">
 
-            Diese Website basiert auf <strong>Webspell-RM 3.0 (Next Generation)</strong>, einem modernen Open-Source-Content-Management-System (CMS),
-            das unter der <a href="https://www.gnu.org/licenses/gpl-2.0.html" target="_blank">GNU GPL</a> veröffentlicht wird.
-            <br>
-            Entwickelt als Fork von <em>Webspell Clanpackage</em> durch Michael Gruber (<a href="https://webspell.at" target="_blank">webspell.at</a>), vollständig modernisiert.
-            <br>
-            Mehr Infos und Quellcode: <a href="https://www.webspell-rm.de" target="_blank">www.webspell-rm.de</a>.
+            Diese Website verwendet Webspell-RM 3.0 (Next Generation) – ein modernes, quelloffenes Content-Management-System.<br>
+            Die Software basiert auf PHP 8.1 oder höher, MySQL 8 bzw. MariaDB 10 und nutzt Bootstrap 5 für das Frontend-Layout.<br>
+            Weitere Informationen und Dokumentation findest du im <a href="https://www.webspell-rm.de/wiki" target="_blank" rel="noopener">Webspell-RM Wiki</a>.<br>
+            Quellcode und Download: <a href="https://www.webspell-rm.de" target="_blank" rel="noopener">www.webspell-rm.de</a><br>
+            Webspell-RM wird unter der GNU General Public License (GPL) veröffentlicht.<br>
+            © 2018–2025 by <a href="https://www.webspell-rm.de" target="_blank" rel="noopener">webspell-rm.de</a> – Webspell-RM
             <br>
             Verwendete Drittanbieter-Bibliotheken: <strong>jQuery</strong>, <strong>Bootstrap</strong> (MIT-Lizenz).
         </small>'
