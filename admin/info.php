@@ -48,6 +48,17 @@ function getter($url) {
     return $data;
 }
 
+$userID = (int)$_SESSION['userID']; // Angemeldet?
+
+// Beispiel: Benutzername und letzte Anmeldung holen
+$statement = $_database->prepare("SELECT username, lastlogin FROM users WHERE userID = ?");
+$statement->bind_param('i', $userID);
+$statement->execute();
+$statement->bind_result($username, $lastlogin);
+$statement->fetch();
+$statement->close();
+$datetime = new DateTime($lastlogin);
+$lastlogin_formatted = $datetime->format('d.m.Y \u\m H:i \U\h\r');
 
 echo'<div class="card">
       <div class="card-header">
@@ -62,7 +73,7 @@ echo'<div class="card">
               </div>            
               <div class="card-body" style="min-height: 270px">
                 <h4>'.$_language->module['welcome'].'</h4>
-                '.$_language->module['hello'].' <b>'.$username.'</b> '.$_language->module['last_login'].' '.$lastlogin.'.
+                '.$_language->module['hello'].' <b>'.$username.'</b> '.$_language->module['last_login'].' '.$lastlogin_formatted.'.
                 '. $_language->module['welcome_message'].'
               </div>
             </div>

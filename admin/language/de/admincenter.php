@@ -43,8 +43,25 @@ $language_array = Array(
   'last_login'              => 'dein letzte Anmeldung war am',
   'version'                 => 'Version',
   'webspell_version'        => 'Webspell RM Version',
-  'welcome'                 => 'Willkommen in deinem Management Center',
-  'welcome_message'         => '<br>Dieses Administrations System erlaubt es dir, deine Seite zu managen, benutze die Navigation links.<br>Sollten Fragen vorhanden sein, benutze bitte unseren <a href="https://www.webspell-rm.de" target="_blank">Support</a>.<br><br>Danke, dass du dich für Webspell RM entschieden hast.<br><br>Dein <a href="https://www.webspell-rm.de" target="_blank">Webspell RM Entwicklungs Team</a>',
+  /*'welcome'                 => 'Willkommen in deinem Management Center',
+  'welcome_message'         => '<br>Dieses Administrations System erlaubt es dir, deine Seite zu managen, benutze die Navigation links.<br>Sollten Fragen vorhanden sein, benutze bitte unseren <a href="https://www.webspell-rm.de" target="_blank">Support</a>.<br><br>Danke, dass du dich für Webspell RM entschieden hast.<br><br>Dein <a href="https://www.webspell-rm.de" target="_blank">Webspell RM Entwicklungs Team</a>',*/
+
+
+
+'welcome'                 => 'Willkommen im Management-Center',
+
+'welcome_message'         => '<br><br>
+
+Dieses Administrationssystem bietet dir alle Werkzeuge, um deine Website komfortabel und effizient zu verwalten. Nutze die Navigationsleiste auf der linken Seite, um auf alle Funktionen zuzugreifen – von der Inhaltsverwaltung bis hin zu erweiterten Einstellungen.<br><br>
+
+Solltest du Fragen haben oder Unterstützung benötigen, steht dir unser Support-Team jederzeit gerne zur Verfügung.<br><br>
+
+Vielen Dank, dass du dich für Webspell RM entschieden hast. Wir wünschen dir viel Erfolg und Freude mit deinem Projekt!<br><br>
+
+<a href="https://www.webspell-rm.de" target="_blank">Dein Webspell RM Entwicklungsteam</a>',
+
+
+
   'na'                      => 'Information nicht verfügbar',
   'error'                   => '<p class="text-danger"><i class="bi bi-exclamation-triangle"></i> Update-Server ist offline!</p>',
   'new_version_available'   => '<p class="text-warning"><i class="bi bi-exclamation-triangle"></i> Eine neue Webspellversion ist vorhanden!</p>Update dein System.',
