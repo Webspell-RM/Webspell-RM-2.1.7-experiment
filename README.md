@@ -2,8 +2,8 @@
 
 **Webspell-RM 3.0** ist ein vollständig neu entwickeltes, modulares und sicheres Open-Source CMS für Communities, Clans und Teams – bereit für das Jahr 2025 und darüber hinaus.
 
-![Logo](https://www.webspell-rm.de/includes/plugins/pic_update/images/390.png)
-![Logo](https://www.webspell-rm.de/includes/plugins/pic_update/images/369.png)
+![Logo](https://www.webspell-rm.de/includes/plugins/picupdate/images/390.png)
+![Logo](https://www.webspell-rm.de/includes/plugins/picupdate/images/371.png)
 
 👉 Offizielle Website: [webspell-rm.de](https://www.webspell-rm.de)  
 👉 Forum & Support: [webspell-rm.de/forum.html](https://www.webspell-rm.de/forum.html)  
