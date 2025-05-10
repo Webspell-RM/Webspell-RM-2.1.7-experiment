@@ -43,15 +43,34 @@ header('X-UA-Compatible: IE=edge');
 <html class="h-100" lang="<?php echo $_language->language; ?>">
 
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Meta Basics -->
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Meta SEO -->
     <meta name="description" content="<?php echo htmlspecialchars($description, ENT_QUOTES, 'UTF-8'); ?>">
     <meta name="keywords" content="<?php echo htmlspecialchars($keywords, ENT_QUOTES, 'UTF-8'); ?>">
-    <meta name="robots" content="all">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="<?php echo $_language->language; ?>">
     <meta name="abstract" content="Anpasser an Webspell-RM">
-    <meta name="copyright" content="Copyright &copy; 2018-2025 by webspell-rm.de">
+
+    <!-- Meta Copyright & Info -->
     <meta name="author" content="webspell-rm.de">
+    <meta name="copyright" content="Copyright © 2018-2025 by webspell-rm.de">
+    <meta name="publisher" content="webspell-rm.de">
     <meta name="distribution" content="global">
+
+    <!-- Optional: Social Media / Open Graph -->
+    <meta property="og:title" content="<?php echo get_sitetitle(); ?>">
+    <meta property="og:description" content="<?php echo htmlspecialchars($description, ENT_QUOTES, 'UTF-8'); ?>">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://<?php echo $_SERVER['HTTP_HOST']; ?>">
+    <meta property="og:image" content="https://<?php echo $_SERVER['HTTP_HOST']; ?>/includes/themes/<?php echo $theme_name; ?>/images/og-image.jpg">
+
+    <!-- Optional: Viewport-Fix für iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+
     <link rel="SHORTCUT ICON" href="./includes/themes/<?php echo htmlspecialchars($theme_name, ENT_QUOTES, 'UTF-8'); ?>/images/favicon.ico">
 
     <!-- Head & Title include -->
@@ -130,7 +149,7 @@ header('X-UA-Compatible: IE=edge');
     <script defer src="./components/cookies/js/app.js"></script>
     <!-- Language recognition for DataTables -->
     <script>
-        const LangDataTables = <? echo "'$_language->language'"; ?>
+        const LangDataTables = '<?php echo $_language->language; ?>';
     </script>
     <script type="text/javascript">
         // Example starter JavaScript for disabling form submissions if there are invalid fields

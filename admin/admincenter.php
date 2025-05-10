@@ -312,27 +312,27 @@ header('Content-Type: text/html; charset=UTF-8');
 
 		<ul class="nav justify-content-between" style="width: 100%; margin-bottom: 25px; margin-top: 0px;background: #fe821d;box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px; !important;">
    
-    <li class="nav-item" style="width: 70%;margin-left: 6px;">
-        <a class="navbar-brand" href="/admin/admincenter.php">
-		            <img src="/admin/images/rm.png" style="width: 230px;margin-top: 7px; margin-bottom: 7px;" alt="setting">
-		        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link nav-link-2"><?php echo $_language->module['welcome'] ?> </a>
-    </li>
-    <li class="nav-item">
-        <?php echo @$username ?>
-    </li>
-    <li class="nav-item dropdown" style="margin-right: 18px;">
-        <a class="nav-link nav-link-3 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <?php echo $_language->module['logout'] ?>
-        </a>
-        <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="../index.php"><i class="bi bi-arrow-clockwise text-success"></i> <?php echo $_language->module['back_to_website'] ?></a></li>
-            <li><a class="dropdown-item" href="/admin/admincenter.php?site=logout"><i class="bi bi-x-lg text-danger"></i> <?php echo $_language->module['logout'] ?></a></li>
+            <li class="nav-item" style="width: 70%;margin-left: 6px;">
+                <a class="navbar-brand" href="/admin/admincenter.php">
+        		            <img src="/admin/images/rm.png" style="width: 230px;margin-top: 7px; margin-bottom: 7px;" alt="setting">
+        		        </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link nav-link-2"><?php echo $_language->module['welcome'] ?> </a>
+            </li>
+            <li class="nav-item">
+                <?php echo @$username ?>
+            </li>
+            <li class="nav-item dropdown" style="margin-right: 18px;">
+                <a class="nav-link nav-link-3 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <?php echo $_language->module['logout'] ?>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="../index.php"><i class="bi bi-arrow-clockwise text-success"></i> <?php echo $_language->module['back_to_website'] ?></a></li>
+                    <li><a class="dropdown-item" href="/admin/admincenter.php?site=logout"><i class="bi bi-x-lg text-danger"></i> <?php echo $_language->module['logout'] ?></a></li>
+                </ul>
+            </li>
         </ul>
-    </li>
-</ul>
 
 
 
