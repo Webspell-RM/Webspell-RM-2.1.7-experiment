@@ -1,1 +1,5 @@
 /* Main Layout */
+.bi-color {
+
+    color: rgba(var(--bs-link-color), 1);
+}

@@ -52,7 +52,7 @@ if (isset($_POST['submit'])) {
     $CAPCLASS = new \webspell\Captcha;
     if ($CAPCLASS->checkCaptcha(0, $_POST['captcha_hash'])) {
         if (mysqli_num_rows(safe_query("SELECT * FROM settings_startpage"))) {
-            safe_query("UPDATE settings_startpage SET date='" . $current_datetime . "', title='" . $title . "', startpage_text='" . $startpage_text . "', displayed='" . $displayed . "'");
+            safe_query("UPDATE settings_startpage SET date=CURRENT_TIMESTAMP, title='" . $title . "', startpage_text='" . $startpage_text . "', displayed='" . $displayed . "'");
         } else {
             safe_query("INSERT INTO settings_startpage (date, startpage_text, displayed) VALUES (NOW(), '" . $startpage_text . "', '" . $displayed . "')");
         }

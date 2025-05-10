@@ -57,6 +57,7 @@ header('X-UA-Compatible: IE=edge');
     <!-- Head & Title include -->
     <title><?= get_sitetitle(); ?></title>
     <!--<base href="<?php #echo htmlspecialchars($rewriteBase, ENT_QUOTES, 'UTF-8'); ?>">-->
+    <base href="/">
 
     <link type="application/rss+xml" rel="alternate" href="tmp/rss.xml" title="<?php echo htmlspecialchars($myclanname, ENT_QUOTES, 'UTF-8'); ?> - RSS Feed">
     <link type="text/css" rel="stylesheet" href="./components/cookies/css/cookieconsent.css" media="print" onload="this.media='all'">
