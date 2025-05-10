@@ -37,7 +37,16 @@
 
 $_language->readModule('info', false, true);
 
-
+function getter($url) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    $data = curl_exec($ch);
+    curl_close($ch);
+    return $data;
+}
 
 
 echo'<div class="card">
@@ -49,7 +58,7 @@ echo'<div class="card">
           <div class="col-md-6">
             <div class="card">
               <div class="card-header">
-                <img src="/admin/images/info-logo.jpg" style="max-width: 100%;height: auto;">
+                <img src="/admin/images/info-logo.png" style="max-width: 100%;height: auto;">
               </div>            
               <div class="card-body" style="min-height: 270px">
                 <h4>'.$_language->module['welcome'].'</h4>
@@ -66,7 +75,7 @@ echo'<div class="card">
               <div class="card-body" style="height: 400px">
                 <div class="anyClass">
                   <div class="alert alert-warning" role="alert">';
-                    #echo getter('https://www.webspell-rm.de/includes/modules/live_ticker.php');
+                    echo getter('https://www.webspell-rm.de/includes/modules/live_ticker.php');
                   echo'</div>
                 </div>
               </div>

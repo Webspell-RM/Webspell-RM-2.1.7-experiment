@@ -198,11 +198,13 @@ a:focus { outline: none; }
     margin-top: -12px;
     background-color: rgba(254,130,29,1) !important;
     border-radius: 12px !important;*/
-    color: white;
+    /*color: white;*/
     font-size: 14px;
-font-weight: 600;
+    font-weight: 600;
     padding: 15px !important;
-    background: #3a4651;
+    background: #efefef;
+    border-top-left-radius: 12px !important;
+    border-top-radius-radius: 12px !important;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
   }
 .chat {
@@ -980,13 +982,13 @@ blockquote {
 }
 
 .nav-link-2 {
-    
+    margin-top: 18px;
     color: #3a4651 !important;
  font-size: 12px;
 }
 
 .nav-link-3 {
-    
-    color: #fe821d !important;
+    margin-top: 18px;
+    color: #3a4651 !important;
  font-size: 12px;
 }

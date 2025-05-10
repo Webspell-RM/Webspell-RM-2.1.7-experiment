@@ -310,9 +310,9 @@ header('Content-Type: text/html; charset=UTF-8');
 	<div id="wrapper">
 		<!-- Navigation -->
 
-		<ul class="nav justify-content-between" style="width: 100%; margin-bottom: 25px; margin-top: 5px;background: #3a4651;">
+		<ul class="nav justify-content-between" style="width: 100%; margin-bottom: 25px; margin-top: 0px;background: #fe821d;box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px; !important;">
    
-    <li class="nav-item" style="width: 80%;margin-left: 6px;">
+    <li class="nav-item" style="width: 70%;margin-left: 6px;">
         <a class="navbar-brand" href="/admin/admincenter.php">
 		            <img src="/admin/images/rm.png" style="width: 230px;margin-top: 7px; margin-bottom: 7px;" alt="setting">
 		        </a>
@@ -346,10 +346,8 @@ header('Content-Type: text/html; charset=UTF-8');
 		        
 		        <img id="avatar-big" style="height: 90px;margin-top: 9px;margin-bottom: 9px; -webkit-box-shadow: 2px 2px 15px 3px rgba(0,0,0,0.54);box-shadow: 2px 2px 15px 3px rgba(0,0,0,0.54);border: 3px solid #fe821d;border-radius: 25px;--bs-tooltip-bg: #fe821d;" src="/images/avatars/<?php echo $l_avatar ?>" data-toggle="tooltip" data-html="true" data-bs-placement="right" data-bs-original-title="<?php echo getusername($userID) ?>" class="rounded-circle profile_img">
 		        <div class="sidebar-nav col1lapse navbar-collapse" id="navbarNavDropdown">
+                    <a class="link-head" href="admincenter.php">Dashboard</a>
 		            <ul class="nav metismenu text-start navbar-nav" id="side-bar">
-		                <li class="sidebar-head mm-active">
-		                    <a class="nav-link link-head" href="admincenter.php"> <i class="bi bi-house-door"></i> Dashboard</a>
-		                </li>
 		                <?php echo dashnavi(); ?>
 		            </ul>
 		        </div>
@@ -380,7 +378,7 @@ header('Content-Type: text/html; charset=UTF-8');
         if (file_exists($plugin_path . "admin/" . $site . ".php")) {
             include($plugin_path . "admin/" . $site . ".php");
         } else {
-            echo '<div class="alert alert-danger" role="alert">' . $_language->module['plugin_not_found'] . '</div>';
+            #echo '<div class="alert alert-danger" role="alert">' . $_language->module['plugin_not_found'] . '</div>';
             include('info.php');
         }
     }

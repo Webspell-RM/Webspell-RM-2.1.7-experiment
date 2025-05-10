@@ -37,6 +37,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: login.php");
         exit;
     }
+    $is_active = isset($is_active) ? $is_active : null; // oder ein Standardwert, je nach Bedarf
+    $is_locked = isset($is_locked) ? $is_locked : null; // oder ein Standardwert
 
     $loginResult = LoginSecurity::verifyLogin($email, $password_hash, $ip, $is_active, $is_locked);
 
@@ -158,12 +160,12 @@ if (!empty($email) && LoginSecurity::isEmailBanned($ip, $email)) {
                 </div>
 
                 <form method="POST" action="">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="email"><?= $_language->module['email_address'] ?></label>
                         <input class="form-control" name="email" type="email" placeholder="Email" required>
                     </div>
 
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="password">Passwort</label>
                         <input class="form-control" name="password" type="password" placeholder="Passwort" required>
                     </div>
