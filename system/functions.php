@@ -395,10 +395,10 @@ if (file_exists('func/user.php')) {
 
 // -- ACCESS INFORMATION -- //
 // Einbinden der Zugriffssteuerungs-Funktionen
-if (file_exists('func/access_control.php')) {
-    systeminc('func/access_control');
+if (file_exists('classes/AccessControl.php')) {
+    systeminc('classes/AccessControl');
 } else {
-    systeminc('../system/func/access_control');
+    systeminc('../system/classes/AccessControl');
 }
 
 if (file_exists('func/check_access.php')) {

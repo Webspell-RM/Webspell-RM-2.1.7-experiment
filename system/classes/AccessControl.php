@@ -69,8 +69,7 @@ class AccessControl
     public static function enforce($allowedRoles = ['member'])
     {
         if (!isset($_SESSION['userID'])) {
-            header("Location: index.php?site=login");
-            exit;
+            die('<div style="color: red; font-weight: bold; font-family: sans-serif;"><br>⚠️ Zugriff verweigert – bitte zuerst einloggen.</div>');
         }
 
         $userID = (int)$_SESSION['userID'];

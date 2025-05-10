@@ -111,7 +111,7 @@ if (!isset($_SESSION['userID']) || !checkUserRoleAssignment($_SESSION['userID'])
         text-align: center;
         box-shadow: 0 0 10px rgba(0,0,0,0.2);
     ">
-        <img src="images/error.png" alt="Logo" style="
+        <img src="images/rm.png" alt="Logo" style="
             width: 400px;
             height: auto;
             margin-bottom: 20px;
