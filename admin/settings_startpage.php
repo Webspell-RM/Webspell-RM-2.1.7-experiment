@@ -38,26 +38,34 @@ $tpl = new Template();
 if (isset($_POST['submit'])) {
     $title = $_POST['title'];
     $startpage_text = $_POST['message'];
+    $editor = isset($_POST['editor']) ? '1' : '0';
 
     // Umwandlung der Zeilenumbrüche in <br /> für die Speicherung
     $startpage_text = nl2br($startpage_text);
 
-    if (isset($_POST["displayed"])) {
-        $displayed = 'ckeditor';
-    } else {
-        $displayed = '';
-    }
+    
     $current_datetime = date("Y-m-d H:i:s");
 
     $CAPCLASS = new \webspell\Captcha;
     if ($CAPCLASS->checkCaptcha(0, $_POST['captcha_hash'])) {
         if (mysqli_num_rows(safe_query("SELECT * FROM settings_startpage"))) {
-            safe_query("UPDATE settings_startpage SET date=CURRENT_TIMESTAMP, title='" . $title . "', startpage_text='" . $startpage_text . "', displayed='" . $displayed . "'");
+            safe_query("UPDATE settings_startpage SET date=CURRENT_TIMESTAMP, title='" . $title . "', startpage_text='" . $startpage_text . "', editor='" . $editor . "'");
         } else {
-            safe_query("INSERT INTO settings_startpage (date, startpage_text, displayed) VALUES (NOW(), '" . $startpage_text . "', '" . $displayed . "')");
+            safe_query("INSERT INTO settings_startpage (date, startpage_text, editor) VALUES (NOW(), '" . $startpage_text . "', '" . $editor . "')");
         }
+        echo '<div class="alert alert-success" role="alert">' . $_language->module['changes_successful'] . '</div>';
+        echo '<script type="text/javascript">
+                setTimeout(function() {
+                    window.location.href = "admincenter.php?site=settings_startpage";
+                }, 3000); // 3 Sekunden warten
+            </script>';
     } else {
         echo $_language->module['transaction_invalid'];
+        echo '<script type="text/javascript">
+                setTimeout(function() {
+                    window.location.href = "admincenter.php?site=settings_startpage";
+                }, 3000); // 3 Sekunden warten
+            </script>';
     }
 }
 
@@ -69,14 +77,21 @@ $ds = mysqli_fetch_array($ergebnis);
 $CAPCLASS->createTransaction();
 $hash = $CAPCLASS->getHash();
 
+// Editor aktivieren, wenn Checkbox aktiviert war
+  $editor_checked = '';
+if (isset($ds['editor']) && $ds['editor'] == 1) {
+    $editor_checked = 'checked'; // Wenn der Wert 1 ist, wird die Checkbox aktiviert
+}
+
 // Template laden
 $data_array = [
     'startpage_label' => $_language->module['startpage'],
     'title_head' => $_language->module['title_head'],
     'title' => htmlspecialchars($ds['title']),
     'startpage_text' => htmlspecialchars($ds['startpage_text']),
+    'editor_is_editor' => $_language->module['editor_is_editor'], // Fügt die Label für "Editor anzeigen" hinzu
+    'editor_checked' => $editor_checked, // Setzt den Wert für die Checkbox
     'captcha_hash' => $hash,
-    'checkbox_checked' => ($ds['displayed'] == 'ckeditor') ? ' checked' : '',
     'update_button_label' => $_language->module['update']
 ];
 

@@ -120,6 +120,9 @@ try {
                 while ($rox = mysqli_fetch_array($rex)) {
                     // Menüeinträge im Dropdown-Menü erzeugen
                     if (!empty($rox['indropdown']) && $rox['indropdown'] == 1) {
+
+                        $translate = new multiLanguage(detectCurrentLanguage());
+                        $translate->detectLanguages($rox['name']);
                         $sub_array = [
                             'url' => strpos($rox['url'], 'http://') !== false ? $rox['url'] . '" target="_blank' : $rox['url'],
                             'name' => $translate->getTextByLanguage($rox['name'])

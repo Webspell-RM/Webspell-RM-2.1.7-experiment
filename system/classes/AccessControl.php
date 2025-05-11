@@ -64,9 +64,9 @@ class AccessControl
 
     /**
      * Erzwingt eine oder mehrere erlaubte Rollen.
-     * @param array|string $allowedRoles z.B. ['member', 'admin']
+     *# @param array|string $allowedRoles z.B. ['member', 'admin']
      */
-    public static function enforce($allowedRoles = ['member'])
+ /*   public static function enforce($allowedRoles = ['member'])
     {
         if (!isset($_SESSION['userID'])) {
             die('<div style="color: red; font-weight: bold; font-family: sans-serif;"><br>⚠️ Zugriff verweigert – bitte zuerst einloggen.</div>');
@@ -94,6 +94,95 @@ class AccessControl
         }
     }
 
+    public static function hasRole(string $roleName): bool
+    {
+        if (!isset($_SESSION['userID'])) return false;
+
+        $userID = (int)$_SESSION['userID'];
+        global $_database;
+
+        $stmt = $_database->prepare("
+            SELECT r.role_name
+            FROM user_role_assignments a
+            JOIN user_roles r ON a.roleID = r.roleID
+            WHERE a.userID = ? AND r.role_name = ?
+            LIMIT 1
+        ");
+        $stmt->bind_param('is', $userID, $roleName);
+        $stmt->execute();
+        $res = $stmt->get_result();
+
+        return $res->num_rows > 0;
+    }
+
+    public static function hasAnyRole(array $roleNames): bool
+    {
+        foreach ($roleNames as $role) {
+            if (self::hasRole($role)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static function isClanMember(): bool
+    {
+        return self::hasRole('Clanmitglied');
+    }
+*/
+
+    public static function hasAnyRole(array $roleNames): bool
+{
+    if (!isset($_SESSION['userID']) || empty($roleNames)) return false;
+
+    $userID = (int)$_SESSION['userID'];
+    global $_database;
+
+    // Erzeuge Platzhalter für Prepared Statement (?, ?, ...)
+    $placeholders = implode(',', array_fill(0, count($roleNames), '?'));
+
+    // Datentypen: i für userID, danach s für jeden Rollennamen
+    $types = 'i' . str_repeat('s', count($roleNames));
+
+    // Alle Parameter zusammenfügen
+    $params = array_merge([$types, $userID], $roleNames);
+
+    // Dynamisch vorbereiten
+    $stmt = $_database->prepare("
+        SELECT 1
+        FROM user_role_assignments a
+        JOIN user_roles r ON a.roleID = r.roleID
+        WHERE a.userID = ? AND r.role_name IN ($placeholders)
+        LIMIT 1
+    ");
+
+    if ($stmt === false) {
+        error_log("Fehler beim Prepare in hasAnyRole(): " . $_database->error);
+        return false;
+    }
+
+    // Dynamisches Binden
+    $stmt->bind_param(...self::refValues($params));
+    $stmt->execute();
+    $res = $stmt->get_result();
+
+    return $res->num_rows > 0;
+}
+
+private static function refValues(array $arr)
+{
+    // Ab PHP 8 sind keine Referenzen mehr nötig
+    if (version_compare(PHP_VERSION, '8.0.0', '>=')) {
+        return $arr;
+    }
+
+    // Für PHP < 8: Referenzen für bind_param
+    $refs = [];
+    foreach ($arr as $key => $value) {
+        $refs[$key] = &$arr[$key];
+    }
+    return $refs;
+}
 
 
 

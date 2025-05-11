@@ -40,6 +40,9 @@ $language_array = array(
     'name_label' => 'Name',
     'name_placeholder' => 'Geben Sie den Namen ein',
 
+    'changes_successful'    => 'Änderungen erfolgreich',
+    'transaction_invalid' => 'Transaktions ID ungültig',
+
 );
 
 

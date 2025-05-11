@@ -28,87 +28,47 @@
  *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
 */
 
-// Überprüfen, ob der Parameter 'staticID' in der URL vorhanden ist
-if (isset($_GET['staticID'])) {
-    // Wenn vorhanden, wird der Wert des Parameters in $staticID gespeichert
-    $staticID = $_GET['staticID'];
-} else {
-    // Falls nicht, wird $staticID auf einen leeren Wert gesetzt
-    $staticID = '';
-}
 
-// Eine Abfrage ausführen, um die statischen Einstellungen aus der Datenbank zu holen, basierend auf der 'staticID'
-$ds = mysqli_fetch_array(safe_query("SELECT * FROM `settings_static` WHERE `staticID`='" . $staticID . "'"));
-
-// Sprachmodul 'static' laden, um Übersetzungen für die statische Seite zu ermöglichen
+// Sprachmodul
 $_language->readModule("static");
 
-// Eine Variable 'allowed' setzen, die bestimmt, ob der Zugriff erlaubt ist
-$allowed = false;
+use webspell\AccessControl;
 
-// Den Zugriff basierend auf dem 'accesslevel' des Datensatzes prüfen
-switch ($ds['accesslevel']) {
-    case 0:
-        // Zugriff für alle Benutzer erlaubt
-        $allowed = true;
-        break;
-    case 1:
-        // Zugriff nur für eingeloggte Benutzer erlaubt
-        if ($userID) {
-            $allowed = true;
-        }
-        break;
-    case 2:
-        // Zugriff nur für Clan-Mitglieder erlaubt
-        if (isclanmember($userID)) {
-            $allowed = true;
-        }
-        break;
+$staticID = isset($_GET['staticID']) ? (int)$_GET['staticID'] : 0;
+
+$ds = mysqli_fetch_array(safe_query("SELECT * FROM `settings_static` WHERE `staticID`='" . $staticID . "'"));
+
+// Titel übersetzen
+$title = $ds['title'];
+$translate = new multiLanguage(detectCurrentLanguage());
+$translate->detectLanguages($title);
+$title = $translate->getTextByLanguage($title);
+
+$data_array = [
+    'title' => $title,
+    'subtitle' => $title
+];
+echo $tpl->loadTemplate("static", "head", $data_array, 'theme');
+
+// Rollen aus der DB (JSON-Feld) lesen
+$allowedRoles = [];
+if (!empty($ds['access_roles'])) {
+    $allowedRoles = json_decode($ds['access_roles'], true);
 }
 
-// Sprachmodul für die Navigation laden
-$_language->readModule('navigation');
+// Zugriff prüfen
+if (AccessControl::hasAnyRole($allowedRoles)) {
 
-// Überprüfen, ob der Zugriff erlaubt ist
-if ($allowed) {
-    // Wenn der Zugriff erlaubt ist, den Titel der Seite aus dem Datensatz holen
-    $title = $ds['title'];
-    
-    // Übersetzungsobjekt für mehrsprachige Unterstützung erstellen
-    $translate = new multiLanguage(detectCurrentLanguage());
-    $translate->detectLanguages($title);  // Die Sprachen für den Titel erkennen
-    $title = $translate->getTextByLanguage($title);  // Den Titel in der richtigen Sprache setzen
-
-    // Ein Array mit den Template-Daten für den Kopfbereich der Seite erstellen
-    $data_array = [
-        '$title' => $title,  // Den Titel in das Array setzen
-        '$subtitle' => $title  // Den Titel auch als Untertitel setzen
-    ];
-    
-    // Template für den Kopfbereich der statischen Seite laden und ausgeben
-    $template = $tpl->loadTemplate("static", "head", $data_array);
-    echo $template;
-
-    // Den Inhalt der statischen Seite aus der Datenbank holen
+    // Inhalt übersetzen
     $content = $ds['content'];
-    
-    // Den Inhalt für Übersetzungen vorbereiten
     $translate->detectLanguages($content);
-    $content = $translate->getTextByLanguage($content);  // Den Inhalt in der richtigen Sprache setzen
+    $content = $translate->getTextByLanguage($content);
 
-    // Ein Array mit den Template-Daten für den Inhalt der Seite erstellen
     $data_array = [
-        '$content' => $content  // Den übersetzten Inhalt in das Array setzen
+        'content' => $content
     ];
-    
-    // Template für den Inhalt der statischen Seite laden und ausgeben
-    $template = $tpl->loadTemplate("static", "content", $data_array);
-    echo $template;
+    echo $tpl->loadTemplate("static", "content", $data_array, 'theme');
 
 } else {
-    // Falls der Zugriff nicht erlaubt ist, das 'static' Modul für die Übersetzung laden
-    $_language->readModule('static');
-    
-    // Weiterleitung zur Startseite mit einer Fehlermeldung
-    redirect("index.php", $_language->module['no_access'], 3);
+    echo '<div class="alert alert-danger" role="alert">' . $_language->module['no_access'] . '</div>';
 }

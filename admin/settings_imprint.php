@@ -69,13 +69,19 @@ if (isset($_POST['submit'])) {
             safe_query($insert_query);
         }
 
-        // Erfolgsnachricht anzeigen und weiterleiten
-        echo "<div class='alert alert-success'>Impressum erfolgreich gespeichert.</div>";
-        redirect("admincenter.php?site=settings_imprint", "", 0);
-        exit;
+        echo '<div class="alert alert-success" role="alert">' . $_language->module['changes_successful'] . '</div>';
+        echo '<script type="text/javascript">
+                setTimeout(function() {
+                    window.location.href = "admincenter.php?site=settings_imprint";
+                }, 3000); // 3 Sekunden warten
+            </script>';
     } else {
-        // Fehler, falls CAPTCHA ungültig
-        echo "<div class='alert alert-danger'>" . $_language->module['transaction_invalid'] . "</div>";
+        echo '<div class="alert alert-success" role="alert">' . $_language->module['transaction_invalid'] . '</div>';
+        echo '<script type="text/javascript">
+                setTimeout(function() {
+                    window.location.href = "admincenter.php?site=settings_imprint";
+                }, 3000); // 3 Sekunden warten
+            </script>';
     }
 }
 

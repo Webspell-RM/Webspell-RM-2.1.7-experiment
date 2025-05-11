@@ -2,6 +2,6 @@
 
 $language_array = array(
 
-    'no_access'     => '<blockquote>Zugriff verwehrt</blockquote>'
+    'no_access'     => 'Diese Seite ist nur für bestimmte Benutzergruppen zugänglich.'
 );
 

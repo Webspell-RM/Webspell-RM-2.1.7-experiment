@@ -33,6 +33,6 @@ $language_array = Array(
   'transaction_invalid'   => 'Transaktions ID ungültig',
   'update'                => 'aktualisieren',
   'win_color'             => 'Gewonnen Schriftfarbe',
-  'sc_plugin_info'        => 'Info für die sc_Datei'
+  'sc_plugin_info'        => 'Info für die sc_Datei',
 );
 

@@ -5,8 +5,10 @@
     </div>
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb t-5 p-2 bg-light">
-            <li class="breadcrumb-item"><a href="admincenter.php?site=settings_startpage">{{ startpage_label }}</a></li>
-            <li class="breadcrumb-item active" aria-current="page">New / Edit</li>
+            <li class="breadcrumb-item">
+                <a href="admincenter.php?site=settings_startpage">{{ startpage_label }}</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page"> News / Edit</li>
         </ol>
     </nav>
     <div class="card-body">
@@ -14,7 +16,7 @@
             <h3 class="mb-4">{{ startpage_label }}</h3>
             <div class="row">
                 <div class="col-md-12">
-                    <form class="form-horizontal" method="post" id="post" name="post" action="admincenter.php?site=settings_startpage">
+                    <form class="form-horizontal" method="post" id="post" name="post" action="">
                         <div class="mb-3 row">
                             <label class="col-sm-2 control-label">{{ title_head }}</label>
                             <div class="col-sm-10">
@@ -23,16 +25,15 @@
                         </div>
 
                         <div class="mb-3 row">
-                            <label class="col-sm-2 control-label">Editor anzeigen:</label>
-                            <div class="col-sm-10">
-                                <input type="checkbox" id="toggle-editor" name="displayed" value="ckeditor"{{ checkbox_checked }}>
-                                <label for="toggle-editor">CKEditor aktivieren</label>
+                            <label class="col-sm-3 control-label">{{ editor_is_editor }}:</label>
+                            <div class="col-sm-8 form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="toggle-editor" name="editor" value="1" {{ editor_checked }}>
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <div class="col-sm-12">
-                                <textarea class="ckeditor" id="ckeditor" rows="25" name="message" style="width: 100%;">{{ startpage_text }}</textarea>
+                                <textarea class="{{ editor_checked }}" id="ckeditor" rows="25" name="message" style="width: 100%;">{{ startpage_text }}</textarea>
                             </div>
                         </div>
 
@@ -44,4 +45,5 @@
         </div>
     </div>
 </div>
+
 <!-- end -->
