@@ -1,411 +1,292 @@
-<?php
-/**
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- *                  Webspell-RM      /                        /   /                                          *
- *                  -----------__---/__---__------__----__---/---/-----__---- _  _ -                         *
- *                   | /| /  /___) /   ) (_ `   /   ) /___) /   / __  /     /  /  /                          *
- *                  _|/_|/__(___ _(___/_(__)___/___/_(___ _/___/_____/_____/__/__/_                          *
- *                               Free Content / Management System                                            *
- *                                           /                                                               *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @version         webspell-rm                                                                              *
- *                                                                                                           *
- * @copyright       2018-2025 by webspell-rm.de                                                              *
- * @support         For Support, Plugins, Templates and the Full Script visit webspell-rm.de                 *
- * @website         <https://www.webspell-rm.de>                                                             *
- * @forum           <https://www.webspell-rm.de/forum.html>                                                  *
- * @wiki            <https://www.webspell-rm.de/wiki.html>                                                   *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @license         Script runs under the GNU GENERAL PUBLIC LICENCE                                         *
- *                  It's NOT allowed to remove this copyright-tag                                            *
- *                  <http://www.fsf.org/licensing/licenses/gpl.html>                                         *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @author          Code based on WebSPELL Clanpackage (Michael Gruber - webspell.at)                        *
- * @copyright       2005-2011 by webspell.org / webspell.info                                                *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
-*/
-
-$_language->readModule('plugin_installer', false, true);
+<?php 
 
 use webspell\AccessControl;
-// Den Admin-Zugriff für das Modul überprüfen
-AccessControl::checkAdminAccess('ac_plugin_installer');
+use webspell\PluginUninstaller;
+use webspell\Plugininstaller;
 
-include('../system/func/installer.php');
-include('../system/func/update_base.php');
+// Admin-Rechte prüfen
+#AccessControl::checkAdminAccess('ac_plugininstaller');
 
-function curl_json2array($url)
-{
-  $ssl = 0;
-  if (substr($url, 0, 7) == "http://") {
-    $ssl = 0;
-  } else {
-    $ssl = 1;
-  }
-  $ch = curl_init();
-  curl_setopt($ch, CURLOPT_URL, $url);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-  $output = curl_exec($ch);
-  curl_close($ch);
-  return json_decode($output, true);
-}
-function getter($url)
-{
-  $ch = curl_init();
-  curl_setopt($ch, CURLOPT_URL, $url);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-  curl_setopt($ch, CURLOPT_HEADER, 0);
-  $data = curl_exec($ch);
-  curl_close($ch);
-  return $data;
-}
-$getversion = $version;
+// Sprachdatei laden
+$_language->readModule('plugin_installer', false, true);
 
-####### Plugins #########
-$url = $updateserverurl . '/plugin/plugin-base_v.' . $getversion . '/list.json';
-@$check = fopen($url, "r");
-if ($check) {
-  $plugin = @file_get_contents($updateserverurl . '/plugin/plugin-base_v.' . $getversion . '/list.json');
-  $server_status = '(Alpha Server)';
-} else {
-  $plugin = @file_get_contents($dangerupdateserverurl . '/plugin/plugin-base_v.' . $getversion . '/list.json');
-  $server_status = '(Beta Server)';
-}
-#######################
+// Konfiguration
+$plugin_dir = '../includes/plugins/';
+$plugin_path = 'https://www.update.webspell-rm.de/plugins';
+$plugin_json_url = $plugin_path . '/plugins.json';
 
-if (!$getnew = $plugin) {
-  echo '<div class="card">
-        <div class="card-header">
-            ' . $_language->module['plugin_installer'] . '
-        </div>
-        <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item" aria-current="page"><a href="admincenter.php?site=plugin_installer">' . $_language->module['plugin_installer'] . '</a></li>
-          <li class="breadcrumb-item active" aria-current="page">Error</li>
-        </ol>
-      </nav>
+// Plugin installieren, updaten oder deinstallieren
+if (isset($_GET['install']) || isset($_GET['update']) || isset($_GET['uninstall'])) {
+    $plugin_action = isset($_GET['install']) ? 'install' : (isset($_GET['update']) ? 'update' : 'uninstall');
+    $plugin_folder = basename($_GET[$plugin_action]);
 
-    <div class="card-body">
+    $plugin_info_array = @json_decode(@file_get_contents($plugin_json_url), true);
+    $plugin_info = null;
 
-      <div class="alert alert-success" role="alert">
-        <h4 class="alert-heading">' . $_language->module['plugin_installer'] . '</h4>
-          ' . $_language->module['info_error'] . '
-          <hr>
-          <i><b>' . $_language->module['error'] . '</b></i>
-      </div></div></div>';
-} else {
-
-
-  if (isset($_GET['deinstall']) == 'plugin') {
-    $dir = $_GET['dir'];
-
-    // Inizio Pulitura di widget  e plugin dal database
-    $dir = $_GET['dir'];
-    $modulname = trim($dir, '/');
-    // Recupera il plugin dal database
-    $plugin_name_query = safe_query("SELECT modulname FROM settings_plugins WHERE modulname = '" . $modulname . "'");
-
-    if (mysqli_num_rows($plugin_name_query) > 0) {
-      $plugin_name = mysqli_fetch_assoc($plugin_name_query)['modulname'];
-
-      echo '<div class="alert alert-info"><strong><i class="bi bi-trash3"></i> ' . $_language->module['delete_plugin'] . ':</strong> ' . htmlspecialchars($plugin_name, ENT_QUOTES, 'UTF-8') . '</div>';
-
-      // 1️ Remove widgets from the general table
-      $delete_widgets = safe_query("DELETE FROM `settings_plugins_widget` WHERE `modulname` = '$plugin_name'");
-
-      // 2 Find and clean tables `PREFIX.plugins_*_settings_widgets`
-      $tables_query = safe_query("SHOW TABLES LIKE 'plugins\_%\_settings_widgets'");
-      while ($table = mysqli_fetch_array($tables_query)) {
-        $table_name = $table[0];
-
-        // Check if the table has a `modulname` field
-        $check_column = safe_query("SHOW COLUMNS FROM `$table_name` LIKE 'modulname'");
-        if (mysqli_num_rows($check_column) > 0) {
-          // Remove the corresponding row
-          safe_query("DELETE FROM `$table_name` WHERE `modulname` = '$plugin_name'");
-        }
-      }
-    }
-
-    // 3 Remove the plugin from the main table
-    $delete_plugin = safe_query("DELETE FROM `settings_plugins` WHERE `modulname` = '$plugin_name'");
-
-    // Fine Pulitura di widget  e plugin dal database
-
-    $name = str_replace("/", "", $dir);
-    require_once('../includes/plugins' . $dir . 'uninstall.php');
-    recursiveRemoveDirectory('../includes/plugins' . $dir);
-
-    // Se il parametro redirect=true è presente, dopo la disinstallazione fa il redirect a plugin_manager
-    if (isset($_GET['redirect']) && $_GET['redirect'] == 'true') {
-      echo '<script>setTimeout(function(){ window.location.href = "admincenter.php?site=plugin_manager"; }, 0);</script>';
-      exit;
-    }
-
-    header('Location: ?site=plugin_installer');
-    exit;
-  } elseif (!empty($_GET['do'])) {
-    echo '<div class="card">
-        <div class="card-header">
-            ' . $_language->module['plugin_installer'] . '
-        </div>
-        <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item" aria-current="page"><a href="admincenter.php?site=plugin_installer">' . $_language->module['plugin_installer'] . '</a></li>
-          <li class="breadcrumb-item active" aria-current="page">Install</li>
-        </ol>
-      </nav>
-
-    <div class="card-body">';
-    $dir = $_GET['dir'];
-    $dir = str_replace('/', '', $dir);
-    ############ Plugin und Modul Einstellung ###############
-    DeleteData("navigation_website_sub", "modulname", $dir);
-    DeleteData("navigation_dashboard_links", "modulname", $dir);
-    DeleteData("settings_plugins", "modulname", $dir);
-    DeleteData("settings_plugins_widget", "modulname", $dir);
-    $id = $_GET['id'];
-    echo rmmodinstall('plugin', 'install', $dir, $id, $getversion);
-    echo '</div></div>';
-  } elseif (!empty($_GET['re'])) {
-    echo '<div class="card">
-        <div class="card-header">
-            ' . $_language->module['plugin_installer'] . '
-        </div>
-        <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item" aria-current="page"><a href="admincenter.php?site=plugin_installer">' . $_language->module['plugin_installer'] . '</a></li>
-          <li class="breadcrumb-item active" aria-current="page">Install</li>
-        </ol>
-      </nav>
-
-    <div class="card-body">';
-    $dir = $_GET['dir'];
-    $dir = str_replace('/', '', $dir);
-    ############ Plugin und Modul Einstellung ###############
-    DeleteData("navigation_website_sub", "modulname", $dir);
-    DeleteData("navigation_dashboard_links", "modulname", $dir);
-    DeleteData("settings_plugins", "modulname", $dir);
-    DeleteData("settings_plugins_widget", "modulname", $dir);
-    $id = $_GET['id'];
-    echo rmmodinstall('plugin', 'install', $dir, $id, $getversion);
-    echo '</div></div>';
-  } elseif (!empty($_GET['up'])) {
-    echo '<div class="card">
-        <div class="card-header">
-            ' . $_language->module['plugin_installer_update'] . '
-        </div>
-        <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item" aria-current="page"><a href="admincenter.php?site=plugin_installer">' . $_language->module['plugin_installer'] . '</a></li>
-          <li class="breadcrumb-item" aria-current="page">Update</li>
-        </ol>
-      </nav>
-
-    <div class="card-body">';
-    $dir = $_GET['dir'];
-    $dir = str_replace('/', '', $dir);
-    ############ Plugin und Modul Einstellung ###############
-    DeleteData("navigation_website_sub", "modulname", $dir);
-    DeleteData("navigation_dashboard_links", "modulname", $dir);
-    DeleteData("settings_plugins", "modulname", $dir);/*
-  DeleteData("settings_plugins_widget","modulname",$dir);*/
-    $id = $_GET['id'];
-    echo rmmodinstall('plugin', 'update', $dir, $id, $getversion);
-    echo '</div></div>';
-  } else {
-    try {
-
-      ####### Plugins #########
-      $url = $updateserverurl . '/plugin/plugin-base_v.' . $getversion . '/list.json';
-      @$check = fopen($url, "r");
-      if ($check) {
-        $url = $updateserverurl . '/plugin/plugin-base_v.' . $getversion . '/list.json';
-        $imgurl = $updateserverurl . '/plugin/plugin-base_v.' . $getversion . '';
-      } else {
-        $url = $dangerupdateserverurl . '/plugin/plugin-base_v.' . $getversion . '/list.json';
-        $imgurl = $dangerupdateserverurl . '/plugin/plugin-base_v.' . $getversion . '';
-      }
-      #######################
-
-      $result = curl_json2array($url);
-      $anz = (count($result) - 1);
-      $output = "";
-      $input = "";
-      $install_datei = "";
-
-      for ($plug = 1; $plug <= $anz; $plug++) {
-        $installedversion = 'n/a';
-        $translate = new multiLanguage(detectCurrentLanguage());
-        $translate->detectLanguages($result['item' . $plug]['name']);
-        $result['item' . $plug]['name'] = $translate->getTextByLanguage($result['item' . $plug]['name']);
-
-        $translate = new multiLanguage(detectCurrentLanguage());
-        $translate->detectLanguages($result['item' . $plug]['description']);
-        $result['item' . $plug]['description'] = $translate->getTextByLanguage($result['item' . $plug]['description']);
-
-        $translate = new multiLanguage(detectCurrentLanguage());
-        $translate->detectLanguages($result['item' . $plug]['plus_plugin']);
-        $result['item' . $plug]['plus_plugin'] = $translate->getTextByLanguage($result['item' . $plug]['plus_plugin']);
-
-        $ergebnis = safe_query("SELECT * FROM `settings_plugins` WHERE `modulname`='" . $result['item' . $plug]['modulname'] . "'");
-        if (mysqli_num_rows($ergebnis) == '1') {
-          $row = mysqli_fetch_assoc($ergebnis);
-          if ($row['version'] !== '') {
-            $installedversion = $row['version'];
-          }
-        }
-
-        if ($result['item' . $plug]['version'] > $installedversion) {
-          $installed_version = '<span class="badge text-bg-warning">' . $installedversion . '</span>';
-        } elseif ($result['item' . $plug]['version'] == $installedversion) {
-          $installed_version = '<span class="badge text-bg-success">' . $installedversion . '</span>';
-        } else {
-          $installed_version = $installedversion;
-        }
-
-        $output .= '  <tr>';
-        $output .= '<td><h5>' . $result['item' . $plug]['name'] . '</h5>
-                        <div class="imageHold">
-                          <div><img class="featured-image img-thumbnail" style="z-index: 1;" src="' . $imgurl . '' . $result['item' . $plug]['path'] . $result['item' . $plug]['preview'] . '" alt="{img}" /></div>
-                        </div>
-                        </td>';
-        $output .= '<td>' . $result['item' . $plug]['description'] . '<hr>
-                          <table class="table table-borderless"><tr>';
-
-        if ($result['item' . $plug]['widgets'] == "") {
-          $output .= '<td width="50%"></td>';
-        } else {
-          $output .= '<td width="50%" class="table-success"><b>' . $_language->module['plus_widgets'] . ':</b><br>' . $result['item' . $plug]['widgets'] . '</td>';
-        }
-
-        if ($result['item' . $plug]['required'] == "") {
-          $output .= '<td></td>';
-        } else {
-          $output .= '<td class="table-success"><b>' . $_language->module['plus_plugin'] . ':</b><br>' . $result['item' . $plug]['plus_plugin'] . '</td>';
-        }
-
-        $output .= '</tr></table></td>';
-        $output .= '<td>' . $_language->module['plugin_lang'] . ': ' . $result['item' . $plug]['languages'] . '<hr>
-                            ' . $_language->module['plugin_ver'] . ' ' . $result['item' . $plug]['version'] . '<br />
-                            ' . $_language->module['inst_plugin_ver'] . ' ' . $installed_version . '<br />
-                            ' . $_language->module['required'] . ' ' . $result['item' . $plug]['req'] . '<br />
-                            
-                            ' . $_language->module['plugin_update'] . ': ' . $result['item' . $plug]['update'] . '<br />
-                            Coding by: ' . $result['item' . $plug]['author'] . '</td>';
-
-        include("../system/version.php");
-        if (is_dir("../includes/plugins/" . $result['item' . $plug]['path'])) {
-          $output .= '<td>';
-
-          if ($result['item' . $plug . '']['version'] === $installedversion) {
-            $output .= '<div class="d-grid gap-2"><a class="btn btn-success mb-3" data-toggle="tooltip" data-html="true" title="' . $_language->module['tooltip_3'] . ' " href="?site=plugin_installer&re=install&id=' . $plug . '&dir=' . $result['item' . $plug]['path'] . '"><i class="bi bi-arrow-repeat"></i> ' . $_language->module['reinstall'] . '</a></div>';
-          } else {
-            $output .= '<div class="d-grid gap-2"><a class="btn btn-warning mb-3" data-toggle="tooltip" data-html="true" title="' . $_language->module['tooltip_4'] . ' " href="?site=plugin_installer&id=' . $plug . '&up=install&dir=' . $result['item' . $plug]['path'] . '"><i class="bi bi-cloud-arrow-down"></i> ' . $_language->module['update'] . ' to Ver. ' . $result['item' . $plug]['version'] . '</a></div>';
-          }
-
-          #if (
-            #@$row['modulname'] == 'footer'
-            #|| @$row['modulname'] == 'navigation'
-          #) {
-
-
-            #$output .= '';
-          #} else {
-
-            $output .= ' 
-              <!-- Button trigger modal -->
-              <div class="d-grid gap-2"><button type="button" class="btn btn-danger mb-3" data-toggle="tooltip" data-html="true" title="' . $_language->module['tooltip_2'] . ' " data-bs-toggle="modal" data-bs-target="#confirm-delete" data-href="admincenter.php?site=plugin_installer&deinstall=plugin&dir=' . $result['item' . $plug]['path'] . '&modulname=' . $result['item' . $plug]['modulname'] . '"><i class="bi bi-trash3"></i> 
-              ' . $_language->module['plugin_deinstallieren'] . '
-              </button></div></th>';
-            echo '
-              <!-- Button trigger modal END-->            
-
-              <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                  <div class="modal-dialog">
-                      <div class="modal-content">
-                          <div class="modal-header">
-                             <h5 class="modal-title" id="modalLabel"><i class="bi bi-trash3"></i> ' . $_language->module['plugin_deinstallieren'] . '</h5>
-                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                          </div>
-                          <div class="modal-body">
-                             <p><i class="bi bi-info-circle"></i> ' . $_language->module['delete_info'] . '</p>
-                          </div>
-                          <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-circle"></i> ' . $_language->module['close'] . '</button>
-                              <a class="btn btn-danger btn-ok"><i class="bi bi-trash3"></i> ' . $_language->module['plugin_deinstallieren'] . '</a>
-                          </div>
-                      </div>
-                  </div>
-              </div>';
-          #}
-        } else {
-
-          if ($result['item' . $plug]['req'] == $version) {
-            if (@$result['item' . $plug]['aktive'] == '0') {
-              $output .= '<td><div class="d-grid gap-2"><button class="btn btn-info" data-toggle="tooltip" data-html="true" title="' . $_language->module['tooltip_5'] . ' " style="width: 160px"><i class="bi bi-layout-sidebar"></i> ' . $_language->module['no_install'] . '</button></div></td>';
-            } else {
-              $output .= '<td><div class="d-grid gap-2"><a class="btn btn-success" data-toggle="tooltip" data-html="true" title="' . $_language->module['tooltip_6'] . ' " href="?site=plugin_installer&do=install&id=' . $plug . '&dir=' . $result['item' . $plug]['path'] . '"><i class="bi bi-plus-circle"></i> ' . $_language->module['installation'] . '</a></div></td>';
+    if (is_array($plugin_info_array)) {
+        foreach ($plugin_info_array as $plugin) {
+            if (isset($plugin['modulname']) && $plugin['modulname'] === $plugin_folder) {
+                $plugin_info = $plugin;
+                break;
             }
-            $output .= '  </tr>';
-          } else {
-            $output .= '<td><div class="d-grid gap-2"><button class="btn btn-info" data-toggle="tooltip" data-html="true" title="' . $_language->module['tooltip_1'] . ' " ><i class="bi bi-ban"></i> ' . $_language->module['incompatible'] . '</button> ' . $_language->module['no_ver'] . '</div></td>';
-            $output .= '  </tr>';
-          }
         }
-      }
-    } catch (Exception $e) {
-      echo $e->message();
-      return false;
     }
 
-    $_language->readModule('plugin_installer');
-    $_language->readModule('plugin_installer', false, true);
+    // Plugin deinstallieren
+    if ($plugin_action === 'uninstall') {
+        if (empty($plugin_folder) || !preg_match('/^[a-z0-9_\-]+$/i', $plugin_folder)) {
+            echo '<div class="alert alert-danger">Ungültiger Plugin-Ordner.</div>';
+            exit;
+        }
 
-    echo '<div class="card">
-        <div class="card-header"><i class="bi bi-plugin"></i> ' . $_language->module['plugin_installer'] . '
+        $uninstaller = new PluginUninstaller();
+        $uninstaller->uninstall($plugin_folder);
+
+        $log = $uninstaller->getLog();
+        $html_log = '';
+        $valid_types = ['success', 'danger', 'warning', 'info'];
+
+        foreach ($log as $entry) {
+            $type = in_array($entry['type'], $valid_types) ? $entry['type'] : 'info';
+            $html_log .= '<div class="alert alert-' . htmlspecialchars($type) . '">' . htmlspecialchars($entry['message']) . '</div>';
+        }
+
+        echo $html_log;
+        exit;
+    }
+
+    // Plugin installieren oder updaten
+    if (!$plugin_info) {
+        echo '<div class="alert alert-danger">Plugin nicht gefunden: ' . htmlspecialchars($plugin_folder) . '</div>';
+        exit;
+    }
+
+    $local_plugin_folder = $plugin_dir . $plugin_folder;
+
+    if (!download_plugin_files($plugin_folder, $local_plugin_folder, $plugin_path)) {
+        exit;
+    }
+
+    $script_file = $plugin_action === 'install' ? 'install.php' : 'update.php';
+    $script_path = $local_plugin_folder . '/' . $script_file;
+
+    if (file_exists($script_path)) {
+        include $script_path;
+    }
+
+    // Plugin-Daten speichern
+    $name = htmlspecialchars($plugin_info['name']);
+    $modulname = htmlspecialchars($plugin_info['modulname']);
+    $description = htmlspecialchars($plugin_info['description']);
+    $version = htmlspecialchars($plugin_info['version']);
+    $author = htmlspecialchars($plugin_info['author']);
+    $url = htmlspecialchars($plugin_info['url']);
+    $folder = htmlspecialchars($plugin_folder);
+
+    if ($plugin_action === 'install') {
+        safe_query("
+            INSERT INTO plugins_installed (name, modulname, description, version, author, url, folder, installed_date)
+            VALUES ('$name','$modulname','$description','$version','$author','$url','$folder',NOW())
+        ");
+        echo '<div class="alert alert-success">Plugin <strong>' . $name . '</strong> wurde installiert.</div>';
+        echo '<script type="text/javascript">
+                setTimeout(function() {
+                    window.location.href = "admincenter.php?site=plugin_installer";
+                }, 3000); // 3 Sekunden warten
+            </script>';
+    } else {
+        safe_query("
+            UPDATE plugins_installed 
+            SET version = '$version', installed_date = NOW()
+            WHERE modulname = '$modulname'
+        ");
+        echo '<div class="alert alert-success">Plugin <strong>' . $name . '</strong> wurde aktualisiert.</div>';
+        echo '<script type="text/javascript">
+                setTimeout(function() {
+                    window.location.href = "admincenter.php?site=plugin_installer";
+                }, 3000); // 3 Sekunden warten
+            </script>';
+    }
+}
+
+// Lokale Plugins erfassen
+$local_plugins = [];
+foreach (scandir($plugin_dir) as $folder) {
+    if ($folder == '.' || $folder == '..') continue;
+    $path = $plugin_dir . $folder;
+    if (is_dir($path) && file_exists("$path/plugin.json")) {
+        $json = json_decode(file_get_contents("$path/plugin.json"), true);
+        if ($json) {
+            $json['dir'] = $folder;
+            $local_plugins[$json['name']] = $json;
+        }
+    }
+}
+
+// Externe Plugins abrufen
+$external_plugins = [];
+if (filter_var($plugin_json_url, FILTER_VALIDATE_URL)) {
+    $plugin_data = @file_get_contents($plugin_json_url);
+    if ($plugin_data) {
+        $decoded = json_decode($plugin_data, true);
+        if (is_array($decoded)) {
+            foreach ($decoded as $plugin) {
+                if (isset($plugin['name'])) {
+                    $external_plugins[$plugin['name']] = $plugin;
+                }
+            }
+        }
+    }
+}
+
+// Installierte Plugins laden
+$installed_plugins = [];
+$res = safe_query("SELECT * FROM plugins_installed");
+while ($row = mysqli_fetch_assoc($res)) {
+    $installed_plugins[$row['name']] = $row;
+}
+
+// Alle Plugins zusammenführen
+$all_plugin_names = array_unique(array_merge(
+    array_keys($local_plugins),
+    array_keys($external_plugins),
+    array_keys($installed_plugins)
+));
+
+$plugins_for_template = [];
+
+foreach ($all_plugin_names as $name) {
+    $local = $local_plugins[$name] ?? null;
+    $external = $external_plugins[$name] ?? null;
+    $installed_entry = $installed_plugins[$name] ?? null;
+
+    $plugin = $local ?? $external;
+    if (!$plugin) continue;
+
+    $plugin_folder = $plugin['dir'] ?? $plugin['name'];
+    $installed = $installed_entry !== null;
+    $installed_version = $installed_entry['version'] ?? '—';
+
+    $update = false;
+    if ($installed && isset($plugin['version'])) {
+        $update = version_compare($installed_version, $plugin['version'], '<');
+    }
+
+    $plugins_for_template[] = [
+        'name' => $name,
+        'modulname' => $plugin['modulname'] ?? '',
+        'description' => $plugin['description'] ?? '',
+        'version' => $plugin['version'] ?? '',
+        'author' => $plugin['author'] ?? '',
+        'url' => $plugin['url'] ?? '',
+        'folder' => $plugin_folder,
+        'installed_version' => $installed_version,
+        'installed' => $installed,
+        'update' => $update
+    ];
+}
+
+// HTML-Ausgabe
+echo '
+<div class="card">
+    <div class="card-header">'.$_language->module['plugin_installer'].'</div>
+    <div class="card-body">
+        <div class="container py-5">
+        <h3>'.$_language->module['plugin_installer_headline'].'</h3>
+
+        <table class="table table-bordered table-striped bg-white shadow-sm">
+            <thead class="table-light">
+                <tr>
+                    <th width="20%">'.$_language->module['plugin_name'].'</th>
+                    <th width="50%">'.$_language->module['plugin_description'].'</th>
+                    <th>'.$_language->module['plugin_version'].'</th>
+                    <th width="20%">'.$_language->module['plugin_action'].'</th>
+                </tr>
+            </thead>
+            <tbody>';
+
+foreach ($plugins_for_template as $plugin) {
+    echo '<tr>
+        <td>'.htmlspecialchars($plugin['name']).'</td>
+        <td>'.htmlspecialchars($plugin['description']).'</td>
+        <td>'.htmlspecialchars($plugin['version']);
+
+    if ($plugin['installed']) {
+        echo '<br><small class="text-muted">('.htmlspecialchars($plugin['installed_version']).')</small>';
+    }
+
+    echo '</td><td>';
+
+    if ($plugin['installed']) {
+        echo '<span class="badge bg-success">'.$_language->module['installed'].'</span> ';
+        if ($plugin['update']) {
+            echo '<a href="admincenter.php?site=plugin_installer&update='.urlencode($plugin['modulname']).'" class="btn btn-warning btn-sm">'
+                .$_language->module['update'].'</a> ';
+        }
+        echo '<a href="admincenter.php?site=plugin_installer&uninstall='.urlencode($plugin['modulname']).'" class="btn btn-danger btn-sm" onclick="return confirm(\'Wirklich deinstallieren?\');">'
+            .$_language->module['uninstall'].'</a>';
+    } else {
+        echo '<a href="admincenter.php?site=plugin_installer&install='.urlencode($plugin['modulname']).'" 
+                class="btn btn-primary btn-sm">'
+            .$_language->module['install'].'</a>';
+    }
+
+    echo '</td></tr>';
+}
+
+echo '
+            </tbody>
+        </table>
+
         </div>
-<nav aria-label="breadcrumb">
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item" aria-current="page"><a href="admincenter.php?site=plugin_installer">' . $_language->module['plugin_installer'] . '</a></li>
-    <li class="breadcrumb-item active" aria-current="page">new & edit</li>
-  </ol>
-</nav>
+    </div>
+</div>';
 
-<div class="card-body">
+/**
+ * Plugin-Dateien herunterladen und entpacken
+ */
+function download_plugin_files(string $plugin_folder, string $local_plugin_folder, string $plugin_path)
+{
+    $remote_url = $plugin_path . '/' . $plugin_folder . '.zip';
+    $local_zip = $local_plugin_folder . '.zip';
 
-<div class="alert alert-success" role="alert">
-  <h4 class="alert-heading"><i class="bi bi-plugin"></i> ' . $_language->module['plugin_installer'] . '</h4><p class="text-sm-start">' . $server_status . '</p>
-  ' . $_language->module['info'] . '
-  <hr>
-  <i class="bi bi-info-circle" style="font-size: 1rem; color: #ffc107;"></i> ' . $_language->module['all_plugins_1'] . ' ' . $anz . ' ' . $_language->module['all_plugins_2'] . '
-</div>
+    // ZIP-Datei herunterladen
+    $content = @file_get_contents($remote_url);
+    if ($content === false) {
+        echo '<div class="alert alert-danger">Download der Plugin-Datei fehlgeschlagen.</div>';
+        return false;
+    }
 
-    
-    <!-- END -->
-    <!-- plugin_installer_content -->
-    <div class="table-responsive"><table id="plugini" class="table table-striped">
-      <thead>
-        <tr>
-          <th style="width: 22%"><b>' . $_language->module['preview'] . '</b></th>
-          <th style="width: 48%"><b>' . $_language->module['description'] . '</b></th>
-          <th style="width: 12%"><b>' . $_language->module['version'] . '</b></th>
-          <th style="width: 12%"><b>' . $_language->module['options'] . '</b></th>
-        </tr>
-      </thead>
-      <tbody>
-        ' . $output . '
-        
-       </table>
-      </div>
-      </div>
-      </div>
-    ';
-  }
+    // Lokal speichern
+    if (file_put_contents($local_zip, $content) === false) {
+        echo '<div class="alert alert-danger">Speichern der Plugin-Datei fehlgeschlagen.</div>';
+        return false;
+    }
+
+    // Entpacken
+    $zip = new ZipArchive();
+    if ($zip->open($local_zip) === true) {
+        $zip->extractTo($local_plugin_folder);
+        $zip->close();
+        unlink($local_zip);
+        return true;
+    } else {
+        echo '<div class="alert alert-danger">Entpacken der Plugin-Datei fehlgeschlagen.</div>';
+        return false;
+    }
+}
+
+/**
+ * Ordner rekursiv löschen
+ */
+function deleteFolder($folderPath) {
+    if (!is_dir($folderPath)) return false;
+
+    $files = array_diff(scandir($folderPath), ['.', '..']);
+    foreach ($files as $file) {
+        $filePath = $folderPath . DIRECTORY_SEPARATOR . $file;
+        is_dir($filePath) ? deleteFolder($filePath) : unlink($filePath);
+    }
+
+    return rmdir($folderPath);
 }

@@ -511,6 +511,12 @@ if (file_exists('classes/AdminLogger.php')) {
     systeminc('../system/classes/AdminLogger');
 }
 
+if (file_exists('classes/PluginUninstaller.php')) {
+    systeminc('classes/PluginUninstaller');
+} else {
+    systeminc('../system/classes/PluginUninstaller');
+}
+
 // Sprachwahl aus Cookie, Session oder automatische Erkennung
 if (isset($_COOKIE['language'])) {
     $_language->setLanguage($_COOKIE['language']);
