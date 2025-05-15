@@ -179,6 +179,7 @@ foreach ($all_plugin_names as $name) {
         'version' => $plugin['version'] ?? '',
         'author' => $plugin['author'] ?? '',
         'url' => $plugin['url'] ?? '',
+        'download' => $plugin['download'] ?? '',
         'folder' => $plugin_folder,
         'installed_version' => $installed_version,
         'installed' => $installed,
@@ -218,7 +219,7 @@ foreach ($plugins_for_template as $plugin) {
     echo '</td><td>';
 
     if ($plugin['installed']) {
-        echo '<span class="badge bg-success">'.$_language->module['installed'].'</span> ';
+        echo '<button class="btn btn-success btn-sm" disabled>'.$_language->module['installed'].'</button> ';
         if ($plugin['update']) {
             echo '<a href="admincenter.php?site=plugin_installer&update='.urlencode($plugin['modulname']).'" class="btn btn-warning btn-sm">'
                 .$_language->module['update'].'</a> ';
@@ -226,9 +227,12 @@ foreach ($plugins_for_template as $plugin) {
         echo '<a href="admincenter.php?site=plugin_installer&uninstall='.urlencode($plugin['modulname']).'" class="btn btn-danger btn-sm" onclick="return confirm(\'Wirklich deinstallieren?\');">'
             .$_language->module['uninstall'].'</a>';
     } else {
-        echo '<a href="admincenter.php?site=plugin_installer&install='.urlencode($plugin['modulname']).'" 
-                class="btn btn-primary btn-sm">'
-            .$_language->module['install'].'</a>';
+        if (!empty($plugin['download']) && $plugin['download'] !== 'DISABLED') {
+            echo '<a href="admincenter.php?site=plugin_installer&install=' . urlencode($plugin['modulname']) . '" 
+                class="btn btn-primary btn-sm">' . $_language->module['install'] . '</a>';
+        } else {
+            echo '<span style="color: gray;">Kein Download verfügbar</span>';
+        }
     }
 
     echo '</td></tr>';

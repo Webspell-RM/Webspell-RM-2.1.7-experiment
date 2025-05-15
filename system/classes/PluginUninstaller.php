@@ -70,6 +70,8 @@ class PluginUninstaller
         } else {
             $this->addLog('error', 'Fehler beim Löschen der Tabelle "' . $table_name . '".');
         }
+        $this->removeEntriesByModuleColumn($plugin_folder);
+        $this->removeAllPluginTables($plugin_folder);
     }
 
     private function addLog($type, $message)
@@ -80,5 +82,55 @@ class PluginUninstaller
     public function getLog()
     {
         return $this->log;
+    }
+
+    private function removeEntriesByModuleColumn($plugin_folder)
+    {
+        global $_database;
+
+        $folder_escaped = $_database->real_escape_string($plugin_folder);
+
+        // Hole alle Tabellen der Datenbank
+        $result = $_database->query("SHOW TABLES");
+        while ($row = $result->fetch_row()) {
+            $table = $row[0];
+
+            // Prüfen, ob die Tabelle eine Spalte "modulname" hat
+            $col_result = $_database->query("SHOW COLUMNS FROM `" . $table . "` LIKE 'modulname'");
+            if ($col_result && $col_result->num_rows > 0) {
+                // Einträge mit modulname = 'pluginname' löschen
+                $delete_sql = "DELETE FROM `" . $table . "` WHERE `modulname` = '" . $folder_escaped . "'";
+                $_database->query($delete_sql);
+
+                if ($_database->affected_rows > 0) {
+                    $this->addLog('success', "Einträge aus {$table} gelöscht (modulname = '{$plugin_folder}', {$_database->affected_rows} Zeilen).");
+                }
+            }
+        }
+    }
+
+    private function removeAllPluginTables($plugin_folder)
+    {
+        global $_database;
+
+        $folder_escaped = $_database->real_escape_string($plugin_folder);
+
+        // Suche nach allen Tabellen, die mit "plugins_pluginname" oder "plugins_pluginname_" beginnen
+        $sql = "SHOW TABLES LIKE 'plugins_" . $folder_escaped . "%'";
+        $result = $_database->query($sql);
+
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_row()) {
+                $table_name = $row[0];
+                $drop_sql = "DROP TABLE IF EXISTS `" . $table_name . "`";
+                if ($_database->query($drop_sql)) {
+                    $this->addLog('success', "Tabelle gelöscht: " . $table_name);
+                } else {
+                    $this->addLog('error', "Fehler beim Löschen der Tabelle: " . $table_name);
+                }
+            }
+        } else {
+            $this->addLog('info', "Keine passenden Tabellen für 'plugins_{$plugin_folder}' gefunden.");
+        }
     }
 }

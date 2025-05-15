@@ -20,5 +20,5 @@ $language_array = array(
     'uninstall'                  => 'Deinstallieren',
 'uninstalled_success'                  => 'Plugin wurde erfolgreich deinstalliert.',
 'uninstall_script_missing'                  => 'Deinstallations-Skript nicht gefunden.',
-'uninstall_failed'                  => 'Deinstallation fehlgeschlagen.',
+'uninstall_failed'                  => 'Deinstallation fehlgeschlagen.'
 );
