@@ -1,32 +1,31 @@
 <?php
-
 /**
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- *                  Webspell-RM      /                        /   /                                          *
- *                  -----------__---/__---__------__----__---/---/-----__---- _  _ -                         *
- *                   | /| /  /___) /   ) (_ `   /   ) /___) /   / __  /     /  /  /                          *
- *                  _|/_|/__(___ _(___/_(__)___/___/_(___ _/___/_____/_____/__/__/_                          *
- *                               Free Content / Management System                                            *
- *                                           /                                                               *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @version         webspell-rm                                                                              *
- *                                                                                                           *
- * @copyright       2018-2024 by webspell-rm.de                                                              *
- * @support         For Support, Plugins, Templates and the Full Script visit webspell-rm.de                 *
- * @website         <https://www.webspell-rm.de>                                                             *
- * @forum           <https://www.webspell-rm.de/forum.html>                                                  *
- * @wiki            <https://www.webspell-rm.de/wiki.html>                                                   *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @license         Script runs under the GNU GENERAL PUBLIC LICENCE                                         *
- *                  It's NOT allowed to remove this copyright-tag                                            *
- *                  <http://www.fsf.org/licensing/licenses/gpl.html>                                         *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @author          Code based on WebSPELL Clanpackage (Michael Gruber - webspell.at)                        *
- * @copyright       2005-2011 by webspell.org / webspell.info                                                *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Webspell-RM 3.0 - Modern Content & Community Management System
+ * ─────────────────────────────────────────────────────────────────────────────
+ *
+ * @version       3.0
+ * @build         Stable Release
+ * @release       2025
+ * @copyright     © 2018–2025 Webspell-RM | https://www.webspell-rm.de
+ * 
+ * @description   Webspell-RM is a modern open source CMS designed for gaming
+ *                communities, esports teams, and digital projects of any kind.
+ * 
+ * @author        Based on the original WebSPELL Clanpackage by Michael Gruber
+ *                (webspell.at), further developed by the Webspell-RM Team.
+ * 
+ * @license       GNU General Public License (GPL)
+ *                This software is distributed under the terms of the GPL.
+ *                It is strictly prohibited to remove this copyright notice.
+ *                For license details, see: https://www.gnu.org/licenses/gpl.html
+ * 
+ * @support       Support, updates, and plugins available at:
+ *                → Website: https://www.webspell-rm.de
+ *                → Forum:   https://www.webspell-rm.de/forum.html
+ *                → Wiki:    https://www.webspell-rm.de/wiki.html
+ * 
+ * ─────────────────────────────────────────────────────────────────────────────
  */
 
 use webspell\RoleManager;
@@ -250,9 +249,9 @@ function dashnavi() {
 if ($userID && !isset($_GET['userID']) && !isset($_POST['userID'])) {
 	$ds = mysqli_fetch_array(safe_query("SELECT registerdate FROM `users` WHERE userID='" . $userID . "'"));
 	$username = '<a class="nav-link nav-link-3" href="../index.php?site=profile&amp;id=' . $userID . '">' . getusername($userID) . '</a>';
-	$lastlogin = !empty($ds['lastlogin']) ? getformatdatetime($ds['lastlogin']) : '-';
-    $registerdate = getformatdatetime($ds['registerdate']);
-
+	$lastlogin = !empty($ds['lastlogin']) ? date("d.m.Y H:i", strtotime($ds['lastlogin'])) : '-';
+    $registerdate = date("d.m.Y H:i", strtotime($ds['registerdate']));
+    
 	$data_array = array();
 	$data_array['$username'] = $username;
 	$data_array['$lastlogin'] = $lastlogin;

@@ -781,9 +781,10 @@ function get_all_settings() {
 #function escape($input) {
 #    return mysqli_real_escape_string($GLOBALS['_database'], $input);
 #}
-function getformatdatetime($datetime, $format = 'd.m.Y H:i') {
-    if (empty($datetime) || $datetime == '0000-00-00 00:00:00') return '-';
-    return date($format, strtotime($datetime));
-}
+#function getformatdatetime($datetime, $format = 'd.m.Y H:i') {
+#    if (empty($datetime) || $datetime == '0000-00-00 00:00:00') return '-';
+#    return date($format, strtotime($datetime));
+#}
+
 
 

@@ -73,7 +73,7 @@ span.application {
 
 /*-----------pagination--------------------*/
 
-.pagination>li>a, .pagination>li>span {
+/*.pagination>li>a, .pagination>li>span {
   position:relative;
   float:center;
   padding:6px 12px;
@@ -92,6 +92,21 @@ span.application {
   background-color: rgba(var(--bs-primary-rgb), 1);
   border: 1px solid rgba(var(--bs-card-border-color-rgb), 1);
   border-radius: var(--bs-border-radius);
+}*/
+
+
+.page-link {
+  color: rgba(var(--bs-link-color),1);
+  background-color: rgba(var(--bs-card-bg-rgb), 1);
+  border: 1px solid rgba(var(--bs-card-border-color-rgb), 1);
+  border-radius: var(--bs-border-radius);
+}
+
+.page-item.active .page-link {
+  z-index: 3;
+  color: #fff;
+  background-color: rgba(var(--bs-primary-rgb), 1);
+  border: 1px solid rgba(var(--bs-card-border-color-rgb), 1);
 }
 
 /* card Design */

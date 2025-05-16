@@ -338,4 +338,49 @@ private function findMatchingEndif(string $template, int $start): int|false
         return $template;
     }
 
+
+    /**
+     * Bootstrap 5 Pagination generieren
+     * 
+     * @param string $baseUrl Basis-URL für Links (z.B. "index.php?site=clan_rules")
+     * @param int $currentPage Aktuelle Seite
+     * @param int $totalPages Gesamtanzahl Seiten
+     * @param string $pageParam Name des URL-Parameters für die Seite (default: "page")
+     * @return string HTML-Code der Pagination
+     */
+    public function renderPagination(string $baseUrl, int $currentPage, int $totalPages, string $pageParam = 'page'): string
+    {
+        if ($totalPages <= 1) {
+            return ''; // Keine Pagination nötig
+        }
+
+        $html = '<nav><ul class="pagination pagination-sm justify-content-center mt-4">';
+
+        // Zurück-Button
+        $prevDisabled = ($currentPage <= 1) ? ' disabled' : '';
+        $prevPage = max(1, $currentPage - 1);
+        $html .= '<li class="page-item' . $prevDisabled . '">';
+        $html .= '<a class="page-link" href="' . htmlspecialchars($baseUrl) . '&' . $pageParam . '=' . $prevPage . '" aria-label="Previous">&laquo;</a>';
+        $html .= '</li>';
+
+        // Seiten-Buttons
+        for ($i = 1; $i <= $totalPages; $i++) {
+            $active = ($i === $currentPage) ? ' active' : '';
+            $html .= '<li class="page-item' . $active . '">';
+            $html .= '<a class="page-link" href="' . htmlspecialchars($baseUrl) . '&' . $pageParam . '=' . $i . '">' . $i . '</a>';
+            $html .= '</li>';
+        }
+
+        // Weiter-Button
+        $nextDisabled = ($currentPage >= $totalPages) ? ' disabled' : '';
+        $nextPage = min($totalPages, $currentPage + 1);
+        $html .= '<li class="page-item' . $nextDisabled . '">';
+        $html .= '<a class="page-link" href="' . htmlspecialchars($baseUrl) . '&' . $pageParam . '=' . $nextPage . '" aria-label="Next">&raquo;</a>';
+        $html .= '</li>';
+
+        $html .= '</ul></nav>';
+
+        return $html;
+    }
+
 }

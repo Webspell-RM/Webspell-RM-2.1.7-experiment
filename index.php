@@ -1,24 +1,31 @@
 <?php
 /**
- * Webspell-RM - A Modern Content Management System
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Webspell-RM 3.0 - Modern Content & Community Management System
+ * ─────────────────────────────────────────────────────────────────────────────
  *
- * @version     3.0 (Next Generation 2025)
- * @author      Webspell-RM Team
- * @website     https://www.webspell-rm.de
- * @license     GNU GENERAL PUBLIC LICENSE (GPL)
- *
- * @note        This project is a full rework based on the original
- *              Webspell Clanpackage by Michael Gruber (webspell.at)
- *              with major architectural and codebase changes.
- *
- * @description
- * Webspell-RM is an open-source content management system (CMS) designed to manage websites and communities.
- * It provides powerful tools for creating and managing content, themes, plugins, and user permissions.
- *
- * @third_party
- * - jQuery: MIT License (https://jquery.com/)
- * - Bootstrap: MIT License (https://getbootstrap.com/)
- * - Other libraries: Refer to the LICENSE file for third-party libraries used in this project.
+ * @version       3.0
+ * @build         Stable Release
+ * @release       2025
+ * @copyright     © 2018–2025 Webspell-RM | https://www.webspell-rm.de
+ * 
+ * @description   Webspell-RM is a modern open source CMS designed for gaming
+ *                communities, esports teams, and digital projects of any kind.
+ * 
+ * @author        Based on the original WebSPELL Clanpackage by Michael Gruber
+ *                (webspell.at), further developed by the Webspell-RM Team.
+ * 
+ * @license       GNU General Public License (GPL)
+ *                This software is distributed under the terms of the GPL.
+ *                It is strictly prohibited to remove this copyright notice.
+ *                For license details, see: https://www.gnu.org/licenses/gpl.html
+ * 
+ * @support       Support, updates, and plugins available at:
+ *                → Website: https://www.webspell-rm.de
+ *                → Forum:   https://www.webspell-rm.de/forum.html
+ *                → Wiki:    https://www.webspell-rm.de/wiki.html
+ * 
+ * ─────────────────────────────────────────────────────────────────────────────
  */
 
 include_once("system/config.inc.php");
@@ -30,7 +37,6 @@ include_once("system/plugin.php");
 include_once("system/widget.php");
 include_once("system/multi_language.php");
 include_once("system/classes/track_visitor.php");
-#include_once("system/classes/TextFormatter.php");
 
 // THEME INITIALISIEREN
 $theme = new theme();
