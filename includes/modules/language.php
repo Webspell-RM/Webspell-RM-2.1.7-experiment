@@ -110,14 +110,16 @@ $index_langs = ['de', 'en', 'it'];
 foreach ($index_langs as $short) {
     $enabled = mysqli_fetch_array(safe_query("SELECT * FROM `settings` WHERE `" . $short . "_lang` = '1'"));
     if ($enabled[$short . '_lang'] == '1') {
-        ${$short . '_languages'} = '<a href="index.php?new_lang=' . $short . $querystring . '" data-toggle="tooltip" title="' . $index_language[$short] . '"><img class="flag" src="images/languages/' . $short . '.png" alt="' . $short . '">' . $index_language[$short] . '</a>';
+        ${$short . '_languages'} = '<a class="dropdown-item" href="index.php?new_lang=' . $short . $querystring . '" data-toggle="tooltip" title="' . $index_language[$short] . '"><img class="flag" src="images/languages/' . $short . '.png" alt="' . $short . '">&nbsp;' . $index_language[$short] . '</a>';
     }
 }
 
 // Aktuelle Sprache anzeigen mit Haken
 $language_name = isset($index_language[$lang]) ? $index_language[$lang] : ucfirst($lang);
 $flag = '<img class="flag" src="images/languages/' . $lang . '.png" alt="' . $lang . '">';
-$lang_ok = '<a href="index.php?new_lang=' . $lang . $querystring . '" data-toggle="tooltip" title="' . $language_name . '"><img class="flag" src="images/languages/' . $lang . '.png" alt="' . $lang . '">' . $language_name . ' <i class="bi bi-check2 text-success" style="font-size: 2rem;"></i></a>';
+$lang_ok = '<a class="dropdown-item" href="index.php?new_lang=' . $lang . $querystring . '" data-toggle="tooltip" title="' . $language_name . '">
+
+<img class="flag" src="images/languages/' . $lang . '.png" alt="' . $lang . '">&nbsp;' . $language_name . ' <i class="bi bi-check2 text-success" style="font-size: 1rem;"></i></a>';
 
 // Template einfügen
 $dx = mysqli_fetch_array(safe_query("SELECT * FROM `settings` WHERE `de_lang` = '1' OR `en_lang` = '1' OR `it_lang` = '1'"));

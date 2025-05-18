@@ -29,17 +29,19 @@
  */
 
 $_language->readModule('index');
-
 $index_language = $_language->module;
-
 
 // Überprüfe, ob die Session bereits gestartet wurde
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-
 header('X-UA-Compatible: IE=edge');
+
+// Aktuelles Theme laden
+$result = safe_query("SELECT * FROM settings_themes WHERE modulname = 'default'");
+$row = mysqli_fetch_assoc($result);
+$currentTheme = $row['themename'] ?? 'lux';
 ?>
 <!DOCTYPE html>
 <html class="h-100" lang="<?php echo $_language->language; ?>">
@@ -95,6 +97,8 @@ header('X-UA-Compatible: IE=edge');
     echo ($_pluginmanager->plugin_loadheadfile_widget_css());
     echo '<!--Widget css END-->' . PHP_EOL;
     ?>
+    
+    <link id="bootstrap-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/<?php echo htmlspecialchars($currentTheme); ?>/bootstrap.min.css"/>
     <link type="text/css" rel="stylesheet" href="./includes/themes/<?php echo htmlspecialchars($theme_name, ENT_QUOTES, 'UTF-8'); ?>/css/stylesheet.css" />
 </head>
 
@@ -144,6 +148,7 @@ header('X-UA-Compatible: IE=edge');
     #echo get_editor();
     /* ckeditor END*/
     ?>
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Cookies Abfrage -->
     <script defer src="./components/cookies/js/iframemanager.js"></script>
     <script defer src="./components/cookies/js/cookieconsent.js"></script>

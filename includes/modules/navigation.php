@@ -123,9 +123,10 @@ try {
 
                         $translate = new multiLanguage(detectCurrentLanguage());
                         $translate->detectLanguages($rox['name']);
+                        $name = $translate->getTextByLanguage($rox['name']);
                         $sub_array = [
                             'url' => strpos($rox['url'], 'http://') !== false ? $rox['url'] . '" target="_blank' : $rox['url'],
-                            'name' => $translate->getTextByLanguage($rox['name'])
+                            'name' => $name
                         ];
                         echo $tpl->loadTemplate("navigation", "sub_nav", $sub_array, 'theme');
                     }
@@ -141,7 +142,7 @@ try {
             $head_array = [
                     'windows' => $row['windows'] ? '' : '_blank',
                     'url' => strpos($rox['url'], 'http://') !== false ? $rox['url'] . '" target="_blank' : $rox['url'],
-                            'name' => $translate->getTextByLanguage($rox['name'])
+                    'name' => $translate->getTextByLanguage($rox['name'])
                 ];
 
             echo $tpl->loadTemplate("navigation", "main_head", $head_array, 'theme');
