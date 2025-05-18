@@ -34,8 +34,12 @@
 
 $_language->readModule('privacy_policy');
 
-// Initialisiere das Daten-Array für das Template
+$config = mysqli_fetch_array(safe_query("SELECT selected_style FROM settings_headstyle_config WHERE id=1"));
+$class = htmlspecialchars($config['selected_style']);
+
+// Header-Daten
 $data_array = [
+    'class'    => $class,
     'title' => $_language->module['privacy_policy'], // Titel der Datenschutzrichtlinie
     'subtitle' => 'Privacy policy', // Untertitel der Seite
     'privacy_policy_text' => '', // Platz für den Text der Datenschutzrichtlinie

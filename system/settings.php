@@ -293,29 +293,17 @@ if ($result && mysqli_num_rows($result) > 0) {
 // CSS- und JS-Dateien
 $components = array(
     'css' => array(
-        './components/bootstrap/css/bootstrap.min.css',
         './components/bootstrap/css/bootstrap-icons.min.css',
         './components/scrolltotop/css/scrolltotop.css',
-        './components/datatables/css/jquery.dataTables.min.css',
         './components/ckeditor/plugins/codesnippet/lib/highlight/styles/school_book_output.css',
-        './components/css/styles.css.php',
         './components/css/animate.css',
         './components/css/page.css',
-        './components/css/passtrength.css',
-        './components/css/' . htmlspecialchars($headlines) . '', // Sicherheitsmaßnahme: htmlspecialchars
-        './components/fonts/fonts_' . htmlspecialchars($font_family) . '.css' // Sicherheitsmaßnahme: htmlspecialchars
+        './components/css/headstyles.css'
     ),
     'js' => array(
         './components/jquery/jquery.min.js',
-        './components/bootstrap/js/bootstrap.bundle.min.js',
         './components/scrolltotop/js/scrolltotop.js',
-        './components/datatables/js/jquery.dataTables.js',
-        './components/js/bbcode.js',
-        './components/js/index.js',
-        './components/js/jquery.easing.min.js',
-        './components/js/passtrength.js',
-        './components/js/slick.min.js',
-        './components/js/enchanter.js'
+        './components/js/slick.min.js'
     )
 );
 

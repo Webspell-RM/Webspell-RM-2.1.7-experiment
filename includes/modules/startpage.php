@@ -45,8 +45,12 @@ if (mysqli_num_rows($ergebnis)) {
     $translate->detectLanguages($title);  // Die Sprachen für den Titel erkennen
     $title = $translate->getTextByLanguage($title);  // Den Titel basierend auf der aktuellen Sprache setzen
 
-    // Ein Array für die Template-Daten vorbereiten
+    $config = mysqli_fetch_array(safe_query("SELECT selected_style FROM settings_headstyle_config WHERE id=1"));
+    $class = htmlspecialchars($config['selected_style']);
+
+    // Header-Daten
     $data_array = [
+        'class'    => $class,
         'title' => $title,  // Den übersetzten Titel setzen
         'subtitle' => 'Start Page',  // Untertitel der Startseite setzen
     ];

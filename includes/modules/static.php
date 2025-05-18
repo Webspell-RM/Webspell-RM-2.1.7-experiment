@@ -44,7 +44,12 @@ $translate = new multiLanguage(detectCurrentLanguage());
 $translate->detectLanguages($title);
 $title = $translate->getTextByLanguage($title);
 
+$config = mysqli_fetch_array(safe_query("SELECT selected_style FROM settings_headstyle_config WHERE id=1"));
+$class = htmlspecialchars($config['selected_style']);
+
+// Header-Daten
 $data_array = [
+    'class'    => $class,
     'title' => $title,
     'subtitle' => $title
 ];

@@ -1,6 +1,6 @@
 /* Main Layout */
 .logo .bg-primary {
-background-color: transparent !important;
+  background-color: transparent !important;
 }
 
 .head-boxes {
@@ -9,17 +9,17 @@ background-color: transparent !important;
 
 span.head-boxes-head {
   color: transparent;
-  }
+}
 
 .head-boxes h2 {
   font-size: 14px;
   font-weight: 500;
   padding: 0;
-  line-height: 1px;
+  line-height: 1;
   margin: 0 0 5px 0;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: rgba(var(--bs-body-color),1);
+  color: var(--bs-body-color); /* korrekt für Bootstrap 5.3 */
   font-family: "Poppins", sans-serif;
 }
 
@@ -28,16 +28,14 @@ span.head-boxes-head {
   width: 120px;
   height: 1px;
   display: inline-block;
-  background: rgba(var(--bs-body-color),1);
+  background-color: var(--bs-body-color); /* ebenfalls korrekt */
   margin: 4px 10px;
 }
 
 p.head-boxes-foot {
-  margin: 0;
-  margin: 0;
   font-size: 16px;
   font-weight: 700;
   font-family: "Playfair Display", serif;
-  color: rgba(var(--bs-link-color),1);
-  margin-bottom: -20px;
+  color: var(--bs-link-color); /* Bootstrap-konform */
+  margin: 0 0 -20px 0;
 }

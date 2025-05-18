@@ -139,7 +139,7 @@ if ($loggedin) {
         $dashboard = '';
     } else {
         // Zugriff gewährt, Dashboard-Link setzen
-        $dashboard = '<li><a class="dropdown-item" href="admin/admincenter.php" target="_blank">' . $index_language['admincenter'] . '</a></li>';
+        $dashboard = '<li><a class="dropdown-item" href="admin/admincenter.php" target="_blank">&nbsp;' . $index_language['admincenter'] . '</a></li>';
     }
 
     // Ausgabe des Dashboards (je nach Berechtigung)
