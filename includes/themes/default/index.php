@@ -148,7 +148,7 @@ $currentTheme = $row['themename'] ?? 'lux';
     #echo get_editor();
     /* ckeditor END*/
     ?>
-     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
     <!-- Cookies Abfrage -->
     <script defer src="./components/cookies/js/iframemanager.js"></script>
     <script defer src="./components/cookies/js/cookieconsent.js"></script>

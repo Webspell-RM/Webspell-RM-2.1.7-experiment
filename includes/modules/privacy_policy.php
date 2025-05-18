@@ -34,6 +34,7 @@
 
 $_language->readModule('privacy_policy');
 
+global $hp_title;
 $config = mysqli_fetch_array(safe_query("SELECT selected_style FROM settings_headstyle_config WHERE id=1"));
 $class = htmlspecialchars($config['selected_style']);
 
@@ -41,19 +42,14 @@ $class = htmlspecialchars($config['selected_style']);
 $data_array = [
     'class'    => $class,
     'title' => $_language->module['privacy_policy'], // Titel der Datenschutzrichtlinie
-    'subtitle' => 'Privacy policy', // Untertitel der Seite
-    'privacy_policy_text' => '', // Platz für den Text der Datenschutzrichtlinie
-    'date' => '', // Platz für das Datum
-    /*'myclanname' => $myclanname, // Clanname einfügen
-    'page_title' => $pagetitle,*/
-    'privacy_policy' => $_language->module['privacy_policy'], // Sprachvariable für Datenschutzrichtlinie
-    'stand1' => $_language->module['stand1'], // Sprachvariable für Stand1
-    'stand2' => $_language->module['stand2'], // Sprachvariable für Stand2
+    'subtitle' => 'Privacy policy',
+    /*'myclanname' => $myclanname, // Clanname einfügen*/
+    
+    'privacy_policy' => $_language->module['privacy_policy'],
 ];
 
 // Template für den Kopfbereich laden
-$template = $tpl->loadTemplate("privacy_policy", "head", $data_array);
-echo $template;
+echo $tpl->loadTemplate("privacy_policy", "head", $data_array, 'theme');
 
 // Funktion zum Abrufen der Datenschutzrichtlinie aus der Datenbank
 function getPrivacyPolicy() {
@@ -73,15 +69,18 @@ if (mysqli_num_rows($ergebnis)) {
     $privacy_policy_text = $translate->getTextByLanguage($privacy_policy_text);
 
     // Datum der Datenschutzrichtlinie formatieren
-    $date = getformatdatetime($ds['date']);
+    $date = $ds['date'];
 
-    // Erstellen des Daten-Arrays für das Template
-    $data_array['privacy_policy_text'] = $privacy_policy_text;
-    $data_array['date'] = $date;
+    $data_array = [
+        'page_title' => $hp_title,
+        'privacy_policy_text' => $privacy_policy_text,
+        'stand1' => $_language->module['stand1'],
+    'stand2' => $_language->module['stand2'],
+        'date' => $date,
+    ];
 
     // Template für den Inhalt laden
-    $template = $tpl->loadTemplate("privacy_policy", "content", $data_array);
-    echo $template;
+    echo $tpl->loadTemplate("privacy_policy", "content", $data_array, 'theme');
 } else {
     // Wenn keine Datenschutzrichtlinie vorhanden ist
     echo generateAlert($_language->module['no_privacy_policy'], 'alert-info');

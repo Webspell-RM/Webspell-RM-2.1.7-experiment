@@ -376,14 +376,14 @@ echo '<div class="card">
             <div class="mb-3 row">
                 <label class="col-md-2 control-label">' . $_language->module['name'] . ':</label>
                 <div class="col-md-8">' . $_language->module['info'] . ' <span class="text-muted small"><em>
-                    <input class="form-control" type="text" name="name" value="' . getinput($ds['name']) . '" size="60"></em></span>
+                    <input class="form-control" type="text" name="name" value="' . htmlspecialchars($ds['name']) . '" size="60"></em></span>
                 </div>
             </div>
 
             <div class="mb-3 row">
                 <label class="col-md-2 control-label">' . $_language->module['url'] . ':</label>
                 <div class="col-md-8"><span class="text-muted small"><em>
-                    <input class="form-control" type="text" name="url" value="' . getinput($ds['url']) . '" size="60"></em></span>
+                    <input class="form-control" type="text" name="url" value="' . htmlspecialchars($ds['url']) . '" size="60"></em></span>
                 </div>
             </div>
 
@@ -613,14 +613,14 @@ echo '<form class="form-horizontal" method="post">
         <div class="mb-3 row">
           <label class="col-md-2 control-label">' . $_language->module['fa_name'] . ':</label>
           <div class="col-md-8"><span class="text-muted small"><em>
-            <input class="form-control" type="text" name="fa_name" value="' . getinput($ds['fa_name']) . '" size="60"></em></span>
+            <input class="form-control" type="text" name="fa_name" value="' . htmlspecialchars($ds['fa_name']) . '" size="60"></em></span>
           </div>
         </div>
 
         <div class="mb-3 row">
           <label class="col-md-2 control-label">' . $_language->module['name'] . ':</label>
           <div class="col-md-8"><span class="text-muted small"><em>
-            <input class="form-control" type="text" name="name" value="' . getinput($ds['name']) . '" size="60"></em></span>
+            <input class="form-control" type="text" name="name" value="' . htmlspecialchars($ds['name']) . '" size="60"></em></span>
           </div>
         </div>
 
@@ -799,7 +799,7 @@ while ($ds = mysqli_fetch_array($ergebnis)) {
     if ($ds[ 'sort_art' ] == 1) {
         $sort = '<b>' . $ds[ 'sort' ] . '</b>';
         $catactions = '';
-        @$name = getinput($ds[ 'name' ]);
+        @$name = htmlspecialchars($ds[ 'name' ]);
     } else {
         $sort = $list;
         $catactions = '

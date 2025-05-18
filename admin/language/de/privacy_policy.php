@@ -7,8 +7,8 @@ $language_array = array(
     'transaction_invalid' => 'Transaktions ID ungültig',
     'update' => 'aktualisieren',
     'title' => 'Datenschutz-Bestimmungen',
-    'editor_is_editor' => 'Editor aus / einschalten:'
-    'changes_successful'    => 'Änderungen erfolgreich',
+    'editor_is_editor' => 'Editor aus / einschalten:',
+    'changes_successful' => 'Änderungen erfolgreich',
 );
 
 ?>

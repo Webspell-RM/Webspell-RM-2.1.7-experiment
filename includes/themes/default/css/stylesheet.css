@@ -1,5 +1,5 @@
 /* Main Layout */
 .bi-color {
 
-    color: rgba(var(--bs-link-color), 1);
+    color: rgba(var(--bs-primary-rgb), 1);
 }

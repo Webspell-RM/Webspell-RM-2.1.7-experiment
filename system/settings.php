@@ -302,6 +302,7 @@ $components = array(
     ),
     'js' => array(
         './components/jquery/jquery.min.js',
+        './components/bootstrap/js/bootstrap.bundle.min.js',
         './components/scrolltotop/js/scrolltotop.js',
         './components/js/slick.min.js'
     )

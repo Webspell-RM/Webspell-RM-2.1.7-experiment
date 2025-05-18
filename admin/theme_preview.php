@@ -3,9 +3,9 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1
-header("Pragma: no-cache"); // HTTP 1.0
-header("Expires: 0"); // Proxies
+#header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1
+#header("Pragma: no-cache"); // HTTP 1.0
+#header("Expires: 0"); // Proxies
 
 function safe_query($query) {
     global $_database;
@@ -106,7 +106,7 @@ $currentTheme = $ds['themename'];
     const saveMsg = document.getElementById("saveMsg");
 
     window.setTheme = function(theme) {
-      themeLink.href = `https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/${theme}/bootstrap.min.css`;
+      themeLink.href = `https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/${theme}/bootstrap.min.css?v=${Date.now()}`;
       themeSelect.value = theme;
       saveMsg.textContent = '';
     }
@@ -133,7 +133,7 @@ $currentTheme = $ds['themename'];
     function updateThemePreviewColors(theme, col) {
       const tempLink = document.createElement("link");
       tempLink.rel = "stylesheet";
-      tempLink.href = `https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/${theme}/bootstrap.min.css`;
+      tempLink.href = `https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/${theme}/bootstrap.min.css?v=${Date.now()}`;
       document.head.appendChild(tempLink);
 
       tempLink.onload = () => {

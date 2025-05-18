@@ -9,7 +9,7 @@ $language_array = array(
     'text' => 'Text',
     'title_head' => 'Überschrift',
     'description' => 'Description / Info',
-    'editor_is_editor' => 'Editor aus / einschalten:'
+    'editor_is_editor' => 'Editor aus / einschalten:',
     'changes_successful'    => 'Änderungen erfolgreich',
 );
 
