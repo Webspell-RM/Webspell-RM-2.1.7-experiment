@@ -1,14 +1,18 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// Konfigurationsdatei sicher einbinden
+$configPath = __DIR__ . '/../system/config.inc.php';
+if (!file_exists($configPath)) {
+    die("Fehler: Konfigurationsdatei nicht gefunden.");
+}
+require_once $configPath;
 
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'd03e3329');
-define('DB_USER', 'd03e3329');
-define('DB_PASS', '97v4RrSChCGnW9jK9GyR');
-
+// Datenbankverbindung aufbauen
 $_database = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+
+// Fehlerprüfung
+if ($_database->connect_error) {
+    die("Verbindung zur Datenbank fehlgeschlagen: " . $_database->connect_error);
+}
 
 if ($_database->connect_error) {
     http_response_code(500);

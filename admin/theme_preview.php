@@ -1,28 +1,18 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-#header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1
-#header("Pragma: no-cache"); // HTTP 1.0
-#header("Expires: 0"); // Proxies
-
-function safe_query($query) {
-    global $_database;
-    return mysqli_query($_database, $query);
+// Konfigurationsdatei sicher einbinden
+$configPath = __DIR__ . '/../system/config.inc.php';
+if (!file_exists($configPath)) {
+    die("Fehler: Konfigurationsdatei nicht gefunden.");
 }
+require_once $configPath;
 
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'd03e3329');
-define('DB_USER', 'd03e3329');
-define('DB_PASS', '97v4RrSChCGnW9jK9GyR');
-
+// Datenbankverbindung aufbauen
 $_database = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-$ergebnis = $_database->query("SELECT * FROM settings_themes WHERE modulname = 'default'");
-$ds = mysqli_fetch_array($ergebnis);
-$currentTheme = $ds['themename'];
 
-
+// Fehlerprüfung
+if ($_database->connect_error) {
+    die("Verbindung zur Datenbank fehlgeschlagen: " . $_database->connect_error);
+}
 ?>
 
 <!DOCTYPE html>
