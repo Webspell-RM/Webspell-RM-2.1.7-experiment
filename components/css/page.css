@@ -67,3 +67,55 @@ body, .sticky-footer-wrapper {
 
     color: rgba(var(--bs-primary-rgb), 1);
 }
+
+.login,
+.image {
+  min-height: 79.5vh;
+}
+
+.sign_pic_bg {
+background-image: url('/images/login_bg.jpg');
+background-position: center center;
+  background-size: cover;
+}
+.bg-image {
+  background-image: url('/images/login_bg.jpg');
+  background-position: center center;
+  background-size: cover;
+}
+
+.reg_pic_text {  
+  color: rgba(var(--bs-primary-rgb), 1);
+}
+
+.signup-greeting {
+  
+  padding: 20px;
+  text-align: center;
+}
+
+.signup-greeting h4 {
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 9;
+}
+
+.signup-greeting p {
+  position: relative;
+  z-index: 9;  
+}
+
+@media (max-width: 1199px) {
+  
+}
+
+@media (max-width: 767px) {
+  
+}
+
+@media (max-width: 575px) {
+    
+  .login,.image {
+    min-height: 72vh;
+  }
+}

@@ -190,9 +190,9 @@ if ($action == "add") {
     $cats = '<select class="form-select" name="mnavID">';
     while ($ds = mysqli_fetch_array($ergebnis)) {
         if ($ds[ 'default' ] == 0) {
-            $name = $_language->module[ 'cat_' . getinput($ds[ 'name' ]) ];
+            $name = $_language->module[ 'cat_' . htmlspecialchars($ds[ 'name' ]) ];
         } else {
-            $name = getinput($ds[ 'name' ]);
+            $name = htmlspecialchars($ds[ 'name' ]);
             
         }
         $cats .= '<option value="' . $ds[ 'mnavID' ] . '">' . $name . '</option>';
@@ -256,7 +256,7 @@ if ($action == "add") {
     $cats = '<select class="form-select" name="mnavID">';
     while ($dc = mysqli_fetch_array($category)) {
         if ($dc[ 'default' ] == 1) {
-            $name = getinput($dc[ 'name' ]);
+            $name = htmlspecialchars($dc[ 'name' ]);
         }
         if ($ds[ 'mnavID' ] == $dc[ 'mnavID' ]) {
             $selected = " selected=\"selected\"";
@@ -283,13 +283,13 @@ if ($action == "add") {
   <div class="mb-3 row">
     <label class="col-sm-2 control-label">'.$_language->module['name'].':</label>
     <div class="col-sm-8"><span class="text-muted small"><em>
-      <input class="form-control" type="text" name="name" value="' . getinput($ds[ 'name' ]) . '" size="60"></em></span>
+      <input class="form-control" type="text" name="name" value="' . htmlspecialchars($ds[ 'name' ]) . '" size="60"></em></span>
     </div>
   </div>
   <div class="mb-3 row">
     <label class="col-sm-2 control-label">'.$_language->module['url'].':</label>
     <div class="col-sm-8"><span class="text-muted small"><em>
-      <input class="form-control" type="text" name="link" value="' . getinput($ds[ 'url' ]) . '" size="60"></em></span>
+      <input class="form-control" type="text" name="link" value="' . htmlspecialchars($ds[ 'url' ]) . '" size="60"></em></span>
     </div>
   </div>
 
@@ -402,7 +402,7 @@ if ($action == "add") {
         <div class="mb-3 row">
     <label class="col-sm-2 control-label">' . $_language->module[ 'name' ] . ':</label>
     <div class="col-sm-8"><span class="text-muted small"><em>
-      <input class="form-control" type="text" name="name" value="' . getinput($ds[ 'name' ]) . '" size="60"></em></span>
+      <input class="form-control" type="text" name="name" value="' . htmlspecialchars($ds[ 'name' ]) . '" size="60"></em></span>
     </div>
   </div>
 
@@ -410,7 +410,7 @@ if ($action == "add") {
     <label class="col-sm-2 control-label">'.$_language->module['url'].':</label>
     <div class="col-sm-8"><span class="text-muted small"><em>
         
-        <input class="form-control" id="link" rows="10" cols="" name="link" value="' . getinput($ds[ 'url' ]) .
+        <input class="form-control" id="link" rows="10" cols="" name="link" value="' . htmlspecialchars($ds[ 'url' ]) .
         '" size="60"></em></span><br>
         <select id="windows" name="windows" class="form-select">'.$windows_1.'</select>
     </div>
@@ -496,7 +496,7 @@ $CAPCLASS = new \webspell\Captcha;
         if ($ds[ 'default' ] == 0) {
             $list = '<b>' . $ds[ 'list' ] . '</b>';
             $catactions = '';
-            $name = $_language->module[ 'cat_' . getinput($ds[ 'name' ]) ];
+            $name = $_language->module[ 'cat_' . htmlspecialchars($ds[ 'name' ]) ];
         } else {
             $sort = $list;
             $catactions =
