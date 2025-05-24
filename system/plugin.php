@@ -115,7 +115,7 @@ class plugin_manager
 		$_language = new \webspell\Language;
 		$_language->readModule('plugin');
 		$return = array();
-		whouseronline();
+		#whouseronline();
 		if (isset($data['activate']) == 1) {
 			if (isset($site)) {
 				$ifiles = $data['index_link'];

@@ -7,7 +7,7 @@ class PluginSettings
     public static function load_widget_settings(string $getsite): ?array
     {
         $allowed_sites = [
-            'contact', 'imprint', 'privacy_policy', 'profile', 'myprofile',
+            'contact', 'imprint', 'privacy_policy', 'profile', 'edit_profile',
             'error_404', 'report', 'static', 'loginoverview', 'register',
             'lostpassword', 'login', 'logout', 'footer', 'navigation', 'topbar',
             'news_comments', 'articles_comments', 'blog_comments', 'gallery_comments',
@@ -28,7 +28,7 @@ class PluginSettings
     {
         // Whitelist erlaubter statischer Seiten
         $allowed_sites = [
-            'contact', 'imprint', 'privacy_policy', 'profile', 'myprofile',
+            'contact', 'imprint', 'privacy_policy', 'profile', 'edit_profile',
             'error_404', 'report', 'static', 'loginoverview', 'register',
             'lostpassword', 'login', 'logout', 'footer', 'navigation', 'topbar',
             'news_comments', 'articles_comments', 'blog_comments', 'gallery_comments',

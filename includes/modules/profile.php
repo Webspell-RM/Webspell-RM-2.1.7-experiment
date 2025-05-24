@@ -1,31 +1,57 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+
 
 $_language->readModule('profile');
 
+// Style aus settings holen
 $config = mysqli_fetch_array(safe_query("SELECT selected_style FROM settings_headstyle_config WHERE id=1"));
 $class = htmlspecialchars($config['selected_style']);
 
 // Header-Daten
-$data_array = [
+$data_array_header = [
     'class'    => $class,
-    'title' => $_language->module['title'],
+    'title'    => $_language->module['title'],
     'subtitle' => 'Profil'
 ];
-echo $tpl->loadTemplate("profile", "head", $data_array);
+echo $tpl->loadTemplate("profile", "head", $data_array_header);
 
+// userID aus GET oder Session
 $userID = isset($_GET['userID']) ? (int)$_GET['userID'] : ($_SESSION['userID'] ?? 0);
-
 if ($userID === 0) {
     echo "Kein Benutzer angegeben.";
     exit();
 }
 
+// user_profile laden
+$sql_profiles = "SELECT * FROM user_profiles WHERE userID = $userID LIMIT 1";
+$result_profiles = $_database->query($sql_profiles);
+if (!$result_profiles || $result_profiles->num_rows === 0) {
+    echo "Benutzerprofil nicht gefunden.";
+    exit();
+}
+$user_profile = $result_profiles->fetch_assoc();
+
+// user_stats laden
+$sql_stats = "SELECT * FROM user_stats WHERE userID = $userID LIMIT 1";
+$result_stats = $_database->query($sql_stats);
+$user_stats = $result_stats && $result_stats->num_rows > 0 ? $result_stats->fetch_assoc() : [];
+
+// user_settings laden (optional, falls benötigt)
+$sql_settings = "SELECT * FROM user_settings WHERE userID = $userID LIMIT 1";
+$result_settings = $_database->query($sql_settings);
+$user_settings = $result_settings && $result_settings->num_rows > 0 ? $result_settings->fetch_assoc() : [];
+
+// user_socials laden
+$sql_socials = "SELECT * FROM user_socials WHERE userID = $userID LIMIT 1";
+$result_socials = $_database->query($sql_socials);
+$user_socials = $result_socials && $result_socials->num_rows > 0 ? $result_socials->fetch_assoc() : [];
+
+// user + role + lastlogin + registerdate laden
 $sql = "
     SELECT 
-        u.*,
+        u.username,
+        u.registerdate,
+        u.lastlogin,
         r.role_name
     FROM users u
     LEFT JOIN user_role_assignments ura ON u.userID = ura.userID
@@ -33,43 +59,61 @@ $sql = "
     WHERE u.userID = $userID
     LIMIT 1
 ";
+$result = $_database->query($sql);
+if ($result && $row = $result->fetch_assoc()) {
+    $username = htmlspecialchars($row['username']);
+    $role_name = !empty($row['role_name']) ? htmlspecialchars($row['role_name']) : 'Benutzer';
 
-try {
-    $result = $_database->query($sql);
-    if ($result && $user = $result->fetch_assoc()) {
+    // registerdate und lastlogin aus users holen
+    $register_date_raw = $row['registerdate'];
+    $last_visit_raw = $row['lastlogin'];
+} else {
+    $username = 'Unbekannt';
+    $role_name = 'Benutzer';
+    $register_date_raw = null;
+    $last_visit_raw = null;
+}
 
-        // Werte aufbereiten
-        $username       = htmlspecialchars($user['username']);
-        $about_me       = !empty($user['about_me']) ? $user['about_me'] : 'Keine Informationen über mich.';
-        #$register_date  = !empty($user['registerdate']) && is_numeric($user['registerdate']) ? date('d.m.Y', (int)$user['registerdate']) : 'Unbekannt';
-        $register_date  = (!empty($user['registerdate']) && strtotime($user['registerdate']) !== false)
-    ? date('d.m.Y', strtotime($user['registerdate']))
+// Werte vorbereiten und sichern
+$firstname    = htmlspecialchars($user_profile['firstname'] ?? '');
+$lastname     = htmlspecialchars($user_profile['lastname'] ?? '');
+$about_me     = !empty($user_profile['about_me']) ? htmlspecialchars($user_profile['about_me']) : 'Keine Informationen über mich.';
+$register_date = (!empty($register_date_raw) && strtotime($register_date_raw) !== false)
+    ? date('d.m.Y', strtotime($register_date_raw))
     : 'Unbekannt';
-        #$last_visit     = !empty($user['lastlogin']) && is_numeric($user['lastlogin']) ? date('d.m.Y H:i', (int)$user['lastlogin']) : 'Nie besucht';
-        $last_visit     = (!empty($user['lastlogin']) && strtotime($user['lastlogin']) !== false)
-    ? date('d.m.Y H:i', strtotime($user['lastlogin']))
+
+$last_visit = (!empty($last_visit_raw) && strtotime($last_visit_raw) !== false)
+    ? date('d.m.Y H:i', strtotime($last_visit_raw))
     : 'Nie besucht';
 
-        $points         = isset($user['points']) ? (int)$user['points'] : 0;
-        $avatar_url     = !empty($user['avatar']) ? '/images/avatars/' . $user['avatar'] : "/images/avatars/noavatar.png";
-        $role_name      = !empty($user['role_name']) ? $user['role_name'] : 'Benutzer';
-        $location       = !empty($user['location']) ? $user['location'] : 'Unbekannter Ort';
+$points = isset($user_stats['points']) ? (int)$user_stats['points'] : 0;
 
-        $level          = floor($points / 100);
-        $level_percent  = $points % 100;
+$avatar_url = !empty($user_profile['avatar']) ? '' . $user_profile['avatar'] : "/images/avatars/noavatar.png";
 
-        $twitter_url    = !empty($user['twitter']) ? htmlspecialchars($user['twitter']) : '#';
-        $facebook_url   = !empty($user['facebook']) ? htmlspecialchars($user['facebook']) : '#';
-        $discord_url    = !empty($user['discord']) ? htmlspecialchars($user['discord']) : '#';
+$location = !empty($user_profile['location']) ? htmlspecialchars($user_profile['location']) : 'Unbekannter Ort';
+$age = !empty($user_profile['age']) ? (int)$user_profile['age'] : 'Nicht angegeben';
+$sexuality = !empty($user_profile['sexuality']) ? htmlspecialchars($user_profile['sexuality']) : 'Nicht angegeben';
 
-        $is_own_profile = ($_SESSION['userID'] ?? 0) === $userID;
-        $edit_button    = $is_own_profile ? '<a href="edit_profile.php" class="btn btn-outline-primary mt-3"><i class="fas fa-user-edit"></i> Profil bearbeiten</a>' : '';
-        #$edit_button    = '<a href="edit_profile.php" class="btn btn-outline-primary mt-3"><i class="fas fa-user-edit"></i> Profil bearbeiten</a>';
+// Levelberechnung
+$level = floor($points / 100);
+$level_percent = $points % 100;
 
-        $banned         = !empty($user['banned'] ?? 0) == 1
-    ? '<div class="alert alert-danger" role="alert"><i class="bi bi-exclamation-square"></i> Dieser Benutzer ist gebannt!</div>' : '';
+// Social URLs
+$facebook_url  = !empty($user_socials['facebook']) ? htmlspecialchars($user_socials['facebook']) : '#';
+$twitter_url   = !empty($user_socials['twitter']) ? htmlspecialchars($user_socials['twitter']) : '#';
+$instagram_url = !empty($user_socials['instagram']) ? htmlspecialchars($user_socials['instagram']) : '#';
+$website_url   = !empty($user_socials['website']) ? htmlspecialchars($user_socials['website']) : '#';
+$github_url    = !empty($user_socials['github']) ? htmlspecialchars($user_socials['github']) : '#';
 
-        $last_activity = !empty($user['lastlogin']) ? strtotime($user['lastlogin']) : 0;
+// Prüfen ob eigenes Profil
+$is_own_profile = ($_SESSION['userID'] ?? 0) === $userID;
+$edit_button = $is_own_profile ? '<a href="index.php?site=edit_profile" class="btn btn-outline-primary mt-3"><i class="fas fa-user-edit"></i> Profil bearbeiten</a>' : '';
+
+// Banned-Status (aktuell leer, ggf. anpassen)
+$banned = '';
+
+// Letzte Aktivität und Online-Zeit berechnen
+$last_activity = (!empty($last_visit_raw) && strtotime($last_visit_raw) !== false) ? strtotime($last_visit_raw) : 0;
 $current_time = time();
 
 if ($last_activity > 0 && $last_activity <= $current_time) {
@@ -81,69 +125,47 @@ if ($last_activity > 0 && $last_activity <= $current_time) {
     $online_time = "Keine Aktivität";
 }
 
-        // Anzahl der Logins berechnen
-        $stmt = $_database->prepare("SELECT COUNT(*) AS login_count FROM user_sessions WHERE userID = ?");
-        $stmt->bind_param('i', $userID);
-        $stmt->execute();
-        $stmt->bind_result($logins_count);
-        $stmt->fetch();
-        $stmt->close();
+// Anzahl der Logins aus user_sessions
+$stmt = $_database->prepare("SELECT COUNT(*) AS login_count FROM user_sessions WHERE userID = ?");
+$stmt->bind_param('i', $userID);
+$stmt->execute();
+$stmt->bind_result($logins_count);
+$stmt->fetch();
+$stmt->close();
+$logins = $logins_count > 0 ? $logins_count : 0;
 
-        $logins = $logins_count > 0 ? $logins_count : 0;
-
-        // Dummy-Daten
-        $posts    = 42;
-        $comments = 103;
-
-
-
-    } else {
-        echo "Benutzer nicht gefunden.";
-        exit();
-    }
-} catch (mysqli_sql_exception $e) {
-    echo "SQL-Fehler: " . $e->getMessage();
-    exit();
-}
+// Dummy-Daten für Beiträge & Kommentare (kannst du ersetzen)
+$posts    = 42;
+$comments = 103;
 
 $data_array = [
-    'username'        => htmlspecialchars($user['username']),
+    'username'        => $username,
     'user_picture'    => $avatar_url,
     'user_role'       => $role_name,
     'user_points'     => $points,
     'user_about'      => $about_me,
-    'user_signature'  => $user['signature'] ?? '„Keep coding & carry on.“',
-    'user_name'       => htmlspecialchars($user['firstname'] ?? 'Max'),
-    'user_surname'    => htmlspecialchars($user['lastname'] ?? 'Muster'),
-    'user_age'        => htmlspecialchars($user['age'] ?? 'Nicht angegeben'),
+    'user_signature'  => $user_profile['signature'] ?? '„Keep coding & carry on.“',
+    'user_name'       => $firstname,
+    'user_surname'    => $lastname,
+    'user_age'        => $age,
     'user_location'   => $location,
-    'user_sexuality'  => htmlspecialchars($user['sexuality'] ?? 'Nicht angegeben'),
-    'user_posts'      => '<ul><li>Beitrag 1</li><li>Beitrag 2</li></ul>', // Optional dynamisch ersetzen
+    'user_sexuality'  => $sexuality,
+    'user_posts'      => '<ul><li>Beitrag 1</li><li>Beitrag 2</li></ul>', // Ersetzen mit dynamischen Posts, wenn möglich
     'register_date'   => $register_date, 
     'user_activity'   => '<p>Zuletzt online: ' . $last_visit . '</p><p>Online-Zeit: ' . $online_time . '</p><p>Logins: ' . $logins . '</p>',
-    #'user_activity'   => '<p>Zuletzt online: ' . $last_visit . '</p><p>Logins: ' . $logins . '</p>',
-
-    'github_url'      => htmlspecialchars($user['github'] ?? '#'),
+    'github_url'      => $github_url,
     'twitter_url'     => $twitter_url,
     'facebook_url'    => $facebook_url,
-    'discord_url'     => $discord_url,
-    'instagram_url'   => htmlspecialchars($user['instagram'] ?? '#'),
-    'website_url'     => htmlspecialchars($user['website'] ?? '#'),
-    'register_date'   => $register_date,
+    'website_url'     => $website_url,
+    'instagram_url'   => $instagram_url,
     'last_visit'      => $last_visit,
     'user_level'      => $level,
-    'level_progress'  => $level_percent, // z. B. für Fortschrittsanzeige in %
+    'level_progress'  => $level_percent,
     'edit_button'     => $edit_button,
     'comments_count'  => $comments,
     'posts_count'     => $posts,
-    'banned' => $banned
+    'banned'          => $banned
 ];
 
+// Ausgabe Template
 echo $tpl->loadTemplate("profile", "content", $data_array);
-
-?>
-
-
-
-
-

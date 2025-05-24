@@ -126,7 +126,7 @@ function get_left_side_modul()
     $getsite = isset($qs_arr['site']) ? $qs_arr['site'] : 'startpage';
 
     $noWidgetPages = [
-        'contact', 'imprint', 'privacy_policy', 'profile', 'myprofile', 'error_404',
+        'contact', 'imprint', 'privacy_policy', 'profile', 'edit_profile', 'error_404',
         'report', 'static', 'loginoverview', 'register', 'lostpassword', 'login',
         'logout', 'footer', 'navigation', 'topbar', 'articles_comments', 'blog_comments',
         'gallery_comments', 'news_comments', 'news_recomments', 'polls_comments',
@@ -161,7 +161,7 @@ function get_right_side_modul()
     $getsite = isset($qs_arr['site']) ? $qs_arr['site'] : 'startpage';
 
     $noWidgetPages = [
-        'contact', 'imprint', 'privacy_policy', 'profile', 'myprofile', 'error_404',
+        'contact', 'imprint', 'privacy_policy', 'profile', 'edit_profile', 'error_404',
         'report', 'static', 'loginoverview', 'register', 'lostpassword', 'login',
         'logout', 'footer', 'navigation', 'topbar', 'articles_comments', 'blog_comments',
         'gallery_comments', 'news_comments', 'news_recomments', 'polls_comments',
