@@ -38,6 +38,14 @@ include_once("system/widget.php");
 include_once("system/multi_language.php");
 include_once("system/classes/track_visitor.php");
 
+if (file_exists("includes/plugins/counter/counter_track.php")) {
+    include_once("includes/plugins/counter/counter_track.php");
+}
+
+if (file_exists("includes/plugins/whoisonline/whoisonline_tracker.php")) {
+    include_once("includes/plugins/whoisonline/whoisonline_tracker.php");
+}
+
 // THEME INITIALISIEREN
 $theme = new theme();
 

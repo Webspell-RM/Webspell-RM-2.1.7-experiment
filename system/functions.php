@@ -1,32 +1,4 @@
 <?php
-/**
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- *                  Webspell-RM      /                        /   /                                          *
- *                  -----------__---/__---__------__----__---/---/-----__---- _  _ -                         *
- *                   | /| /  /___) /   ) (_ `   /   ) /___) /   / __  /     /  /  /                          *
- *                  _|/_|/__(___ _(___/_(__)___/___/_(___ _/___/_____/_____/__/__/_                          *
- *                               Free Content / Management System                                            *
- *                                           /                                                               *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @version         webspell-rm                                                                              *
- *                                                                                                           *
- * @copyright       2018-2023 by webspell-rm.de                                                              *
- * @support         For Support, Plugins, Templates and the Full Script visit webspell-rm.de                 *
- * @website         <https://www.webspell-rm.de>                                                             *
- * @forum           <https://www.webspell-rm.de/forum.html>                                                  *
- * @wiki            <https://www.webspell-rm.de/wiki.html>                                                   *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @license         Script runs under the GNU GENERAL PUBLIC LICENCE                                         *
- *                  It's NOT allowed to remove this copyright-tag                                            *
- *                  <http://www.fsf.org/licensing/licenses/gpl.html>                                         *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @author          Code based on WebSPELL Clanpackage (Michael Gruber - webspell.at)                        *
- * @copyright       2005-2011 by webspell.org / webspell.info                                                *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
-*/
 
 // Funktion zur Erkennung der aktuellen Sprache
 function detectCurrentLanguage() {
@@ -602,78 +574,6 @@ if (date("dh", $lastBanCheck) != date("dh")) {
 safe_query("DELETE FROM banned_ips WHERE deltime < '" . time() . "'");
 
 
-
-// =======================
-// WHO IS / WAS ONLINE
-// =======================
-function whouseronline() {
-    global $site, $userID;
-
-    $site = $site ?: 'startpage';
-
-    $timeout = 5; // Minuten
-    $deltime = time() - ($timeout * 60);
-    $wasdeltime = time() - (60 * 60 * 24); // 24 Stunden
-
-    safe_query("DELETE FROM `whoisonline` WHERE `time` < '$deltime'");
-    safe_query("DELETE FROM `whowasonline` WHERE `time` < '$wasdeltime'");
-
-    if ($userID) {
-        // Aktiver User
-        $check = safe_query("SELECT `userID` FROM `whoisonline` WHERE `userID` = '$userID'");
-        if (mysqli_num_rows($check)) {
-            safe_query("UPDATE `whoisonline` SET `time` = '" . time() . "', `site` = '$site' WHERE `userID` = '$userID'");
-        } else {
-            safe_query("INSERT INTO `whoisonline` (`time`, `userID`, `site`) VALUES ('" . time() . "', '$userID', '$site')");
-        }
-
-        $check = safe_query("SELECT `userID` FROM `whowasonline` WHERE `userID` = '$userID'");
-        if (mysqli_num_rows($check)) {
-            safe_query("UPDATE `whowasonline` SET `time` = '" . time() . "', `site` = '$site' WHERE `userID` = '$userID'");
-        } else {
-            safe_query("INSERT INTO `whowasonline` (`time`, `userID`, `site`) VALUES ('" . time() . "', '$userID', '$site')");
-        }
-    } else {
-        // Gast
-        $ip = $GLOBALS['ip'];
-        $check = safe_query("SELECT `ip` FROM `whoisonline` WHERE `ip` = '$ip'");
-        if (mysqli_num_rows($check)) {
-            safe_query("UPDATE `whoisonline` SET `time` = '" . time() . "', `site` = '$site' WHERE `ip` = '$ip'");
-        } else {
-            safe_query("INSERT INTO `whoisonline` (`time`, `ip`, `site`) VALUES ('" . time() . "', '$ip', '$site')");
-        }
-    }
-}
-
-// =======================
-// COUNTER
-// =======================
-/*$time = time();
-$date = date("d.m.Y", $time);
-$deltime = $time - (3600 * 24);
-
-safe_query("DELETE FROM `counter_iplist` WHERE `del` < '$deltime'");
-
-$ip = $GLOBALS['ip'];
-if (!mysqli_num_rows(safe_query("SELECT `ip` FROM `counter_iplist` WHERE `ip` = '$ip'"))) {
-    if ($userID) {
-        safe_query("UPDATE `users` SET `ip` = '$ip' WHERE `userID` = '$userID'");
-    }
-
-    safe_query("UPDATE `counter` SET `hits` = `hits` + 1");
-    safe_query("INSERT INTO `counter_iplist` (`dates`, `del`, `ip`) VALUES ('$date', '$time', '$ip')");
-
-    if (!mysqli_num_rows(safe_query("SELECT `dates` FROM `counter_stats` WHERE `dates` = '$date'"))) {
-        safe_query("INSERT INTO `counter_stats` (`dates`, `count`) VALUES ('$date', '1')");
-    } else {
-        safe_query("UPDATE `counter_stats` SET `count` = `count` + 1 WHERE `dates` = '$date'");
-    }
-}
-*/
-// Update maxonline
-$res = mysqli_fetch_assoc(safe_query("SELECT COUNT(*) as maxuser FROM `whoisonline`"));
-safe_query("UPDATE `counter` SET `maxonline` = '" . $res['maxuser'] . "' WHERE `maxonline` < '" . $res['maxuser'] . "'");
-
 // =======================
 // SEO / PAGE TITLE
 // =======================
@@ -777,14 +677,5 @@ function get_all_settings() {
     }
     return [];
 }
-
-#function escape($input) {
-#    return mysqli_real_escape_string($GLOBALS['_database'], $input);
-#}
-#function getformatdatetime($datetime, $format = 'd.m.Y H:i') {
-#    if (empty($datetime) || $datetime == '0000-00-00 00:00:00') return '-';
-#    return date($format, strtotime($datetime));
-#}
-
 
 
