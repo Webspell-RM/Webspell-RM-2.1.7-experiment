@@ -1,5 +1,10 @@
 <?php
 
+// Überprüfen, ob die Session bereits gestartet wurde
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Sprachmodul laden
 $_language->readModule('admin_log', false, true);
 

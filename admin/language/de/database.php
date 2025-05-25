@@ -22,6 +22,6 @@ $language_array = array(
     'date' => 'Datensicherung',
     'file' => 'Dateiname',
     'created_by' => 'Erstellt von',
-    'actions' => 'Aktionen'
+    'actions' => 'Aktionen',
 );
 

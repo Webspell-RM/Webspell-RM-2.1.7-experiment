@@ -1,4 +1,15 @@
 <?php
+
+// Überprüfen, ob die Session bereits gestartet wurde
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+use webspell\AccessControl;
+// Den Admin-Zugriff für das Modul überprüfen
+AccessControl::checkAdminAccess('ac_headstyle');
+
+
 if (isset($_POST['save_style'])) {
     $style = htmlspecialchars($_POST['selected_style'], ENT_QUOTES);
     safe_query("UPDATE settings_headstyle_config SET selected_style='$style' WHERE id=1");

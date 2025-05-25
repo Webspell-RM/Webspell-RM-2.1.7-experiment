@@ -1,75 +1,19 @@
 <?php
+
+// Überprüfen, ob die Session bereits gestartet wurde
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+
 use webspell\CMSUpdater;
+use webspell\AccessControl;
+// Den Admin-Zugriff für das Modul überprüfen
+AccessControl::checkAdminAccess('ac_update_core');
 
 require_once __DIR__ . '/../system/classes/CMSUpdater.php';
 
-
-
 $updater = new CMSUpdater();
-
-/*if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $result = $updater->runUpdates();
-    echo "<pre>{$result}</pre>";
-} else {
-    echo '
-    <form method="post">
-        <button type="submit">CMS-Update starten</button>
-    </form>';
-}
-
-
-$update_url = 'https://update.webspell-rm.de/update_server.php';
-
-$response = json_decode(file_get_contents($update_url), true);
-if (!$response || empty($response['latest_version'])) {
-    die("Keine Update-Informationen erhalten.");
-}
-
-// Prüfen, ob Update nötig
-$current_version = '2.1.7'; // aktuelle CMS-Version
-if (version_compare($response['latest_version'], $current_version, '>')) {
-    echo "Neues Update verfügbar: " . $response['latest_version'];
-
-    // ZIP herunterladen
-    $zip_file = __DIR__ . '/tmp/update.zip';
-    file_put_contents($zip_file, fopen($response['zip_url'], 'r'));
-
-    // Entpacken und Dateien überschreiben
-    $zip = new ZipArchive;
-    if ($zip->open($zip_file) === TRUE) {
-        $zip->extractTo(__DIR__ . '/../../'); // root-Verzeichnis
-        $zip->close();
-        echo "Dateien aktualisiert.";
-    } else {
-        echo "ZIP-Archiv konnte nicht geöffnet werden.";
-    }
-
-    // SQL ausführen
-    global $_database;
-    foreach ($response['sql_updates'] as $sql) {
-        $_database->query($sql);
-    }
-
-    echo "Update erfolgreich installiert.";
-} else {
-    echo "Dein CMS ist auf dem neuesten Stand.";
-}*/
-
-
-
-
-
-
-//version geht!!!!
-
-
-
-
-
-
-
-
-
 
 global $_language, $_database;
 
@@ -198,25 +142,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 echo $tpl->loadTemplate("update_core", "content", $data_array, "admin");
-
-
-
-
-
-
-/*
-
-// Template-Daten vorbereiten
-$tpl = new Template();
-$data = [
-    'update_headline'   => $_language->module['update_manager'] ?? 'Update Manager',
-    'current_version'   => $current_version,
-    'latest_version'    => $latest_version,
-    'update_available'  => $update_available,
-    'csrf_token'        => $_SESSION['csrf_token'],
-    'message'           => $message
-];
-
-// Template ausgeben
-echo $tpl->loadTemplate("update_core", "content", $data_array, 'admin');
-*/

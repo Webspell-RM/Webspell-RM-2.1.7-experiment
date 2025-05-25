@@ -1,4 +1,9 @@
 <?php
+
+use webspell\AccessControl;
+// Den Admin-Zugriff für das Modul überprüfen
+AccessControl::checkAdminAccess('ac_theme');
+
 require_once __DIR__ . '/../system/config.inc.php';
 
 // DB-Verbindung
@@ -22,8 +27,7 @@ if ($theme === '') {
 $navbar_class = null;
 $navbar_theme = null;
 
-// Navbar-String verarbeiten, z. B. "bg-dark|dark"
-// Navbar-String verarbeiten, z. B. "bg-dark|dark"
+// Navbar-String verarbeiten
 if ($navbar !== '') {
     $parts = explode('|', $navbar);
     if (count($parts) === 2) {

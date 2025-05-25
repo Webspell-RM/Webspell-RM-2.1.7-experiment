@@ -1,5 +1,14 @@
 <?php
+
+// Überprüfen, ob die Session bereits gestartet wurde
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 use webspell\RoleManager;
+use webspell\AccessControl;
+// Den Admin-Zugriff für das Modul überprüfen
+AccessControl::checkAdminAccess('ac_role_permissions');
 
 global $_database;
 

@@ -1,34 +1,13 @@
 <?php
-/**
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*  
- *                                    Webspell-RM      /                        /   /                                                 *
- *                                    -----------__---/__---__------__----__---/---/-----__---- _  _ -                                *
- *                                     | /| /  /___) /   ) (_ `   /   ) /___) /   / __  /     /  /  /                                 *
- *                                    _|/_|/__(___ _(___/_(__)___/___/_(___ _/___/_____/_____/__/__/_                                 *
- *                                                 Free Content / Management System                                                   *
- *                                                             /                                                                      *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @version         Webspell-RM                                                                                                       *
- *                                                                                                                                    *
- * @copyright       2018-2022 by webspell-rm.de <https://www.webspell-rm.de>                                                          *
- * @support         For Support, Plugins, Templates and the Full Script visit webspell-rm.de <https://www.webspell-rm.de/forum.html>  *
- * @WIKI            webspell-rm.de <https://www.webspell-rm.de/wiki.html>                                                             *
- *                                                                                                                                    *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @license         Script runs under the GNU GENERAL PUBLIC LICENCE                                                                  *
- *                  It's NOT allowed to remove this copyright-tag <http://www.fsf.org/licensing/licenses/gpl.html>                    *
- *                                                                                                                                    *
- * @author          Code based on WebSPELL Clanpackage (Michael Gruber - webspell.at)                                                 *
- * @copyright       2005-2018 by webspell.org / webspell.info                                                                         *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- *                                                                                                                                    *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- */
 
 // Überprüfen, ob die Session bereits gestartet wurde
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
+
+use webspell\AccessControl;
+// Den Admin-Zugriff für das Modul überprüfen
+AccessControl::checkAdminAccess('ac_dashboard_navigation');
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -121,8 +100,54 @@ if (isset($_GET[ 'action' ])) {
     $action = '';
 }
 
-if ($action == "add") {
 
+
+if (isset($_POST['saveedit'])) {
+    if ($_POST['captcha_hash'] != $_SESSION['captcha_hash']) {
+        die('<div class="alert alert-danger" role="alert">Fehler: Ungültiges Captcha.</div>');        
+        redirect("admincenter.php?site=dashboard_navigation", "", 3);
+    }
+
+    $catID = (int)$_POST['catID'];
+    $name = mysqli_real_escape_string($_database, $_POST['name']);
+    $url = mysqli_real_escape_string($_database, $_POST['url']);
+    $modulname = mysqli_real_escape_string($_database, $_POST['modulname']);
+    $linkID = (int)$_POST['linkID'];
+
+    // Link updaten
+    $query = "UPDATE navigation_dashboard_links SET catID = ?, name = ?, url = ?, modulname = ? WHERE linkID = ?";
+    $stmt = $_database->prepare($query);
+    $stmt->bind_param("isssi", $catID, $name, $url, $modulname, $linkID);
+    
+    if ($stmt->execute()) {
+        // Rechte-Tabelle updaten oder einfügen
+        $type = 'link';
+        $roleID = 1; // Admin-Rolle
+
+        $access_query = "
+            INSERT INTO user_role_admin_navi_rights (roleID, type, modulname, accessID) 
+            VALUES (?, ?, ?, ?) 
+            ON DUPLICATE KEY UPDATE accessID = VALUES(accessID)
+        ";
+        $stmt_access = $_database->prepare($access_query);
+        $stmt_access->bind_param("isss", $roleID, $type, $modulname, $catID);
+
+        if ($stmt_access->execute()) {
+            echo '<div class="alert alert-success" role="alert">Link und Zugriffsrechte erfolgreich aktualisiert!</div>';
+            redirect("admincenter.php?site=dashboard_navigation", "", 3);
+        } else {
+            echo '<div class="alert alert-danger" role="alert">Fehler beim Aktualisieren der Zugriffsrechte: ' . $_database->error . '</div>';
+            redirect("admincenter.php?site=dashboard_navigation", "", 3);
+        }
+
+        $stmt_access->close();
+    } else {
+        echo '<div class="alert alert-warning" role="alert">Fehler beim Speichern des Links oder keine Änderungen.</div>';
+        redirect("admincenter.php?site=dashboard_navigation", "", 3);
+    }
+
+    $stmt->close();
+}
 
 
 
@@ -133,15 +158,9 @@ if (isset($_POST[ 'save' ])) {
     if ($_POST['captcha_hash'] != $_SESSION['captcha_hash']) {
         die('<div class="alert alert-danger" role="alert">Fehler: Ungültiges Captcha.</div>');        
         redirect("admincenter.php?site=dashboard_navigation", "", 3);
-    }
-    
-    
+    }  
 
-
-
-
-
-            // Eingabewerte validieren und schützen
+    // Eingabewerte validieren und schützen
     $catID = isset($_POST['catID']) ? mysqli_real_escape_string($_database, $_POST['catID']) : '';
     $name = isset($_POST['name']) ? mysqli_real_escape_string($_database, $_POST['name']) : '';
     $url = isset($_POST['url']) ? mysqli_real_escape_string($_database, $_POST['url']) : '';
@@ -192,19 +211,12 @@ if (isset($_POST[ 'save' ])) {
         $stmt->close();
     }
 
-
-
-
-
-
-    
-
-
 }    
 
 
 
 
+if ($action == "add") {
    
 
     $ergebnis = safe_query("SELECT * FROM navigation_dashboard_categories ORDER BY sort");
@@ -272,7 +284,7 @@ $hash = $_SESSION['captcha_hash'];
     </div>
   </div>
   <div class="mb-3 row">
-    <label class="col-md-2 control-label">Modulname:</label>
+    <label class="col-md-2 control-label">' . $_language->module['modulname'] . ':</label>
     <div class="col-md-8"><span class="text-muted small"><em>
         <input class="form-control" type="text" name="modulname" size="60"></em></span>
     </div>
@@ -300,32 +312,7 @@ $hash = $_SESSION['captcha_hash'];
 
 
 
-if (isset($_POST['saveedit'])) {
-    // Überprüfen des Captchas
-    if ($_POST['captcha_hash'] != $_SESSION['captcha_hash']) {
-        die('<div class="alert alert-danger" role="alert">Fehler: Ungültiges Captcha.</div>');        
-        redirect("admincenter.php?site=dashboard_navigation", "", 3);
-    }
 
-    $catID = (int)$_POST['catID']; // Wandelt in Integer um
-    $name = mysqli_real_escape_string($_database, $_POST['name']);
-    $url = mysqli_real_escape_string($_database, $_POST['url']);
-    $linkID = (int)$_POST['linkID']; // Wandelt in Integer um
-
-    $query = "UPDATE navigation_dashboard_links SET catID = ?, name = ?, url = ? WHERE linkID = ?";
-    $stmt = $_database->prepare($query);
-    $stmt->bind_param("issi", $catID, $name, $url, $linkID);
-    $stmt->execute();
-
-    if ($stmt->affected_rows > 0) {
-        echo '<div class="alert alert-success" role="alert">Link erfolgreich aktualisiert!</div>';
-            redirect("admincenter.php?site=dashboard_navigation", "", 3);
-    } else {
-        echo '<div class="alert alert-warning" role="alert">Fehler beim Speichern des Links oder keine Änderungen.</div>';
-            redirect("admincenter.php?site=dashboard_navigation", "", 3);
-    }
-    $stmt->close();
-}
 
 
 // Holen der Link-Daten aus der URL
@@ -384,6 +371,13 @@ echo '<div class="card">
                 <label class="col-md-2 control-label">' . $_language->module['url'] . ':</label>
                 <div class="col-md-8"><span class="text-muted small"><em>
                     <input class="form-control" type="text" name="url" value="' . htmlspecialchars($ds['url']) . '" size="60"></em></span>
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <label class="col-md-2 control-label">' . $_language->module['modulname'] . ':</label>
+                <div class="col-md-8"><span class="text-muted small"><em>
+                    <input class="form-control" type="text" name="modulname" value="' . htmlspecialchars($ds['modulname']) . '" size="60"></em></span>
                 </div>
             </div>
 
@@ -768,6 +762,7 @@ echo '<form method="post" action="admincenter.php?site=dashboard_navigation">
             <tr>
                 <th width="25%"><b>' . $_language->module[ 'name' ] . '</b></th>
                 <th width="25%"><b>Link</b></th>
+                <th width="17%" align="center"><b>' . $_language->module[ 'modulname' ] . '</b></th>
                 <th width="17%" align="center"><b>' . $_language->module[ 'actions' ] . '</b></th>
                 <th width="8%"><b>' . $_language->module[ 'sort' ] . '</b></th>
             </tr>
@@ -856,7 +851,8 @@ while ($ds = mysqli_fetch_array($ergebnis)) {
     echo '<tr class="table-secondary">
         <td width="25%" class="td_head admin-nav-modal"><b>' . $name . '</b></td>
         <td width="25%" class="td_head admin-nav-modal"></td>
-        <td width="20%" class="td_head">' . $catactions . '</td>
+        <td width="20%" class="td_head"></td>
+        <td width="20%" class="td_head">' . $catactions . '</td>        
         <td width="8%" class="td_head">' . $sort . '</td>
     </tr>';
 
@@ -894,6 +890,7 @@ while ($ds = mysqli_fetch_array($ergebnis)) {
             echo '<tr>
                 <td class="' . $td . '">&nbsp;-&nbsp;<b>' . $name . '</b></td>
                 <td class="' . $td . '"><small>' . $db[ 'url' ] . '</small></td>
+                <td class="' . $td . '"><small>' . $db[ 'modulname' ] . '</small></td>
                 <td class="' . $td . '">
                     <a href="admincenter.php?site=dashboard_navigation&amp;action=edit&amp;linkID=' . $db[ 'linkID' ] .'" class="btn btn-warning btn-sm"><i class="bi bi-pencil-square"></i> ' . $_language->module[ 'edit' ] . '</a>
 

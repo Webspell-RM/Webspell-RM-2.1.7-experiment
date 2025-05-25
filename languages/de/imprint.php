@@ -58,7 +58,7 @@ $language_array = array(
             Webspell-RM wird unter der GNU General Public License (GPL) veröffentlicht.<br>
             © 2018–2025 by <a href="https://www.webspell-rm.de" target="_blank" rel="noopener">webspell-rm.de</a> – Webspell-RM
             <br>
-            Verwendete Drittanbieter-Bibliotheken: <strong>jQuery</strong>, <strong>Bootstrap</strong> (MIT-Lizenz).
+            Verwendete Drittanbieter-Bibliotheken: <strong>jQuery</strong>, <strong>Bootstrap</strong>, <strong>Bootswatch</strong> (alle unter MIT-Lizenz).
         </small>'
 
 

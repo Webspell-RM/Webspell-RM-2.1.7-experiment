@@ -1,5 +1,10 @@
 <?php
 
+// Überprüfen, ob die Session bereits gestartet wurde
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Aktuelle CMS-Version
 $version = '2.1.8';
 

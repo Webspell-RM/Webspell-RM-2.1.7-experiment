@@ -45,6 +45,7 @@ $language_array = Array(
 
   'no_data_found' =>'Keine Daten gefunden.',
   'roleID_missing' =>'Die RoleID fehlt.',
+    'modulname' => 'Modulname',
 
 );
 

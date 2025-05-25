@@ -1,11 +1,16 @@
-<?php 
+<?php
+
+// Überprüfen, ob die Session bereits gestartet wurde
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 use webspell\AccessControl;
 use webspell\PluginUninstaller;
 use webspell\Plugininstaller;
 
 // Admin-Rechte prüfen
-#AccessControl::checkAdminAccess('ac_plugininstaller');
+AccessControl::checkAdminAccess('ac_plugin_installer');
 
 // Sprachdatei laden
 $_language->readModule('plugin_installer', false, true);

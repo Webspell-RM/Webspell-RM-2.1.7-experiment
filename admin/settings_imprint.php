@@ -1,12 +1,19 @@
 <?php
+
+// Überprüfen, ob die Session bereits gestartet wurde
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 $_language->readModule('imprint', false, true);
-$tpl = new Template();
-$CAPCLASS = new \webspell\Captcha;
 
 use webspell\AccessControl;
 
 // Admin-Zugriff überprüfen
 AccessControl::checkAdminAccess('ac_imprint');
+
+$CAPCLASS = new \webspell\Captcha;
+
 
 // Prüfen, ob das Formular abgeschickt wurde
 if (isset($_POST['submit'])) {

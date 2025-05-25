@@ -1,6 +1,14 @@
 <?php
 
+// Überprüfen, ob die Session bereits gestartet wurde
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 use webspell\LoginSecurity;
+use webspell\AccessControl;
+// Den Admin-Zugriff für das Modul überprüfen
+AccessControl::checkAdminAccess('ac_security_overview');
 
 echo '<div class="card">
 <div class="card-header">
