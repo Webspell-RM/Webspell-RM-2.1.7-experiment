@@ -48,7 +48,7 @@ if ($result && $row = $result->fetch_assoc()) {
       <label for="themeSwitcher" class="form-label">Theme auswählen:</label>
       <select class="form-select" id="themeSwitcher">
         <?php
-        $themes = ['brite', 'cerulean', 'cosmo', 'cyborg', 'darkly', 'flatly', 'journal', 'lux'];
+        $themes = ['brite', 'cerulean', 'cosmo', 'cyborg', 'darkly', 'flatly', 'journal', 'litera', 'lumen', 'lux', 'materia'];
         foreach ($themes as $theme) {
             $selected = $themename === $theme ? 'selected' : '';
             echo "<option value=\"$theme\" $selected>" . ucfirst($theme) . "</option>";
@@ -134,7 +134,7 @@ if ($result && $row = $result->fetch_assoc()) {
   </div>
 
   <script>
-    const themes = ['brite','cerulean','cosmo','cyborg','darkly','flatly','journal','lux'];
+    const themes = ['brite','cerulean','cosmo','cyborg','darkly','flatly','journal','litera','lumen','lux','materia'];
     const themeSelect = document.getElementById("themeSwitcher");
     const themeLink = document.getElementById("bootstrap-css");
     const themeCards = document.getElementById("themeCards");
