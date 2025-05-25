@@ -75,8 +75,8 @@ if ($result && $row = $result->fetch_assoc()) {
 }
 
 // Werte vorbereiten und sichern
-$firstname    = htmlspecialchars($user_profile['firstname'] ?? '');
-$lastname     = htmlspecialchars($user_profile['lastname'] ?? '');
+$firstname    = htmlspecialchars($user_profile['firstname'] ?? 'Nicht angegeben');
+$lastname     = htmlspecialchars($user_profile['lastname'] ?? 'Nicht angegeben');
 $about_me     = !empty($user_profile['about_me']) ? htmlspecialchars($user_profile['about_me']) : 'Keine Informationen über mich.';
 $register_date = (!empty($register_date_raw) && strtotime($register_date_raw) !== false)
     ? date('d.m.Y', strtotime($register_date_raw))
