@@ -98,7 +98,7 @@ $currentTheme = $row['themename'] ?? 'lux';
     echo '<!--Widget css END-->' . PHP_EOL;
     ?>
     
-    <link id="bootstrap-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/<?php echo htmlspecialchars($currentTheme); ?>/bootstrap.min.css"/>
+    <link id="bootstrap-css" rel="stylesheet" href="./includes/themes/<?php echo htmlspecialchars($theme_name, ENT_QUOTES, 'UTF-8'); ?>/css/dist/<?php echo htmlspecialchars($currentTheme); ?>/bootstrap.min.css"/>
     <link type="text/css" rel="stylesheet" href="./includes/themes/<?php echo htmlspecialchars($theme_name, ENT_QUOTES, 'UTF-8'); ?>/css/stylesheet.css" />
 </head>
 

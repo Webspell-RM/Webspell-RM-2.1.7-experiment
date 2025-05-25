@@ -13,6 +13,12 @@ $_database = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 if ($_database->connect_error) {
     die("Verbindung zur Datenbank fehlgeschlagen: " . $_database->connect_error);
 }
+
+$themename = 'flatly'; // default
+$result = $_database->query("SELECT themename FROM settings_themes WHERE active = '1' LIMIT 1");
+if ($result && $row = $result->fetch_assoc()) {
+    $themename = $row['themename'];
+}
 ?>
 
 <!DOCTYPE html>
@@ -22,7 +28,7 @@ if ($_database->connect_error) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Bootswatch Theme-Wechsler</title>
 
-  <link id="bootstrap-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/<?= htmlspecialchars($currentTheme) ?>/bootstrap.min.css"/>
+  <link id="bootstrap-css" rel="stylesheet" href="/../includes/themes/default/css/dist/<?= htmlspecialchars($themename) ?>/bootstrap.min.css"/>
 
   <style>
     .theme-card { cursor: pointer; transition: transform 0.2s ease; position: relative; }
@@ -35,16 +41,16 @@ if ($_database->connect_error) {
 <body class="p-4">
   <div class="container">
     
-    <h1 class="mb-4">Theme-Wechsler (Vorschau im iFrame)</h1>
+    <h1 class="mb-4">Theme-Wechsler (Vorschau)</h1>
 
     <!-- Dropdown -->
     <div class="mb-4">
       <label for="themeSwitcher" class="form-label">Theme auswählen:</label>
       <select class="form-select" id="themeSwitcher">
         <?php
-        $themes = ['lux', 'cyborg', 'morph', 'darkly', 'flatly'];
+        $themes = ['brite', 'cerulean', 'cosmo', 'cyborg', 'darkly', 'flatly', 'journal', 'lux'];
         foreach ($themes as $theme) {
-            $selected = $currentTheme === $theme ? 'selected' : '';
+            $selected = $themename === $theme ? 'selected' : '';
             echo "<option value=\"$theme\" $selected>" . ucfirst($theme) . "</option>";
         }
         ?>
@@ -55,14 +61,54 @@ if ($_database->connect_error) {
     <div class="row g-3 mb-4" id="themeCards"></div>
 
     <!-- Demo-Elemente -->
-    <nav class="navbar navbar-expand-lg bg-dark navbar-dark mb-4">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#">DemoNavbar</a>
+      <h4>Navigation (Demo)</h4>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="navbarStyle" id="nav1" value="bg-primary|light">
+        <label class="form-check-label" for="nav1">
+          <nav class="navbar navbar-expand-lg bg-primary mb-2" data-bs-theme="light">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="#">DemoNavbar</a>
+            </div>
+          </nav>
+        </label>
       </div>
-    </nav>
+
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="navbarStyle" id="nav2" value="bg-dark|dark">
+        <label class="form-check-label" for="nav2">
+          <nav class="navbar navbar-expand-lg bg-dark mb-2" data-bs-theme="dark">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="#">DemoNavbar</a>
+            </div>
+          </nav>
+        </label>
+      </div>
+
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="navbarStyle" id="nav3" value="bg-light|light">
+        <label class="form-check-label" for="nav3">
+          <nav class="navbar navbar-expand-lg bg-light mb-2" data-bs-theme="light">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="#">DemoNavbar</a>
+            </div>
+          </nav>
+        </label>
+      </div>
+
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="navbarStyle" id="nav4" value="bg-body-tertiary|light">
+        <label class="form-check-label" for="nav4">
+          <nav class="navbar navbar-expand-lg bg-body-tertiary mb-2">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="#">DemoNavbar</a>
+            </div>
+          </nav>
+        </label>
+      </div>
+   
 
     <div class="mb-4">
-      <h2>Buttons (Demo)</h2>
+      <h4>Buttons (Demo)</h4>
       <div class="d-flex flex-wrap gap-2">
         <button class="btn btn-primary">Primär</button>
         <button class="btn btn-secondary">Sekundär</button>
@@ -88,7 +134,7 @@ if ($_database->connect_error) {
   </div>
 
   <script>
-    const themes = ['lux', 'cyborg', 'morph', 'darkly', 'flatly'];
+    const themes = ['brite','cerulean','cosmo','cyborg','darkly','flatly','journal','lux'];
     const themeSelect = document.getElementById("themeSwitcher");
     const themeLink = document.getElementById("bootstrap-css");
     const themeCards = document.getElementById("themeCards");
@@ -96,7 +142,7 @@ if ($_database->connect_error) {
     const saveMsg = document.getElementById("saveMsg");
 
     window.setTheme = function(theme) {
-      themeLink.href = `https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/${theme}/bootstrap.min.css?v=${Date.now()}`;
+      themeLink.href = `/../includes/themes/default/css/dist/${theme}/bootstrap.min.css?v=${Date.now()}`;
       themeSelect.value = theme;
       saveMsg.textContent = '';
     }
@@ -123,7 +169,7 @@ if ($_database->connect_error) {
     function updateThemePreviewColors(theme, col) {
       const tempLink = document.createElement("link");
       tempLink.rel = "stylesheet";
-      tempLink.href = `https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/${theme}/bootstrap.min.css?v=${Date.now()}`;
+      tempLink.href = `/../includes/themes/default/css/dist/${theme}/bootstrap.min.css?v=${Date.now()}`;
       document.head.appendChild(tempLink);
 
       tempLink.onload = () => {
@@ -167,30 +213,39 @@ if ($_database->connect_error) {
     });
 
     saveBtn.addEventListener("click", () => {
-    const selected = themeSelect.value;
-    fetch("theme_save.php", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: "theme=" + encodeURIComponent(selected)
-    })
-    .then(res => res.text())
-    .then(msg => {
-      console.log("Antwort vom Server:", msg); // <--- Debug-Ausgabe
-      if (msg.trim() === "OK") {
-        saveMsg.textContent = "Theme gespeichert!";
-        saveMsg.className = "text-success";
-        //location.reload(); // 🔁 Seite neu laden
-      } else {
-        saveMsg.textContent = msg;
-        saveMsg.className = "text-danger";
-      }
-    })
-    .catch((err) => {
-      console.error("Fetch-Fehler:", err);
-      saveMsg.textContent = "Fehler beim Speichern.";
+  const selectedTheme = themeSelect.value;
+  const navbarRadio = document.querySelector('input[name="navbarStyle"]:checked');
+  const selectedNavbar = navbarRadio ? navbarRadio.value : '';
+
+  const params = new URLSearchParams();
+  params.append("theme", selectedTheme);
+  params.append("navbar", selectedNavbar);
+
+  fetch("theme_save.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: params.toString()
+  })
+  .then(res => res.text())
+  .then(msg => {
+    console.log("Antwort vom Server:", msg);
+    if (msg.trim() === "OK") {
+      saveMsg.textContent = "Theme & Navbar gespeichert!";
+      saveMsg.className = "text-success";
+    } else {
+      saveMsg.textContent = msg;
       saveMsg.className = "text-danger";
-    });
+    }
+  })
+  .catch((err) => {
+    console.error("Fetch-Fehler:", err);
+    saveMsg.textContent = "Fehler beim Speichern.";
+    saveMsg.className = "text-danger";
   });
+});
+
+
+
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

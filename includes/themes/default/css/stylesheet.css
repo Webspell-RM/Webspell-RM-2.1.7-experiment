@@ -3,3 +3,5 @@
 
     color: rgba(var(--bs-primary-rgb), 1);
 }
+
+.navbar {height: 80px}

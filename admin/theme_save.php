@@ -1,43 +1,62 @@
 <?php
-// Konfigurationsdatei sicher einbinden
-$configPath = __DIR__ . '/../system/config.inc.php';
-if (!file_exists($configPath)) {
-    die("Fehler: Konfigurationsdatei nicht gefunden.");
-}
-require_once $configPath;
+require_once __DIR__ . '/../system/config.inc.php';
 
-// Datenbankverbindung aufbauen
+// DB-Verbindung
 $_database = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-
-// Fehlerprüfung
-if ($_database->connect_error) {
-    die("Verbindung zur Datenbank fehlgeschlagen: " . $_database->connect_error);
-}
-
 if ($_database->connect_error) {
     http_response_code(500);
-    echo "DB-Verbindung fehlgeschlagen: " . $_database->connect_error;
+    die("DB-Verbindungsfehler: " . $_database->connect_error);
+}
+
+// POST-Werte holen
+$theme = $_POST['theme'] ?? '';
+$navbar = $_POST['navbar'] ?? '';
+
+if ($theme === '') {
+    http_response_code(400);
+    echo "Fehlerhafte Eingabe: 'theme' fehlt oder ist leer.";
     exit;
 }
 
-if (isset($_POST['theme']) && $_POST['theme'] !== '') {
-    $theme = $_POST['theme'];
+// Standardwerte
+$navbar_class = null;
+$navbar_theme = null;
 
-    $stmt = $_database->prepare("UPDATE settings_themes SET themename = ? WHERE modulname = 'default'");
-    if (!$stmt) {
-        http_response_code(500);
-        echo "Prepare-Fehler: " . $_database->error;
+// Navbar-String verarbeiten, z. B. "bg-dark|dark"
+// Navbar-String verarbeiten, z. B. "bg-dark|dark"
+if ($navbar !== '') {
+    $parts = explode('|', $navbar);
+    if (count($parts) === 2) {
+        $navbar_class = $parts[0];
+        $navbar_theme = $parts[1];
+    } else {
+        http_response_code(400);
+        echo "Ungültiges Format für 'navbar'.";
         exit;
     }
-    $stmt->bind_param("s", $theme);
+}
 
-    if ($stmt->execute()) {
-        echo "OK";
-    } else {
-        http_response_code(500);
-        echo "Execute-Fehler: " . $stmt->error;
-    }
+// Sonderregel: Lux + bg-primary → dark Theme
+if ($theme === 'lux' && $navbar_class === 'bg-primary') {
+    $navbar_theme = 'dark';
+}
+if ($theme === 'flatly' && $navbar_class === 'bg-primary') {
+    $navbar_theme = 'light';
+}
+
+// Theme + Navbar speichern
+$stmt = $_database->prepare("
+    UPDATE settings_themes 
+    SET themename = ?, navbar_class = ?, navbar_theme = ? 
+    WHERE modulname = 'default'
+");
+
+if ($stmt) {
+    $stmt->bind_param("sss", $theme, $navbar_class, $navbar_theme);
+    $stmt->execute();
+    $stmt->close();
+    echo "OK";
 } else {
-    http_response_code(400);
-    echo "Fehlerhafte Eingabe: 'theme' fehlt oder leer";
+    http_response_code(500);
+    echo "Datenbankfehler beim Speichern.";
 }
