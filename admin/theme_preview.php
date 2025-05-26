@@ -5,17 +5,6 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-
-use webspell\AccessControl;
-// Den Admin-Zugriff für das Modul überprüfen
-AccessControl::checkAdminAccess('ac_theme');
-
-
-
-
-
-
-
 // Konfigurationsdatei sicher einbinden
 $configPath = __DIR__ . '/../system/config.inc.php';
 if (!file_exists($configPath)) {

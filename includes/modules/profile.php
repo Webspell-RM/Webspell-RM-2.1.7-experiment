@@ -22,13 +22,19 @@ if ($userID === 0) {
     exit();
 }
 
+
 // user_profile laden
-$sql_profiles = "SELECT * FROM user_profiles WHERE userID = $userID LIMIT 1";
-$result_profiles = $_database->query($sql_profiles);
-if (!$result_profiles || $result_profiles->num_rows === 0) {
+$sql_users = "SELECT * FROM users WHERE userID = $userID LIMIT 1";
+$result_users = $_database->query($sql_users);
+if (!$result_users || $result_users->num_rows === 0) {
     echo "Benutzerprofil nicht gefunden.";
     exit();
 }
+$user_users = $result_users->fetch_assoc();
+
+// user_profile laden
+$sql_profiles = "SELECT * FROM user_profiles WHERE userID = $userID LIMIT 1";
+$result_profiles = $_database->query($sql_profiles);
 $user_profile = $result_profiles->fetch_assoc();
 
 // user_stats laden

@@ -5,15 +5,13 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Sprachmodul laden
-$_language->readModule('admin_log', false, true);
-
 use webspell\AccessControl;
 // Den Admin-Zugriff für das Modul überprüfen
 AccessControl::checkAdminAccess('ac_admin_log');
 
 
-$_language->readModule('admin_log');
+// Sprachmodul laden
+$_language->readModule('admin_log', false, true);
 
 $action_labels = [
     1 => 'Erstellen',
