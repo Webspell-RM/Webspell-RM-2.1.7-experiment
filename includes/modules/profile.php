@@ -117,6 +117,7 @@ $edit_button = $is_own_profile ? '<a href="index.php?site=edit_profile" class="b
 
 // Banned-Status (aktuell leer, ggf. anpassen)
 $banned = '';
+$isLocked = isset($user_users['is_locked']) && (int)$user_users['is_locked'] === 1;
 
 // Letzte Aktivität und Online-Zeit berechnen
 $last_activity = (!empty($last_visit_raw) && strtotime($last_visit_raw) !== false) ? strtotime($last_visit_raw) : 0;
@@ -170,7 +171,7 @@ $data_array = [
     'edit_button'     => $edit_button,
     'comments_count'  => $comments,
     'posts_count'     => $posts,
-    'banned'          => $banned
+    'isLocked'          => $isLocked
 ];
 
 // Ausgabe Template

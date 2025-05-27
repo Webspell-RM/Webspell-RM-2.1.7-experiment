@@ -91,6 +91,8 @@ $language_array = Array(
   'settings'                      => 'Allgemeine Einstellungen',
   'additional_options_startpage'  => 'Frontend (Website) deaktivieren und Startpage wählen',
   'page_title'                    => 'Homepage Titel',
+  'since'                         => 'Since',
+
   'page_url'                      => 'Homepage URL',
   'admin_email'                   => 'Admin E-Mail',
   'admin_name'                    => 'Admin Name',

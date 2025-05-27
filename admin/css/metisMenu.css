@@ -31,10 +31,10 @@
   display: block;
   color: #ffffff;
   border-radius: 0px;
-  padding: 12px;
+  padding: 10px;
   transition: all 0.3s ease-out;
   text-decoration: none;
-  background: rgba(255,255,255,0.2);
+  background: rgba(0,0,0,0.2);
 }
 
 .sidebar-nav .metismenu a:hover,
@@ -49,7 +49,7 @@
   color: #f4f4f4;
   background: rgba(255,255,255,0.2);
   border-radius: 0px;
-  border-left: 4px solid rgba(254,130,29,1);
+  border-left: 2px solid rgba(254,130,29,1);
 }
 
 

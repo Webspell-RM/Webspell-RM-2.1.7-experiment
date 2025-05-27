@@ -324,7 +324,7 @@ $valid_js = array_filter($components['js'], 'check_file_exists');
 $ds = mysqli_fetch_array(
     safe_query("SELECT * FROM settings")
 );
-
+/*
 // Maximalanzahl der neuesten Themen
 $maxlatesttopics = $ds['latesttopics'];
 if (empty($maxlatesttopics)) {
@@ -360,27 +360,28 @@ $maxmessages = $ds['messages'];
 if (empty($maxmessages)) {
     $maxmessages = 5;
 }
-
+*/
 // Zusätzliche Einstellungen
 $hp_url = $ds['hpurl'];
 $hp_title = stripslashes($ds['hptitle']);
-$register_per_ip = $ds['register_per_ip'];
+#$register_per_ip = $ds['register_per_ip'];
 $admin_name = $ds['adminname'];
 $admin_email = $ds['adminemail'];
 $myclantag = $ds['clantag'];
 $myclanname = $ds['clanname'];
+$since = $ds['since'];
 
 // SEO-Einstellungen
 $keywords = $ds['keywords'];
 $description = $ds['description'];
 
 // Sitzungseinstellungen
-$sessionduration = $ds['sessionduration'];
+/*$sessionduration = $ds['sessionduration'];
 if (empty($sessionduration)) {
     $sessionduration = 24;
-}
+}*/
 $closed = (int)$ds['closed'];
-$imprint_type = $ds['imprint'];
+#$imprint_type = $ds['imprint'];
 
 // Sprach- und Datumseinstellungen
 $default_language = $ds['default_language'];
@@ -393,35 +394,37 @@ if (empty($rss_default_language)) {
 }
 
 // Sicherheitseinstellungen
-$max_wrong_pw = $ds['max_wrong_pw'];
+#$lastBanCheck = $ds['bancheck'];
+#$autoDetectLanguage = (int)$ds['detect_language'];
+/*$max_wrong_pw = $ds['max_wrong_pw'];
 if (empty($max_wrong_pw)) {
     $max_wrong_pw = 3;
 }
-$lastBanCheck = $ds['bancheck'];
+
 $insertlinks = $ds['insertlinks'];
-$autoDetectLanguage = (int)$ds['detect_language'];
+
 $spamCheckMaxPosts = $ds['spammaxposts'];
 if (empty($spamCheckMaxPosts)) {
     $spamCheckMaxPosts = 30;
 }
 $spamCheckEnabled = (int)$ds['spam_check'];
 $spamCheckRating = 0.95;
-
+*/
 // Datums- und Zeiteinstellungen
-$default_format_date = $ds['date_format'];
+/*$default_format_date = $ds['date_format'];
 if (empty($default_format_date)) {
     $default_format_date = 'd.m.Y';
 }
 $default_format_time = $ds['time_format'];
 if (empty($default_format_time)) {
     $default_format_time = 'H:i';
-}
+}*/
 
 // Suchfunktion-Einstellungen
-$search_min_len = $ds['search_min_len'];
+/*$search_min_len = $ds['search_min_len'];
 if (empty($search_min_len)) {
     $search_min_len = '4';
-}
+}*/
 $modRewrite = (bool)$ds['modRewrite'];
 if (empty($modRewrite)) {
     $modRewrite = false;

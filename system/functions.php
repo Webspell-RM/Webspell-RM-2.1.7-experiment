@@ -162,11 +162,11 @@ function percent($sub, $total, $dec = 2)
 
 
 // Funktion, die eine Seite im Wartungsmodus anzeigt
-function showlock($reason)
+function showlock(string $reason, int $time)
 {
     // Holen des Seitentitels aus der Datenbank
-    $gettitle = mysqli_fetch_array(safe_query("SELECT `title` FROM `settings`"));
-    $pagetitle = $gettitle['title'];
+    $gettitle = mysqli_fetch_array(safe_query("SELECT `hptitle` FROM `settings`"));
+    $pagetitle = $gettitle['hptitle'];
     
     // Erstellen eines Datenarrays, um den Seitentitel und andere Variablen zu speichern
     $data_array = array();
@@ -180,13 +180,38 @@ function showlock($reason)
     }
 
     // Hinzufügen des Grundes für den Wartungsmodus
-    $data_array['$reason'] = $reason;
+    $data_array = [
+        'reason' => $reason,
+        'time' => $time
+    ];
 
     // Einbinden der Lock-Seite
-    include("./includes/modules/lock.php");
+    include(__DIR__ . '/../includes/modules/lock.php');
 
     // Das Skript stoppen, damit keine weiteren Ausgaben erfolgen
     die();
+}
+
+// Prüft, ob die Webseite geschlossen ist und ob der Benutzer ein Admin ist
+$res = safe_query("SELECT closed FROM settings");
+$row = mysqli_fetch_assoc($res);
+$closed = isset($row['closed']) ? (int)$row['closed'] : 0;
+
+$currentPath = $_SERVER['SCRIPT_NAME'];
+$isLoginPage = (strpos($currentPath, '/admin/login.php') !== false);
+
+if (
+    $closed === 1 &&
+    !$isLoginPage &&
+    (!isset($_SESSION['userID']))
+) {
+    $lockRes = safe_query("SELECT reason, time FROM site_lock LIMIT 1");
+    $lockRow = mysqli_fetch_assoc($lockRes);
+
+    $reason = $lockRow['reason'] ?? 'Wartungsmodus aktiviert.';
+    $time = isset($lockRow['time']) ? (int)$lockRow['time'] : 0;
+
+    showlock($reason, $time);
 }
 
 // Funktion zur Überprüfung von Systemumgebungsvariablen
@@ -490,7 +515,7 @@ if (file_exists('classes/PluginUninstaller.php')) {
 }
 
 // Sprachwahl aus Cookie, Session oder automatische Erkennung
-if (isset($_COOKIE['language'])) {
+/*if (isset($_COOKIE['language'])) {
     $_language->setLanguage($_COOKIE['language']);
 } elseif (isset($_SESSION['language'])) {
     $_language->setLanguage($_SESSION['language']);
@@ -500,7 +525,7 @@ if (isset($_COOKIE['language'])) {
         $_language->setLanguage($lang);
         $_SESSION['language'] = $lang;
     }
-}
+}*/
 
 // Funktion zur Bereinigung des Textes vor dem Speichern in der Datenbank
 function cleanTextForStorage($text) {
@@ -532,12 +557,7 @@ if (isset($_GET['site'])) {
     $site = '';
 }
 
-// Prüft, ob das Forum geschlossen ist und ob der Benutzer ein Admin ist
-if ($closed && !isanyadmin($userID)) {
-    $dl = mysqli_fetch_array(safe_query("SELECT * FROM lock LIMIT 0,1"));
-    $reason = $dl['reason'];
-    showlock($reason);
-}
+
 
 // Setzt Standardwerte für HTTP_REFERER und REQUEST_URI
 if (!isset($_SERVER['HTTP_REFERER'])) {
@@ -553,7 +573,7 @@ if (!isset($_SERVER['REQUEST_URI'])) {
 
 // -- BANNED USERS -- //
 // Überprüft alle Benutzer auf Bannstatus und entfernt abgelaufene Banns
-if (date("dh", $lastBanCheck) != date("dh")) {
+/*if (date("dh", $lastBanCheck) != date("dh")) {
     $get = safe_query("SELECT userID, banned FROM users WHERE banned IS NOT NULL");
     $removeBan = array();
     while ($ds = mysqli_fetch_assoc($get)) {
@@ -568,7 +588,7 @@ if (date("dh", $lastBanCheck) != date("dh")) {
         safe_query("UPDATE users SET banned=NULL WHERE " . $where);
     }
     safe_query("UPDATE settings SET bancheck='" . time() . "'");
-}
+}*/
 // -- BANNED IPs -- //
 // Löscht abgelaufene Einträge in der Tabelle für gesperrte IPs
 safe_query("DELETE FROM banned_ips WHERE deltime < '" . time() . "'");

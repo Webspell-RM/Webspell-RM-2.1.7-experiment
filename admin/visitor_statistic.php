@@ -83,7 +83,7 @@ while ($row = $result->fetch_assoc()) {
 
     <div class="row mb-4">
         <div class="col-md-3">
-            <div class="card text-white bg-primary mb-3">
+            <div class="card bg-primary mb-3">
                 <div class="card-header"><?php echo $_language->module['online_users']; ?></div>
                 <div class="card-body">
                     <h5 class="card-title"><?php echo $online_users; ?></h5>
@@ -91,7 +91,7 @@ while ($row = $result->fetch_assoc()) {
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card text-white bg-success mb-3">
+            <div class="card bg-success mb-3">
                 <div class="card-header"><?php echo $_language->module['visitors_today']; ?></div>
                 <div class="card-body">
                     <h5 class="card-title"><?php echo $visitors_today; ?></h5>
@@ -99,7 +99,7 @@ while ($row = $result->fetch_assoc()) {
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card text-white bg-warning mb-3">
+            <div class="card bg-warning mb-3">
                 <div class="card-header"><?php echo $_language->module['visitors_yesterday']; ?></div>
                 <div class="card-body">
                     <h5 class="card-title"><?php echo $visitors_yesterday; ?></h5>
@@ -107,7 +107,7 @@ while ($row = $result->fetch_assoc()) {
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card text-white bg-info mb-3">
+            <div class="card bg-info mb-3">
                 <div class="card-header"><?php echo $_language->module['visitors_week']; ?></div>
                 <div class="card-body">
                     <h5 class="card-title"><?php echo $visitors_week; ?></h5>

@@ -157,6 +157,11 @@ if (!empty($email) && LoginSecurity::isEmailBanned($ip, $email)) {
                         <?= $_language->module['welcome2'] ?> Login<br><br>
                         <?= $_language->module['insertmail'] ?>
                     </div>
+                    <?php if ($closed === 1): ?>
+                        <div class="alert alert-warning">
+                            Die Seite ist derzeit gesperrt. Nur Administratoren können sich anmelden.
+                        </div>
+                    <?php endif; ?>
                 </div>
 
                 <form method="POST" action="">

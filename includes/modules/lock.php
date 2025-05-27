@@ -1,152 +1,118 @@
-<?php
-/**
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- *                  Webspell-RM      /                        /   /                                          *
- *                  -----------__---/__---__------__----__---/---/-----__---- _  _ -                         *
- *                   | /| /  /___) /   ) (_ `   /   ) /___) /   / __  /     /  /  /                          *
- *                  _|/_|/__(___ _(___/_(__)___/___/_(___ _/___/_____/_____/__/__/_                          *
- *                               Free Content / Management System                                            *
- *                                           /                                                               *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @version         webspell-rm                                                                              *
- *                                                                                                           *
- * @copyright       2018-2025 by webspell-rm.de                                                              *
- * @support         For Support, Plugins, Templates and the Full Script visit webspell-rm.de                 *
- * @website         <https://www.webspell-rm.de>                                                             *
- * @forum           <https://www.webspell-rm.de/forum.html>                                                  *
- * @wiki            <https://www.webspell-rm.de/wiki.html>                                                   *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @license         Script runs under the GNU GENERAL PUBLIC LICENCE                                         *
- *                  It's NOT allowed to remove this copyright-tag                                            *
- *                  <http://www.fsf.org/licensing/licenses/gpl.html>                                         *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @author          Code based on WebSPELL Clanpackage (Michael Gruber - webspell.at)                        *
- * @copyright       2005-2011 by webspell.org / webspell.info                                                *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
-*/
 
-global $myclanname;
-
-// Datenbank-Abfrage für Social Media Links
-$ergebnis = safe_query("SELECT * FROM `settings_social_media`");
-$socialLinks = [];
-
-while ($row = mysqli_fetch_assoc($ergebnis)) {
-    foreach ($row as $platform => $link) {
-        $socialLinks[$platform] = $link;
-    }
-}
-
-// Social Media Icons generieren
-$icons = '';
-foreach ($socialLinks as $platform => $link) {
-    if (!empty($link)) {
-        $icons .= '<a href="' . htmlspecialchars($link) . '" target="_blank" class="social-media-circle ' . htmlspecialchars($platform) . '">
-                      <i class="bi bi-' . htmlspecialchars($platform) . '"></i>
-                   </a> ';
-    }
-}
-
-// Fehlende Variablen setzen
-$pagetitle = $pagetitle ?? 'Website';
-$rewriteBase = $rewriteBase ?? '/';
-$reason = $reason ?? 'Coming Soon!';
-$since = $since ?? date("Y"); // Standardjahr setzen, falls nicht vorhanden
-$myclanname = $myclanname ?? 'DefaultClan'; // Standardname, falls nicht vorhanden
-$copy = date("Y") . ' ' . $myclanname . ' | ' . $since;
-
-// Platzhalter-Daten für das Template
-$data_array = [
-    'pagetitle' => $pagetitle,
-    'rewriteBase' => $rewriteBase,
-    'reason' => $reason,
-    'since' => $since,
-    'myclanname' => $myclanname,
-    'icons' => $icons,
-    'copy' => $copy,
-];
-
-// HTML-Grundgerüst der Seite
-$html = '
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Website using webSPELL-RM CMS">
-    <meta name="keywords" content="Clandesign, Webspell, Webspell | RM, Webdesign, Tutorials, Downloads, Webspell-rm, Addons, Plugins, Templates">
-    <meta name="robots" content="all">
-    <meta name="author" content="webspell-rm.de">
-    <link rel="SHORTCUT ICON" href="/includes/themes/default/templates/favicon.ico">
-
-    <title>{{ pagetitle }}</title>
-    <base href="{{ rewriteBase }}">
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../components/css/lockpage.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <meta charset="UTF-8" />
+    <title>Wartungsmodus</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+    <style>
+        body {
+            background:
+                linear-gradient(to top right, rgba(210, 180, 140, 0.9), rgba(0, 0, 0, 0.9)),
+                url('/images/lock_bg.jpg') no-repeat center center;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 1rem;
+            margin: 0;
+        }
+        .logo {
+            margin-bottom: 1.5rem;
+        }
+        .card {
+            max-width: 600px;
+            width: 100%;
+        }
+        ul.countdown {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            padding: 0;
+            margin: 1rem 0;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+        ul.countdown li {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+            min-width: 80px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        ul.countdown li span {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #343a40;
+        }
+        ul.countdown li h3 {
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            color: #6c757d;
+        }
+    </style>
 </head>
 <body>
-    <header id="header" class="text-center">
-        <img src="images/webspell-logo-lock.png" alt="Webspell Logo" style="height: 150px"/>
-    </header>
-    
-    <main id="main" class="container text-center">
-        <div class="row justify-content-center">
-            <h2>We’re Launching Our Website Soon</h2>
+
+    <!-- Logo oben -->
+    <div class="logo text-center">
+        <img src="/images/webspell-logo-lock.png" alt="Webspell Logo" style="height: 150px;" />
+    </div>
+
+    <!-- Card darunter -->
+    <div class="card shadow-lg p-4">
+        <div class="card-body">
+            <h1 class="text-danger mb-3"><i class="bi bi-cone-striped"></i> Wartungsmodus</h1>
+            <p class="reason"><?= $data_array['reason'] ?? 'Wartungsmodus aktiv.' ?></p>
+
+            <?php
+            $startTime = $data_array['time'] ?? time();
+            ?>
+
+            <p class="text-muted small">Seit: <?= date("d.m.Y - H:i", $startTime) ?></p>
+
+            <ul class="countdown">
+                <li><span id="days">0</span><h3>Tage</h3></li>
+                <li><span id="hours">00</span><h3>Stunden</h3></li>
+                <li><span id="minutes">00</span><h3>Minuten</h3></li>
+                <li><span id="seconds">00</span><h3>Sekunden</h3></li>
+            </ul>
+
+            <a href="/admin/login.php" class="btn btn-outline-success btn-sm mt-3">Zum Admin-Login</a>
         </div>
-    </main>
-    
-    <section id="about" class="about">
-        <div class="container login_card text-center">
-            <h5>Information</h5>
-            <div class="row justify-content-center">
-                <div class="col-4" style="background: #fff; color: #000; padding: 10px; border-radius: 5px;">
-                    <p>{{ reason }}</p>
-                </div>    
-            </div>
-        </div>
-    </section>
-    
-    <section id="contact" class="contact text-center">
-        <div class="card container login_card text-center">
-            <div class="card-body">
-                <h3>Admin Login</h3>
-                <form class="row g-3 form-inline justify-content-center" method="post" action="/includes/modules/checklogin.php">
-                    <div class="col-auto">
-                        <input name="ws_user" type="text" class="form-control" placeholder="Enter email" required>
-                    </div>
-                    <div class="col-auto">
-                        <input name="password" type="password" class="form-control" placeholder="Password" required>
-                    </div>
-                    <div class="col-auto">
-                        <button type="submit" name="Submit" class="btn btn-success">Login</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </section>
-    
-    <section id="social" class="social text-center">
-        <h4>Follow us <small>on Social Media</small></h4>
-        {{ icons }}
-    </section>
-    
-    <footer class="footer text-center mt-4">
-        <div class="container">
-            <small>&copy; {{ copy }} | All rights reserved.</small>
-        </div>
-    </footer>
+    </div>
+
+    <script>
+        // Startzeit vom Server (Unix-Timestamp in Millisekunden)
+        const startTime = <?= (int)$startTime ?> * 1000;
+
+        function updateCountdown() {
+            const now = Date.now();
+            let elapsed = Math.floor((now - startTime) / 1000); // Sekunden
+
+            if (elapsed < 0) elapsed = 0; // falls Startzeit in Zukunft
+
+            const days = Math.floor(elapsed / 86400);
+            const hours = Math.floor((elapsed % 86400) / 3600);
+            const minutes = Math.floor((elapsed % 3600) / 60);
+            const seconds = elapsed % 60;
+
+            document.getElementById('days').textContent = days;
+            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
+
 </body>
-</html>';
-
-// Platzhalter ersetzen
-foreach ($data_array as $key => $value) {
-    $html = str_replace("{{ $key }}", $value, $html);
-}
-
-// Ausgabe der finalen HTML-Seite
-echo $html;
+</html>
