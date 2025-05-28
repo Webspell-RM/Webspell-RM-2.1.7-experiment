@@ -116,8 +116,10 @@ $is_own_profile = ($_SESSION['userID'] ?? 0) === $userID;
 $edit_button = $is_own_profile ? '<a href="index.php?site=edit_profile" class="btn btn-outline-primary mt-3"><i class="fas fa-user-edit"></i> Profil bearbeiten</a>' : '';
 
 // Banned-Status (aktuell leer, ggf. anpassen)
-$banned = '';
+#$isLocked = isset($user_users['is_locked']) ? (int)$user_users['is_locked'] : 0;
 $isLocked = isset($user_users['is_locked']) && (int)$user_users['is_locked'] === 1;
+#$isLocked = $user_users['is_locked'] === 1;
+
 
 // Letzte Aktivität und Online-Zeit berechnen
 $last_activity = (!empty($last_visit_raw) && strtotime($last_visit_raw) !== false) ? strtotime($last_visit_raw) : 0;
@@ -145,6 +147,12 @@ $logins = $logins_count > 0 ? $logins_count : 0;
 $posts    = 42;
 $comments = 103;
 
+if ($isLocked == 1 ) {
+    $isrowLocked='<div class="alert alert-danger d-flex align-items-center" role="alert">
+        <i class="bi bi-lock-fill me-2"></i> Dieses Profil ist gesperrt.
+    </div>';
+}
+
 $data_array = [
     'username'        => $username,
     'user_picture'    => $avatar_url,
@@ -171,8 +179,9 @@ $data_array = [
     'edit_button'     => $edit_button,
     'comments_count'  => $comments,
     'posts_count'     => $posts,
-    'isLocked'          => $isLocked
+    'isLocked'        => $isrowLocked ?? '',
 ];
 
 // Ausgabe Template
 echo $tpl->loadTemplate("profile", "content", $data_array);
+print_r($isLocked);

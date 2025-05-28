@@ -30,6 +30,7 @@
 
 
 $_language->readModule('imprint');
+global $hp_title;
 
 $config = mysqli_fetch_array(safe_query("SELECT selected_style FROM settings_headstyle_config WHERE id=1"));
 $class = htmlspecialchars($config['selected_style']);
@@ -92,6 +93,7 @@ switch ($type) {
 
 // Werte zuweisen (mit sicheren Fallbacks)
 $data_array += [
+    'impressum_hp_name' => $hp_title,
     'impressum_type' => $type_labels[$type] ?? $type_labels['unknown'],
     'company_name' => $imprint_data['company_name'] ?? '',
     'represented_by' => $imprint_data['represented_by'] ?? '',
