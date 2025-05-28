@@ -1,8 +1,8 @@
 <?php
 
-#use webspell\AccessControl;
+use webspell\AccessControl;
 // Den Admin-Zugriff für das Modul überprüfen
-#AccessControl::checkAdminAccess('ac_theme');
+AccessControl::checkAdminAccess('ac_theme_save');
 
 require_once __DIR__ . '/../system/config.inc.php';
 

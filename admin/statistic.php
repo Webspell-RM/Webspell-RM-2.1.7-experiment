@@ -11,7 +11,7 @@ $_language->readModule('user_roles', false, true);
 
 use webspell\AccessControl;
 // Den Admin-Zugriff für das Modul überprüfen
-AccessControl::checkAdminAccess('ac_statistik');
+AccessControl::checkAdminAccess('ac_statistic');
 
 
 

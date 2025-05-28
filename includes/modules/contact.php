@@ -3,18 +3,104 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
+/*
 // Sprachdatei laden
 $_language->readModule('contact');
 
-try {
-    $get = mysqli_fetch_assoc(safe_query("SELECT * FROM settings_recaptcha"));
+// Variablen initialisieren
+$name = '';
+$from = '';
+$subject = '';
+$text = '';
+$showerror = '';
+$getemail = '';
+$loggedin = '';
+$recaptcha = (int)htmlspecialchars('recaptcha'); // falls verwendet
+$webkey = htmlspecialchars('recaptcha_sitekey'); // falls verwendet
+
+$loggedin = (isset($_SESSION['userID']) && $_SESSION['userID'] > 0);
+
+// Empfänger-Auswahl generieren (kann angepasst werden)
+$emails = getContactRecipients(); // eigene Funktion oder statisch definiert
+foreach ($emails as $email => $label) {
+    $getemail .= '<option value="' . htmlspecialchars($email) . '">' . htmlspecialchars($label) . '</option>';
+}
+
+// Wenn Formular abgeschickt wurde
+if (isset($_POST['action']) && $_POST['action'] == 'send') {
+
+    $name = trim($_POST['name']);
+    $from = trim($_POST['from']);
+    $subject = trim($_POST['subject']);
+    $text = trim($_POST['text']);
+    $to = trim($_POST['getemail']);
+
+    // Validierung
+    if (empty($name) || empty($from) || empty($subject) || empty($text) || !filter_var($from, FILTER_VALIDATE_EMAIL)) {
+        $showerror = getErrorBox($_language->module['fill_out_all_fields']);
+    } else {
+        // Optional: ReCaptcha prüfen (nur wenn nicht eingeloggt)
+        if (!$loggedin && $recaptcha == 0) {
+            if (!validate_recaptcha()) {
+                $showerror = getErrorBox($_language->module['wrong_security_code']);
+            }
+        }
+
+        if (empty($showerror)) {
+            // Mail senden
+            $mail_body = $_language->module['contact_mail_from'] . ": $name <$from>\n\n";
+            $mail_body .= $_language->module['subject'] . ": $subject\n\n";
+            $mail_body .= $_language->module['message'] . ":\n$text\n";
+
+            mail($to, $subject, $mail_body, "From: $from");
+
+            $showerror = getSuccessBox($_language->module['contact_success']);
+            // Felder zurücksetzen
+            $name = $from = $subject = $text = '';
+        }
+    }
+}
+
+
+
+$data_array = [
+    'description' => $_language->module['description'],
+    'showerror' => $showerror,
+    'getemail' => $getemail,
+    'name' => htmlspecialchars($name),
+    'from' => htmlspecialchars($from),
+    'subject' => htmlspecialchars($subject),
+    'text' => htmlspecialchars($text),
+    'security_code' => $_language->module['security_code'],
+    'user' => $_language->module['user'],
+    'mail' => $_language->module['mail'],
+    'e_mail_info' => $_language->module['e_mail_info'],
+    'subject' => $_language->module['subject'],
+    'message' => $_language->module['message'],
+    'lang_GDPRinfo' => $_language->module['GDPRinfo'],
+    'send' => $_language->module['send'],
+    'info_captcha' => (!$loggedin && $recaptcha == 0)
+        ? '<div class="g-recaptcha" style="width: 70%; float: left;" data-sitekey="' . htmlspecialchars($webkey) . '"></div>'
+        : '',
+    'loggedin' => $loggedin,
+    'userID' => $_SESSION['userID'] ?? 0, // User-ID direkt aus der Session übergeben
+];
+
+// Template laden und anzeigen
+echo $tpl->loadTemplate("contact", "form", $data_array, 'theme');
+
+
+
+
+*/
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$get = mysqli_fetch_assoc(safe_query("SELECT * FROM settings"));
     $webkey = $get['webkey'];
     $seckey = $get['seckey'];
-    $recaptcha = ($get['activated'] == "1") ? 1 : 0;
-} catch (Exception $e) {
-    $recaptcha = 0;
-}
+
 
 $loggedin = (isset($_SESSION['userID']) && $_SESSION['userID'] > 0);
 $_language->readModule('contact');
