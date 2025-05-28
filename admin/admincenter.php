@@ -221,7 +221,15 @@ function dashnavi() {
 
                     $active_class = $is_active ? 'active' : '';
 
-                    $cat_links_html .= '<li class="' . $active_class . '"><a href="' . $url . '"><i class="bi bi-plus-lg ac-link"></i> ' . $link_name . '</a></li>';
+                    $icon_class = $active_class ? 'bi bi-arrow-right' : 'bi bi-plus-lg';
+
+                    $cat_links_html .= '<li class="' . $active_class . '">'
+                        . '<a href="' . $url . '">'
+                        . '<i class="' . $icon_class . ' ac-link"></i> ' 
+                        . $link_name 
+                        . '</a></li>';
+
+                    #$cat_links_html .= '<li class="' . $active_class . '"><a href="' . $url . '"><i class="bi bi-plus-lg ac-link"></i> ' . $link_name . '</a></li>';
                 }
             }
 

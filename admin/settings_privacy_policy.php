@@ -5,17 +5,20 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Sprachmodul laden
-$_language->readModule('privacy_policy', false, true);
-
 use webspell\AccessControl;
 use webspell\Captcha;
 
 // Zugriffskontrolle für Admin
 AccessControl::checkAdminAccess('ac_privacy_policy');
 
+// Sprachmodul laden
+$_language->readModule('privacy_policy', false, true);
+
+
+
 // Initialisierung der Captcha-Klasse
 $CAPCLASS = new \webspell\Captcha;
+$tpl = new Template();
 
 // Verarbeitung und Speichern des Datenschutztexts
 // Wenn das Formular gesendet wurde

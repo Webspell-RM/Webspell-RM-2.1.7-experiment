@@ -5,14 +5,16 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-$_language->readModule('imprint', false, true);
-
 use webspell\AccessControl;
 
 // Admin-Zugriff überprüfen
 AccessControl::checkAdminAccess('ac_imprint');
 
+$_language->readModule('imprint', false, true);
+
+
 $CAPCLASS = new \webspell\Captcha;
+$tpl = new Template();
 
 
 // Prüfen, ob das Formular abgeschickt wurde
