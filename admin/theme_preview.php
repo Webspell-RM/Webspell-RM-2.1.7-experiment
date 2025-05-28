@@ -5,6 +5,11 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
+#use webspell\AccessControl;
+
+// Admin-Zugriff überprüfen
+#AccessControl::checkAdminAccess('ac_theme_preview');
+
 // Konfigurationsdatei sicher einbinden
 $configPath = __DIR__ . '/../system/config.inc.php';
 if (!file_exists($configPath)) {

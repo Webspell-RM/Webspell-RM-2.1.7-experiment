@@ -4,32 +4,5 @@
     color: rgba(var(--bs-primary-rgb), 1);
 }
 
-.navbar {height: 80px}
 
-.head-boxes-1 {
-  margin-bottom: 30px;
-    margin-left: 12px;
-}
 
-.head-boxes-1 h2,
-.head-boxes-1 h2::after {
-  font-size: 28px;
-}
-
-.head-boxes-1 span.head-boxes-head {
-  display: none;
-}
-
-.head-boxes-1 span.head-boxes-title {
-  display: inline-block;
-    line-height: 1 !important;
-    margin: 0 -11px -11px;
-    padding: 15px 0 12px 0;
-    text-transform: uppercase;
-    border-bottom: 1px solid rgba(var(--bs-primary-rgb), 1);
-    
-}
-
-.head-boxes-1 p.head-boxes-foot {
-  display: none;
-}   

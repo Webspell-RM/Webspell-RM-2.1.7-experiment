@@ -67,7 +67,7 @@ class LoginSecurity {
 
     
 
-    public static function verifyLogin($email, $password_hash, $ip, $is_active ,$banned): array {
+    public static function verifyLogin($email, $password_hash, $ip, $is_active , $banned): array {
         // Zuerst prüfen, ob IP gesperrt ist
         $isIpBanned = self::isIpBanned($ip); // IP-Überprüfung
         if ($isIpBanned) {
@@ -86,8 +86,8 @@ class LoginSecurity {
                 return ['success' => false, 'ip_banned' => false, 'error' => 'Dein Konto wurde noch nicht aktiviert. Bitte überprüfe deine E-Mail.'];
             }
 
-            // Überprüfen, ob das Konto aktiv ist
-            if ($user['banned'] == 1) {
+            // Überprüfen, ob der User gebannt ist
+            if (isset($user['banned']) && $user['banned'] == 1) {
                 return ['success' => false, 'ip_banned' => false, 'error' => 'Dein Konto wurde gesperrt. Bitte überprüfe deine E-Mail.'];
             }
 

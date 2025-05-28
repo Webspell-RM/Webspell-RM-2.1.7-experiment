@@ -184,4 +184,3 @@ $data_array = [
 
 // Ausgabe Template
 echo $tpl->loadTemplate("profile", "content", $data_array);
-print_r($isLocked);

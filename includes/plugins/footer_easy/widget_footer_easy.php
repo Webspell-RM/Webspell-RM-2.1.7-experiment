@@ -7,7 +7,7 @@ $pm = new plugin_manager();
 $plugin_language = $pm->plugin_language("footer_easy", $plugin_path);
 $tpl = Template::getInstance();
 
-GLOBAL $myclanname;
+GLOBAL $myclanname, $since;
 
 // Links aus DB holen
 $res = safe_query("SELECT * FROM plugins_footer_easy ORDER BY link_number");
@@ -29,11 +29,11 @@ while ($r = mysqli_fetch_assoc($res)) {
 }
 
 // Template-Daten
-$data_array = array_merge(
-  ['myclanname'=> $myclanname, 'date'=> date("Y")],
-  $data
-);
+$data_array = array_merge([
+  'myclanname' => $myclanname,
+  'date' => date("Y"),
+  'since' => $since,
+], $data);
 
 // ausgeben
 echo $tpl->loadTemplate("footer_easy", "content", $data_array, 'plugin');
-?>

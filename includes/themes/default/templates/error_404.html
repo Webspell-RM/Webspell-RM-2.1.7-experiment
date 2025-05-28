@@ -1,34 +1,43 @@
 <!-- error_404_content -->
-<style type="text/css">
-.titlehead {     
-    border: 3px solid;
-    border-color: #c4183c; 
-    background-color: rgba(var(--bs-rm-body-bg),1);
-    border-radius: var(--bs-border-radius);
-}
-</style>
 
-<div class="head-boxes {{ class }}">
-    <span class="head-boxes-head">{{ error_404 }}</span>
-<h2 class="head-h2">
-    <span class="head-boxes-title">{{ error_404 }}</span>
-</h2>
-    <p class="head-boxes-foot">{{ error_404 }}</p>
-</div>
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .error-icon {
+      font-size: 6rem;
+      color: #dc3545;
+    }
+    .error-box {
+      max-width: 600px;
+      margin: auto;
+    }
+  </style>
 
-<div class="card">
-    <div class="card-body titlehead"><br>
-            <center>
-        
-              <h3>{{ help }}</h3><br>
-              <i class="bi bi-emoji-frown" style="font-size: 6rem; color: #c4183c;"></i>
-              <h1 style="font-family: Georgia, serif;font-size: 58px;font-style: italic;">{{ error_404 }}</h1>
-              <p>{{ message_404 }}</p>
-        
-              <p><a class="btn btn-warning" href="javascript: history.back(-1)">{{ back }}</a></p>
-              <br />
-            </center>
-        
+
+  <div class="container text-center py-5">
+    <div class="error-box bg-white shadow rounded p-5">
+      <div class="mb-4">
+        <i class="bi bi-emoji-frown error-icon"></i>
+      </div>
+      <h1 class="display-4">Seite nicht gefunden</h1>
+      <p class="lead text-muted mb-4">
+        Die angeforderte Seite konnte nicht gefunden werden. Möglicherweise wurde sie verschoben oder existiert nicht mehr.
+      </p>
+      <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+        <a href="/" class="btn btn-primary">
+          <i class="bi bi-house-door-fill me-1"></i> Zur Startseite
+        </a>
+        <a href="javascript:history.back()" class="btn btn-outline-secondary">
+          <i class="bi bi-arrow-left me-1"></i> Zurück
+        </a>
+        <a href="index.php?site=contact" class="btn btn-outline-danger">
+          <i class="bi bi-envelope-fill me-1"></i> Support kontaktieren
+        </a>
+      </div>
     </div>
-</div>
+  </div>
+
+
+
 <!-- END -->

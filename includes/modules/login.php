@@ -46,7 +46,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($user) {
             if (!empty($user['is_locked']) && (int)$user['is_locked'] === 1) {
                 // Konto ist gesperrt
-                $message = '<div class="alert alert-danger" role="alert">Dein Konto wurde gesperrt. Bitte kontaktiere den Support.</div>';
+                $message = '<div class="alert alert-danger" role="alert"><b>Dein Konto wurde vorübergehend gesperrt.</b><br><br>
+                Dies kann z.B. aufgrund von Regelverstößen, verdächtigen Aktivitäten oder auf deinen eigenen Wunsch hin erfolgt sein.<br><br>
+                Bitte wende dich an unser Support-Team, um weitere Details zu erfahren oder eine Entsperrung zu beantragen.</div>';
                 $isIpBanned = true;
             } else {
                 // Benutzerinformationen in der Session speichern
