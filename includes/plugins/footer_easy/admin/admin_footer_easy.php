@@ -13,7 +13,7 @@ $_SESSION['language'] = $_SESSION['language'] ?? 'de';
 global $languageService;
 $languageService = new LanguageService($_database);
 
-// Admin-Modul-Sprache laden (z. B. admin/language/de/footer_easy.php)
+// Admin-Modul-Sprache laden
 $languageService->readPluginModule('footer_easy');
 
 use webspell\AccessControl;
