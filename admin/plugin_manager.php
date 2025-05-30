@@ -1,11 +1,22 @@
 <?php
 
-// Überprüfen, ob die Session bereits gestartet wurde
-if (session_status() == PHP_SESSION_NONE) {
+use webspell\LanguageService;
+
+// Session absichern
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-$_language->readModule('plugin_manager', false, true);
+// Standard setzen, wenn nicht vorhanden
+$_SESSION['language'] = $_SESSION['language'] ?? 'de';
+
+// Initialisieren
+global $languageService;
+$lang = $languageService->detectLanguage();
+$languageService = new LanguageService($_database);
+
+// Admin-Modul laden
+$languageService->readModule('plugin_manager', true);
 
 use webspell\AccessControl;
 // Den Admin-Zugriff für das Modul überprüfen
@@ -47,11 +58,11 @@ if (!empty(@$db['active'] == 1) !== false) {
 
             safe_query("UPDATE `settings_plugins` SET `activate` = '0' WHERE `pluginID` = '" . $id . "';");
             safe_query("UPDATE `navigation_website_sub` SET `indropdown` = '0' WHERE `modulname` =  '" . $_GET['modulname'] . "';");
-            echo $_language->module['success_deactivated'];
+            echo $languageService->get('success_deactivated');
             redirect("admincenter.php?site=plugin_manager", "", 1);
             return false;
         } catch (Exception $e) {
-            echo $_language->module['success_deactivated'] . "<br /><br />" . $e->getMessage();
+            echo $languageService->get('success_deactivated') . "<br /><br />" . $e->getMessage();
             redirect("admincenter.php?site=plugin_manager", "", 5);
             return false;
         }
@@ -60,11 +71,11 @@ if (!empty(@$db['active'] == 1) !== false) {
         try {
             safe_query("UPDATE `settings_plugins` SET `activate` = '1' WHERE `pluginID` = '" . $id . "';");
             safe_query("UPDATE `navigation_website_sub` SET `indropdown` = '1' WHERE `modulname` =  '" . $_GET['modulname'] . "';");
-            echo $_language->module['success_activated'];
+            echo $languageService->get('success_activated');
             redirect("admincenter.php?site=plugin_manager", "", 1);
             return false;
         } catch (Exception $e) {
-            echo $_language->module['failed_activated'] . "<br /><br />" . $e->getMessage();
+            echo $languageService->get('failed_activated') . "<br /><br />" . $e->getMessage();
             redirect("admincenter.php?site=plugin_manager", "", 5);
             return false;
         }
@@ -130,11 +141,11 @@ if (!empty(@$db['active'] == 1) !== false) {
             "
             );
 
-            echo $_language->module['success_save'] . "<br /><br />";
+            echo $languageService->get('success_save') . "<br /><br />";
             redirect("admincenter.php?site=plugin_manager", "", 1);
             return false;
         } catch (Exception $e) {
-            echo $_language->module['failed_save'] . "<br /><br />" . $e->getMessage();
+            echo $languageService->get('failed_save') . "<br /><br />" . $e->getMessage();
             redirect("admincenter.php?site=plugin_manager", "", 5);
             return false;
         }
@@ -153,7 +164,7 @@ if (!empty(@$db['active'] == 1) !== false) {
         if (mysqli_num_rows($plugin_name_query) > 0) {
             $plugin_name = mysqli_fetch_assoc($plugin_name_query)['modulname'];
 
-            echo '<div class="alert alert-info"><strong><i class="bi bi-trash3"></i> ' . $_language->module['delete_plugin'] . ':</strong> ' . htmlspecialchars($plugin_name, ENT_QUOTES, 'UTF-8') . '</div>';
+            echo '<div class="alert alert-info"><strong><i class="bi bi-trash3"></i> ' . $languageService->get('delete_plugin') . ':</strong> ' . htmlspecialchars($plugin_name, ENT_QUOTES, 'UTF-8') . '</div>';
 
             // 1️ Remove widgets from the general table
             $delete_widgets = safe_query("DELETE FROM `settings_plugins_widget` WHERE `modulname` = '$plugin_name'");
@@ -210,11 +221,11 @@ if (!empty(@$db['active'] == 1) !== false) {
             "
             );
 
-            echo $_language->module['success_save'] . "<br /><br />";
+            echo $languageService->get('success_save') . "<br /><br />";
             redirect("admincenter.php?site=plugin_manager&action=edit&id=" . $_POST['id'] . "&do=edit", "", 1);
             return false;
         } catch (Exception $e) {
-            echo $_language->module['failed_save'] . "<br /><br />" . $e->getMessage();
+            echo $languageService->get('failed_save') . "<br /><br />" . $e->getMessage();
             redirect("admincenter.php?site=plugin_manager&action=edit&id=" . $_POST['id'] . "&do=edit", "", 5);
             return false;
         }
@@ -242,11 +253,11 @@ if (!empty(@$db['active'] == 1) !== false) {
 
       WHERE `id` = '" . intval($_POST['id']) . "'");
 
-            echo $_language->module['success_edit'] . "<br /><br />";
+            echo $languageService->get('success_edit') . "<br /><br />";
             redirect("admincenter.php?site=plugin_manager&action=edit&id=" . $_POST['xid'] . "&do=edit", "", 1);
             return false;
         } catch (Exception $e) {
-            echo $_language->module['failed_edit'] . "<br /><br />" . $e->getMessage();
+            echo $languageService->get('failed_edit') . "<br /><br />" . $e->getMessage();
             redirect("admincenter.php?site=plugin_manager&action=edit&id=" . $_POST['xid'] . "&do=edit", "", 5);
             return false;
         }
@@ -279,11 +290,11 @@ if (!empty(@$db['active'] == 1) !== false) {
 	        
             WHERE `pluginID` = '" . intval($_POST['pid']) . "'");
 
-            echo $_language->module['success_edit'] . "<br /><br />";
+            echo $languageService->get('success_edit') . "<br /><br />";
             redirect("admincenter.php?site=plugin_manager", "", 1);
             return false;
         } catch (Exception $e) {
-            echo $_language->module['failed_edit'] . "<br /><br />" . $e->getMessage();
+            echo $languageService->get('failed_edit') . "<br /><br />" . $e->getMessage();
             redirect("admincenter.php?site=plugin_manager", "", 5);
             return false;
         }
@@ -310,7 +321,7 @@ if (!empty(@$db['active'] == 1) !== false) {
 
             redirect("admincenter.php?site=plugin_manager&action=widget_edit&id=" . $id . "&do=edit", "", "1");
         } else {
-            echo '' . $_language->module['transaction_invalid'] . '';
+            echo '' . $languageService->get('transaction_invalid') . '';
         }
     }
 
@@ -360,7 +371,7 @@ if (!empty(@$db['active'] == 1) !== false) {
 
             redirect("admincenter.php?site=plugin_manager&action=widget_edit&id=" . $id . "&do=edit", "", "1");
         } else {
-            echo '' . $_language->module['transaction_invalid'] . '';
+            echo '' . $languageService->get('transaction_invalid') . '';
         }
     }
     ###HEADER#################################
@@ -385,7 +396,7 @@ if (!empty(@$db['active'] == 1) !== false) {
 
             redirect("admincenter.php?site=plugin_manager&action=widget_edit&id=" . $id . "&do=edit", "", "1");
         } else {
-            echo '' . $_language->module['transaction_invalid'] . '';
+            echo '' . $languageService->get('transaction_invalid') . '';
         }
     }
 
@@ -435,7 +446,7 @@ if (!empty(@$db['active'] == 1) !== false) {
 
             redirect("admincenter.php?site=plugin_manager&action=widget_edit&id=" . $id . "&do=edit", "", "1");
         } else {
-            echo '' . $_language->module['transaction_invalid'] . '';
+            echo '' . $languageService->get('transaction_invalid') . '';
         }
     }
     ###NAVIGATION#################################
@@ -460,7 +471,7 @@ if (!empty(@$db['active'] == 1) !== false) {
 
             redirect("admincenter.php?site=plugin_manager&action=widget_edit&id=" . $id . "&do=edit", "", "1");
         } else {
-            echo '' . $_language->module['transaction_invalid'] . '';
+            echo '' . $languageService->get('transaction_invalid') . '';
         }
     }
 
@@ -510,7 +521,7 @@ if (!empty(@$db['active'] == 1) !== false) {
 
             redirect("admincenter.php?site=plugin_manager&action=widget_edit&id=" . $id . "&do=edit", "", "1");
         } else {
-            echo '' . $_language->module['transaction_invalid'] . '';
+            echo '' . $languageService->get('transaction_invalid') . '';
         }
     }
     ###content_head#################################
@@ -535,7 +546,7 @@ if (!empty(@$db['active'] == 1) !== false) {
 
             redirect("admincenter.php?site=plugin_manager&action=widget_edit&id=" . $id . "&do=edit", "", "1");
         } else {
-            echo '' . $_language->module['transaction_invalid'] . '';
+            echo '' . $languageService->get('transaction_invalid') . '';
         }
     }
 
@@ -585,7 +596,7 @@ if (!empty(@$db['active'] == 1) !== false) {
 
             redirect("admincenter.php?site=plugin_manager&action=widget_edit&id=" . $id . "&do=edit", "", "1");
         } else {
-            echo '' . $_language->module['transaction_invalid'] . '';
+            echo '' . $languageService->get('transaction_invalid') . '';
         }
     }
     ###content_up#################################
@@ -610,7 +621,7 @@ if (!empty(@$db['active'] == 1) !== false) {
 
             redirect("admincenter.php?site=plugin_manager&action=widget_edit&id=" . $id . "&do=edit", "", "1");
         } else {
-            echo '' . $_language->module['transaction_invalid'] . '';
+            echo '' . $languageService->get('transaction_invalid') . '';
         }
     }
 
@@ -660,7 +671,7 @@ if (!empty(@$db['active'] == 1) !== false) {
 
             redirect("admincenter.php?site=plugin_manager&action=widget_edit&id=" . $id . "&do=edit", "", "1");
         } else {
-            echo '' . $_language->module['transaction_invalid'] . '';
+            echo '' . $languageService->get('transaction_invalid') . '';
         }
     }
     ###content_down#################################
@@ -685,7 +696,7 @@ if (!empty(@$db['active'] == 1) !== false) {
 
             redirect("admincenter.php?site=plugin_manager&action=widget_edit&id=" . $id . "&do=edit", "", "1");
         } else {
-            echo '' . $_language->module['transaction_invalid'] . '';
+            echo '' . $languageService->get('transaction_invalid') . '';
         }
     }
 
@@ -735,7 +746,7 @@ if (!empty(@$db['active'] == 1) !== false) {
 
             redirect("admincenter.php?site=plugin_manager&action=widget_edit&id=" . $id . "&do=edit", "", "1");
         } else {
-            echo '' . $_language->module['transaction_invalid'] . '';
+            echo '' . $languageService->get('transaction_invalid') . '';
         }
     }
     ###left sidebar#################################
@@ -760,7 +771,7 @@ if (!empty(@$db['active'] == 1) !== false) {
 
             redirect("admincenter.php?site=plugin_manager&action=widget_edit&id=" . $id . "&do=edit", "", "1");
         } else {
-            echo '' . $_language->module['transaction_invalid'] . '';
+            echo '' . $languageService->get('transaction_invalid') . '';
         }
     }
 
@@ -810,7 +821,7 @@ if (!empty(@$db['active'] == 1) !== false) {
 
             redirect("admincenter.php?site=plugin_manager&action=widget_edit&id=" . $id . "&do=edit", "", "1");
         } else {
-            echo '' . $_language->module['transaction_invalid'] . '';
+            echo '' . $languageService->get('transaction_invalid') . '';
         }
     }
     ###right sidebar#################################
@@ -837,7 +848,7 @@ if (!empty(@$db['active'] == 1) !== false) {
 
             redirect("admincenter.php?site=plugin_manager&action=widget_edit&id=" . $id . "&do=edit", "", "1");
         } else {
-            echo '' . $_language->module['transaction_invalid'] . '';
+            echo '' . $languageService->get('transaction_invalid') . '';
         }
     }
 
@@ -889,7 +900,7 @@ if (!empty(@$db['active'] == 1) !== false) {
 
             redirect("admincenter.php?site=plugin_manager&action=widget_edit&id=" . $id . "&do=edit", "", "1");
         } else {
-            echo '' . $_language->module['transaction_invalid'] . '';
+            echo '' . $languageService->get('transaction_invalid') . '';
         }
     }
     ###right sidebar#################################
@@ -914,7 +925,7 @@ if (!empty(@$db['active'] == 1) !== false) {
 
             redirect("admincenter.php?site=plugin_manager&action=widget_edit&id=" . $id . "&do=edit", "", "1");
         } else {
-            echo '' . $_language->module['transaction_invalid'] . '';
+            echo '' . $languageService->get('transaction_invalid') . '';
         }
     }
 
@@ -964,7 +975,7 @@ if (!empty(@$db['active'] == 1) !== false) {
 
             redirect("admincenter.php?site=plugin_manager&action=widget_edit&id=" . $id . "&do=edit", "", "1");
         } else {
-            echo '' . $_language->module['transaction_invalid'] . '';
+            echo '' . $languageService->get('transaction_invalid') . '';
         }
     }
     ###content_foot#################################
@@ -989,7 +1000,7 @@ if (!empty(@$db['active'] == 1) !== false) {
 
             redirect("admincenter.php?site=plugin_manager&action=widget_edit&id=" . $id . "&do=edit", "", "1");
         } else {
-            echo '' . $_language->module['transaction_invalid'] . '';
+            echo '' . $languageService->get('transaction_invalid') . '';
         }
     }
 
@@ -1039,7 +1050,7 @@ if (!empty(@$db['active'] == 1) !== false) {
 
             redirect("admincenter.php?site=plugin_manager&action=widget_edit&id=" . $id . "&do=edit", "", "1");
         } else {
-            echo '' . $_language->module['transaction_invalid'] . '';
+            echo '' . $languageService->get('transaction_invalid') . '';
         }
     }
     ###FOOTER#################################
@@ -1053,7 +1064,7 @@ if (!empty(@$db['active'] == 1) !== false) {
                 safe_query("UPDATE plugins_" . $_POST['modulname'] . "_settings_widgets SET sort='" . $sorter[1] . "' WHERE id='" . $sorter[0] . "' ");
             }
         } else {
-            echo $_language->module['transaction_invalid'];
+            echo $languageService->get('transaction_invalid');
         }
     }
 
@@ -1100,11 +1111,11 @@ if (!empty(@$db['active'] == 1) !== false) {
             safe_query("DELETE FROM plugins_userlist_settings_widgets WHERE widgetname='" . $_GET['widgetname'] . "'");
             safe_query("DELETE FROM plugins_whoisonline_settings_widgets WHERE widgetname='" . $_GET['widgetname'] . "'");
 
-            echo $_language->module['success_delete'];
+            echo $languageService->get('success_delete');
             redirect("admincenter.php?site=plugin_manager&action=edit&id=" . $id . "&do=edit", "", 1);
         } else {
-            echo $_language->module['failed_delete'] . "<br /><br />" . $e->getMessage();
-            echo $_language->module['transaction_invalid'];
+            echo $languageService->get('failed_delete') . "<br /><br />" . $e->getMessage();
+            echo $languageService->get('transaction_invalid');
         }
     }
 
@@ -1121,12 +1132,12 @@ if (!empty(@$db['active'] == 1) !== false) {
 
         echo '<div class="card">
         <div class="card-header"><i class="bi bi-puzzle"></i> 
-            ' . $_language->module['plugin_manager'] . '
+            ' . $languageService->get('plugin_manager') . '
         </div>
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="admincenter.php?site=plugin_manager">' . $_language->module['plugin_manager'] . '</a></li>
-            <li class="breadcrumb-item active" aria-current="page">' . $_language->module['widget_side'] . '</li>
+            <li class="breadcrumb-item"><a href="admincenter.php?site=plugin_manager">' . $languageService->get('plugin_manager') . '</a></li>
+            <li class="breadcrumb-item active" aria-current="page">' . $languageService->get('widget_side') . '</li>
           </ol>
         </nav>
         <div class="card-body">';
@@ -1145,7 +1156,7 @@ if (!empty(@$db['active'] == 1) !== false) {
 
             $plugin_ID = $db['pluginID'];
 
-            echo '<h5>' . $_language->module['page'] . ': <a href="admincenter.php?site=plugin_manager&amp;action=edit&amp;id=' . $plugin_ID . '">' . $db['name'] . '</a></h5>';
+            echo '<h5>' . $languageService->get('page') . ': <a href="admincenter.php?site=plugin_manager&amp;action=edit&amp;id=' . $plugin_ID . '">' . $db['name'] . '</a></h5>';
         }
 
         echo '<form class="form-horizontal" method="post">
@@ -1153,13 +1164,13 @@ if (!empty(@$db['active'] == 1) !== false) {
             <table class="table table-striped table-bordered">              
             <thead>
                 <tr>                              
-                    <th class="text-bg-secondary p-3" style="width:25%"><i class="bi bi-layout-text-sidebar-reverse"></i> ' . $_language->module['widget_name'] . '</th>
-                    <th class="text-bg-secondary p-3"><i class="bi bi-grid-3x2"></i> ' . $_language->module['area'] . '</th>
+                    <th class="text-bg-secondary p-3" style="width:25%"><i class="bi bi-layout-text-sidebar-reverse"></i> ' . $languageService->get('widget_name') . '</th>
+                    <th class="text-bg-secondary p-3"><i class="bi bi-grid-3x2"></i> ' . $languageService->get('area') . '</th>
                 </tr>
             </thead>
             <tbody>
             <tr>
-                <td><span class="badge border border-success text-black bg-info" style="width: 100%">' . $_language->module['header1'] . '</span><br>';
+                <td><span class="badge border border-success text-black bg-info" style="width: 100%">' . $languageService->get('header1') . '</span><br>';
         $header_plugins_widget = safe_query("SELECT * FROM settings_plugins_widget WHERE area = '1' ORDER BY widgetname ASC");
         $i = 1;
         while ($header_off = mysqli_fetch_array($header_plugins_widget)) {
@@ -1178,10 +1189,10 @@ if (!empty(@$db['active'] == 1) !== false) {
             }
             $i++;
         }
-        echo '<br><button class="btn btn-success" style="font-size: 10px;margin-top:10px;" type="submit" name="header_activ"><i class="bi bi-plus-circle"></i> ' . $_language->module['widget_off_setting'] . '</button>
+        echo '<br><button class="btn btn-success" style="font-size: 10px;margin-top:10px;" type="submit" name="header_activ"><i class="bi bi-plus-circle"></i> ' . $languageService->get('widget_off_setting') . '</button>
                 </td>
                 <td class=" text-center"  style="align-content: center;">     
-                    ' . $_language->module['header'] . '
+                    ' . $languageService->get('header') . '
                     <div class="alert alert-success text-center" style="padding: 5px"><div class="border border-danger container text-center mt-3 alert alert-secondary">';
         $xheader_ergebnis = safe_query("SELECT * FROM plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND  position='header_widget' ORDER BY sort");
         $tmp = mysqli_fetch_assoc(safe_query("SELECT count(id) as cnt FROM plugins_" . $dw['modulname'] . "_settings_widgets"));
@@ -1211,12 +1222,12 @@ if (!empty(@$db['active'] == 1) !== false) {
             echo '<br>
                         <input type="hidden" name="captcha_hash" value="' . $hash . '">';
         }
-        echo '<button class="btn btn-danger" style="font-size: 10px;margin-top:10px;" type="submit" name="header_deactivated"><i class="bi bi-trash3"></i> ' . $_language->module['widget_on_setting'] . '</>
+        echo '<button class="btn btn-danger" style="font-size: 10px;margin-top:10px;" type="submit" name="header_deactivated"><i class="bi bi-trash3"></i> ' . $languageService->get('widget_on_setting') . '</>
                     </div></div>
                 </td>
             </tr>
             <tr>
-                <td><span class="badge border border-success text-black bg-info" style="width: 100%">' . $_language->module['navigation'] . '</span><br>';
+                <td><span class="badge border border-success text-black bg-info" style="width: 100%">' . $languageService->get('navigation') . '</span><br>';
         $navigation_plugins_widget = safe_query("SELECT * FROM settings_plugins_widget WHERE area = '2' ORDER BY widgetname ASC");
         $i = 1;
         while ($navigation_off = mysqli_fetch_array($navigation_plugins_widget)) {
@@ -1235,10 +1246,10 @@ if (!empty(@$db['active'] == 1) !== false) {
             }
             $i++;
         }
-        echo '</br><button class="btn btn-success" style="font-size: 10px;margin-top:10px;" type="submit" name="navigation_activ"><i class="bi bi-plus-circle"></i> ' . $_language->module['widget_off_setting'] . '</button>
+        echo '</br><button class="btn btn-success" style="font-size: 10px;margin-top:10px;" type="submit" name="navigation_activ"><i class="bi bi-plus-circle"></i> ' . $languageService->get('widget_off_setting') . '</button>
                 </td>
                 <td class=" text-center"  style="align-content: center;">
-                    ' . $_language->module['navigation'] . '
+                    ' . $languageService->get('navigation') . '
                     <div class="alert alert-success text-center" style="padding: 5px"><div class="border border-danger container text-center mt-3 alert alert-secondary">';
         $xnavigation_ergebnis = safe_query("SELECT * FROM plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND  position='navigation_widget' ORDER BY sort");
         $tmp = mysqli_fetch_assoc(safe_query("SELECT count(id) as cnt FROM plugins_" . $dw['modulname'] . "_settings_widgets"));
@@ -1268,12 +1279,12 @@ if (!empty(@$db['active'] == 1) !== false) {
             echo '<br>
                         <input type="hidden" name="captcha_hash" value="' . $hash . '">';
         }
-        echo '<button class="btn btn-danger" style="font-size: 10px;margin-top:10px;" type="submit" name="navigation_deactivated"><i class="bi bi-trash3"></i> ' . $_language->module['widget_on_setting'] . '</button>
+        echo '<button class="btn btn-danger" style="font-size: 10px;margin-top:10px;" type="submit" name="navigation_deactivated"><i class="bi bi-trash3"></i> ' . $languageService->get('widget_on_setting') . '</button>
                     </div></div>
                 </td>
             </tr>
             <tr>
-                <td><span class="badge border border-success text-black bg-info" style="width: 100%">' . $_language->module['content_head1'] . '</span><br>';
+                <td><span class="badge border border-success text-black bg-info" style="width: 100%">' . $languageService->get('content_head1') . '</span><br>';
         $content_head_plugins_widget = safe_query("SELECT * FROM settings_plugins_widget WHERE area = '3' ORDER BY widgetname ASC");
         $i = 1;
         while ($content_head_off = mysqli_fetch_array($content_head_plugins_widget)) {
@@ -1292,10 +1303,10 @@ if (!empty(@$db['active'] == 1) !== false) {
             }
             $i++;
         }
-        echo '</br><button class="btn btn-success" style="font-size: 10px;margin-top:10px;" type="submit" name="content_head_activ"><i class="bi bi-plus-circle"></i> ' . $_language->module['widget_off_setting'] . '</button>
+        echo '</br><button class="btn btn-success" style="font-size: 10px;margin-top:10px;" type="submit" name="content_head_activ"><i class="bi bi-plus-circle"></i> ' . $languageService->get('widget_off_setting') . '</button>
                 </td>
                 <td class=" text-center" style="align-content: center;">
-                    ' . $_language->module['content_head'] . '
+                    ' . $languageService->get('content_head') . '
                     <div class="alert alert-success text-center" style="padding: 5px"><div class="border border-danger container text-center mt-3 alert alert-secondary">';
         $xcontent_head_ergebnis = safe_query("SELECT * FROM plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND  position='content_head_widget' ORDER BY sort");
         $tmp = mysqli_fetch_assoc(safe_query("SELECT count(id) as cnt FROM plugins_" . $dw['modulname'] . "_settings_widgets"));
@@ -1325,12 +1336,12 @@ if (!empty(@$db['active'] == 1) !== false) {
             echo '<br>
                         <input type="hidden" name="captcha_hash" value="' . $hash . '">';
         }
-        echo '<button class="btn btn-danger" style="font-size: 10px;margin-top:10px;" type="submit" name="content_head_deactivated"><i class="bi bi-trash3"></i> ' . $_language->module['widget_on_setting'] . '</button></div></div>
+        echo '<button class="btn btn-danger" style="font-size: 10px;margin-top:10px;" type="submit" name="content_head_deactivated"><i class="bi bi-trash3"></i> ' . $languageService->get('widget_on_setting') . '</button></div></div>
                 </td>
             </tr>
 			<!-- ################################### Inizio testa alta -->
 			<tr>
-                <td><span class="badge border border-success text-black bg-info" style="width: 100%">' . $_language->module['content_up1'] . '</span><br>';
+                <td><span class="badge border border-success text-black bg-info" style="width: 100%">' . $languageService->get('content_up1') . '</span><br>';
         $content_up_plugins_widget = safe_query("SELECT * FROM settings_plugins_widget WHERE area = '3' ORDER BY widgetname ASC");
         $i = 1;
         while ($content_up_off = mysqli_fetch_array($content_up_plugins_widget)) {
@@ -1349,10 +1360,10 @@ if (!empty(@$db['active'] == 1) !== false) {
             }
             $i++;
         }
-        echo '</br><button class="btn btn-success" style="font-size: 10px;margin-top:10px;" type="submit" name="content_up_activ"><i class="bi bi-plus-circle"></i> ' . $_language->module['widget_off_setting'] . '</button>
+        echo '</br><button class="btn btn-success" style="font-size: 10px;margin-top:10px;" type="submit" name="content_up_activ"><i class="bi bi-plus-circle"></i> ' . $languageService->get('widget_off_setting') . '</button>
                 </td>
                 <td class=" text-center" style="align-content: end;">
-				<div class="container text-center" style="padding-top: 10px">' . $_language->module['content_up'] . '
+				<div class="container text-center" style="padding-top: 10px">' . $languageService->get('content_up') . '
     <div class="row">
         <div class="col-3 text-start" style="padding: 5px">
             <div class="border border-danger alert alert-success text-center" style="height: 90%; padding: 5px"></div>
@@ -1392,7 +1403,7 @@ if (!empty(@$db['active'] == 1) !== false) {
             echo '<br>
                         <input type="hidden" name="captcha_hash" value="' . $hash . '">';
         }
-        echo '<button class="btn btn-danger" style="font-size: 10px;margin-top:10px;" type="submit" name="content_up_deactivated"><i class="bi bi-trash3"></i> ' . $_language->module['widget_on_setting'] . '</button></div></div>
+        echo '<button class="btn btn-danger" style="font-size: 10px;margin-top:10px;" type="submit" name="content_up_deactivated"><i class="bi bi-trash3"></i> ' . $languageService->get('widget_on_setting') . '</button></div></div>
         <div class="col-3 text-end" style="padding: 5px">
             <div class="border border-danger alert alert-success text-center" style="height: 90%; padding: 5px"></div>
         </div>
@@ -1402,7 +1413,7 @@ if (!empty(@$db['active'] == 1) !== false) {
 			<!-- ################################### fine testa alta -->
             <tr>
                 <td>
-                    <span class="badge border border-success text-black bg-info" style="width: 100%">' . $_language->module['left'] . '</span><br>';
+                    <span class="badge border border-success text-black bg-info" style="width: 100%">' . $languageService->get('left') . '</span><br>';
         $sidebar_left_plugins_widget = safe_query("SELECT * FROM settings_plugins_widget WHERE area = '4' ORDER BY widgetname ASC");
         $i = 1;
         while ($sidebar_left_off = mysqli_fetch_array($sidebar_left_plugins_widget)) {
@@ -1421,9 +1432,9 @@ if (!empty(@$db['active'] == 1) !== false) {
             }
             $i++;
         }
-        echo '</br><button class="btn btn-success" style="font-size: 10px;margin-top:10px;" type="submit" name="sidebar_left_activ"><i class="bi bi-plus-circle"></i> ' . $_language->module['widget_off_setting'] . '</button>
+        echo '</br><button class="btn btn-success" style="font-size: 10px;margin-top:10px;" type="submit" name="sidebar_left_activ"><i class="bi bi-plus-circle"></i> ' . $languageService->get('widget_off_setting') . '</button>
                     <hr>
-                    <span class="badge border border-success text-black bg-info" style="width: 100%">' . $_language->module['right'] . '</span><br>';
+                    <span class="badge border border-success text-black bg-info" style="width: 100%">' . $languageService->get('right') . '</span><br>';
         $sidebar_right_plugins_widget = safe_query("SELECT * FROM settings_plugins_widget WHERE area = '4' ORDER BY widgetname ASC");
         $i = 1;
         while ($sidebar_right_off = mysqli_fetch_array($sidebar_right_plugins_widget)) {
@@ -1443,16 +1454,16 @@ if (!empty(@$db['active'] == 1) !== false) {
             }
             $i++;
         }
-        echo '<br><button class="btn btn-success" style="font-size: 10px;margin-top:10px;" type="submit" name="sidebar_right_activ"><i class="bi bi-plus-circle"></i> ' . $_language->module['widget_off_setting'] . '</button>
+        echo '<br><button class="btn btn-success" style="font-size: 10px;margin-top:10px;" type="submit" name="sidebar_right_activ"><i class="bi bi-plus-circle"></i> ' . $languageService->get('widget_off_setting') . '</button>
                 </td>
                 <td>
                     <div class="col text-center">   
-                        ' . $_language->module['right_left_active'] . '
+                        ' . $languageService->get('right_left_active') . '
                     </div>
                     <div class="container text-center" style="padding-top: 10px">
                         <div class="row">
                             <div class="col-3 text-start" style="padding: 5px">
-                                ' . $_language->module['left'] . '
+                                ' . $languageService->get('left') . '
                                 <div class="border border-danger alert alert-success text-center" style="height: 90%;padding: 5px">';
         $xsidebar_left_ergebnis = safe_query("SELECT * FROM plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND  position='left_side_widget' ORDER BY sort");
         $tmp = mysqli_fetch_assoc(safe_query("SELECT count(id) as cnt FROM plugins_" . $dw['modulname'] . "_settings_widgets"));
@@ -1482,15 +1493,15 @@ if (!empty(@$db['active'] == 1) !== false) {
             echo '<br>
                                     <input type="hidden" name="captcha_hash" value="' . $hash . '">';
         }
-        echo '<button class="btn btn-danger mb-3" style="font-size: 10px;margin-top:10px;" type="submit" name="sidebar_left_deactivated"><i class="bi bi-trash3"></i> ' . $_language->module['widget_on_setting'] . '</button>
+        echo '<button class="btn btn-danger mb-3" style="font-size: 10px;margin-top:10px;" type="submit" name="sidebar_left_deactivated"><i class="bi bi-trash3"></i> ' . $languageService->get('widget_on_setting') . '</button>
                                 </div>
                             </div>
                             <div class="col-6 text-start" style="padding: 5px">
-                                ' . $_language->module['main_area'] . '
-                                <div class="border border-danger col-12 text-center border-end alert alert-secondary" style="height: 90%;"><h5>' . $_language->module['main_area'] . '</h5></div>
+                                ' . $languageService->get('main_area') . '
+                                <div class="border border-danger col-12 text-center border-end alert alert-secondary" style="height: 90%;"><h5>' . $languageService->get('main_area') . '</h5></div>
                             </div>
                             <div class="col-3 text-end" style="padding: 5px">
-                                ' . $_language->module['right'] . '
+                                ' . $languageService->get('right') . '
                                 <div class="border border-danger alert alert-success text-center" style="height: 90%;padding: 5px">';
         $xsidebar_right_ergebnis = safe_query("SELECT * FROM plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND  position='right_side_widget' ORDER BY sort");
         $tmp = mysqli_fetch_assoc(safe_query("SELECT count(id) as cnt FROM plugins_" . $dw['modulname'] . "_settings_widgets"));
@@ -1520,7 +1531,7 @@ if (!empty(@$db['active'] == 1) !== false) {
             echo '<br>
                                     <input type="hidden" name="captcha_hash" value="' . $hash . '">';
         }
-        echo '<button class="btn btn-danger mb-3" style="font-size: 10px;margin-top:10px;" type="submit" name="sidebar_right_deactivated"><i class="bi bi-trash3"></i> ' . $_language->module['widget_on_setting'] . '</button>
+        echo '<button class="btn btn-danger mb-3" style="font-size: 10px;margin-top:10px;" type="submit" name="sidebar_right_deactivated"><i class="bi bi-trash3"></i> ' . $languageService->get('widget_on_setting') . '</button>
                                 </div>
                             </div>
                         </div>
@@ -1530,7 +1541,7 @@ if (!empty(@$db['active'] == 1) !== false) {
             
 			<!-- ################################### Inizio testa bassa -->
 			<tr>
-                <td><span class="badge border border-success text-black bg-info" style="width: 100%">' . $_language->module['content_down1'] . '</span><br>';
+                <td><span class="badge border border-success text-black bg-info" style="width: 100%">' . $languageService->get('content_down1') . '</span><br>';
         $content_down_plugins_widget = safe_query("SELECT * FROM settings_plugins_widget WHERE area = '3' ORDER BY widgetname ASC");
         $i = 1;
         while ($content_down_off = mysqli_fetch_array($content_down_plugins_widget)) {
@@ -1549,10 +1560,10 @@ if (!empty(@$db['active'] == 1) !== false) {
             }
             $i++;
         }
-        echo '</br><button class="btn btn-success" style="font-size: 10px;margin-top:10px;" type="submit" name="content_down_activ"><i class="bi bi-plus-circle"></i> ' . $_language->module['widget_off_setting'] . '</button>
+        echo '</br><button class="btn btn-success" style="font-size: 10px;margin-top:10px;" type="submit" name="content_down_activ"><i class="bi bi-plus-circle"></i> ' . $languageService->get('widget_off_setting') . '</button>
                 </td>
                 <td class=" text-center">
-				<div class="container text-center" style="padding-top: 10px">' . $_language->module['content_down'] . '
+				<div class="container text-center" style="padding-top: 10px">' . $languageService->get('content_down') . '
     <div class="row">
         <div class="col-3 text-start" style="padding: 5px">
             <div class="border border-danger alert alert-success text-center" style="height: 90%; padding: 5px"></div>
@@ -1592,7 +1603,7 @@ if (!empty(@$db['active'] == 1) !== false) {
             echo '<br>
                         <input type="hidden" name="captcha_hash" value="' . $hash . '">';
         }
-        echo '<button class="btn btn-danger" style="font-size: 10px;margin-top:10px;" type="submit" name="content_down_deactivated"><i class="bi bi-trash3"></i> ' . $_language->module['widget_on_setting'] . '</button></div></div>
+        echo '<button class="btn btn-danger" style="font-size: 10px;margin-top:10px;" type="submit" name="content_down_deactivated"><i class="bi bi-trash3"></i> ' . $languageService->get('widget_on_setting') . '</button></div></div>
         <div class="col-3 text-end" style="padding: 5px">
             <div class="border border-danger alert alert-success text-center" style="height: 90%; padding: 5px"></div>
         </div>
@@ -1600,7 +1611,7 @@ if (!empty(@$db['active'] == 1) !== false) {
                 </td>
             </tr><tr>
 			<!-- ################################### fine testa bassa -->
-                <td><span class="badge border border-success text-black bg-info" style="width: 100%">' . $_language->module['content_foot1'] . '</span><br>';
+                <td><span class="badge border border-success text-black bg-info" style="width: 100%">' . $languageService->get('content_foot1') . '</span><br>';
         $content_foot_plugins_widget = safe_query("SELECT * FROM settings_plugins_widget WHERE area = '3' ORDER BY widgetname ASC");
         $i = 1;
         while ($content_foot_off = mysqli_fetch_array($content_foot_plugins_widget)) {
@@ -1619,10 +1630,10 @@ if (!empty(@$db['active'] == 1) !== false) {
             }
             $i++;
         }
-        echo '</br><button class="btn btn-success" style="font-size: 10px;margin-top:10px;" type="submit" name="content_foot_activ"><i class="bi bi-plus-circle"></i> ' . $_language->module['widget_off_setting'] . '</button>
+        echo '</br><button class="btn btn-success" style="font-size: 10px;margin-top:10px;" type="submit" name="content_foot_activ"><i class="bi bi-plus-circle"></i> ' . $languageService->get('widget_off_setting') . '</button>
                 </td>
                 <td class=" text-center"  style="align-content: center;">
-                    ' . $_language->module['content_foot'] . '
+                    ' . $languageService->get('content_foot') . '
                     <div class="alert alert-success text-center" style="padding: 5px"><div class="border border-danger container text-center mt-3 alert alert-secondary">';
         $xcontent_foot_ergebnis = safe_query("SELECT * FROM plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND  position='content_foot_widget' ORDER BY sort");
         $tmp = mysqli_fetch_assoc(safe_query("SELECT count(id) as cnt FROM plugins_" . $dw['modulname'] . "_settings_widgets"));
@@ -1652,12 +1663,12 @@ if (!empty(@$db['active'] == 1) !== false) {
             echo '<br>
                         <input type="hidden" name="captcha_hash" value="' . $hash . '">';
         }
-        echo '<button class="btn btn-danger" style="font-size: 10px;margin-top:10px;" type="submit" name="content_foot_deactivated"><i class="bi bi-trash3"></i> ' . $_language->module['widget_on_setting'] . '</button>
+        echo '<button class="btn btn-danger" style="font-size: 10px;margin-top:10px;" type="submit" name="content_foot_deactivated"><i class="bi bi-trash3"></i> ' . $languageService->get('widget_on_setting') . '</button>
                     </div></div>
                 </td>
             </tr>
             <tr>
-                <td><span class="badge border border-success text-black bg-info" style="width: 100%">' . $_language->module['footer'] . '</span><br>';
+                <td><span class="badge border border-success text-black bg-info" style="width: 100%">' . $languageService->get('footer') . '</span><br>';
         $footer_plugins_widget = safe_query("SELECT * FROM settings_plugins_widget WHERE area = '6' ORDER BY widgetname ASC");
         $i = 1;
         while ($footer_off = mysqli_fetch_array($footer_plugins_widget)) {
@@ -1676,10 +1687,10 @@ if (!empty(@$db['active'] == 1) !== false) {
             }
             $i++;
         }
-        echo '</br><button class="btn btn-success" style="font-size: 10px;margin-top:10px;" type="submit" name="footer_activ"><i class="bi bi-plus-circle"></i> ' . $_language->module['widget_off_setting'] . '</button>
+        echo '</br><button class="btn btn-success" style="font-size: 10px;margin-top:10px;" type="submit" name="footer_activ"><i class="bi bi-plus-circle"></i> ' . $languageService->get('widget_off_setting') . '</button>
                 </td>
                 <td class=" text-center" style="align-content: center;">     
-                    ' . $_language->module['footer'] . '
+                    ' . $languageService->get('footer') . '
                     <div class="alert alert-success text-center" style="padding: 5px"><div class="border border-danger container text-center mt-3 alert alert-secondary">';
         $xfooter_ergebnis = safe_query("SELECT * FROM plugins_" . $dw['modulname'] . "_settings_widgets WHERE themes_modulname= '" . $dx['modulname'] . "' AND  position='footer_widget' ORDER BY sort");
         $tmp = mysqli_fetch_assoc(safe_query("SELECT count(id) as cnt FROM plugins_" . $dw['modulname'] . "_settings_widgets"));
@@ -1710,7 +1721,7 @@ if (!empty(@$db['active'] == 1) !== false) {
                         <input type="hidden" name="captcha_hash" value="' . $hash . '">';
         }
 
-        echo '<button class="btn btn-danger" style="font-size: 10px;margin-top:10px;" type="submit" name="footer_deactivated"><i class="bi bi-trash3"></i> ' . $_language->module['widget_on_setting'] . '</button>
+        echo '<button class="btn btn-danger" style="font-size: 10px;margin-top:10px;" type="submit" name="footer_deactivated"><i class="bi bi-trash3"></i> ' . $languageService->get('widget_on_setting') . '</button>
                     </div></div>
                 </td>
             </tr>';
@@ -1722,7 +1733,7 @@ if (!empty(@$db['active'] == 1) !== false) {
                 <input type="hidden" name="themes_modulname" value="' . $dx['modulname'] . '">
                 <input type="hidden" name="modulname" value="' . $dw['modulname'] . '">
                 <input type="hidden" name="id" value="' . $_GET['id'] . '">
-                <input type="hidden" name="captcha_hash" value="' . $hash_2 . '" /><button class="btn btn-primary" type="submit" name="sortieren" /><i class="bi bi-sort-numeric-up-alt"></i> ' . $_language->module['to_sort'] . '</button>
+                <input type="hidden" name="captcha_hash" value="' . $hash_2 . '" /><button class="btn btn-primary" type="submit" name="sortieren" /><i class="bi bi-sort-numeric-up-alt"></i> ' . $languageService->get('to_sort') . '</button>
             </td><td style="background-color: white!important;"style="background-color: white!important;"></td></tr>
             </tbody></table>
             </div></form>';
@@ -1738,12 +1749,12 @@ if (!empty(@$db['active'] == 1) !== false) {
 
         echo '<div class="card">
         <div class="card-header"><i class="bi bi-puzzle"></i> 
-            ' . $_language->module['plugin_manager'] . '
+            ' . $languageService->get('plugin_manager') . '
         </div>
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="admincenter.php?site=plugin_manager">' . $_language->module['plugin_manager'] . '</a></li>
-            <li class="breadcrumb-item active" aria-current="page">' . $_language->module['edit_plugin'] . '</li>
+            <li class="breadcrumb-item"><a href="admincenter.php?site=plugin_manager">' . $languageService->get('plugin_manager') . '</a></li>
+            <li class="breadcrumb-item active" aria-current="page">' . $languageService->get('edit_plugin') . '</li>
           </ol>
         </nav>
         <div class="card-body">';
@@ -1751,7 +1762,7 @@ if (!empty(@$db['active'] == 1) !== false) {
         $ergebnis = safe_query("SELECT * FROM `settings_plugins` WHERE `pluginID`='" . $id . "' LIMIT 1");
         $ds = mysqli_fetch_array($ergebnis);
 
-        $translate = new multiLanguage(detectCurrentLanguage());
+        $translate = new multiLanguage($lang);
         $translate->detectLanguages($ds['name']);
         $name = $translate->getTextByLanguage($ds['name']);
         $translate->detectLanguages($ds['info']);
@@ -1760,11 +1771,11 @@ if (!empty(@$db['active'] == 1) !== false) {
         if (@$ds['admin_file'] != '') {
 
             echo '<div class="mb-3 row">
-            <label class="col-md-1 control-label">' . $_language->module['options'] . ':</label>
+            <label class="col-md-1 control-label">' . $languageService->get('options') . ':</label>
             <div class="col-md-8">
-                <a class="btn btn-primary" data-toggle="tooltip" data-html="true" title="' . $_language->module['tooltip_7'] . ' " href="admincenter.php?site=' . $ds['admin_file'] . '"><i class="bi bi-gear"></i> ' . $name . '</a>
+                <a class="btn btn-primary" data-toggle="tooltip" data-html="true" title="' . $languageService->get('tooltip_7') . ' " href="admincenter.php?site=' . $ds['admin_file'] . '"><i class="bi bi-gear"></i> ' . $name . '</a>
 
-      <a href="admincenter.php?site=plugin_manager&action=widget_add&id=' . $id . '" class="btn btn-primary" type="button"><i class="bi bi-plus-circle"></i> ' . $_language->module['new_widget'] . '</a>
+      <a href="admincenter.php?site=plugin_manager&action=widget_add&id=' . $id . '" class="btn btn-primary" type="button"><i class="bi bi-plus-circle"></i> ' . $languageService->get('new_widget') . '</a>
 
             </div>
         </div>';
@@ -1775,12 +1786,12 @@ if (!empty(@$db['active'] == 1) !== false) {
         #$themeergebnis = safe_query("SELECT * FROM settings_themes WHERE active = '1'");
         #$db = mysqli_fetch_array($themeergebnis);
 
-        echo '<b>' . $_language->module['plugin_basic_setting'] . ':</b>
+        echo '<b>' . $languageService->get('plugin_basic_setting') . ':</b>
         <hr>
         <div class="mb-3 row">
             <input type="hidden" name="pid" value="' . $ds['pluginID'] . '" />    
-            <label class="col-sm-5 col-form-label" for="name">Plugin ' . $_language->module['name'] . ':<br>
-                ' . $_language->module['multi_language_info_name'] . '
+            <label class="col-sm-5 col-form-label" for="name">Plugin ' . $languageService->get('name') . ':<br>
+                ' . $languageService->get('multi_language_info_name') . '
             </label>
             <div class="col-sm-7">
                 <h4>' . $name . '</h4>
@@ -1789,8 +1800,8 @@ if (!empty(@$db['active'] == 1) !== false) {
             </div>
         </div>
         <div class="mb-3 row">
-            <label class="col-sm-5 col-form-label" for="name">' . $_language->module['description'] . ':<br>
-                ' . $_language->module['multi_language_info_description'] . '
+            <label class="col-sm-5 col-form-label" for="name">' . $languageService->get('description') . ':<br>
+                ' . $languageService->get('multi_language_info_description') . '
             </label>
             <div class="col-sm-7">
                 <p style="margin-top: 7px">' . $info . '</p>
@@ -1800,57 +1811,57 @@ if (!empty(@$db['active'] == 1) !== false) {
         </div>
    
         <div class="mb-3 row">
-            <label class="col-sm-5 col-form-label" for="author">' . $_language->module['author'] . ':</label>
+            <label class="col-sm-5 col-form-label" for="author">' . $languageService->get('author') . ':</label>
             <div class="col-sm-7"><span class="text-muted small"><em>
                 <input type="name" class="form-control" rows="5" name="author" value="' . $ds['author'] . '" placeholder="autor"></em></span>
             </div>
         </div>
         <div class="mb-3 row">
-            <label class="col-sm-5 col-form-label" for="website">' . $_language->module['website'] . ':</label>
+            <label class="col-sm-5 col-form-label" for="website">' . $languageService->get('website') . ':</label>
             <div class="col-sm-7"><span class="text-muted small"><em>
                 <input type="name" class="form-control" placeholder="http://" rows="5"  value="' . $ds['website'] . '" name="website"></em></span>
             </div>
         </div>
         <div class="mb-3 row">
-            <label class="col-sm-5 col-form-label" for="name">' . $_language->module['modulname'] . ': <br><small>(' . $_language->module['for_uninstall'] . ')</small></label>
+            <label class="col-sm-5 col-form-label" for="name">' . $languageService->get('modulname') . ': <br><small>(' . $languageService->get('for_uninstall') . ')</small></label>
             <div class="col-sm-7"><span class="text-muted small"><em>
                 <input type="name" class="form-control" name="modulname" value="' . $ds['modulname'] . '" disabled></em></span>
             </div>
         </div>
         <div class="mb-3 row">
-            <label class="col-sm-5 col-form-label" for="admin_file">' . $_language->module['admin_file'] . ': <br><small>(' . $_language->module['index_file_nophp'] . ')</small></label>
+            <label class="col-sm-5 col-form-label" for="admin_file">' . $languageService->get('admin_file') . ': <br><small>(' . $languageService->get('index_file_nophp') . ')</small></label>
             <div class="col-sm-7"><span class="text-muted small"><em>
                 <input type="name" class="form-control"  name="admin_file" value="' . $ds['admin_file'] . '" placeholder="admin file"></em></span>
             </div>
         </div>
         <div class="mb-3 row">
-            <label class="col-sm-5 col-form-label" for="index">' . $_language->module['index_file'] . ': <br><small>(' . $_language->module['index_file_nophp'] . ')</small></label>
+            <label class="col-sm-5 col-form-label" for="index">' . $languageService->get('index_file') . ': <br><small>(' . $languageService->get('index_file_nophp') . ')</small></label>
             <div class="col-sm-7"><span class="text-muted small"><em>
                 <input type="name" class="form-control" placeholder="index file" rows="5"  value="' . $ds['index_link'] . '" name="index"></em></span>
             </div>
         </div>
 
         <div class="mb-3 row">
-            <label class="col-sm-5 col-form-label" for="hittenfiles">' . $_language->module['hidden_file'] . ': <br><small>(' . $_language->module['hidden_file_seperate'] . ')</small></label>
+            <label class="col-sm-5 col-form-label" for="hittenfiles">' . $languageService->get('hidden_file') . ': <br><small>(' . $languageService->get('hidden_file_seperate') . ')</small></label>
             <div class="col-sm-7"><span class="text-muted small"><em>
                 <input type="name" class="form-control" rows="5" placeholder="myfile,secondfile,anotherfile" value="' . $ds['hiddenfiles'] . '" name="hiddenfiles"></em></span>
             </div>
         </div>
         <div class="mb-3 row">
-            <label class="col-sm-5 col-form-label" for="version">' . $_language->module['version_file'] . ':</label>
+            <label class="col-sm-5 col-form-label" for="version">' . $languageService->get('version_file') . ':</label>
             <div class="col-sm-7"><span class="text-muted small"><em>
                 <input type="name" class="form-control" rows="5" value="' . $ds['version'] . '" name="version" placeholder="version"></em></span>
             </div>
         </div>
         <div class="mb-3 row">
-            <label class="col-sm-5 col-form-label" for="path">' . $_language->module['folder_file'] . ': <br><small>(' . $_language->module['folder_file_slash'] . ')</small></label>
+            <label class="col-sm-5 col-form-label" for="path">' . $languageService->get('folder_file') . ': <br><small>(' . $languageService->get('folder_file_slash') . ')</small></label>
             <div class="col-sm-7"><span class="text-muted small"><em>
                 <input type="name" class="form-control" placeholder="includes/plugins/myplugin/"  value="' . $ds['path'] . '" rows="5" name="path"></em></span>
             </div>
         </div>
 <hr>
         <div class="mb-3 row">
-            <label class="col-sm-5 col-form-label" for="path">Widgets: <br><small>(' . $_language->module['widget_included_with_plugin'] . ')</small></label>  
+            <label class="col-sm-5 col-form-label" for="path">Widgets: <br><small>(' . $languageService->get('widget_included_with_plugin') . ')</small></label>  
             ';
 
         $widgetsergebnis = safe_query("SELECT * FROM settings_plugins_widget WHERE modulname = '" . $ds['modulname'] . "'");
@@ -1860,17 +1871,17 @@ if (!empty(@$db['active'] == 1) !== false) {
             $widget .= '<div class="col-sm-12">
                                 <div class="mb-3 row">
                                     <div class="col-sm-5 text-end">
-                                    <button type="button" class="btn btn-info" data-toggle="popover" data-bs-placement="left" data-img="../includes/plugins/' . $ds['modulname'] . '/images/' . $df['widgetdatei'] . '.jpg" title="Widget" ><i class="bi bi-image"></i> ' . $_language->module['preview_widget'] . '</button>
+                                    <button type="button" class="btn btn-info" data-toggle="popover" data-bs-placement="left" data-img="../includes/plugins/' . $ds['modulname'] . '/images/' . $df['widgetdatei'] . '.jpg" title="Widget" ><i class="bi bi-image"></i> ' . $languageService->get('preview_widget') . '</button>
                                     </div>                    
                                     <div class="col-sm-4">
                                         <div class="form-control">' . $df['widgetname'] . '</div>
                                     </div>
-                                    <div class="col-sm-3"><a href="admincenter.php?site=plugin_manager&action=edit_widget&id=' . $id . '&widgetname=' . $df['widgetname'] . '" class="btn btn-warning" type="button"><i class="bi bi-pencil-square"></i> ' . $_language->module['edit_widget'] . '</a>
+                                    <div class="col-sm-3"><a href="admincenter.php?site=plugin_manager&action=edit_widget&id=' . $id . '&widgetname=' . $df['widgetname'] . '" class="btn btn-warning" type="button"><i class="bi bi-pencil-square"></i> ' . $languageService->get('edit_widget') . '</a>
                                    
 
             <!-- Button trigger modal -->
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirm-delete" data-toggle="tooltip" data-html="true" title="' . $_language->module['tooltip_6'] . ' " data-href="admincenter.php?site=plugin_manager&amp;delete=true&amp;widgetname=' . $df['widgetname'] . '&amp;id=' . $id . '&amp;captcha_hash=' . $hash . '"><i class="bi bi-trash3"></i>  
-            ' . $_language->module['widget_delete'] . '
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirm-delete" data-toggle="tooltip" data-html="true" title="' . $languageService->get('tooltip_6') . ' " data-href="admincenter.php?site=plugin_manager&amp;delete=true&amp;widgetname=' . $df['widgetname'] . '&amp;id=' . $id . '&amp;captcha_hash=' . $hash . '"><i class="bi bi-trash3"></i>  
+            ' . $languageService->get('widget_delete') . '
             </button>
             <!-- Button trigger modal END-->
             <!-- Modal -->
@@ -1878,14 +1889,14 @@ if (!empty(@$db['active'] == 1) !== false) {
               <div class="modal-dialog">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">' . $_language->module['name'] . ': ' . $df['widgetname'] . '</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="' . $_language->module['close'] . '"></button>
+                    <h5 class="modal-title" id="exampleModalLabel">' . $languageService->get('name') . ': ' . $df['widgetname'] . '</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="' . $languageService->get('close') . '"></button>
                   </div>
-                  <div class="modal-body"><p>' . $_language->module['really_delete'] . '</p>
+                  <div class="modal-body"><p>' . $languageService->get('really_delete') . '</p>
                   </div>
                   <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-square"></i> ' . $_language->module['close'] . '</button>
-                    <a class="btn btn-danger btn-ok"><i class="bi bi-trash3"></i> ' . $_language->module['widget_delete'] . '</a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-square"></i> ' . $languageService->get('close') . '</button>
+                    <a class="btn btn-danger btn-ok"><i class="bi bi-trash3"></i> ' . $languageService->get('widget_delete') . '</a>
                   </div>
                 </div>
               </div>
@@ -1899,7 +1910,7 @@ if (!empty(@$db['active'] == 1) !== false) {
         if ($ds['modulname'] == @$modulname) {
             $xwidget = $widget;
         } else {
-            $xwidget = $_language->module['no_widget_available'];
+            $xwidget = $languageService->get('no_widget_available');
         }
 
         echo '' . $xwidget . '
@@ -1916,7 +1927,7 @@ if (!empty(@$db['active'] == 1) !== false) {
                 <input type="hidden" name="themes_modulname" value="' . $dx['modulname'] . '">
                 <input type="hidden" name="modulname" value="' . $ds['modulname'] . '">
                 <input type="hidden" name="id" value="' . $_GET['id'] . '">
-                    <button class="btn btn-warning" type="submit" name="saveedit"><i class="bi bi-save"></i> ' . $_language->module['edit_plugin_widget'] . '</button>
+                    <button class="btn btn-warning" type="submit" name="saveedit"><i class="bi bi-save"></i> ' . $languageService->get('edit_plugin_widget') . '</button>
                 </div>
             </div>
         </div>
@@ -1935,13 +1946,13 @@ if (!empty(@$db['active'] == 1) !== false) {
 
         echo '<div class="card">
         <div class="card-header"><i class="bi bi-puzzle"></i> 
-            ' . $_language->module['plugin_manager'] . '
+            ' . $languageService->get('plugin_manager') . '
         </div>
             
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="admincenter.php?site=plugin_manager">' . $_language->module['plugin_manager'] . '</a></li>
-            <li class="breadcrumb-item active" aria-current="page">' . $_language->module['add_widget'] . '</li>
+            <li class="breadcrumb-item"><a href="admincenter.php?site=plugin_manager">' . $languageService->get('plugin_manager') . '</a></li>
+            <li class="breadcrumb-item active" aria-current="page">' . $languageService->get('add_widget') . '</li>
           </ol>
         </nav>
 
@@ -1960,7 +1971,7 @@ if (!empty(@$db['active'] == 1) !== false) {
         $ergebnis = safe_query("SELECT * FROM settings_plugins_widget WHERE modulname='" . $db['modulname'] . "'");
         $ds = mysqli_fetch_array($ergebnis);
 
-        $widget_alle = '<option value="">' . $_language->module['no_area'] . '</option>
+        $widget_alle = '<option value="">' . $languageService->get('no_area') . '</option>
 <option value="1">Header</option>
 <option value="2">Navigation</option>
 <option value="3">Content Head & Content Foot</option>
@@ -1970,28 +1981,28 @@ if (!empty(@$db['active'] == 1) !== false) {
         $widget = str_replace('value=""', 'value="" selected="selected"', $widget_alle);
         echo '<form class="form-horizontal" method="post" id="post" name="post" action="admincenter.php?site=plugin_manager" onsubmit="return chkFormular();" enctype="multipart/form-data">
         <div class="mb-3 row">
-            <label class="col-sm-5 col-form-label" for="name">' . $_language->module['widget_name'] . ':<font color="#DD0000">*</font> <br><small>(' . $_language->module['for_widgetname'] . ')</small></label>
+            <label class="col-sm-5 col-form-label" for="name">' . $languageService->get('widget_name') . ':<font color="#DD0000">*</font> <br><small>(' . $languageService->get('for_widgetname') . ')</small></label>
             <div class="col-sm-6"><span class="text-muted small"><em>
-                <input type="text"" class="form-control" name="widgetname" placeholder="' . $_language->module['widget_name'] . '"></em></span>
+                <input type="text"" class="form-control" name="widgetname" placeholder="' . $languageService->get('widget_name') . '"></em></span>
             </div>
         </div>
 
         <div class="mb-3 row">
-            <label class="col-sm-5 col-form-label" for="name">' . $_language->module['modulname'] . ': <br><small>(' . $_language->module['for_plugin'] . ')</small></label>
+            <label class="col-sm-5 col-form-label" for="name">' . $languageService->get('modulname') . ': <br><small>(' . $languageService->get('for_plugin') . ')</small></label>
             <div class="col-sm-6"><span class="text-muted small"><em>
                 <input type="name" class="form-control" name="modulname" value="' . $db['modulname'] . '" disabled></em></span>
             </div>
         </div>
 
         <div class="mb-3 row">
-            <label class="col-sm-5 col-form-label" for="admin_file">' . $_language->module['widget_datei'] . ': <br><small>(' . $_language->module['widgetdatei_nophp'] . ')</small></label>
+            <label class="col-sm-5 col-form-label" for="admin_file">' . $languageService->get('widget_datei') . ': <br><small>(' . $languageService->get('widgetdatei_nophp') . ')</small></label>
             <div class="col-sm-6"><span class="text-muted small"><em>
-                <input type="name" class="form-control" name="widgetdatei" placeholder="' . $_language->module['widgetdatei_nophp'] . '"></em></span>
+                <input type="name" class="form-control" name="widgetdatei" placeholder="' . $languageService->get('widgetdatei_nophp') . '"></em></span>
             </div>
         </div>
 
         <div class="mb-3 row">
-            <label class="col-sm-5 col-form-label" for="admin_file">' . $_language->module['area'] . ': <br><small>(' . $_language->module['area_info'] . ')</small></label>
+            <label class="col-sm-5 col-form-label" for="admin_file">' . $languageService->get('area') . ': <br><small>(' . $languageService->get('area_info') . ')</small></label>
             <div class="col-sm-6"><span class="text-muted small"><em>
                                     <select id="area" name="area" class="form-select">' . $widget . '</select></em></span>
             </div>
@@ -1999,13 +2010,13 @@ if (!empty(@$db['active'] == 1) !== false) {
         <div class="col-sm-12">
             <div class="mb-3 row">
                 <div class="col-sm-11">
-                    <font color="#DD0000">*</font>' . $_language->module['fields_star_required'] . '
+                    <font color="#DD0000">*</font>' . $languageService->get('fields_star_required') . '
                 </div>
                 <div class="col-sm-11">
 
                     <input type="hidden" name="modulname" value="' . $db['modulname'] . '" />
                     <input type="hidden" name="id" value="' . $_GET['id'] . '" />
-                    <button class="btn btn-success" type="submit" name="widget_add"  /><i class="bi bi-plus-circle"></i> ' . $_language->module['add_widget'] . '</button>
+                    <button class="btn btn-success" type="submit" name="widget_add"  /><i class="bi bi-plus-circle"></i> ' . $languageService->get('add_widget') . '</button>
 
                 </div>
             </div>
@@ -2023,13 +2034,13 @@ if (!empty(@$db['active'] == 1) !== false) {
 
         echo '<div class="card">
         <div class="card-header"><i class="bi bi-puzzle"></i> 
-            ' . $_language->module['plugin_manager'] . '
+            ' . $languageService->get('plugin_manager') . '
         </div>
             
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="admincenter.php?site=plugin_manager">' . $_language->module['plugin_manager'] . '</a></li>
-            <li class="breadcrumb-item active" aria-current="page"><i class="bi bi-pencil-square"></i> ' . $_language->module['edit_widget'] . '</li>
+            <li class="breadcrumb-item"><a href="admincenter.php?site=plugin_manager">' . $languageService->get('plugin_manager') . '</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><i class="bi bi-pencil-square"></i> ' . $languageService->get('edit_widget') . '</li>
           </ol>
         </nav>
         <div class="card-body">';
@@ -2047,7 +2058,7 @@ if (!empty(@$db['active'] == 1) !== false) {
         $ergebnis = safe_query("SELECT * FROM settings_plugins_widget WHERE widgetname='" . $_GET['widgetname'] . "'");
         $ds = mysqli_fetch_array($ergebnis);
 
-        $widget_alle = '<option value="">' . $_language->module['no_area'] . '</option>
+        $widget_alle = '<option value="">' . $languageService->get('no_area') . '</option>
 <option value="1">Header</option>
 <option value="2">Navigation</option>
 <option value="3">Content Head & Content Foot</option>
@@ -2060,28 +2071,28 @@ if (!empty(@$db['active'] == 1) !== false) {
         echo '<form class="form-horizontal" method="post" id="post" name="post" action="admincenter.php?site=plugin_manager" onsubmit="return chkFormular();" enctype="multipart/form-data">
        
         <div class="mb-3 row">
-            <label class="col-sm-5 col-form-label" for="name">' . $_language->module['widget_name'] . ':<font color="#DD0000">*</font> <br><small>(' . $_language->module['for_widgetname'] . ')</small></label>
+            <label class="col-sm-5 col-form-label" for="name">' . $languageService->get('widget_name') . ':<font color="#DD0000">*</font> <br><small>(' . $languageService->get('for_widgetname') . ')</small></label>
             <div class="col-sm-6"><span class="text-muted small"><em>
                 <input type="text"" class="form-control" name="widgetname" value="' . $ds['widgetname'] . '" placeholder="widget name"></em></span>
             </div>
         </div>
 
         <div class="mb-3 row">
-            <label class="col-sm-5 col-form-label" for="name">' . $_language->module['modulname'] . ': <br><small>(' . $_language->module['for_plugin'] . ')</small></label>
+            <label class="col-sm-5 col-form-label" for="name">' . $languageService->get('modulname') . ': <br><small>(' . $languageService->get('for_plugin') . ')</small></label>
             <div class="col-sm-6"><span class="text-muted small"><em>
                 <input type="name" class="form-control" name="modulname" value="' . $db['modulname'] . '" disabled></em></span>
             </div>
         </div>
 
         <div class="mb-3 row">
-            <label class="col-sm-5 col-form-label" for="admin_file">' . $_language->module['widget_datei'] . ': <br><small>(' . $_language->module['widgetdatei_nophp'] . ')</small></label>
+            <label class="col-sm-5 col-form-label" for="admin_file">' . $languageService->get('widget_datei') . ': <br><small>(' . $languageService->get('widgetdatei_nophp') . ')</small></label>
             <div class="col-sm-6"><span class="text-muted small"><em>
                 <input type="name" class="form-control" name="widgetdatei" value="' . $ds['widgetdatei'] . '" placeholder="widget datei"></em></span>
             </div>
         </div>
 
         <div class="mb-3 row">
-            <label class="col-sm-5 col-form-label" for="admin_file">' . $_language->module['area'] . ': <br><small>(' . $_language->module['area_info'] . ')</small></label>
+            <label class="col-sm-5 col-form-label" for="admin_file">' . $languageService->get('area') . ': <br><small>(' . $languageService->get('area_info') . ')</small></label>
             <div class="col-sm-6"><span class="text-muted small"><em>
                                     <select id="area" name="area" class="form-select">' . $widget . '</select></em></span>
             </div>
@@ -2089,14 +2100,14 @@ if (!empty(@$db['active'] == 1) !== false) {
        <div class="col-sm-12">
             <div class="mb-3 row">
                 <div class="col-sm-11">
-                    <font color="#DD0000">*</font>' . $_language->module['fields_star_required'] . '
+                    <font color="#DD0000">*</font>' . $languageService->get('fields_star_required') . '
                 </div>
                 <div class="col-sm-11">
                     <input type="hidden" name="modulname" value="' . $db['modulname'] . '" />
                     <input type="hidden" name="xid" value="' . $_GET['id'] . '" />
 
                     <input type="hidden" name="id" value="' . $ds['id'] . '" />
-                    <button class="btn btn-warning" type="submit" name="edit_widget"  /><i class="bi bi-pencil-square"></i> ' . $_language->module['edit_widget'] . '</button>
+                    <button class="btn btn-warning" type="submit" name="edit_widget"  /><i class="bi bi-pencil-square"></i> ' . $languageService->get('edit_widget') . '</button>
                 </div>
             </div>
         </div>
@@ -2107,13 +2118,13 @@ if (!empty(@$db['active'] == 1) !== false) {
             <!--
             function chkFormular() {
                 if (document.getElementById('name').value == "") {
-                    alert('<? echo $_language->module['no_plugin_name']; ?>');
+                    alert('<? echo $languageService->get('no_plugin_name'); ?>');
                     document.getElementById('name').focus();
                     return false;
                 }
 
                 if (document.getElementById('modulname').value == "") {
-                    alert('<? echo $_language->module['no_modul_name']; ?>');
+                    alert('<? echo $languageService->get('no_modul_name'); ?>');
                     document.getElementById('modulname').focus();
                     return false;
                 }
@@ -2129,13 +2140,13 @@ if (!empty(@$db['active'] == 1) !== false) {
 
                     echo '<div class="card">
         <div class="card-header"><i class="bi bi-puzzle"></i> 
-            ' . $_language->module['plugin_manager'] . '
+            ' . $languageService->get('plugin_manager') . '
         </div>
             
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="admincenter.php?site=plugin_manager">' . $_language->module['plugin_manager'] . '</a></li>
-                <li class="breadcrumb-item active" aria-current="page">' . $_language->module['add_plugin'] . '</li>
+                <li class="breadcrumb-item"><a href="admincenter.php?site=plugin_manager">' . $languageService->get('plugin_manager') . '</a></li>
+                <li class="breadcrumb-item active" aria-current="page">' . $languageService->get('add_plugin') . '</li>
             </ol>
         </nav>
         <div class="card-body">';
@@ -2145,68 +2156,68 @@ if (!empty(@$db['active'] == 1) !== false) {
   
 
         <div class="mb-3 row">
-            <label class="col-sm-5 col-form-label" for="name">' . $_language->module['name'] . ':<font color="#DD0000">*</font></label>
+            <label class="col-sm-5 col-form-label" for="name">' . $languageService->get('name') . ':<font color="#DD0000">*</font></label>
             <div class="col-sm-6"><span class="text-muted small"><em>
                 <input type="text" name="name" id="name" placeholder="plugin name" maxlength="30" autocomplete="name" class="form-control"></em></span>
             </div>
         </div>
         <div class="mb-3 row">
-            <label class="col-sm-5 col-form-label" for="name">' . $_language->module['description'] . ':</label>
+            <label class="col-sm-5 col-form-label" for="name">' . $languageService->get('description') . ':</label>
             <div class="col-sm-6"><span class="text-muted small"><em>
                 <textarea class="form-control" name="info" rows="5" cols="" style="width: 100%;" placeholder="info"></textarea></em></span>
             </div>
         </div>
   
         <div class="mb-3 row">
-            <label class="col-sm-5 col-form-label" for="admin_file">' . $_language->module['admin_file'] . ': <br><small>(' . $_language->module['index_file_nophp'] . ')</small></label>
+            <label class="col-sm-5 col-form-label" for="admin_file">' . $languageService->get('admin_file') . ': <br><small>(' . $languageService->get('index_file_nophp') . ')</small></label>
             <div class="col-sm-6"><span class="text-muted small"><em>
                 <input type="name" class="form-control" name="admin_file" placeholder="admin_file"></em></span>
             </div>
         </div>
         <div class="mb-3 row">
-            <label class="col-sm-5 col-form-label" for="author">' . $_language->module['author'] . ':</label>
+            <label class="col-sm-5 col-form-label" for="author">' . $languageService->get('author') . ':</label>
             <div class="col-sm-6"><span class="text-muted small"><em>
                 <input type="name" class="form-control" rows="5" name="author" placeholder="author"></em></span>
             </div>
         </div>
         <div class="mb-3 row">
-            <label class="col-sm-5 col-form-label" for="website">' . $_language->module['website'] . ':</label>
+            <label class="col-sm-5 col-form-label" for="website">' . $languageService->get('website') . ':</label>
             <div class="col-sm-6"><span class="text-muted small"><em>
                 <input type="name" class="form-control" placeholder="http://" rows="5" name="website"></em></span>
             </div>
         </div>
         <div class="mb-3 row">
-            <label class="col-sm-5 col-form-label" for="name">' . $_language->module['modulname'] . ': <font color="#DD0000">*</font> <br><small>(' . $_language->module['for_uninstall'] . ')</small></label>
+            <label class="col-sm-5 col-form-label" for="name">' . $languageService->get('modulname') . ': <font color="#DD0000">*</font> <br><small>(' . $languageService->get('for_uninstall') . ')</small></label>
             <div class="col-sm-6"><span class="text-muted small"><em>
                 <input type="text" name="modulname" id="modulname" placeholder="modulname" maxlength="30" autocomplete="modulname" class="form-control"></em></span>
             </div>
         </div>
         <div class="mb-3 row">
-            <label class="col-sm-5 col-form-label" for="admin_file">' . $_language->module['admin_file'] . ': <br><small>(' . $_language->module['index_file_nophp'] . ')</small></label>
+            <label class="col-sm-5 col-form-label" for="admin_file">' . $languageService->get('admin_file') . ': <br><small>(' . $languageService->get('index_file_nophp') . ')</small></label>
             <div class="col-sm-6"><span class="text-muted small"><em>
                 <input type="name" class="form-control" name="admin_file" placeholder="admin_file"></em></span>
             </div>
         </div>
         <div class="mb-3 row">
-            <label class="col-sm-5 col-form-label" for="index">' . $_language->module['index_file'] . ': <br><small>(' . $_language->module['index_file_nophp'] . ')</small></label>
+            <label class="col-sm-5 col-form-label" for="index">' . $languageService->get('index_file') . ': <br><small>(' . $languageService->get('index_file_nophp') . ')</small></label>
             <div class="col-sm-6"><span class="text-muted small"><em>
                 <input type="name" class="form-control" placeholder="index file" rows="5" name="index"></em></span>
             </div>
         </div>
         <div class="mb-3 row">
-            <label class="col-sm-5 col-form-label" for="hittenfiles">' . $_language->module['hidden_file'] . ': <br><small>(' . $_language->module['hidden_file_seperate'] . ')</small></label>
+            <label class="col-sm-5 col-form-label" for="hittenfiles">' . $languageService->get('hidden_file') . ': <br><small>(' . $languageService->get('hidden_file_seperate') . ')</small></label>
             <div class="col-sm-6"><span class="text-muted small"><em>
                 <input type="name" class="form-control" rows="5" placeholder="myfile,secondfile,anotherfile" name="hiddenfiles"></em></span>
             </div>
         </div>
         <div class="mb-3 row">
-            <label class="col-sm-5 col-form-label" for="version">' . $_language->module['version_file'] . ':</label>
+            <label class="col-sm-5 col-form-label" for="version">' . $languageService->get('version_file') . ':</label>
             <div class="col-sm-6"><span class="text-muted small"><em>
                 <input type="name" class="form-control" rows="5" name="version" placeholder="version"></em></span>
             </div>
         </div>
         <div class="mb-3 row">
-            <label class="col-sm-5 col-form-label" for="path">' . $_language->module['folder_file'] . ':  <font color="#DD0000">*</font> <br><small>(' . $_language->module['folder_file_slash'] . ')</small></label>
+            <label class="col-sm-5 col-form-label" for="path">' . $languageService->get('folder_file') . ':  <font color="#DD0000">*</font> <br><small>(' . $languageService->get('folder_file_slash') . ')</small></label>
             <div class="col-sm-6"><span class="text-muted small"><em>
                 <input type="name" class="form-control" placeholder="includes/plugins/myplugin/" rows="5" name="path"></em></span>
             </div>
@@ -2215,11 +2226,11 @@ if (!empty(@$db['active'] == 1) !== false) {
         <div class="col-sm-12">
             <div class="mb-3 row">
                 <div class="col-sm-11">
-                    <font color="#DD0000">*</font>' . $_language->module['fields_star_required'] . '
+                    <font color="#DD0000">*</font>' . $languageService->get('fields_star_required') . '
                 </div>
                 <div class="col-sm-11">
                     <input type="hidden" name="themes_modulname" value="' . $db['modulname'] . '" />
-                    <button class="btn btn-success" type="submit" name="svn"  /><i class="bi bi-save"></i> ' . $_language->module['save_plugin'] . '</button>
+                    <button class="btn btn-success" type="submit" name="svn"  /><i class="bi bi-save"></i> ' . $languageService->get('save_plugin') . '</button>
                 </div>
             </div>
         </div>
@@ -2232,20 +2243,20 @@ if (!empty(@$db['active'] == 1) !== false) {
 } else {
                     echo '<div class="card">
         <div class="card-header"><i class="bi bi-puzzle"></i> 
-            ' . $_language->module['plugin_manager'] . '
+            ' . $languageService->get('plugin_manager') . '
         </div>
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="admincenter.php?site=plugin_manager">' . $_language->module['plugin_manager'] . '</a></li>
+            <li class="breadcrumb-item"><a href="admincenter.php?site=plugin_manager">' . $languageService->get('plugin_manager') . '</a></li>
             <li class="breadcrumb-item active" aria-current="page">new & edit</li>
           </ol>
         </nav>
         <div class="card-body">
         <div class="mb-3 row">
-    <label class="col-md-1 control-label">' . $_language->module['options'] . ':</label>
+    <label class="col-md-1 control-label">' . $languageService->get('options') . ':</label>
     <div class="col-md-8">
 
-      <a href="admincenter.php?site=plugin_manager&action=new" class="btn btn-primary" type="button"><i class="bi bi-plus-circle"></i> ' . $_language->module['new_plugin'] . '</a>
+      <a href="admincenter.php?site=plugin_manager&action=new" class="btn btn-primary" type="button"><i class="bi bi-plus-circle"></i> ' . $languageService->get('new_plugin') . '</a>
 
     </div>
   </div>';
@@ -2258,13 +2269,13 @@ if (!empty(@$db['active'] == 1) !== false) {
 
                     echo '<table id="plugini" class="table table-striped table-bordered" style="width:100%">
         <thead>
-            <th><strong>' . $_language->module['id'] . '</strong></th>
-            <th width="10%"><strong>' . $_language->module['plugin'] . ' ' . $_language->module['name'] . '</strong></th>
-            <th><strong>' . $_language->module['plugin'] . ' ' . $_language->module['description'] . '</strong></th>
-            <th class="text-center" width="12%"><strong>' . $_language->module['plugin_status'] . '</strong></th>
-            <th class="text-center" width="12%"><strong>' . $_language->module['plugin_setting'] . '</strong></th>
-            <th class="text-center" width="12%"><strong>' . $_language->module['widget_side_assignment'] . '</strong></th>
-            <th class="text-center" width="12%"><strong>' . $_language->module['action'] . '</strong></th>
+            <th><strong>' . $languageService->get('id') . '</strong></th>
+            <th width="10%"><strong>' . $languageService->get('plugin') . ' ' . $languageService->get('name') . '</strong></th>
+            <th><strong>' . $languageService->get('plugin') . ' ' . $languageService->get('description') . '</strong></th>
+            <th class="text-center" width="12%"><strong>' . $languageService->get('plugin_status') . '</strong></th>
+            <th class="text-center" width="12%"><strong>' . $languageService->get('plugin_setting') . '</strong></th>
+            <th class="text-center" width="12%"><strong>' . $languageService->get('widget_side_assignment') . '</strong></th>
+            <th class="text-center" width="12%"><strong>' . $languageService->get('action') . '</strong></th>
 
         </thead>';
                     $ergebnis = safe_query("SELECT * FROM settings_plugins");
@@ -2273,12 +2284,12 @@ if (!empty(@$db['active'] == 1) !== false) {
                         $dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE pluginID='" . $ds['pluginID'] . "'"));
 
                         if ($ds['activate'] == "1") {
-                            $actions = '<div class="d-grid gap-2"><a href="admincenter.php?site=plugin_manager&id=' . $ds['pluginID'] . '&modulname=' . $ds['modulname'] . '&do=dea" class="btn btn-info" data-toggle="tooltip" data-html="true" title="' . $_language->module['tooltip_2'] . ' " type="button"><i class="bi bi-toggle-off"></i> ' . $_language->module['deactivate'] . '</a></div>';
+                            $actions = '<div class="d-grid gap-2"><a href="admincenter.php?site=plugin_manager&id=' . $ds['pluginID'] . '&modulname=' . $ds['modulname'] . '&do=dea" class="btn btn-info" data-toggle="tooltip" data-html="true" title="' . $languageService->get('tooltip_2') . ' " type="button"><i class="bi bi-toggle-off"></i> ' . $languageService->get('deactivate') . '</a></div>';
                         } else {
-                            $actions = '<div class="d-grid gap-2"><a href="admincenter.php?site=plugin_manager&id=' . $ds['pluginID'] . '&modulname=' . $ds['modulname'] . '&do=act" class="btn btn-success" data-toggle="tooltip" data-html="true" title="' . $_language->module['tooltip_1'] . ' " type="button"><i class="bi bi-toggle-on"></i> ' . $_language->module['activate'] . '</a></div>';
+                            $actions = '<div class="d-grid gap-2"><a href="admincenter.php?site=plugin_manager&id=' . $ds['pluginID'] . '&modulname=' . $ds['modulname'] . '&do=act" class="btn btn-success" data-toggle="tooltip" data-html="true" title="' . $languageService->get('tooltip_1') . ' " type="button"><i class="bi bi-toggle-on"></i> ' . $languageService->get('activate') . '</a></div>';
                         }
 
-                        $translate = new multiLanguage(detectCurrentLanguage());
+                        $translate = new multiLanguage($lang);
                         $translate->detectLanguages($ds['name']);
                         $ds['name'] = $translate->getTextByLanguage($ds['name']);
                         $translate->detectLanguages($ds['info']);
@@ -2296,19 +2307,19 @@ if (!empty(@$db['active'] == 1) !== false) {
 
                             echo '<td class="text-center">
                                 <div class="d-grid gap-2">
-                            <button type="button" class="btn btn-danger" disabled><i class="bi bi-slash-circle"></i> ' . $_language->module['status_cannot_assigned'] . '</button>
+                            <button type="button" class="btn btn-danger" disabled><i class="bi bi-slash-circle"></i> ' . $languageService->get('status_cannot_assigned') . '</button>
                                  </div></td>';
                         }
                         if ($dx['plugin_display'] == "1") {
                             echo '
                     <td class="text-center">
                     <div class="d-grid gap-2">
-                    <a href="admincenter.php?site=plugin_manager&action=edit&id=' . $ds['pluginID'] . '&do=edit" class="btn btn-warning" data-toggle="tooltip" data-html="true" title="' . $_language->module['tooltip_4'] . '" type="button"><i class="bi bi-pencil-square"></i> ' . $_language->module['edit'] . '</a></div></td>';
+                    <a href="admincenter.php?site=plugin_manager&action=edit&id=' . $ds['pluginID'] . '&do=edit" class="btn btn-warning" data-toggle="tooltip" data-html="true" title="' . $languageService->get('tooltip_4') . '" type="button"><i class="bi bi-pencil-square"></i> ' . $languageService->get('edit') . '</a></div></td>';
                         } else {
 
                             echo '<td class="text-center">
                             <div class="d-grid gap-2">
-                        <button type="button" class="btn btn-danger" disabled><i class="bi bi-slash-circle"></i> ' . $_language->module['plugin_cannot_assigned'] . '</button>
+                        <button type="button" class="btn btn-danger" disabled><i class="bi bi-slash-circle"></i> ' . $languageService->get('plugin_cannot_assigned') . '</button>
                         </div></td>';
                         }
 
@@ -2316,12 +2327,12 @@ if (!empty(@$db['active'] == 1) !== false) {
                         if ($dx['widget_display'] == "1") {
                             echo '<td class="text-center">
                             <div class="d-grid gap-2">
-                            <a href="admincenter.php?site=plugin_manager&action=widget_edit&id=' . $ds['pluginID'] . '&do=edit" class="btn btn-success" data-toggle="tooltip" data-html="true" title="' . $_language->module['tooltip_3'] . '" type="button"><i class="bi bi-plus-circle"></i> ' . $_language->module['widget_side'] . '</a></div></td>';
+                            <a href="admincenter.php?site=plugin_manager&action=widget_edit&id=' . $ds['pluginID'] . '&do=edit" class="btn btn-success" data-toggle="tooltip" data-html="true" title="' . $languageService->get('tooltip_3') . '" type="button"><i class="bi bi-plus-circle"></i> ' . $languageService->get('widget_side') . '</a></div></td>';
                         } else {
 
                             echo '<td class="text-center">
                             <div class="d-grid gap-2">
-                        <button type="button" class="btn btn-danger" disabled><i class="bi bi-slash-circle"></i> ' . $_language->module['widget_cannot_assigned'] . '</button>
+                        <button type="button" class="btn btn-danger" disabled><i class="bi bi-slash-circle"></i> ' . $languageService->get('widget_cannot_assigned') . '</button>
                         </div></td>';
                         }
 
@@ -2330,30 +2341,30 @@ if (!empty(@$db['active'] == 1) !== false) {
 
                             echo '<td class="text-center">
                             <div class="d-grid gap-2">
-                            <button type="button" class="btn btn-danger" disabled><i class="bi bi-slash-circle"></i> ' . $_language->module['delete_cannot_assigned'] . '</button>
+                            <button type="button" class="btn btn-danger" disabled><i class="bi bi-slash-circle"></i> ' . $languageService->get('delete_cannot_assigned') . '</button>
                             </div></td>';
                         } else {
 
                             echo '<td class="text-center">
                             <div class="d-grid gap-2">
-                            <a href="admincenter.php?site=plugin_manager&action=delete_plugin&id=' . $ds['pluginID'] . '&modulname=' . $ds['modulname'] . '&do=delete" class="btn btn-danger" data-toggle="tooltip" data-html="true" title="' . $_language->module['tooltip_8'] . '" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-plugin="' .  $ds['modulname'] . '" title="' . $_language->module['tooltip_6'] . '"><i class="bi bi-trash3"></i> ' . $_language->module['delete_plugin'] . '</a></div></td>
+                            <a href="admincenter.php?site=plugin_manager&action=delete_plugin&id=' . $ds['pluginID'] . '&modulname=' . $ds['modulname'] . '&do=delete" class="btn btn-danger" data-toggle="tooltip" data-html="true" title="' . $languageService->get('tooltip_8') . '" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-plugin="' .  $ds['modulname'] . '" title="' . $languageService->get('tooltip_6') . '"><i class="bi bi-trash3"></i> ' . $languageService->get('delete_plugin') . '</a></div></td>
                             <!-- Bootstrap Modal for Confirm Delete -->
                             <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title">' . $_language->module['modulname'] . ': <span id="modalPluginTitle"></span></h5>
+                                            <h5 class="modal-title">' . $languageService->get('modulname') . ': <span id="modalPluginTitle"></span></h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                         </div>
                                         <div class="modal-body">
-                                            ' . $_language->module['really_delete_plugin'] . '
+                                            ' . $languageService->get('really_delete_plugin') . '
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                                <i class="bi bi-x-square"></i> ' . $_language->module['close'] . '
+                                                <i class="bi bi-x-square"></i> ' . $languageService->get('close') . '
                                             </button>
                                             <a id="confirmDeleteBtn" href="#" class="btn btn-danger">
-                                                <i class="bi bi-trash3"></i> ' . $_language->module['delete'] . '
+                                                <i class="bi bi-trash3"></i> ' . $languageService->get('delete') . '
                                             </a>
                                         </div>
                                     </div>
@@ -2425,10 +2436,10 @@ if (!empty(@$db['active'] == 1) !== false) {
                         <img class="img-fluid" src="/images/install-logo.jpg" alt="" style="height: 150px"/><br>
                           <small>Ohje !</small><br>
                           <p class="test">404 Error.</p><br>
-                          ' . $_language->module["info"] . '
+                          ' . $languageService->get('info') . '
                     </div>
                     <br />
-                    <p><a class="btn btn-warning" href="/admin/admincenter.php?site=settings_templates">' . $_language->module["activate_template"] . '</a></p>
+                    <p><a class="btn btn-warning" href="/admin/admincenter.php?site=settings_templates">' . $languageService->get('activate_template') . '</a></p>
                     <br />
                 </center>
             </div>

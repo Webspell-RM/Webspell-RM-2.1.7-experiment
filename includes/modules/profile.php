@@ -1,7 +1,14 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
+use webspell\LanguageService;
 
-$_language->readModule('profile');
+global $languageService;
+
+$lang = $languageService->detectLanguage();
+$languageService->readModule('profile');
 
 // Style aus settings holen
 $config = mysqli_fetch_array(safe_query("SELECT selected_style FROM settings_headstyle_config WHERE id=1"));

@@ -1,28 +1,5 @@
 <?php
 
-// Funktion zur Erkennung der aktuellen Sprache
-function detectCurrentLanguage() {
-    // Datenbankabfrage zum Abrufen der Standard-Sprache aus der Einstellungen-Tabelle
-    $res = safe_query("SELECT `default_language` FROM `settings` WHERE 1");
-    $rox = mysqli_fetch_array($res);
-
-    // Überprüfen, ob die Sprache in der Session gesetzt ist
-    if (isset($_SESSION['language'])) {
-        $lng = $_SESSION['language'];
-    } 
-    // Falls die Sprache nicht in der Session gesetzt ist, auf den Standardwert aus den Einstellungen zurückgreifen
-    elseif (isset($rox['default_language'])) {
-        $lng = $rox['default_language'];
-    } 
-    // Wenn keine Sprache gesetzt ist, Standard auf Englisch setzen
-    else {
-        $lng = "en";
-    }
-
-    // Rückgabe der ermittelten Sprache
-    return $lng;
-}
-
 // Funktion zur sicheren Ausgabe von Variablen
 function show_var($var) {
     // Überprüfen, ob die Variable ein Skalarwert (z.B. String, Integer) ist
@@ -420,17 +397,6 @@ if (file_exists('func/page.php')) {
     systeminc('../system/func/page');
 }
 
-// -- LANGUAGE SYSTEM -- //
-// Einbinden des Sprachsystems und Setzen der Standardsprache
-if (file_exists('func/language.php')) {
-    systeminc('func/language');
-} else {
-    systeminc('../system/func/language');
-}
-
-$_language = new \webspell\Language;
-$_language->setLanguage($default_language);
-
 // -- SPAM -- //
 // Einbinden der Spam-Funktionen
 if (file_exists('func/spam.php')) {
@@ -514,18 +480,30 @@ if (file_exists('classes/PluginUninstaller.php')) {
     systeminc('../system/classes/PluginUninstaller');
 }
 
-// Sprachwahl aus Cookie, Session oder automatische Erkennung
-/*if (isset($_COOKIE['language'])) {
-    $_language->setLanguage($_COOKIE['language']);
-} elseif (isset($_SESSION['language'])) {
-    $_language->setLanguage($_SESSION['language']);
-} elseif ($autoDetectLanguage) {
-    $lang = detectUserLanguage();
-    if (!empty($lang)) {
-        $_language->setLanguage($lang);
-        $_SESSION['language'] = $lang;
+if (file_exists('classes/LanguageService.php')) {
+    systeminc('classes/LanguageService');
+} else {
+    systeminc('../system/classes/LanguageService');
+}
+
+if (file_exists('classes/LanguageManager.php')) {
+    systeminc('classes/LanguageManager');
+} else {
+    systeminc('../system/classes/LanguageManager');
+}
+
+
+function getCurrentLanguage(): string
+{
+    global $languageService;
+    static $lang = null;
+
+    if ($lang === null) {
+        $lang = $languageService->detectLanguage();
     }
-}*/
+
+    return $lang;
+}
 
 // Funktion zur Bereinigung des Textes vor dem Speichern in der Datenbank
 function cleanTextForStorage($text) {
@@ -598,14 +576,14 @@ safe_query("DELETE FROM banned_ips WHERE deltime < '" . time() . "'");
 // SEO / PAGE TITLE
 // =======================
 if (stristr($_SERVER['PHP_SELF'], "/admin/") === false) {
-    if (file_exists('seo.php')) {
-        systeminc('seo');
-    } else {
-        systeminc('../system/seo');
-    }
-    define('PAGETITLE', getPageTitle());
+    #if (file_exists('seo.php')) {
+    #    systeminc('seo');
+    #} else {
+    #    systeminc('../system/seo');
+    #}
+    #define('PAGETITLE', getPageTitle());
 } else {
-    define('PAGETITLE', $GLOBALS['hp_title']);
+    #define('PAGETITLE', $GLOBALS['hp_title']);
 }
 
 // =======================

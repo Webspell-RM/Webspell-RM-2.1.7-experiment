@@ -25,24 +25,24 @@
 
     <div class="card mb-3">
         <div class="card-body">
-            <p><strong>Installierte Version:</strong> {{ current_version }}</p>
-            <p><strong>Verfügbare Version:</strong> {{ new_version }}</p>
-            <p><strong>Änderungen:</strong><br>{{ changelog }}</p>
+            <p><strong>Installierte Version:</strong> {current_version}</p>
+            <p><strong>Verfügbare Version:</strong> {new_version}</p>
+            <p><strong>Änderungen:</strong><br>{changelog}</p>
         </div>
     </div>
 
-{{ if show_button }}
+{if show_button}
     <form method="post" class="mb-4">
         <button type="submit" class="btn btn-warning">
             <i class="bi bi-arrow-clockwise"></i> Update jetzt starten
         </button>
     </form>
     <div class="update-log mt-3">
-        {{ update_status }}
+        {update_status}
     </div>
-{{ else }}
+{else}
     <div class="alert alert-success">Du verwendest bereits die neueste Version.</div>
-{{ endif }}
+{endif}
 </div>
 
 

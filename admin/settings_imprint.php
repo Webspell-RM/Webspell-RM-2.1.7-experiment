@@ -1,17 +1,26 @@
 <?php
 
-// Überprüfen, ob die Session bereits gestartet wurde
-if (session_status() == PHP_SESSION_NONE) {
+use webspell\LanguageService;
+
+// Session absichern
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+// Standard setzen, wenn nicht vorhanden
+$_SESSION['language'] = $_SESSION['language'] ?? 'de';
+
+// Initialisieren
+global $languageService;
+$languageService = new LanguageService($_database);
+
+// Admin-Modul laden
+$languageService->readModule('imprint', true);
 
 use webspell\AccessControl;
 
 // Admin-Zugriff überprüfen
 AccessControl::checkAdminAccess('ac_imprint');
-
-$_language->readModule('imprint', false, true);
-
 
 $CAPCLASS = new \webspell\Captcha;
 $tpl = new Template();
@@ -78,14 +87,14 @@ if (isset($_POST['submit'])) {
             safe_query($insert_query);
         }
 
-        echo '<div class="alert alert-success" role="alert">' . $_language->module['changes_successful'] . '</div>';
+        echo '<div class="alert alert-success" role="alert">' . $languageService->module['changes_successful'] . '</div>';
         echo '<script type="text/javascript">
                 setTimeout(function() {
                     window.location.href = "admincenter.php?site=settings_imprint";
                 }, 3000); // 3 Sekunden warten
             </script>';
     } else {
-        echo '<div class="alert alert-success" role="alert">' . $_language->module['transaction_invalid'] . '</div>';
+        echo '<div class="alert alert-success" role="alert">' . $languageService->module['transaction_invalid'] . '</div>';
         echo '<script type="text/javascript">
                 setTimeout(function() {
                     window.location.href = "admincenter.php?site=settings_imprint";
@@ -140,37 +149,37 @@ $data_array = [
     'phone_value'                      => $phone_value,
     'disclaimer_value'                 => $disclaimer_value,
     'hash'                             => $hash,
-    'imprint'                          => $_language->module['imprint'],
-    'private_option'                   => $_language->module['private_option'],
-    'association_option'               => $_language->module['association_option'],
-    'small_business_option'            => $_language->module['small_business_option'],
-    'company_option'                   => $_language->module['company_option'],
-    'impressum_type_label'             => $_language->module['impressum_type_label'],
-    'name_label'                       => $_language->module['name_label'],
-    'name_placeholder'                 => $_language->module['name_placeholder'],
-    'association_name_label'           => $_language->module['association_name_label'],
-    'association_name_placeholder'     => $_language->module['association_name_placeholder'],
-    'represented_by_label'             => $_language->module['represented_by_label'],
-    'represented_by_placeholder'       => $_language->module['represented_by_placeholder'],
-    'small_business_name_label'        => $_language->module['small_business_name_label'],
-    'small_business_name_placeholder'  => $_language->module['small_business_name_placeholder'],
-    'tax_id_label'                     => $_language->module['tax_id_label'],
-    'tax_id_placeholder'               => $_language->module['tax_id_placeholder'],
-    'company_name_label'               => $_language->module['company_name_label'],
-    'company_name_placeholder'         => $_language->module['company_name_placeholder'],
-    'represented_by_company_label'     => $_language->module['represented_by_company_label'],
-    'represented_by_company_placeholder'=> $_language->module['represented_by_company_placeholder'],
-    'tax_id_company_label'             => $_language->module['tax_id_company_label'],
-    'tax_id_company_placeholder'       => $_language->module['tax_id_company_placeholder'],
-    'email_label'                      => $_language->module['email_label'],
-    'email_placeholder'                => $_language->module['email_placeholder'],
-    'website_label'                    => $_language->module['website_label'],
-    'website_placeholder'              => $_language->module['website_placeholder'],
-    'phone_label'                      => $_language->module['phone_label'],
-    'phone_placeholder'                => $_language->module['phone_placeholder'],
-    'disclaimer_label'                 => $_language->module['disclaimer_label'],
-    'disclaimer_placeholder'           => $_language->module['disclaimer_placeholder'],
-    'save_button'                      => $_language->module['save_button'],
+    'imprint'                          => $languageService->module['imprint'],
+    'private_option'                   => $languageService->module['private_option'],
+    'association_option'               => $languageService->module['association_option'],
+    'small_business_option'            => $languageService->module['small_business_option'],
+    'company_option'                   => $languageService->module['company_option'],
+    'impressum_type_label'             => $languageService->module['impressum_type_label'],
+    'name_label'                       => $languageService->module['name_label'],
+    'name_placeholder'                 => $languageService->module['name_placeholder'],
+    'association_name_label'           => $languageService->module['association_name_label'],
+    'association_name_placeholder'     => $languageService->module['association_name_placeholder'],
+    'represented_by_label'             => $languageService->module['represented_by_label'],
+    'represented_by_placeholder'       => $languageService->module['represented_by_placeholder'],
+    'small_business_name_label'        => $languageService->module['small_business_name_label'],
+    'small_business_name_placeholder'  => $languageService->module['small_business_name_placeholder'],
+    'tax_id_label'                     => $languageService->module['tax_id_label'],
+    'tax_id_placeholder'               => $languageService->module['tax_id_placeholder'],
+    'company_name_label'               => $languageService->module['company_name_label'],
+    'company_name_placeholder'         => $languageService->module['company_name_placeholder'],
+    'represented_by_company_label'     => $languageService->module['represented_by_company_label'],
+    'represented_by_company_placeholder'=> $languageService->module['represented_by_company_placeholder'],
+    'tax_id_company_label'             => $languageService->module['tax_id_company_label'],
+    'tax_id_company_placeholder'       => $languageService->module['tax_id_company_placeholder'],
+    'email_label'                      => $languageService->module['email_label'],
+    'email_placeholder'                => $languageService->module['email_placeholder'],
+    'website_label'                    => $languageService->module['website_label'],
+    'website_placeholder'              => $languageService->module['website_placeholder'],
+    'phone_label'                      => $languageService->module['phone_label'],
+    'phone_placeholder'                => $languageService->module['phone_placeholder'],
+    'disclaimer_label'                 => $languageService->module['disclaimer_label'],
+    'disclaimer_placeholder'           => $languageService->module['disclaimer_placeholder'],
+    'save_button'                      => $languageService->module['save_button'],
 ];
 
 // Template laden und anzeigen

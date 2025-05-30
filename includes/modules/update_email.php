@@ -1,12 +1,12 @@
 <?php
 
-
-use webspell\LoginSecurity;
-global $_database;
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+use webspell\LoginSecurity;
+
+global $_database;
 
 // CSRF-Token validieren
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

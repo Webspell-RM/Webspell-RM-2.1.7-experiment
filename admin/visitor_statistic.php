@@ -1,12 +1,21 @@
 <?php
 
-// Überprüfen, ob die Session bereits gestartet wurde
-if (session_status() == PHP_SESSION_NONE) {
+use webspell\LanguageService;
+
+// Session absichern
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Sprachmodul laden
-$_language->readModule('visitor_statistic', false, true);
+// Standard setzen, wenn nicht vorhanden
+$_SESSION['language'] = $_SESSION['language'] ?? 'de';
+
+// Initialisieren
+global $languageService;
+$languageService = new LanguageService($_database);
+
+// Admin-Modul laden
+$languageService->readModule('visitor_statistic', true);
 
 use webspell\AccessControl;
 
@@ -79,12 +88,12 @@ while ($row = $result->fetch_assoc()) {
 
 <div class="container py-4">
 
-    <h1 class="mb-4"><?php echo $_language->module['visitor_statistics']; ?></h1>
+    <h1 class="mb-4"><?php echo $languageService->get('visitor_statistics'); ?></h1>
 
     <div class="row mb-4">
         <div class="col-md-3">
             <div class="card bg-primary mb-3">
-                <div class="card-header"><?php echo $_language->module['online_users']; ?></div>
+                <div class="card-header"><?php echo $languageService->get('online_users'); ?></div>
                 <div class="card-body">
                     <h5 class="card-title"><?php echo $online_users; ?></h5>
                 </div>
@@ -92,7 +101,7 @@ while ($row = $result->fetch_assoc()) {
         </div>
         <div class="col-md-3">
             <div class="card bg-success mb-3">
-                <div class="card-header"><?php echo $_language->module['visitors_today']; ?></div>
+                <div class="card-header"><?php echo $languageService->get('visitors_today'); ?></div>
                 <div class="card-body">
                     <h5 class="card-title"><?php echo $visitors_today; ?></h5>
                 </div>
@@ -100,7 +109,7 @@ while ($row = $result->fetch_assoc()) {
         </div>
         <div class="col-md-3">
             <div class="card bg-warning mb-3">
-                <div class="card-header"><?php echo $_language->module['visitors_yesterday']; ?></div>
+                <div class="card-header"><?php echo $languageService->get('visitors_yesterday'); ?></div>
                 <div class="card-body">
                     <h5 class="card-title"><?php echo $visitors_yesterday; ?></h5>
                 </div>
@@ -108,7 +117,7 @@ while ($row = $result->fetch_assoc()) {
         </div>
         <div class="col-md-3">
             <div class="card bg-info mb-3">
-                <div class="card-header"><?php echo $_language->module['visitors_week']; ?></div>
+                <div class="card-header"><?php echo $languageService->get('visitors_week'); ?></div>
                 <div class="card-body">
                     <h5 class="card-title"><?php echo $visitors_week; ?></h5>
                 </div>
@@ -118,7 +127,7 @@ while ($row = $result->fetch_assoc()) {
 
     <!-- Chart Top Seiten -->
     <div class="card mb-4">
-        <div class="card-header"><?php echo $_language->module['top_pages']; ?></div>
+        <div class="card-header"><?php echo $languageService->get('top_pages'); ?></div>
         <div class="card-body">
             <canvas id="topPagesChart"></canvas>
         </div>
@@ -126,7 +135,7 @@ while ($row = $result->fetch_assoc()) {
 
     <!-- Chart Top Länder -->
     <div class="card mb-4">
-        <div class="card-header"><?php echo $_language->module['top_countries']; ?></div>
+        <div class="card-header"><?php echo $languageService->get('top_countries'); ?></div>
         <div class="card-body">
             <canvas id="topCountriesChart"></canvas>
         </div>
@@ -163,7 +172,7 @@ var topPagesChart = new Chart(ctxPages, {
     data: {
         labels: <?php echo json_encode(array_column($top_pages, 'page')); ?>,
         datasets: [{
-            label: '<?php echo $_language->module['visits']; ?>',
+            label: '<?php echo $languageService->get('visits'); ?>',
             data: <?php echo json_encode(array_column($top_pages, 'visits')); ?>,
             backgroundColor: 'rgba(54, 162, 235, 0.7)'
         }]
@@ -177,7 +186,7 @@ var topCountriesChart = new Chart(ctxCountries, {
     data: {
         labels: <?php echo json_encode(array_column($top_countries, 'country_code')); ?>,
         datasets: [{
-            label: '<?php echo $_language->module['visitors']; ?>',
+            label: '<?php echo $languageService->get('visitors'); ?>',
             data: <?php echo json_encode(array_column($top_countries, 'visitors')); ?>,
             backgroundColor: 'rgba(255, 206, 86, 0.7)'
         }]

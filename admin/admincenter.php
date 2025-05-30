@@ -28,15 +28,20 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
+// Session starten, falls noch nicht gestartet
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 use webspell\RoleManager;
 
 
 // Überprüfen, ob der Benutzer bereits eingeloggt ist
-if (isset($_SESSION['userID'])) {
+#if (isset($_SESSION['userID'])) {
     // Wenn der Benutzer eingeloggt ist, Weiterleitung zum Admincenter
-    header("Location: /admin/admincenter.php");
-    exit;
-}
+#    header("Location: /admin/admincenter.php");
+#    exit;
+#}
 
 // Überprüfen, ob ein Login-Versuch gemacht wurde
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ws_user'], $_POST['password'])) {
@@ -84,7 +89,26 @@ chdir('admin');
 
 // Plugin-Manager laden und Sprachmodul für Admincenter einbinden
 $load = new plugin_manager();
-$_language->readModule('admincenter', false, true);
+#$_language->readModule('admincenter', false, true);
+
+
+use webspell\LanguageService;
+
+// Session absichern
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Standard setzen, wenn nicht vorhanden
+$_SESSION['language'] = $_SESSION['language'] ?? 'de';
+
+// Initialisieren
+global $languageService;
+$languageService = new LanguageService($_database);
+
+// Admin-Modul laden
+$languageService->readModule('admincenter', true);
+#$languageService->readModule('admincenter'); 
 
 // Site-Parameter festlegen, falls vorhanden
 $site = isset($_GET['site']) ? $_GET['site'] : (isset($site) ? $site : null);
@@ -188,7 +212,9 @@ function dashnavi() {
         $name = $ds['name'];
         $fa_name = $ds['fa_name'];
 
-        $translate = new multiLanguage(detectCurrentLanguage());
+        $lang = $_SESSION['language'] ?? 'de';
+
+        $translate = new multiLanguage($lang);
         $translate->detectLanguages($name);
         $name = $translate->getTextByLanguage($name);
 
@@ -276,7 +302,7 @@ header('Content-Type: text/html; charset=UTF-8');
 
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo $_language->language ?>">
+<html lang="<?php echo $languageService->language ?>">
 
 <head>
 
@@ -325,18 +351,18 @@ header('Content-Type: text/html; charset=UTF-8');
         		        </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link nav-link-2"><?php echo $_language->module['welcome'] ?> </a>
+                <a class="nav-link nav-link-2"><?= $languageService->module['welcome'] ?> </a>
             </li>
             <li class="nav-item">
                 <?php echo @$username ?>
             </li>
             <li class="nav-item dropdown" style="margin-right: 18px;">
                 <a class="nav-link nav-link-3 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <?php echo $_language->module['logout'] ?>
+                    <?php echo $languageService->module['logout'] ?>
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="../index.php"><i class="bi bi-arrow-clockwise text-success"></i> <?php echo $_language->module['back_to_website'] ?></a></li>
-                    <li><a class="dropdown-item" href="/admin/admincenter.php?site=logout"><i class="bi bi-x-lg text-danger"></i> <?php echo $_language->module['logout'] ?></a></li>
+                    <li><a class="dropdown-item" href="../index.php"><i class="bi bi-arrow-clockwise text-success"></i> <?php echo $languageService->module['back_to_website'] ?></a></li>
+                    <li><a class="dropdown-item" href="/admin/admincenter.php?site=logout"><i class="bi bi-x-lg text-danger"></i> <?php echo $languageService->module['logout'] ?></a></li>
                 </ul>
             </li>
         </ul>
@@ -385,7 +411,7 @@ header('Content-Type: text/html; charset=UTF-8');
         if (file_exists($plugin_path . "admin/" . $site . ".php")) {
             include($plugin_path . "admin/" . $site . ".php");
         } else {
-            #echo '<div class="alert alert-danger" role="alert">' . $_language->module['plugin_not_found'] . '</div>';
+            #echo '<div class="alert alert-danger" role="alert">' . $languageService->module['plugin_not_found'] . '</div>';
             include('info.php');
         }
     }

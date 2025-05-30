@@ -1,10 +1,10 @@
 <!-- navigation_main_head -->
-<li><a class="nav-link" href="{{ url }}" target="{{ windows }}">{{ name }}&nbsp;</a></li>
+<li><a class="nav-link" href="{url}" target="{windows}">{name}&nbsp;</a></li>
 <!-- END -->
 
 <!-- navigation_dd_head -->
 <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ name }}&nbsp;</a>
+    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">{name}&nbsp;</a>
 <!-- END -->
 
 <!-- navigation_sub_open -->
@@ -12,7 +12,7 @@
 <!-- END -->
 
 <!-- navigation_sub_nav -->
-    <li><a class="dropdown-item" href="{{ url }}">{{ name }}</a></li>
+    <li><a class="dropdown-item" href="{url}">{name}</a></li>
 <!-- END -->
 
 <!-- navigation_sub_close -->
@@ -28,17 +28,17 @@
 <!-- END -->
 
 <!-- navigation_login_loggedin -->
-    {{ newmessages }}
+    <!--{newmessages}
 </li>
-<li class="dropdown">{{ icon }}</li>
+<li class="dropdown">{icon}</li>-->
 <li class="nav-item dropdown">
     <a class="nav-link dropdown-toggle" href="#" id="servicesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">&nbsp;
-        <img class="avatar_small" style="height: 21px;width: 28px;margin-left: -5px;" src="../images/avatars/{{ l_avatar }}" alt="{{ nickname }}" title="{{ nickname }}" data-toggle="tooltip" data-html="true" data-bs-placement="right" data-bs-original-title="{{ nickname }}"/>&nbsp;{{ my_account }}
+        <img class="avatar_small" style="height: 21px;width: 28px;margin-left: -5px;" src="../images/avatars/{l_avatar}" alt="{nickname}" title="{nickname}" data-toggle="tooltip" data-html="true" data-bs-placement="right" data-bs-original-title="{nickname}"/>&nbsp;{my_account}
     </a>
     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="servicesDropdown" style="margin-top: 0px;">
-        <li><a class="dropdown-item" href="index.php?site=profile&userID={{ userID }}">&nbsp;{{ to_profil }}</a></li>
-        {{ dashboard }}
-        <li><a class="dropdown-item" href="index.php?site=logout">&nbsp;{{ lang_log_off }}</a></li>
+        <li><a class="dropdown-item" href="index.php?site=profile&userID={userID}">&nbsp;{to_profil}</a></li>
+        {dashboard}
+        <li><a class="dropdown-item" href="index.php?site=logout">&nbsp;{lang_log_off}</a></li>
     </ul>
 </li>
 <!-- END -->
@@ -50,7 +50,7 @@
 <!-- END -->
 
 <!-- navigation_login_login -->
-<li><a class="nav-link" href="index.php?site=login">{{ lang_login }}</a></li>
+<li><a class="nav-link" href="index.php?site=login">{lang_login}</a></li>
 <!-- END -->
 
 <!-- navigation_login_foot -->
@@ -59,13 +59,13 @@
 <!-- navigation_languages -->                
 <!-- Icon dropdown -->
 <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" aria-expanded="false">&nbsp;{{ flag }}&nbsp;</a>
-    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="servicesDropdown">
-        <li>{{ de_languages_ok }}</li>
+    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" aria-expanded="false">
+        &nbsp;{flag_ok}&nbsp;
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+        <li>{languages_ok}</li>
         <li><hr class="dropdown-divider" /></li>
-        <li>{{ de_languages }}</li>
-        <li>{{ en_languages }}</li>
-        <li>{{ it_languages }}</li>          
+        <li>{languages}</li>        
     </ul>
 </li>
 <!-- END -->

@@ -1,35 +1,16 @@
 <?php
-/**
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- *                  Webspell-RM      /                        /   /                                          *
- *                  -----------__---/__---__------__----__---/---/-----__---- _  _ -                         *
- *                   | /| /  /___) /   ) (_ `   /   ) /___) /   / __  /     /  /  /                          *
- *                  _|/_|/__(___ _(___/_(__)___/___/_(___ _/___/_____/_____/__/__/_                          *
- *                               Free Content / Management System                                            *
- *                                           /                                                               *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @version         webspell-rm                                                                              *
- *                                                                                                           *
- * @copyright       2018-2025 by webspell-rm.de                                                              *
- * @support         For Support, Plugins, Templates and the Full Script visit webspell-rm.de                 *
- * @website         <https://www.webspell-rm.de>                                                             *
- * @forum           <https://www.webspell-rm.de/forum.html>                                                  *
- * @wiki            <https://www.webspell-rm.de/wiki.html>                                                   *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @license         Script runs under the GNU GENERAL PUBLIC LICENCE                                         *
- *                  It's NOT allowed to remove this copyright-tag                                            *
- *                  <http://www.fsf.org/licensing/licenses/gpl.html>                                         *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @author          Code based on WebSPELL Clanpackage (Michael Gruber - webspell.at)                        *
- * @copyright       2005-2011 by webspell.org / webspell.info                                                *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
-*/
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-$_language->readModule('imprint');
+use webspell\LanguageService;
+
+global $languageService;
+
+$lang = $languageService->detectLanguage();
+$languageService->readModule('imprint');
+
 global $hp_title;
 
 $config = mysqli_fetch_array(safe_query("SELECT selected_style FROM settings_headstyle_config WHERE id=1"));
@@ -38,7 +19,7 @@ $class = htmlspecialchars($config['selected_style']);
 // Header-Daten
 $data_array = [
     'class'    => $class,
-    'title' => $_language->module['title'],
+    'title' => $languageService->module['title'],
     'subtitle' => 'Imprint'
 ];
 
@@ -53,41 +34,41 @@ $imprint_data = $result->fetch_assoc();
 
 // Typ-Bezeichnungen
 $type_labels = [
-    'private' => $_language->module['private_option'] ?? 'Privat',
-    'association' => $_language->module['association_option'] ?? 'Verein',
-    'small_business' => $_language->module['small_business_option'] ?? 'Kleinunternehmer',
-    'company' => $_language->module['company_option'] ?? 'Unternehmen',
+    'private' => $languageService->module['private_option'] ?? 'Privat',
+    'association' => $languageService->module['association_option'] ?? 'Verein',
+    'small_business' => $languageService->module['small_business_option'] ?? 'Kleinunternehmer',
+    'company' => $languageService->module['company_option'] ?? 'Unternehmen',
     'unknown' => 'Unbekannt'
 ];
 
 
-$translate = new multiLanguage(detectCurrentLanguage());
+$translate = new multiLanguage($lang);
 $translate->detectLanguages($imprint_data['disclaimer']);
 // Basis-Labels (immer vorhanden)
 $data_array = [
-    'impressum_type_label' => $_language->module['impressum_type_label'] ?? 'Typ',
-    'represented_by_label' => $_language->module['represented_by_company_label'] ?? $_language->module['represented_by_label'] ?? 'Vertreten durch',
-    'tax_id_label' => $_language->module['tax_id_company_label'] ?? $_language->module['tax_id_label'] ?? 'Steuernummer',
-    'email_label' => $_language->module['email_label'] ?? 'E-Mail',
-    'website_label' => $_language->module['website_label'] ?? 'Webseite',
-    'phone_label' => $_language->module['phone_label'] ?? 'Telefon',
-    'disclaimer_label' => $_language->module['disclaimer_label'] ?? 'Haftungsausschluss',
-    'association_label' => $_language->module['association_label'] ?? 'Vereinsname',
-    'imprint_info' => $_language->module['imprint_info'] ?? '',
+    'impressum_type_label' => $languageService->module['impressum_type_label'] ?? 'Typ',
+    'represented_by_label' => $languageService->module['represented_by_company_label'] ?? $languageService->module['represented_by_label'] ?? 'Vertreten durch',
+    'tax_id_label' => $languageService->module['tax_id_company_label'] ?? $languageService->module['tax_id_label'] ?? 'Steuernummer',
+    'email_label' => $languageService->module['email_label'] ?? 'E-Mail',
+    'website_label' => $languageService->module['website_label'] ?? 'Webseite',
+    'phone_label' => $languageService->module['phone_label'] ?? 'Telefon',
+    'disclaimer_label' => $languageService->module['disclaimer_label'] ?? 'Haftungsausschluss',
+    'association_label' => $languageService->module['association_label'] ?? 'Vereinsname',
+    'imprint_info' => $languageService->module['imprint_info'] ?? '',
 ];
 
 // Dynamisches name_label je nach Typ setzen
 $type = $imprint_data['type'] ?? 'unknown';
 switch ($type) {
     case 'association':
-        $data_array['name_label'] = $_language->module['association_label'] ?? 'Vereinsname';
+        $data_array['name_label'] = $languageService->module['association_label'] ?? 'Vereinsname';
         break;
     case 'company':
     case 'small_business':
-        $data_array['name_label'] = $_language->module['company_name_label'] ?? 'Firmenname';
+        $data_array['name_label'] = $languageService->module['company_name_label'] ?? 'Firmenname';
         break;
     default:
-        $data_array['name_label'] = $_language->module['name_label'] ?? 'Name';
+        $data_array['name_label'] = $languageService->module['name_label'] ?? 'Name';
         break;
 }
 

@@ -1,14 +1,24 @@
 <?php
+use webspell\LanguageService;
 
-// Überprüfen, ob die Session bereits gestartet wurde
-if (session_status() == PHP_SESSION_NONE) {
+// Session absichern
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Sprachmodul laden
+// Standard setzen, wenn nicht vorhanden
+$_SESSION['language'] = $_SESSION['language'] ?? 'de';
+
+// Initialisieren
+global $languageService;
+$lang = $languageService->detectLanguage();
+$languageService = new LanguageService($_database);
+
+// Admin-Modul laden
+$languageService->readModule('user_roles', true);
 #$_language->readModule('user_roles', false, true);
-$_language->readModule('access_rights', false, true);
-$_language->readModule('user_roles', false, true);
+#$_language->readModule('access_rights', false, true);
+#$_language->readModule('user_roles', false, true);
 
 #use webspell\AccessControl;
 // Den Admin-Zugriff für das Modul überprüfen
@@ -36,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !isset($_SESSION['csrf_token'])) {
 
 // Überprüfen, ob der Benutzer berechtigt ist
 if (!$userID || !checkUserRoleAssignment($userID)) {
-    die('<div class="alert alert-danger" role="alert">' . $_language->module['no_role_assigned'] . '</div>');
+    die('<div class="alert alert-danger" role="alert">' . $languageService->get('no_role_assigned') . '</div>');
 }
 
 // Initialisierung der Rechte-Arrays
@@ -50,7 +60,7 @@ if (isset($_GET['roleID'])) {
     $modules = [];
     $result = safe_query("SELECT linkID, modulname, name FROM navigation_dashboard_links ORDER BY sort ASC");
     if (!$result) {
-        die($_language->module['error_fetching_modules'] . ": " . $_database->error);
+        die($languageService->get('error_fetching_modules') . ": " . $_database->error);
     }
     while ($row = mysqli_fetch_assoc($result)) {
         $modules[] = $row;
@@ -60,7 +70,7 @@ if (isset($_GET['roleID'])) {
     $categories = [];
     $result = safe_query("SELECT catID, name, modulname FROM navigation_dashboard_categories ORDER BY sort ASC");
     if (!$result) {
-        die($_language->module['error_fetching_categories'] . ": " . $_database->error);
+        die($languageService->get('error_fetching_categories') . ": " . $_database->error);
     }
     while ($row = mysqli_fetch_assoc($result)) {
         $categories[] = $row;
@@ -84,7 +94,7 @@ if (isset($_GET['roleID'])) {
     // Rechte speichern
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['roleID']) && isset($_POST['save_rights'])) {
         if ($_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-            die('<div class="alert alert-danger" role="alert">' . $_language->module['invalid_csrf'] . '</div>');
+            die('<div class="alert alert-danger" role="alert">' . $languageService->get('invalid_csrf') . '</div>');
         }
 
         $roleID = (int)$_POST['roleID'];
@@ -133,7 +143,7 @@ if (isset($_GET['roleID'])) {
             }
         }
 
-        $_SESSION['success_message'] = $_language->module['rights_updated'];
+        $_SESSION['success_message'] = $languageService->get('rights_updated');
         header("Location: /admin/admincenter.php?site=user_roles&action=roles");
         exit;
     }
@@ -143,35 +153,35 @@ if (isset($_GET['roleID'])) {
 
 <div class="card">
     <div class="card-header">
-        <i class="bi bi-paragraph"></i> <?= $_language->module['regular_users'] ?>
+        <i class="bi bi-paragraph"></i> <?= $languageService->get('regular_users') ?>
     </div>
 
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb t-5 p-2 bg-light">
-            <li class="breadcrumb-item"><a href="admincenter.php?site=user_roles"><?= $_language->module['regular_users'] ?></a></li>
-            <li class="breadcrumb-item active" aria-current="page"><?= $_language->module['edit_role_rights'] ?></li>
+            <li class="breadcrumb-item"><a href="admincenter.php?site=user_roles"><?= $languageService->get('regular_users') ?></a></li>
+            <li class="breadcrumb-item active" aria-current="page"><?= $languageService->get('edit_role_rights') ?></li>
         </ol>
     </nav>
 
     <div class="card-body">
         <div class="container py-5">
-            <h2 class="mb-4"><?= $_language->module['edit_role_rights'] ?></h2>
+            <h2 class="mb-4"><?= $languageService->get('edit_role_rights') ?></h2>
 
             <form method="post">
                 <input type="hidden" name="roleID" value="<?= $roleID ?>">
                 <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
 
-                <h4><?= $_language->module['categories'] ?></h4>
+                <h4><?= $languageService->get('categories') ?></h4>
                 <table class="table table-bordered table-striped bg-white shadow-sm">
                     <thead class="table-light">
                         <tr>
-                            <th><?= $_language->module['module'] ?></th>
-                            <th><?= $_language->module['access'] ?></th>
+                            <th><?= $languageService->get('module') ?></th>
+                            <th><?= $languageService->get('access') ?></th>
                         </tr>
                     </thead>
                     <tbody>
                     <?php foreach ($categories as $cat):
-                        $translate = new multiLanguage(detectCurrentLanguage());
+                        $translate = new multiLanguage($lang);
                         $translate->detectLanguages($cat['name']);
                         $cats = $translate->getTextByLanguage($cat['name']);
                         ?>
@@ -183,12 +193,12 @@ if (isset($_GET['roleID'])) {
                     </tbody>
                 </table>
 
-                <h4><?= $_language->module['modules'] ?></h4>
+                <h4><?= $languageService->get('modules') ?></h4>
                 <table class="table table-bordered table-striped bg-white shadow-sm">
                     <thead class="table-light">
                         <tr>
-                            <th><?= $_language->module['module'] ?></th>
-                            <th><?= $_language->module['access'] ?></th>
+                            <th><?= $languageService->get('module') ?></th>
+                            <th><?= $languageService->get('access') ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -204,7 +214,7 @@ if (isset($_GET['roleID'])) {
                     </tbody>
                 </table>
 
-                <button type="submit" name="save_rights" class="btn btn-warning"><?= $_language->module['save_rights'] ?></button>
+                <button type="submit" name="save_rights" class="btn btn-warning"><?= $languageService->get('save_rights') ?></button>
             </form>
         </div>
     </div>
@@ -253,18 +263,18 @@ if (isset($_GET['userID'])) {
                 <table class="table table-bordered table-striped bg-white shadow-sm">
                     <thead class="table-light">
                         <tr>
-                            <th>' . $_language->module['type'] . '</th>
-                            <th>' . $_language->module['modulname'] . '</th>
-                            <th>' . $_language->module['side_name'] . '</th>
+                            <th>' . $languageService->get('type') . '</th>
+                            <th>' . $languageService->get('modulname') . '</th>
+                            <th>' . $languageService->get('side_name') . '</th>
                         </tr>
                     </thead>
                     <tbody>
             ';
             while ($r = mysqli_fetch_assoc($rights_result)) {
-                $type = $r['type'] === 'category' ? $_language->module['category'] : $_language->module['module'];
+                $type = $r['type'] === 'category' ? $languageService->get('category') : $languageService->get('module');
                 $modulname = htmlspecialchars($r['modulname']);
                 $name = htmlspecialchars($r['name']);
-                $translate = new multiLanguage(detectCurrentLanguage());
+                $translate = new multiLanguage($lang);
                 $translate->detectLanguages($name);
                 $side_name = $translate->getTextByLanguage($name);
                 $role_rights_table .= "
@@ -277,43 +287,43 @@ if (isset($_GET['userID'])) {
             }
             $role_rights_table .= '</tbody></table>';
         } else {
-            $role_rights_table = '<p class="text-muted">' . $_language->module['no_rights'] . '</p>';
+            $role_rights_table = '<p class="text-muted">' . $languageService->get('no_rights') . '</p>';
         }
 
     } else {
-        $username = $_language->module['unknown_user'];
-        $role_name = $_language->module['no_role_assigned'];
-        $role_rights_table = '<p class="text-muted">' . $_language->module['no_rights_found'] . '</p>';
+        $username = $languageService->get('unknown_user');
+        $role_name = $languageService->get('no_role_assigned');
+        $role_rights_table = '<p class="text-muted">' . $languageService->get('no_rights_found') . '</p>';
     }
 } else {
-    echo $_language->module['no_user_selected'];
+    echo $languageService->get('no_user_selected');
     exit;
 }
 ?>
 
 <div class="card">
     <div class="card-header">
-        <i class="bi bi-paragraph"></i> <?= $_language->module['regular_users'] ?>
+        <i class="bi bi-paragraph"></i> <?= $languageService->get('regular_users') ?>
     </div>
 
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb t-5 p-2 bg-light">
-            <li class="breadcrumb-item"><a href="admincenter.php?site=user_roles"><?= $_language->module['regular_users'] ?></a></li>
-            <li class="breadcrumb-item active" aria-current="page"><?= $_language->module['user_rights_and_roles'] ?></li>
+            <li class="breadcrumb-item"><a href="admincenter.php?site=user_roles"><?= $languageService->get('regular_users') ?></a></li>
+            <li class="breadcrumb-item active" aria-current="page"><?= $languageService->get('user_rights_and_roles') ?></li>
         </ol>
     </nav>
     <div class="card-body">
         <div class="container py-5">
-            <h2 class="mb-4"><?= $_language->module['user_rights_and_roles'] ?></h2>
+            <h2 class="mb-4"><?= $languageService->get('user_rights_and_roles') ?></h2>
 
-            <h3><?= $_language->module['user_info'] ?></h3>
-            <p><strong><?= $_language->module['username'] ?>:</strong> <?= $username ?></p>
-            <p><strong><?= $_language->module['role'] ?>:</strong> <?= $role_name ?></p>
+            <h3><?= $languageService->get('user_info') ?></h3>
+            <p><strong><?= $languageService->get('username') ?>:</strong> <?= $username ?></p>
+            <p><strong><?= $languageService->get('role') ?>:</strong> <?= $role_name ?></p>
 
-            <h4 class="mt-4"><?= $_language->module['assigned_rights'] ?></h4>
+            <h4 class="mt-4"><?= $languageService->get('assigned_rights') ?></h4>
             <?= $role_rights_table ?>
 
-            <a href="admincenter.php?site=user_roles&action=admins" class="btn btn-primary mt-3"><?= $_language->module['back_to_roles'] ?></a>
+            <a href="admincenter.php?site=user_roles&action=admins" class="btn btn-primary mt-3"><?= $languageService->get('back_to_roles') ?></a>
         </div>
     </div>
 </div>
@@ -334,7 +344,7 @@ if (!isset($_SESSION['csrf_token'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // CSRF-Überprüfung
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        $_SESSION['csrf_error'] = $_language->module['csrf_error_message']; // Fehlernachricht aus dem Spracharray
+        $_SESSION['csrf_error'] = $languageService->get('csrf_error_message'); // Fehlernachricht aus dem Spracharray
         header("Location: admincenter.php?site=user_roles&action=admins"); // Weiterleitung zur vorherigen Seite
         exit();
     }
@@ -347,7 +357,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Überprüfen, ob die Rolle bereits zugewiesen wurde
         $existing_assignment = safe_query("SELECT * FROM user_role_assignments WHERE userID = '$userID' AND roleID = '$roleID'");
         if (mysqli_num_rows($existing_assignment) > 0) {
-            $_SESSION['csrf_error'] = $_language->module['role_already_assigned']; // Rolle bereits zugewiesen
+            $_SESSION['csrf_error'] = $languageService->get('role_already_assigned'); // Rolle bereits zugewiesen
             header("Location: admincenter.php?site=user_roles&action=admins");
             exit();
         }
@@ -356,7 +366,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         safe_query("INSERT INTO user_role_assignments (userID, roleID) VALUES ('$userID', '$roleID')");
 
         // Erfolgreiche Zuweisung
-        $_SESSION['csrf_success'] = $_language->module['role_assigned_successfully']; // Erfolgsnachricht
+        $_SESSION['csrf_success'] = $languageService->get('role_assigned_successfully'); // Erfolgsnachricht
         header("Location: admincenter.php?site=user_roles&action=admins");
         exit();
     }
@@ -381,22 +391,22 @@ if (isset($_SESSION['csrf_success'])): ?>
  
 <div class="card">
     <div class="card-header">
-        <i class="bi bi-paragraph"></i> <?= $_language->module['regular_users'] ?>
+        <i class="bi bi-paragraph"></i> <?= $languageService->get('regular_users') ?>
     </div>
 
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb t-5 p-2 bg-light">
-            <li class="breadcrumb-item"><a href="admincenter.php?site=user_roles"><?= $_language->module['regular_users'] ?></a></li>
-            <li class="breadcrumb-item active" aria-current="page"><?= $_language->module['assign_role_to_user'] ?></li>
+            <li class="breadcrumb-item"><a href="admincenter.php?site=user_roles"><?= $languageService->get('regular_users') ?></a></li>
+            <li class="breadcrumb-item active" aria-current="page"><?= $languageService->get('assign_role_to_user') ?></li>
         </ol>
     </nav>
     <div class="card-body">
         <div class="container py-5">
             <!-- Benutzerrolle zuweisen -->
-            <h3 class="mb-4"><?= $_language->module['assign_role_to_user'] ?></h3>
+            <h3 class="mb-4"><?= $languageService->get('assign_role_to_user') ?></h3>
             <form method="post" class="row g-3 mb-5">
                 <div class="col-auto">
-                    <label for="user_id" class="form-label"><?= $_language->module['username'] ?></label>
+                    <label for="user_id" class="form-label"><?= $languageService->get('username') ?></label>
                     <select name="user_id" class="form-select" required>
                         <?php
                         $admins = safe_query("SELECT * FROM users ORDER BY userID");
@@ -407,7 +417,7 @@ if (isset($_SESSION['csrf_success'])): ?>
                 </div>
 
                 <div class="col-auto">
-                    <label for="role_id" class="form-label"><?= $_language->module['role_name'] ?></label>
+                    <label for="role_id" class="form-label"><?= $languageService->get('role_name') ?></label>
                     <select name="role_id" class="form-select" required>
                         <?php
                         // Hole alle Rollen
@@ -420,19 +430,19 @@ if (isset($_SESSION['csrf_success'])): ?>
                 </div>
 
                 <div class="col-auto">
-                    <button type="submit" name="assign_role" class="btn btn-primary"><?= $_language->module['assign_role_to_user'] ?></button>
+                    <button type="submit" name="assign_role" class="btn btn-primary"><?= $languageService->get('assign_role_to_user') ?></button>
                 </div>
                 <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
             </form>
 
             <!-- Zuweisungen anzeigen -->
-            <h3 class="mb-4"><?= $_language->module['available_roles'] ?></h3>
+            <h3 class="mb-4"><?= $languageService->get('available_roles') ?></h3>
             <table class="table table-bordered table-striped bg-white shadow-sm">
                 <thead class="table-light">
                     <tr>
-                        <th><?= $_language->module['username'] ?></th>
-                        <th><?= $_language->module['role_name'] ?></th>
-                        <th style="width: 330px"><?= $_language->module['actions'] ?></th>
+                        <th><?= $languageService->get('username') ?></th>
+                        <th><?= $languageService->get('role_name') ?></th>
+                        <th style="width: 330px"><?= $languageService->get('actions') ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -447,10 +457,10 @@ if (isset($_SESSION['csrf_success'])): ?>
                         <td><?= htmlspecialchars($assignment['role_name']) ?></td>
                         <td>
                             <a href="admincenter.php?site=user_roles&action=user_role_details&userID=<?= $assignment['userID'] ?>" class="btn btn-sm btn-warning">
-                                <?= $_language->module['view_assigned_rights'] ?>
+                                <?= $languageService->get('view_assigned_rights') ?>
                             </a>
-                            <a href="admincenter.php?site=user_roles&action=admins&delete_assignment=<?= $assignment['userID'] ?>&roleID=<?= $assignment['roleID'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('<?= $_language->module['remove_role_confirm'] ?>')">
-                                <?= $_language->module['remove'] ?>
+                            <a href="admincenter.php?site=user_roles&action=admins&delete_assignment=<?= $assignment['userID'] ?>&roleID=<?= $assignment['roleID'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('<?= $languageService->get('remove_role_confirm') ?>')">
+                                <?= $languageService->get('remove') ?>
                             </a>
                         </td>
                     </tr>
@@ -497,7 +507,7 @@ if (!isset($_SESSION['csrf_token'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // CSRF-Überprüfung
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        $_SESSION['csrf_error'] = $_language->module['csrf_error_message'];
+        $_SESSION['csrf_error'] = $languageService->get('csrf_error_message');
         header("Location: admincenter.php?site=user_roles"); // Weiterleitung zur vorherigen Seite
         exit();
     }
@@ -510,7 +520,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Überprüfen, ob die Rolle bereits zugewiesen wurde
         $existing_assignment = safe_query("SELECT * FROM user_role_assignments WHERE userID = '$userID' AND roleID = '$roleID'");
         if (mysqli_num_rows($existing_assignment) > 0) {
-            $_SESSION['csrf_error'] = $_language->module['role_already_assigned'];
+            $_SESSION['csrf_error'] = $languageService->get('role_already_assigned');
             header("Location: admincenter.php?site=user_roles");
             exit();
         }
@@ -519,7 +529,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         safe_query("INSERT INTO user_role_assignments (userID, roleID) VALUES ('$userID', '$roleID')");
 
         // Erfolgsmeldung
-        $_SESSION['success_message'] = $_language->module['role_assigned_successfully'];
+        $_SESSION['success_message'] = $languageService->get('role_assigned_successfully');
         header("Location: admincenter.php?site=user_roles");
         exit();
     }
@@ -543,28 +553,28 @@ if (isset($_SESSION['csrf_error'])): ?>
 
 <div class="card">
     <div class="card-header">
-        <i class="bi bi-paragraph"></i> <?= $_language->module['regular_users'] ?>
+        <i class="bi bi-paragraph"></i> <?= $languageService->get('regular_users') ?>
     </div>
 
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb t-5 p-2 bg-light">
-            <li class="breadcrumb-item"><a href="admincenter.php?site=user_roles"><?= $_language->module['regular_users'] ?></a></li>
-            <li class="breadcrumb-item active" aria-current="page"><?= $_language->module['manage_admin_roles'] ?></li>
+            <li class="breadcrumb-item"><a href="admincenter.php?site=user_roles"><?= $languageService->get('regular_users') ?></a></li>
+            <li class="breadcrumb-item active" aria-current="page"><?= $languageService->get('manage_admin_roles') ?></li>
         </ol>
     </nav>
 
     <div class="card-body">
         <div class="container py-5">
-            <h2 class="mb-4"><?= $_language->module['manage_admin_roles'] ?></h2>
+            <h2 class="mb-4"><?= $languageService->get('manage_admin_roles') ?></h2>
 
             <!-- Rollenliste -->
-            <h3 class="mb-4"><?= $_language->module['available_roles'] ?></h3>
+            <h3 class="mb-4"><?= $languageService->get('available_roles') ?></h3>
             <table class="table table-bordered table-striped bg-white shadow-sm">
                 <thead class="table-light">
                     <tr>
-                        <th><?= $_language->module['role_name'] ?></th>
-                        <th><?= $_language->module['permissions'] ?></th>
-                        <th style="width: 250px"><?= $_language->module['actions'] ?></th>
+                        <th><?= $languageService->get('role_name') ?></th>
+                        <th><?= $languageService->get('permissions') ?></th>
+                        <th style="width: 250px"><?= $languageService->get('actions') ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -573,10 +583,10 @@ if (isset($_SESSION['csrf_error'])): ?>
                     while ($role = mysqli_fetch_assoc($roles)) : ?>
                         <tr>
                             <td><?= htmlspecialchars($role['role_name']) ?></td>
-                            <td><?= htmlspecialchars($role['description'] ?? $_language->module['no_permissions_defined']) ?></td>
+                            <td><?= htmlspecialchars($role['description'] ?? $languageService->get('no_permissions_defined')) ?></td>
                             <td>
                                 <a href="admincenter.php?site=user_roles&action=edit_role_rights&roleID=<?= (int)$role['roleID'] ?>" class="btn btn-sm btn-warning">
-                                    <?= $_language->module['edit_rights'] ?>
+                                    <?= $languageService->get('edit_rights') ?>
                                 </a>
                             </td>
                         </tr>
@@ -591,9 +601,6 @@ if (isset($_SESSION['csrf_error'])): ?>
 
 
 } elseif ($action == "edit_user") {
-
-    global $_language;
-    $_language->readModule('user_roles');
 
     // Benutzer-ID aus der URL holen
     $userID = isset($_GET['userID']) ? intval($_GET['userID']) : 0;
@@ -667,21 +674,21 @@ if (isset($_SESSION['csrf_error'])): ?>
                         $vars = ['%pagetitle%', '%email%', '%new_password%', '%homepage_url%', '%admin_name%', '%admin_email%'];
                         $repl = [$hp_title, $email, $new_password_plain, $hp_url, $admin_name, $admin_email];
 
-                        $subject = str_replace($vars, $repl, $_language->module['email_subject']);
-                        $message = str_replace($vars, $repl, $_language->module['email_text']);
+                        $subject = str_replace($vars, $repl, $languageService->get('email_subject'));
+                        $message = str_replace($vars, $repl, $languageService->get('email_text'));
 
                         $sendmail = Email::sendEmail($admin_email, 'Passwort zurückgesetzt', $email, $subject, $message);
 
                         if ($sendmail['result'] === 'fail') {
-                            echo generateErrorBoxFromArray($_language->module['email_failed'], [$sendmail['error']]);
+                            echo generateErrorBoxFromArray($languageService->get('email_failed'), [$sendmail['error']]);
                         } else {
-                            echo $_language->module['password_reset_success'] ?? 'E-Mail wurde erfolgreich versendet.';
+                            echo $languageService->get('password_reset_success') ?? 'E-Mail wurde erfolgreich versendet.';
                         }
                     }
 
-                    $_SESSION['success_message'] = $_language->module['password_reset_success'] ?? 'Passwort wurde neu gesetzt.';
+                    $_SESSION['success_message'] = $languageService->get('password_reset_success') ?? 'Passwort wurde neu gesetzt.';
                 } else {
-                    echo generateErrorBoxFromArray($_language->module['user_update_failed'], []);
+                    echo generateErrorBoxFromArray($languageService->get('user_update_failed'), []);
                 }
             } else {
                 $query = "UPDATE users SET username = ?, email = ? WHERE userID = ?";
@@ -695,9 +702,9 @@ if (isset($_SESSION['csrf_error'])): ?>
                 $stmt->execute();
 
                 if ($stmt->affected_rows > 0) {
-                    $_SESSION['success_message'] = $_language->module['user_updated'];
+                    $_SESSION['success_message'] = $languageService->get('user_updated');
                 } else {
-                    $_SESSION['error_message'] = $_language->module['user_update_failed'];
+                    $_SESSION['error_message'] = $languageService->get('user_update_failed');
                 }
             }
 
@@ -710,51 +717,51 @@ if (isset($_SESSION['csrf_error'])): ?>
         ?>
         <div class="card">
             <div class="card-header">
-                <i class="bi bi-paragraph"></i> <?= $_language->module['regular_users'] ?>
+                <i class="bi bi-paragraph"></i> <?= $languageService->get('regular_users') ?>
             </div>
 
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb t-5 p-2 bg-light">
                     <li class="breadcrumb-item">
-                        <a href="admincenter.php?site=user_roles"><?= $_language->module['regular_users'] ?></a>
+                        <a href="admincenter.php?site=user_roles"><?= $languageService->get('regular_users') ?></a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page"><?= $_language->module['user_edit'] ?></li>
+                    <li class="breadcrumb-item active" aria-current="page"><?= $languageService->get('user_edit') ?></li>
                 </ol>
             </nav>
 
             <div class="card-body">
                 <div class="container py-5">
-                    <h2 class="mb-4"><?= $_language->module['user_edit'] ?></h2>
+                    <h2 class="mb-4"><?= $languageService->get('user_edit') ?></h2>
 
                     <form method="post" class="row g-3">
                         <input type="hidden" name="userID" value="<?= htmlspecialchars($user['userID']) ?>">
                         <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
 
                         <div class="col-md-6">
-                            <label for="username" class="form-label"><?= $_language->module['username'] ?></label>
+                            <label for="username" class="form-label"><?= $languageService->get('username') ?></label>
                             <input type="text" id="username" name="username" class="form-control" value="<?= htmlspecialchars($user['username']) ?>" required>
                         </div>
 
                         <div class="col-md-6">
-                            <label for="email" class="form-label"><?= $_language->module['email'] ?></label>
+                            <label for="email" class="form-label"><?= $languageService->get('email') ?></label>
                             <input type="email" id="email" name="email" class="form-control" value="<?= htmlspecialchars($user['email']) ?>" disabled>
                         </div>
 
                         <div class="col-md-6">
-                            <label for="password" class="form-label"><?= $_language->module['set_password_manually'] ?? 'Neues Passwort manuell setzen (optional)' ?></label>
+                            <label for="password" class="form-label"><?= $languageService->get('set_password_manually') ?? 'Neues Passwort manuell setzen (optional)' ?></label>
                             <input type="password" id="password" name="password" class="form-control">
-                            <div class="form-text"><?= $_language->module['manual_password_info'] ?? 'Nur ausfüllen, wenn du selbst ein neues Passwort setzen möchtest.' ?></div>
+                            <div class="form-text"><?= $languageService->get('manual_password_info') ?? 'Nur ausfüllen, wenn du selbst ein neues Passwort setzen möchtest.' ?></div>
                         </div>
 
                         <div class="col-md-6 d-flex align-items-end">
                             <button type="submit" name="reset_password" value="1" class="btn btn-danger w-100"
-                                onclick="return confirm('<?= $_language->module['confirm_reset_password'] ?? 'Automatisch neues Passwort setzen?' ?>');">
-                                🔄 <?= $_language->module['reset_password'] ?? 'Passwort automatisch zurücksetzen' ?>
+                                onclick="return confirm('<?= $languageService->get('confirm_reset_password') ?? 'Automatisch neues Passwort setzen?' ?>');">
+                                🔄 <?= $languageService->get('reset_password') ?? 'Passwort automatisch zurücksetzen' ?>
                             </button>
                         </div>
 
                         <div class="col-md-12">
-                            <button type="submit" name="submit" class="btn btn-warning"><?= $_language->module['save_user'] ?></button>
+                            <button type="submit" name="submit" class="btn btn-warning"><?= $languageService->get('save_user') ?></button>
                         </div>
                     </form>
                 </div>
@@ -828,7 +835,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $stmt->bind_param('ssi', $password_hash, $pepper_encrypted, $userID);
                 $stmt->execute();
 
-                $_SESSION['success_message'] = $_language->module['user_created_successfully'];
+                $_SESSION['success_message'] = $languageService->get('user_created_successfully');
                 header("Location: admincenter.php?site=user_roles");
                 exit();
             } else {
@@ -837,7 +844,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 exit();
             }
         } else {
-            $_SESSION['error_message'] = $_language->module['user_creation_error'];
+            $_SESSION['error_message'] = $languageService->get('user_creation_error');
             header("Location: admincenter.php?site=user_roles");
             exit();
         }
@@ -855,35 +862,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <div class="card">
     <div class="card-header">
-        <i class="bi bi-paragraph"></i> <?= $_language->module['regular_users'] ?>
+        <i class="bi bi-paragraph"></i> <?= $languageService->get('regular_users') ?>
     </div>
 
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb t-5 p-2 bg-light">
-            <li class="breadcrumb-item"><a href="admincenter.php?site=user_roles"><?= $_language->module['regular_users'] ?></a></li>
-            <li class="breadcrumb-item active" aria-current="page"><?= $_language->module['add_user'] ?></li>
+            <li class="breadcrumb-item"><a href="admincenter.php?site=user_roles"><?= $languageService->get('regular_users') ?></a></li>
+            <li class="breadcrumb-item active" aria-current="page"><?= $languageService->get('add_user') ?></li>
         </ol>
     </nav>
 
     <div class="card-body">
 
         <div class="container py-5">
-            <h2 class="mb-4"><?= $_language->module['add_user'] ?></h2>
+            <h2 class="mb-4"><?= $languageService->get('add_user') ?></h2>
 
             <form method="POST" action="">
                 <div class="mb-3">
-                    <label for="username" class="form-label"><?= $_language->module['username'] ?></label>
+                    <label for="username" class="form-label"><?= $languageService->get('username') ?></label>
                     <input type="text" class="form-control" id="username" name="username" required>
                 </div>
                 <div class="mb-3">
-                    <label for="email" class="form-label"><?= $_language->module['email'] ?></label>
+                    <label for="email" class="form-label"><?= $languageService->get('email') ?></label>
                     <input type="email" class="form-control" id="email" name="email" required>
                 </div>
                 <div class="mb-3">
-                    <label for="password" class="form-label"><?= $_language->module['password'] ?></label>
+                    <label for="password" class="form-label"><?= $languageService->get('password') ?></label>
                     <input type="password" class="form-control" id="password" name="password" required>
                 </div>
-                <button type="submit" class="btn btn-success"><?= $_language->module['add_user'] ?></button>
+                <button type="submit" class="btn btn-success"><?= $languageService->get('add_user') ?></button>
             </form>
         </div>
 
@@ -978,7 +985,7 @@ $users = safe_query("SELECT * FROM users ORDER BY userID LIMIT $offset, $users_p
 
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb t-5 p-2 bg-light">
-            <li class="breadcrumb-item"><a href="admincenter.php?site=user_roles"><?= $_language->module['regular_users'] ?></a></li>
+            <li class="breadcrumb-item"><a href="admincenter.php?site=user_roles"><?= $languageService->get('regular_users') ?></a></li>
             <li class="breadcrumb-item active" aria-current="page">New / Edit</li>
         </ol>
     </nav>
@@ -986,18 +993,18 @@ $users = safe_query("SELECT * FROM users ORDER BY userID LIMIT $offset, $users_p
     <div class="card-body">
 
         <div class="form-group row">
-            <label class="col-md-1 control-label"><?= $_language->module['options'] ?>:</label>
+            <label class="col-md-1 control-label"><?= $languageService->get('options') ?>:</label>
             <div class="col-md-8">
-                <a href="admincenter.php?site=user_roles&action=roles" class="btn btn-primary" type="button"><?= $_language->module['manage_admin_roles'] ?></a>      
-                <a href="admincenter.php?site=user_roles&action=admins" class="btn btn-primary" type="button"><?= $_language->module['assign_role_to_user'] ?></a>
+                <a href="admincenter.php?site=user_roles&action=roles" class="btn btn-primary" type="button"><?= $languageService->get('manage_admin_roles') ?></a>      
+                <a href="admincenter.php?site=user_roles&action=admins" class="btn btn-primary" type="button"><?= $languageService->get('assign_role_to_user') ?></a>
             </div>
         </div>
         <div class="container py-5">
-            <h2 class="mb-4"><?= $_language->module['regular_users'] ?></h2>
+            <h2 class="mb-4"><?= $languageService->get('regular_users') ?></h2>
         <!-- Button zum Hinzufügen eines neuen Benutzers -->
         <div class="mb-3">
             <a href="admincenter.php?site=user_roles&action=user_create" class="btn btn-sm btn-success">
-                <?= $_language->module['add_user'] ?>
+                <?= $languageService->get('add_user') ?>
             </a>
         </div>
 
@@ -1005,11 +1012,11 @@ $users = safe_query("SELECT * FROM users ORDER BY userID LIMIT $offset, $users_p
         <table class="table table-bordered table-striped bg-white shadow-sm">
             <thead class="table-light">
                 <tr>
-                    <th><?= $_language->module['id'] ?></th>
-                    <th><?= $_language->module['username'] ?></th>
-                    <th><?= $_language->module['email'] ?></th>
-                    <th><?= $_language->module['registered_on'] ?></th>
-                    <th width="350"><?= $_language->module['actions'] ?></th>
+                    <th><?= $languageService->get('id') ?></th>
+                    <th><?= $languageService->get('username') ?></th>
+                    <th><?= $languageService->get('email') ?></th>
+                    <th><?= $languageService->get('registered_on') ?></th>
+                    <th width="350"><?= $languageService->get('actions') ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -1024,24 +1031,24 @@ $users = safe_query("SELECT * FROM users ORDER BY userID LIMIT $offset, $users_p
                                 <form method="POST" action="" class="d-inline">
                                     <input type="hidden" name="userID" value="<?= $user['userID'] ?>">
                                     <button type="submit" name="unban_user" class="btn btn-success btn-sm">
-                                        <?= $_language->module['unban_user'] ?>
+                                        <?= $languageService->get('unban_user') ?>
                                     </button>
                                 </form>
                             <?php else : ?>
                                 <form method="POST" action="" class="d-inline">
                                     <input type="hidden" name="userID" value="<?= $user['userID'] ?>">
                                     <button type="submit" name="ban_user" class="btn btn-danger btn-sm">
-                                        <?= $_language->module['ban_user'] ?>
+                                        <?= $languageService->get('ban_user') ?>
                                     </button>
                                 </form>
                             <?php endif; ?>
 
                             <a href="admincenter.php?site=user_roles&action=edit_user&userID=<?= $user['userID'] ?>" class="btn btn-sm btn-warning">
-                                <?= $_language->module['edit'] ?>
+                                <?= $languageService->get('edit') ?>
                             </a>
 
-                            <a href="admincenter.php?site=user_roles&action=delete_user&userID=<?= $user['userID'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('<?= $_language->module['confirm_delete'] ?>')">
-                                <?= $_language->module['delete'] ?>
+                            <a href="admincenter.php?site=user_roles&action=delete_user&userID=<?= $user['userID'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('<?= $languageService->get('confirm_delete') ?>')">
+                                <?= $languageService->get('delete') ?>
                             </a>
                         </td>
                     </tr>
@@ -1057,12 +1064,12 @@ $users = safe_query("SELECT * FROM users ORDER BY userID LIMIT $offset, $users_p
     <ul class="pagination justify-content-center">
         <li class="page-item <?= ($page == 1) ? 'disabled' : '' ?>">
             <a class="page-link" href="admincenter.php?site=user_roles&page=1">
-                <?= $_language->module['first'] ?>
+                <?= $languageService->get('first') ?>
             </a>
         </li>
         <li class="page-item <?= ($page == 1) ? 'disabled' : '' ?>">
             <a class="page-link" href="admincenter.php?site=user_roles&page=<?= ($page - 1) ?>">
-                <?= $_language->module['previous'] ?>
+                <?= $languageService->get('previous') ?>
             </a>
         </li>
 
@@ -1077,12 +1084,12 @@ $users = safe_query("SELECT * FROM users ORDER BY userID LIMIT $offset, $users_p
 
         <li class="page-item <?= ($page == $total_pages) ? 'disabled' : '' ?>">
             <a class="page-link" href="admincenter.php?site=user_roles&page=<?= ($page + 1) ?>">
-                <?= $_language->module['next'] ?>
+                <?= $languageService->get('next') ?>
             </a>
         </li>
         <li class="page-item <?= ($page == $total_pages) ? 'disabled' : '' ?>">
             <a class="page-link" href="admincenter.php?site=user_roles&page=<?= $total_pages ?>">
-                <?= $_language->module['last'] ?>
+                <?= $languageService->get('last') ?>
             </a>
         </li>
     </ul>

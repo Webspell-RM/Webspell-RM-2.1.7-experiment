@@ -1,20 +1,27 @@
 <?php
 
-// Überprüfen, ob die Session bereits gestartet wurde
-if (session_status() == PHP_SESSION_NONE) {
+use webspell\LanguageService;
+
+// Session absichern
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+// Standard setzen, wenn nicht vorhanden
+$_SESSION['language'] = $_SESSION['language'] ?? 'de';
+
+// Initialisieren
+global $languageService;
+$languageService = new LanguageService($_database);
+
+// Admin-Modul laden
+$languageService->readModule('privacy_policy', true);
 
 use webspell\AccessControl;
 use webspell\Captcha;
 
 // Zugriffskontrolle für Admin
 AccessControl::checkAdminAccess('ac_privacy_policy');
-
-// Sprachmodul laden
-$_language->readModule('privacy_policy', false, true);
-
-
 
 // Initialisierung der Captcha-Klasse
 $CAPCLASS = new \webspell\Captcha;
@@ -39,14 +46,14 @@ if (isset($_POST['submit'])) {
             // Wenn noch kein Eintrag existiert, dann einen neuen hinzufügen
             safe_query("INSERT INTO settings_privacy_policy (date, privacy_policy_text, editor) VALUES (NOW(), '" . $privacy_policy_text . "', '" . $editor . "')");
         }
-        echo '<div class="alert alert-success" role="alert">' . $_language->module['changes_successful'] . '</div>';
+        echo '<div class="alert alert-success" role="alert">' . $languageService->module['changes_successful'] . '</div>';
         echo '<script type="text/javascript">
                 setTimeout(function() {
                     window.location.href = "admincenter.php?site=settings_privacy_policy";
                 }, 3000); // 3 Sekunden warten
             </script>';
     } else {
-        echo '<div class="alert alert-success" role="alert">' . $_language->module['transaction_invalid'] . '</div>';
+        echo '<div class="alert alert-success" role="alert">' . $languageService->module['transaction_invalid'] . '</div>';
         echo '<script type="text/javascript">
                 setTimeout(function() {
                     window.location.href = "admincenter.php?site=settings_privacy_policy";
@@ -71,12 +78,12 @@ if (isset($ds['editor']) && $ds['editor'] == 1) {
 
 // Template-Daten vorbereiten
 $data_array = [
-    'privacy_policy_label' => $_language->module['privacy_policy'] ?? 'Datenschutzerklärung',
+    'privacy_policy_label' => $languageService->module['privacy_policy'] ?? 'Datenschutzerklärung',
     'privacy_policy_text' => htmlspecialchars($ds['privacy_policy_text'], ENT_QUOTES, 'UTF-8'),
-    'editor_is_editor' => $_language->module['editor_is_editor'], // Label für "Editor anzeigen"
+    'editor_is_editor' => $languageService->module['editor_is_editor'], // Label für "Editor anzeigen"
     'editor_checked' => $editor_checked, // Checkbox für Editor-Status
     'captcha_hash' => $hash,
-    'update_button_label' => $_language->module['update'] ?? 'Aktualisieren'
+    'update_button_label' => $languageService->module['update'] ?? 'Aktualisieren'
 ];
 
 echo $tpl->loadTemplate("privacy_policy", "content", $data_array, 'admin');

@@ -1,9 +1,21 @@
 <?php
 
-// Überprüfen, ob die Session bereits gestartet wurde
-if (session_status() == PHP_SESSION_NONE) {
+use webspell\LanguageService;
+
+// Session absichern
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+// Standard setzen, wenn nicht vorhanden
+$_SESSION['language'] = $_SESSION['language'] ?? 'de';
+
+// Initialisieren
+global $languageService;
+$languageService = new LanguageService($_database);
+
+// Admin-Modul laden
+$languageService->readModule('plugin_installer', true);
 
 use webspell\AccessControl;
 use webspell\PluginUninstaller;
@@ -11,9 +23,6 @@ use webspell\Plugininstaller;
 
 // Admin-Rechte prüfen
 AccessControl::checkAdminAccess('ac_plugin_installer');
-
-// Sprachdatei laden
-$_language->readModule('plugin_installer', false, true);
 
 // Konfiguration
 $plugin_dir = '../includes/plugins/';
@@ -195,18 +204,18 @@ foreach ($all_plugin_names as $name) {
 // HTML-Ausgabe
 echo '
 <div class="card">
-    <div class="card-header">'.$_language->module['plugin_installer'].'</div>
+    <div class="card-header">'.$languageService->get('plugin_installer').'</div>
     <div class="card-body">
         <div class="container py-5">
-        <h3>'.$_language->module['plugin_installer_headline'].'</h3>
+        <h3>'.$languageService->get('plugin_installer_headline').'</h3>
 
         <table class="table table-bordered table-striped bg-white shadow-sm">
             <thead class="table-light">
                 <tr>
-                    <th width="20%">'.$_language->module['plugin_name'].'</th>
-                    <th width="50%">'.$_language->module['plugin_description'].'</th>
-                    <th>'.$_language->module['plugin_version'].'</th>
-                    <th width="20%">'.$_language->module['plugin_action'].'</th>
+                    <th width="20%">'.$languageService->get('plugin_name').'</th>
+                    <th width="50%">'.$languageService->get('plugin_description').'</th>
+                    <th>'.$languageService->get('plugin_version').'</th>
+                    <th width="20%">'.$languageService->get('plugin_action').'</th>
                 </tr>
             </thead>
             <tbody>';
@@ -224,17 +233,17 @@ foreach ($plugins_for_template as $plugin) {
     echo '</td><td>';
 
     if ($plugin['installed']) {
-        echo '<button class="btn btn-success btn-sm" disabled>'.$_language->module['installed'].'</button> ';
+        echo '<button class="btn btn-success btn-sm" disabled>'.$languageService->get('installed').'</button> ';
         if ($plugin['update']) {
             echo '<a href="admincenter.php?site=plugin_installer&update='.urlencode($plugin['modulname']).'" class="btn btn-warning btn-sm">'
-                .$_language->module['update'].'</a> ';
+                .$languageService->get('update').'</a> ';
         }
         echo '<a href="admincenter.php?site=plugin_installer&uninstall='.urlencode($plugin['modulname']).'" class="btn btn-danger btn-sm" onclick="return confirm(\'Wirklich deinstallieren?\');">'
-            .$_language->module['uninstall'].'</a>';
+            .$languageService->get('uninstall').'</a>';
     } else {
         if (!empty($plugin['download']) && $plugin['download'] !== 'DISABLED') {
             echo '<a href="admincenter.php?site=plugin_installer&install=' . urlencode($plugin['modulname']) . '" 
-                class="btn btn-primary btn-sm">' . $_language->module['install'] . '</a>';
+                class="btn btn-primary btn-sm">' . $languageService->get('install') . '</a>';
         } else {
             echo '<span style="color: gray;">Kein Download verfügbar</span>';
         }

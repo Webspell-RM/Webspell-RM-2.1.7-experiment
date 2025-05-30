@@ -1,13 +1,26 @@
 <?php
 
+use webspell\LanguageService;
+
+// Session absichern
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Standard setzen, wenn nicht vorhanden
+$_SESSION['language'] = $_SESSION['language'] ?? 'de';
+
+// Initialisieren
+global $languageService;
+$languageService = new LanguageService($_database);
+
+// Admin-Modul laden
+$languageService->readModule('user_roles', true);
+
 // Überprüfen, ob die Session bereits gestartet wurde
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-
-
-// Sprachmodul laden
-$_language->readModule('user_roles', false, true);
 
 use webspell\AccessControl;
 // Den Admin-Zugriff für das Modul überprüfen

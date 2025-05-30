@@ -1,5 +1,29 @@
 <?php
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+use webspell\LanguageService;
+
+global $languageService;
+
+$lang = $languageService->detectLanguage();
+$languageService->readModule('edit_profile');
+
+// Style aus settings holen
+$config = mysqli_fetch_array(safe_query("SELECT selected_style FROM settings_headstyle_config WHERE id=1"));
+$class = htmlspecialchars($config['selected_style']);
+
+// Header-Daten
+$data_array = [
+    'class'    => $class,
+    'title' => $languageService->get('title'),
+    'subtitle' => 'Imprint'
+];
+
+echo $tpl->loadTemplate("edit_profiles", "head", $data_array, 'theme');
+
 
 $userID = $_SESSION['userID'] ?? null;
 if (!$userID) {

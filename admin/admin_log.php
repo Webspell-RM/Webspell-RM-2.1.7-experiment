@@ -1,17 +1,25 @@
 <?php
 
-// Überprüfen, ob die Session bereits gestartet wurde
-if (session_status() == PHP_SESSION_NONE) {
+use webspell\LanguageService;
+
+// Session absichern
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+// Standard setzen, wenn nicht vorhanden
+$_SESSION['language'] = $_SESSION['language'] ?? 'de';
+
+// Initialisieren
+global $languageService;
+$languageService = new LanguageService($_database);
+
+// Admin-Modul laden
+$languageService->readModule('admin_log', true);
 
 use webspell\AccessControl;
 // Den Admin-Zugriff für das Modul überprüfen
 AccessControl::checkAdminAccess('ac_admin_log');
-
-
-// Sprachmodul laden
-$_language->readModule('admin_log', false, true);
 
 $action_labels = [
     1 => 'Erstellen',
@@ -88,12 +96,12 @@ $result = $_database->query("
 echo '
 <div class="card">
     <div class="card-header">
-        <i class="bi bi-paragraph"></i> ' . $_language->module['admin_log'] . '
+        <i class="bi bi-paragraph"></i> ' . $languageService->get('admin_log') . '
     </div>
 
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb t-5 p-2 bg-light">
-            <li class="breadcrumb-item active">' . $_language->module['admin_log'] . '</li>
+            <li class="breadcrumb-item active">' . $languageService->get('admin_log') . '</li>
         </ol>
     </nav>
 
@@ -134,8 +142,8 @@ while ($row = $result->fetch_assoc()) {
     <table class="table table-bordered table-striped bg-white shadow-sm mb-4">
         <thead class="table-light">
             <tr>
-                <th>' . ($_language->module['property'] ?? 'Eigenschaft') . '</th>
-                <th>' . ($_language->module['value'] ?? 'Wert') . '</th>
+                <th>' . ($languageService->get('property') ?? 'Eigenschaft') . '</th>
+                <th>' . ($languageService->get('value') ?? 'Wert') . '</th>
             </tr>
         </thead>
         <tbody>

@@ -1,11 +1,20 @@
 <?php
+use webspell\LanguageService;
 
-// Überprüfen, ob die Session bereits gestartet wurde
-if (session_status() == PHP_SESSION_NONE) {
+// Session absichern
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-$_language->readModule('editlang', false, true);
+// Standard setzen, wenn nicht vorhanden
+$_SESSION['language'] = $_SESSION['language'] ?? 'de';
+
+// Initialisieren
+global $languageService;
+$languageService = new LanguageService($_database);
+
+// Admin-Modul laden
+$languageService->readModule('editlang', true);
 
 use webspell\AccessControl;
 // Den Admin-Zugriff für das Modul überprüfen
@@ -55,22 +64,22 @@ $messageType = '';
 if ($action === 'save' && $file) {
     $content = $_POST['content'];
     if (saveFileContent($file, $content)) {
-        $message = $_language->module['successfully_saved'];
+        $message = $languageService->get('successfully_saved');
         $messageType = 'success';
         header("Location: admincenter.php?site=editlang&listbox={$listboxType}&message=success");
         exit();
     } else {
-        $message = $_language->module['error_save'];
+        $message = $languageService->get('error_save');
         $messageType = 'error';
     }
 }
 
 if (isset($_GET['message'])) {
     if ($_GET['message'] === 'success') {
-        $message = $_language->module['successfully_saved'];
+        $message = $languageService->get('successfully_saved');
         $messageType = 'success';
     } elseif ($_GET['message'] === 'error') {
-        $message = $_language->module['error_save'];
+        $message = $languageService->get('error_save');
         $messageType = 'error';
     }
 }
@@ -139,7 +148,7 @@ $selectedFile = $file ? urldecode($file) : null;
     </script>
     <div class="card">
         <div class="card-header">
-            <i class="bi bi-translate"></i> <?php echo $_language->module['title']; ?>
+            <i class="bi bi-translate"></i> <?php echo $languageService->get('title'); ?>
         </div>
         <div class="card-body">
             <br>
@@ -148,10 +157,10 @@ $selectedFile = $file ? urldecode($file) : null;
             <form class="card-body form-group" method="get" action="admincenter.php">
                 <div class="form-group">
                     <input type="hidden" name="site" value="editlang">
-                    <label class="fw-bold" for="listbox-type"><i class="bi bi-translate"></i> <?php echo $_language->module['type_lang']; ?></label>
+                    <label class="fw-bold" for="listbox-type"><i class="bi bi-translate"></i> <?php echo $languageService->get('type_lang'); ?></label>
                     <select name="listbox" id="listbox-type" class="form-select" onchange="this.form.submit()">
-                        <option value="main" <?= ($listboxType === 'main') ? 'selected' : '' ?>><?php echo $_language->module['system_lang']; ?></option>
-                        <option value="plugin" <?= ($listboxType === 'plugin') ? 'selected' : '' ?>><?php echo $_language->module['plugins_lang']; ?></option>
+                        <option value="main" <?= ($listboxType === 'main') ? 'selected' : '' ?>><?php echo $languageService->get('system_lang'); ?></option>
+                        <option value="plugin" <?= ($listboxType === 'plugin') ? 'selected' : '' ?>><?php echo $languageService->get('plugins_lang'); ?></option>
                     </select>
                 </div>
             </form>
@@ -162,9 +171,9 @@ $selectedFile = $file ? urldecode($file) : null;
                         <div class="form-group">
                             <input type="hidden" name="site" value="editlang">
                             <input type="hidden" name="listbox" value="main">
-                            <label class="fw-bold" for="language-files"><i class="bi bi-card-text"></i> <?php echo $_language->module['system_lang_file']; ?></label>
+                            <label class="fw-bold" for="language-files"><i class="bi bi-card-text"></i> <?php echo $languageService->get('system_lang_file'); ?></label>
                             <select class="form-select" name="file" id="language-files" onchange="this.form.submit()">
-                                <option value=""><?php echo $_language->module['select_file']; ?></option>
+                                <option value=""><?php echo $languageService->get('select_file'); ?></option>
                                 <?php foreach ($files as $directory => $fileList): ?>
                                     <optgroup style="text-transform: uppercase;" label="<?= htmlspecialchars($directory) ?>">
                                         <?php foreach ($fileList as $fileItem): ?>
@@ -183,9 +192,9 @@ $selectedFile = $file ? urldecode($file) : null;
                         <div class="form-group">
                             <input type="hidden" name="site" value="editlang">
                             <input type="hidden" name="listbox" value="plugin">
-                            <label class="fw-bold" for="plugin-language-files"><i class="bi bi-plugin"></i> <?php echo $_language->module['plugins_lang_file']; ?></label>
+                            <label class="fw-bold" for="plugin-language-files"><i class="bi bi-plugin"></i> <?php echo $languageService->get('plugins_lang_file'); ?></label>
                             <select class="form-select" name="file" id="plugin-language-files" onchange="this.form.submit()">
-                                <option value=""><?php echo $_language->module['select_file']; ?></option>
+                                <option value=""><?php echo $languageService->get('select_file'); ?></option>
                                 <?php foreach ($pluginFiles as $directory => $fileList): ?>
                                     <optgroup style="text-transform: uppercase;" label="<?= htmlspecialchars($directory) ?>">
                                         <?php foreach ($fileList as $fileItem): ?>
@@ -205,20 +214,20 @@ $selectedFile = $file ? urldecode($file) : null;
 
             <?php if ($selectedFile && file_exists($selectedFile)): ?>
                 <div class="file-edit alert alert-success" style="margin: 17px;">
-                    <p class="fw-bold"><i class="bi bi-pencil"></i> <?php echo $_language->module['edit_file']; ?> <?= htmlspecialchars(str_replace([$languageDir, $pluginLanguageDir], '', $selectedFile)) ?>
+                    <p class="fw-bold"><i class="bi bi-pencil"></i> <?php echo $languageService->get('edit_file'); ?> <?= htmlspecialchars(str_replace([$languageDir, $pluginLanguageDir], '', $selectedFile)) ?>
                     <?php if (strpos($selectedFile, '/it/') !== false): ?>
-                    <img src="/images/languages/it.png" style="width: 21px;" title="<?php echo $_language->module['it_lang']; ?>">
+                    <img src="/images/languages/it.png" style="width: 21px;" title="<?php echo $languageService->get('it_lang'); ?>">
                     <?php endif; ?>
                     <?php if (strpos($selectedFile, '/de/') !== false): ?>
-                    <img src="/images/languages/de.png" style="width: 21px;" title="<?php echo $_language->module['de_lang']; ?>">
+                    <img src="/images/languages/de.png" style="width: 21px;" title="<?php echo $languageService->get('de_lang'); ?>">
                     <?php endif; ?>
                     <?php if (strpos($selectedFile, '/en/') !== false): ?>
-                    <img src="/images/languages/en.png" style="width: 21px;" title="<?php echo $_language->module['en_lang']; ?>">
+                    <img src="/images/languages/en.png" style="width: 21px;" title="<?php echo $languageService->get('en_lang'); ?>">
                     <?php endif; ?></p>
 
                     <form action="admincenter.php?site=editlang&file=<?= urlencode($selectedFile) ?>&listbox=<?= htmlspecialchars($listboxType) ?>" method="post">
                         <div class="form-group">
-                            <label for="font-size"><i class="bi bi-fonts"></i> <?php echo $_language->module['font_size']; ?></label>
+                            <label for="font-size"><i class="bi bi-fonts"></i> <?php echo $languageService->get('font_size'); ?></label>
                             <select style="width: 68px;" class="form-select" id="font-size" onchange="changeFontSize()">
                                 <option value="13">13</option>
                                 <option value="15">15</option>
@@ -228,7 +237,7 @@ $selectedFile = $file ? urldecode($file) : null;
                                 <option value="23">23</option>
                             </select><br>
                             <textarea id="file-content" name="content" class="form-control" rows="20"><?= htmlspecialchars(readFileContent($selectedFile)) ?></textarea><br>
-                            <button class="btn btn-success" type="submit" name="action" value="save"><i class="bi bi-save"></i> <?php echo $_language->module['save']; ?></button>
+                            <button class="btn btn-success" type="submit" name="action" value="save"><i class="bi bi-save"></i> <?php echo $languageService->get('save'); ?></button>
                         </div>
                     </form>
                 </div>

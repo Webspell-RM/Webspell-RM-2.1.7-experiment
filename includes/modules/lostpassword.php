@@ -1,8 +1,16 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 use webspell\LoginSecurity;
 use webspell\Email;
+use webspell\LanguageService;
 
-$_language->readModule('lostpassword');
+global $languageService;
+
+$lang = $languageService->detectLanguage();
+$languageService->readModule('lostpassword');
 
 // Einstellungen laden
 $settings_result = safe_query("SELECT * FROM `settings`");
@@ -16,10 +24,10 @@ $success = isset($_GET['success']) && $_GET['success'] == 1;
 
 if ($success && isset($_SESSION['success_message'])) {
     $data_array = [
-        'title' => $_language->module['title'],
-        'forgotten_your_password' => $_language->module['forgotten_your_password'],
+        'title' => $languageService->module['title'],
+        'forgotten_your_password' => $languageService->module['forgotten_your_password'],
         'message' => '<div class="alert alert-success" role="alert">' . $_SESSION['success_message'] . '</div>',
-        'return_to_login' => '<a href="index.php?site=login" class="btn btn-success">' . $_language->module['login'] . '</a>'
+        'return_to_login' => '<a href="index.php?site=login" class="btn btn-success">' . $languageService->module['login'] . '</a>'
     ];
     unset($_SESSION['success_message']);
     echo $tpl->loadTemplate("lostpassword", "success", $data_array, 'theme');
@@ -66,20 +74,20 @@ if (isset($_POST['submit'])) {
                 $repl = [$hp_title, $ds['email'], $new_password_plain, $hp_url];
 
                 // Betreff und Nachricht der E-Mail
-                $subject = str_replace($vars, $repl, $_language->module['email_subject']);
-                $message = str_replace($vars, $repl, $_language->module['email_text']);
+                $subject = str_replace($vars, $repl, $languageService->module['email_subject']);
+                $message = str_replace($vars, $repl, $languageService->module['email_text']);
 
                 // E-Mail senden
                 $sendmail = Email::sendEmail($admin_email, 'Passwort zurückgesetzt', $ds['email'], $subject, $message);
 
                 if ($sendmail['result'] === 'fail') {
                     // Fehler bei der E-Mail-Zustellung
-                    $_SESSION['error_message'] = $_language->module['email_failed'] . ' ' . $sendmail['error'];
+                    $_SESSION['error_message'] = $languageService->module['email_failed'] . ' ' . $sendmail['error'];
                     header("Location: index.php?site=lostpassword");
                     exit;
                 } else {
                     // Erfolgreiche Passwortzurücksetzung
-                    $_SESSION['success_message'] = str_replace($vars, $repl, $_language->module['successful']);
+                    $_SESSION['success_message'] = str_replace($vars, $repl, $languageService->module['successful']);
                     header("Location: index.php?site=lostpassword&success=1");
                     exit;
                 }
@@ -91,13 +99,13 @@ if (isset($_POST['submit'])) {
             }
         } else {
             // Benutzer nicht gefunden
-            $_SESSION['error_message'] = $_language->module['no_user_found'];
+            $_SESSION['error_message'] = $languageService->module['no_user_found'];
             header("Location: index.php?site=lostpassword");
             exit;
         }
     } else {
         // Keine E-Mail eingegeben
-        $_SESSION['error_message'] = $_language->module['no_mail_given'];
+        $_SESSION['error_message'] = $languageService->module['no_mail_given'];
         header("Location: index.php?site=lostpassword");
         exit;
     }
@@ -112,24 +120,24 @@ if (isset($_SESSION['error_message'])) {
 
 // Formular anzeigen
 $data_array = [
-    'title' => $_language->module['title'],
-    'forgotten_your_password' => $_language->module['forgotten_your_password'],
-    'info1' => $_language->module['info1'],
-    'info2' => $_language->module['info2'],
-    'info3' => $_language->module['info3'],
-    'your_email' => $_language->module['your_email'],
-    'get_password' => $_language->module['get_password'],
-    'return_to' => $_language->module['return_to'],
-    'login' => $_language->module['login'],
-    'email-address' => $_language->module['email-address'],
-    'reg' => $_language->module['reg'],
-    'need_account' => $_language->module['need_account'],
+    'title' => $languageService->module['title'],
+    'forgotten_your_password' => $languageService->module['forgotten_your_password'],
+    'info1' => $languageService->module['info1'],
+    'info2' => $languageService->module['info2'],
+    'info3' => $languageService->module['info3'],
+    'your_email' => $languageService->module['your_email'],
+    'get_password' => $languageService->module['get_password'],
+    'return_to' => $languageService->module['return_to'],
+    'login' => $languageService->module['login'],
+    'email-address' => $languageService->module['email-address'],
+    'reg' => $languageService->module['reg'],
+    'need_account' => $languageService->module['need_account'],
     'error_message' => $message,
-    'lastpassword_txt' => $_language->module['lastpassword_txt'],
-    'register_link' =>  $_language->module['register_link'],
-    'welcome_back' =>  $_language->module['welcome_back'],    
-    'reg_text' =>  $_language->module['reg_text'],
-    'login_text' =>  $_language->module['login_text'],
+    'lastpassword_txt' => $languageService->module['lastpassword_txt'],
+    'register_link' =>  $languageService->module['register_link'],
+    'welcome_back' =>  $languageService->module['welcome_back'],    
+    'reg_text' =>  $languageService->module['reg_text'],
+    'login_text' =>  $languageService->module['login_text'],
 ];
 
 echo $tpl->loadTemplate("lostpassword", "content_area", $data_array, 'theme');

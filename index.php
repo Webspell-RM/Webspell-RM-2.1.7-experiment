@@ -28,6 +28,9 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
+
+session_start();
+
 include_once("system/config.inc.php");
 include_once("system/settings.php");
 include_once("system/functions.php");
@@ -46,43 +49,38 @@ if (file_exists("includes/plugins/whoisonline/whoisonline_tracker.php")) {
     include_once("includes/plugins/whoisonline/whoisonline_tracker.php");
 }
 
-// THEME INITIALISIEREN
 $theme = new theme();
 
-// TEMPLATE ENGINE INITIALISIEREN
 $tpl = new template();
-$tpl->themes_path = $theme->get_active_theme();
-$tpl->template_path = "templates/";
+$tpl->themes_path = rtrim($theme->get_active_theme(), '/\\') . DIRECTORY_SEPARATOR;
+$tpl->template_path = "templates" . DIRECTORY_SEPARATOR;
 
-// Plugin Manager
 $_pluginmanager = new plugin_manager();
 
-// DEFINES
-define("MODULE", "./includes/modules/");
+$lang = getCurrentLanguage();
 
-// PLUGINS
+define("MODULE", "./includes/modules/");
 define("PLUGIN", "./includes/plugins/");
 
-// SPRACHE LADEN
-$_language->readModule('index');
-$index_language = $_language->module;
+#$_language->readModule('index');
+#$index_language = $_language->module;
 
-// CSS / JS Komponenten laden (wie gehabt)
+// CSS / JS Komponenten laden
 $components_css = "";
-foreach ($components['css'] as $component) {
-    $components_css .= '<link type="text/css" rel="stylesheet" href="' . $component . '" />' . "\n";
+if (!empty($components['css'])) {
+    foreach ($components['css'] as $component) {
+        $components_css .= '<link type="text/css" rel="stylesheet" href="' . htmlspecialchars($component) . '" />' . "\n";
+    }
 }
 
 $components_js = "";
-foreach ($components['js'] as $component) {
-    $components_js .= '<script src="' . $component . '"></script>' . "\n";
+if (!empty($components['js'])) {
+    foreach ($components['js'] as $component) {
+        $components_js .= '<script src="' . htmlspecialchars($component) . '"></script>' . "\n";
+    }
 }
 
 $theme_css = headfiles("css", $tpl->themes_path);
 $theme_js = headfiles("js", $tpl->themes_path);
 
-// START
-// include theme / content
-include($theme->get_active_theme()."index.php");
-
-?>
+include($tpl->themes_path . "index.php");

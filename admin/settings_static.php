@@ -1,12 +1,22 @@
 <?php
 
-// Überprüfen, ob die Session bereits gestartet wurde
-if (session_status() == PHP_SESSION_NONE) {
+use webspell\LanguageService;
+
+// Session absichern
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Sprachmodul laden
-$_language->readModule('static', false, true);
+// Standard setzen, wenn nicht vorhanden
+$_SESSION['language'] = $_SESSION['language'] ?? 'de';
+
+// Initialisieren
+global $languageService;
+$lang = $languageService->detectLanguage();
+$languageService = new LanguageService($_database);
+
+// Admin-Modul laden
+$languageService->readModule('static', true);
 
 use webspell\AccessControl;
 // Den Admin-Zugriff für das Modul überprüfen
@@ -89,7 +99,7 @@ if (isset($_POST['save'])) {
         // Tags setzen
         \webspell\Tags::setTags('static', $staticID, $tags);
 
-        echo '<div class="alert alert-success" role="alert">' . $_language->module['changes_successful'] . '</div>';
+        echo '<div class="alert alert-success" role="alert">' . $languageService->get('changes_successful') . '</div>';
         echo '<script type="text/javascript">
                 setTimeout(function() {
                     window.location.href = "admincenter.php?site=settings_static";
@@ -97,7 +107,7 @@ if (isset($_POST['save'])) {
             </script>';
 
     } else {
-        echo '<div class="alert alert-danger" role="alert">' . $_language->module['transaction_invalid'] . '</div>';
+        echo '<div class="alert alert-danger" role="alert">' . $languageService->get('transaction_invalid') . '</div>';
         echo '<script type="text/javascript">
                 setTimeout(function() {
                     window.location.href = "admincenter.php?site=settings_static";
@@ -112,7 +122,7 @@ if (isset($_POST['save'])) {
         \webspell\Tags::removeTags('static', $_GET[ 'staticID' ]);
         safe_query("DELETE FROM `settings_static` WHERE staticID='" . $_GET[ 'staticID' ] . "'");
     } else {
-        echo '<div class="alert alert-danger" role="alert">' . $_language->module[ 'transaction_invalid' ] . '</div>';
+        echo '<div class="alert alert-danger" role="alert">' . $languageService->get('transaction_invalid') . '</div>';
         echo '<script type="text/javascript">
                 setTimeout(function() {
                     window.location.href = "admincenter.php?site=settings_static";
@@ -174,7 +184,7 @@ if (isset($_GET['action']) && $_GET['action'] == "add") {
 
     while ($row = mysqli_fetch_array($category_query)) {
         // Erstelle ein neues multiLanguage-Objekt für die aktuelle Sprache
-        $translate = new multiLanguage(detectCurrentLanguage());
+        $translate = new multiLanguage($lang);
         $translate->detectLanguages($row['name']);
         
         #$selected = ($row['mnavID'] == $ds['categoryID']) ? ' selected' : '';
@@ -191,13 +201,13 @@ if (isset($_GET['action']) && $_GET['action'] == "add") {
         // HTML-Formular für die Eingabe von Daten
         echo '<div class="card">
                 <div class="card-header">
-                    ' . $_language->module['static_pages'] . '
+                    ' . $languageService->get('static_pages') . '
                 </div>
 
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="admincenter.php?site=settings_static">' . $_language->module['static_pages'] . '</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">' . $_language->module['add'] . '</li>
+                        <li class="breadcrumb-item"><a href="admincenter.php?site=settings_static">' . $languageService->get('static_pages') . '</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">' . $languageService->get('add') . '</li>
                     </ol>
                 </nav>
 
@@ -208,27 +218,27 @@ if (isset($_GET['action']) && $_GET['action'] == "add") {
                     <div class="col-md-6">
 
                         <div class="mb-3 row">
-                            <label class="col-sm-3 control-label">' . $_language->module['category'] . ':</label>
+                            <label class="col-sm-3 control-label">' . $languageService->get('category') . ':</label>
                             <div class="col-sm-8">
                                 ' . $category_select . '
                             </div>
                         </div>
 
                         <div class="mb-3 row">
-                            <label class="col-sm-3 control-label">' . $_language->module['title'] . ':</label>
+                            <label class="col-sm-3 control-label">' . $languageService->get('title') . ':</label>
                             <div class="col-sm-8"><span class="text-muted small"><em>
                                 <input class="form-control" type="text" name="title" size="60" value="new" /></em></span>
                             </div>
                         </div>
 
                         <div class="mb-3 row">
-                            <label class="col-sm-3 control-label">' . $_language->module['tags'] . ':</label>
+                            <label class="col-sm-3 control-label">' . $languageService->get('tags') . ':</label>
                             <div class="col-sm-8"><span class="text-muted small"><em>
                                 <input class="form-control" type="text" name="tags" size="60" value="" /></em></span>
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label class="col-sm-3 control-label">' . $_language->module['editor_is_displayed'] . ':</label>
+                            <label class="col-sm-3 control-label">' . $languageService->get('editor_is_displayed') . ':</label>
                             <div class="col-sm-8 form-check form-switch">
                                 <input class="form-check-input" type="checkbox" id="toggle-editor" name="editor" value="1" checked>
                             </div>
@@ -237,7 +247,7 @@ if (isset($_GET['action']) && $_GET['action'] == "add") {
 
                     <div class="col-md-6">
                          <div class="mb-3 row">
-                            <label class="col-sm-3 control-label">' . $_language->module['accesslevel'] . ':</label>
+                            <label class="col-sm-3 control-label">' . $languageService->get('accesslevel') . ':</label>
                             <div class="col-sm-8">
                                 ' . $roleCheckboxes . '
                             </div>
@@ -254,7 +264,7 @@ if (isset($_GET['action']) && $_GET['action'] == "add") {
                 <div class="mb-3 row">
                     <div class="col-md-12">
                         <input type="hidden" name="captcha_hash" value="' . $hash . '" />
-                        <button class="btn btn-success btn-sm" type="submit" name="save"  />' . $_language->module['add'] . '</button>
+                        <button class="btn btn-success btn-sm" type="submit" name="save"  />' . $languageService->get('add') . '</button>
                     </div>
                 </div>
             </form>
@@ -365,19 +375,19 @@ document.addEventListener('DOMContentLoaded', function () {
     // Formularausgabe
     echo '
     <div class="card">
-        <div class="card-header">' . $_language->module['static_pages'] . '</div>
+        <div class="card-header">' . $languageService->get('static_pages') . '</div>
 
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="admincenter.php?site=settings_static">' . $_language->module['static_pages'] . '</a></li>
-                <li class="breadcrumb-item active" aria-current="page">' . $_language->module['edit'] . '</li>
+                <li class="breadcrumb-item"><a href="admincenter.php?site=settings_static">' . $languageService->get('static_pages') . '</a></li>
+                <li class="breadcrumb-item active" aria-current="page">' . $languageService->get('edit') . '</li>
             </ol>
         </nav>
 
         <div class="card-body">
             <div class="container py-5">
             <!-- Benutzerrolle zuweisen -->
-            <h3 class="mb-4">' . $_language->module[ 'static_pages' ] . '</h3>
+            <h3 class="mb-4">' . $languageService->get('static_pages') . '</h3>
 
             <form class="form-horizontal" method="post" action="">
 
@@ -385,28 +395,28 @@ document.addEventListener('DOMContentLoaded', function () {
                     <div class="col-md-6">
 
                         <div class="mb-3 row">
-                            <label class="col-sm-3 control-label">' . $_language->module['category'] . ':</label>
+                            <label class="col-sm-3 control-label">' . $languageService->get('category') . ':</label>
                             <div class="col-sm-8">
                                 ' . $category_select . '
                             </div>
                         </div>
 
                         <div class="mb-3 row">
-                            <label class="col-sm-3 control-label">' . $_language->module['title'] . ':</label>
+                            <label class="col-sm-3 control-label">' . $languageService->get('title') . ':</label>
                             <div class="col-sm-8">
                                 <input class="form-control" type="text" name="title" value="' . htmlspecialchars($title) . '" />
                             </div>
                         </div>
 
                         <div class="mb-3 row">
-                            <label class="col-sm-3 control-label">' . $_language->module['tags'] . ':</label>
+                            <label class="col-sm-3 control-label">' . $languageService->get('tags') . ':</label>
                             <div class="col-sm-8">
                                 <input class="form-control" type="text" name="tags" value="' . htmlspecialchars($tags) . '" />
                             </div>
                         </div>
 
                         <div class="mb-3 row">
-                            <label class="col-sm-3 control-label">' . $_language->module['editor_is_displayed'] . ':</label>
+                            <label class="col-sm-3 control-label">' . $languageService->get('editor_is_displayed') . ':</label>
                             <div class="col-sm-8 form-check form-switch">
                                 <input class="form-check-input" type="checkbox" id="toggle-editor" name="editor" value="1"' . ($ds['editor'] == 1 ? ' checked' : '') . '>
                             </div>
@@ -415,7 +425,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     <div class="col-md-6">
                         <div class="mb-3 row">
-                            <label class="col-sm-3 control-label">' . $_language->module['accesslevel'] . ':</label>
+                            <label class="col-sm-3 control-label">' . $languageService->get('accesslevel') . ':</label>
                             <div class="col-sm-8">
                                 ' . $roleCheckboxes . '
                             </div>
@@ -433,7 +443,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <div class="col-md-12">
                         <input type="hidden" name="captcha_hash" value="' . $hash . '" />
                         <input type="hidden" name="staticID" value="' . $staticID . '" />
-                        <button class="btn btn-warning btn-sm" type="submit" name="save">' . $_language->module['edit'] . '</button>
+                        <button class="btn btn-warning btn-sm" type="submit" name="save">' . $languageService->get('edit') . '</button>
                     </div>
                 </div>
 
@@ -473,12 +483,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     echo '<div class="card">
             <div class="card-header">
-                ' . $_language->module['static_pages'] . '
+                ' . $languageService->get('static_pages') . '
             </div>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb t-5 p-2 bg-light">
                     <li class="breadcrumb-item">
-                        <a href="admincenter.php?site=settings_static">' . $_language->module['static_pages'] . '</a>
+                        <a href="admincenter.php?site=settings_static">' . $languageService->get('static_pages') . '</a>
                     </li>
                     <li class="breadcrumb-item active" aria-current="page">News / Edit</li>
                 </ol>
@@ -486,26 +496,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
             <div class="card-body">
                 <div class="form-group row">
-                    <label class="col-md-1 control-label">' . $_language->module['options'] . ':</label>
+                    <label class="col-md-1 control-label">' . $languageService->get('options') . ':</label>
                     <div class="col-md-8">
                         <a href="admincenter.php?site=settings_static&amp;action=add" class="btn btn-primary btn-sm" type="button">
-                            ' . $_language->module['new_static_page'] . '
+                            ' . $languageService->get('new_static_page') . '
                         </a>
                     </div>
                 </div>
 
                 <div class="container py-5">
-                    <h3 class="mb-4">' . $_language->module['static_pages'] . '</h3>';
+                    <h3 class="mb-4">' . $languageService->get('static_pages') . '</h3>';
 
     $ergebnis = safe_query("SELECT * FROM settings_static ORDER BY staticID");
 
     echo '<table class="table table-bordered table-striped bg-white shadow-sm">
                 <thead class="table-light">
                     <tr>
-                        <th><b>' . $_language->module['id'] . '</b></th>
-                        <th><b>' . $_language->module['title'] . '</b></th>
-                        <th><b>' . $_language->module['accesslevel'] . '</b></th>
-                        <th><b>' . $_language->module['actions'] . '</b></th>
+                        <th><b>' . $languageService->get('id') . '</b></th>
+                        <th><b>' . $languageService->get('title') . '</b></th>
+                        <th><b>' . $languageService->get('accesslevel') . '</b></th>
+                        <th><b>' . $languageService->get('actions') . '</b></th>
                     </tr>
                 </thead>';
 
@@ -523,8 +533,8 @@ document.addEventListener('DOMContentLoaded', function () {
             $roles = json_decode($ds['access_roles'], true);
         }
 
-        $accesslevel = empty($roles) ? $_language->module['public'] : implode(', ', array_map(function($role) {
-            return $_language->module[strtolower($role)] ?? htmlspecialchars($role);
+        $accesslevel = empty($roles) ? $languageService->get('public') : implode(', ', array_map(function($role) {
+            return $languageService->get(strtolower($role)) ?? htmlspecialchars($role);
         }, $roles));
 
         $title = $ds['title'];
@@ -539,11 +549,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 <td><a href="../index.php?site=static&amp;staticID=' . $ds['staticID'] . '" target="_blank">' . $title . '</a></td>
                 <td>' . $accesslevel . '</td>
                 <td>
-                    <a href="admincenter.php?site=settings_static&amp;action=edit&amp;staticID=' . $ds['staticID'] . '" class="hidden-xs hidden-sm btn btn-warning btn-sm" type="button">' . $_language->module['edit'] . '</a>
+                    <a href="admincenter.php?site=settings_static&amp;action=edit&amp;staticID=' . $ds['staticID'] . '" class="hidden-xs hidden-sm btn btn-warning btn-sm" type="button">' . $languageService->get('edit') . '</a>
 
                     <!-- Button trigger modal -->
                     <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirm-delete" data-href="admincenter.php?site=settings_static&amp;delete=true&amp;staticID=' . $ds['staticID'] . '&amp;captcha_hash=' . $hash . '">
-                        ' . $_language->module['delete'] . '
+                        ' . $languageService->get('delete') . '
                     </button>
 
                     <!-- Modal -->
@@ -551,13 +561,13 @@ document.addEventListener('DOMContentLoaded', function () {
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLabel">' . $_language->module['static_pages'] . '</h5>
-                                    <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal" aria-label="' . $_language->module['close'] . '"></button>
+                                    <h5 class="modal-title" id="exampleModalLabel">' . $languageService->get('static_pages') . '</h5>
+                                    <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal" aria-label="' . $languageService->get('close') . '"></button>
                                 </div>
-                                <div class="modal-body"><p>' . $_language->module['really_delete'] . '</p></div>
+                                <div class="modal-body"><p>' . $languageService->get('really_delete') . '</p></div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">' . $_language->module['close'] . '</button>
-                                    <a class="btn btn-danger btn-ok btn-sm">' . $_language->module['delete'] . '</a>
+                                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">' . $languageService->get('close') . '</button>
+                                    <a class="btn btn-danger btn-ok btn-sm">' . $languageService->get('delete') . '</a>
                                 </div>
                             </div>
                         </div>

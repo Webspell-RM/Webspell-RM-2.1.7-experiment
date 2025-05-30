@@ -4,8 +4,12 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-global $_language;
-$_language->readModule('register');
+use webspell\LanguageService;
+
+global $languageService;
+
+$lang = $languageService->detectLanguage();
+$languageService->readModule('register');
 
 echo '<div class="container mt-5">
     <div class="row justify-content-center">

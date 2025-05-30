@@ -1,17 +1,25 @@
 <?php
 
-// Überprüfen, ob die Session bereits gestartet wurde
-if (session_status() == PHP_SESSION_NONE) {
+use webspell\LanguageService;
+
+// Session absichern
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-$_language->readModule('db_stats', false, true);
+// Standard setzen, wenn nicht vorhanden
+$_SESSION['language'] = $_SESSION['language'] ?? 'de';
+
+// Initialisieren
+global $languageService;
+$languageService = new LanguageService($_database);
+
+// Admin-Modul laden
+$languageService->readModule('db_stats', true);
 
 use webspell\AccessControl;
 // Admin-Zugriff prüfen
 AccessControl::checkAdminAccess('ac_db_stats');
-
-
 
 global $_database;
 $count_array = array();
@@ -91,7 +99,8 @@ foreach ($tables_array as $table) {
                 $db_size_op += $data['Data_free'];
             }
 
-            $table_name = isset($_language->module[$table]) ? $_language->module[$table] : ucfirst(str_replace("_", " ", $table));
+            $lang_value = $languageService->get($table);
+            $table_name = !empty($lang_value) ? $lang_value : ucfirst(str_replace("_", " ", $table));
             $count_array[] = array($table_name, $data['Rows']);
         }
     }
@@ -118,7 +127,8 @@ foreach ($tables_array as $table) {
         }
 
         // Tabellenname und Größe speichern
-        $table_names[] = isset($_language->module[$table]) ? $_language->module[$table] : ucfirst(str_replace("_", " ", $table));
+        $lang_value = $languageService->get($table);
+        $table_names[] = !empty($lang_value) ? $lang_value : ucfirst(str_replace("_", " ", $table));
         $table_sizes[] = (int)($data['Data_length'] + $data['Index_length']); // Umwandlung in int
     }
 }
@@ -145,11 +155,11 @@ function format_size($size) {
 <!-- Datenbankinformationen -->
 <div class="card">
     <div class="card-header">
-        <?php echo $_language->module['database']; ?>
+        <?php echo $languageService->get('database'); ?>
     </div>
     <div class="card-body">
         <div class="container py-5">
-            <h4 class="mb-3"><?php echo $_language->module['database']; ?></h4>
+            <h4 class="mb-3"><?php echo $languageService->get('database'); ?></h4>
 
             <!-- Erste Reihe für MySQL Version und Größe -->
             <div class="row">
@@ -158,13 +168,13 @@ function format_size($size) {
                     <table class="table table-bordered table-striped">
                         <thead class="table-light">
                             <tr>
-                                <th><?php echo $_language->module['property']; ?></th>
-                                <th><?php echo $_language->module['value']; ?></th>
+                                <th><?php echo $languageService->get('property'); ?></th>
+                                <th><?php echo $languageService->get('value'); ?></th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><?php echo $_language->module['mysql_version']; ?>:</td>
+                                <td><?php echo $languageService->get('mysql_version'); ?>:</td>
                                 <td>
                                     <span class="pull-right text-muted small">
                                         <em><?php echo mysqli_get_server_info($_database); ?></em>
@@ -172,7 +182,7 @@ function format_size($size) {
                                 </td>
                             </tr>
                             <tr>
-                                <td><?php echo $_language->module['size']; ?>:</td>
+                                <td><?php echo $languageService->get('size'); ?>:</td>
                                 <td>
                                     <span class="pull-right text-muted small">
                                         <em><?php echo $db_size; ?> Bytes (<?php echo round($db_size / 1024 / 1024, 2); ?> MB)</em>
@@ -188,20 +198,20 @@ function format_size($size) {
                     <table class="table table-bordered table-striped">
                         <thead class="table-light">
                             <tr>
-                                <th><?php echo $_language->module['property']; ?></th>
-                                <th><?php echo $_language->module['value']; ?></th>
+                                <th><?php echo $languageService->get('property'); ?></th>
+                                <th><?php echo $languageService->get('value'); ?></th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><?php echo $_language->module['overhead']; ?>:</td>
+                                <td><?php echo $languageService->get('overhead'); ?>:</td>
                                 <td>
                                     <span class="pull-right text-muted small">
                                         <em><?php echo $db_size_op; ?> Bytes</em>
                                         <?php
                                         if ($db_size_op != 0) {
                                             echo '<a href="admincenter.php?site=database&amp;action=optimize&amp;back=page_statistic">
-                                                    <font color="red"><b>' . $_language->module['optimize'] . '</b></font>
+                                                    <font color="red"><b>' . $languageService->get('optimize') . '</b></font>
                                                   </a>';
                                         }
                                         ?>
@@ -209,7 +219,7 @@ function format_size($size) {
                                 </td>
                             </tr>
                             <tr>
-                                <td><?php echo $_language->module['tables']; ?>:</td>
+                                <td><?php echo $languageService->get('tables'); ?>:</td>
                                 <td>
                                     <span class="pull-right text-muted small">
                                         <em><?php echo $count_tables; ?></em>
@@ -222,12 +232,12 @@ function format_size($size) {
             </div>
 
             <!-- Statistiken für Tabellenzeilen -->
-            <h4 class="mb-3"><?php echo $_language->module['page_stats']; ?></h4>
+            <h4 class="mb-3"><?php echo $languageService->get('page_stats'); ?></h4>
             <table class="table table-bordered table-striped">
                 <thead class="table-light">
                     <tr>
-                        <th><?php echo $_language->module['property']; ?></th>
-                        <th><?php echo $_language->module['value']; ?></th>
+                        <th><?php echo $languageService->get('property'); ?></th>
+                        <th><?php echo $languageService->get('value'); ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -260,11 +270,11 @@ function format_size($size) {
             </table>
 
             <!-- Diagramm zur Anzeige der Tabellen-Größe -->
-            <h4 class="mb-3"><?php echo $_language->module['table_size_chart']; ?></h4>
+            <h4 class="mb-3"><?php echo $languageService->get('table_size_chart'); ?></h4>
             <table class="table table-bordered table-striped">
                 <thead class="table-light">
                     <tr>
-                        <th><?php echo $_language->module['table_size_chart']; ?></th>
+                        <th><?php echo $languageService->get('table_size_chart'); ?></th>
                     </tr>
                 </thead>
                 <tbody>

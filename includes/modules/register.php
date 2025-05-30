@@ -1,14 +1,17 @@
 <?php
 
-use webspell\LoginSecurity;
-use webspell\Email;
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-global $_language;
-$_language->readModule('register');
+use webspell\LoginSecurity;
+use webspell\Email;
+use webspell\LanguageService;
+
+global $languageService;
+
+$lang = $languageService->detectLanguage();
+$languageService->readModule('register');
 
 // Fehler- und Feldspeicher
 $form_data = $_POST ?? [];
@@ -158,15 +161,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $vars = ['%username%', '%activation_link%', '%hp_title%', '%hp_url%'];
     $repl = [$username, $activation_link, $hp_title, $hp_url];
 
-    $subject = str_replace($vars, $repl, $_language->module['mail_subject']);
-    $message = str_replace($vars, $repl, $_language->module['mail_text']);
+    $subject = str_replace($vars, $repl, $languageService->module['mail_subject']);
+    $message = str_replace($vars, $repl, $languageService->module['mail_text']);
    
     $module = 'Aktiviere deinen Account';            // Modulname für Absenderbezeichnung
     // Optional: POP3 vor SMTP verwenden (kann auch weggelassen werden, Standard ist true)
     $sendmail = Email::sendEmail($admin_email, $module, $email, $subject, $message);
 
     if (is_array($sendmail) && isset($sendmail['result']) && $sendmail['result'] === 'done') {
-        $_SESSION['success_message'] = $_language->module['register_successful'];
+        $_SESSION['success_message'] = $languageService->module['register_successful'];
         $registrierung_erfolgreich = true;
     } else {
         $_SESSION['error_message'] = 'Fehler beim Senden der Bestätigungs-E-Mail.';
@@ -209,36 +212,26 @@ $data_array = [
     'email' => $email,
     'password_repeat' => $password_repeat,
     'recaptcha_site_key' => 'DEIN_SITE_KEY',
-
-    'reg_title' =>  $_language->module['reg_title'],
-    'reg_info_text' =>  $_language->module['reg_info_text'],
-    'login_link' => $_language->module['login_link'],
-    'login_text' =>  $_language->module['login_text'],
-
-    'mail'                          => $_language->module['mail'],
-'username'                      => $_language->module['username'],
-'password'                      => $_language->module['password'],
-'password_repeat'                        => $_language->module['password_repeat'],
-'email_address'                 => $_language->module['email_address'],
-    'enter_your_email'              => $_language->module['enter_your_email'],
-    'enter_your_name'               => $_language->module['enter_your_name'],
-    'enter_password'                => $_language->module['enter_password'],
-    'enter_password_repeat'                        => $_language->module['enter_password_repeat'],
-    'pass_text'                     => $_language->module['pass_text'],
-
-    'register' => $_language->module['register'],
-
-    'terms_of_use_text' => $_language->module['terms_of_use_text'],
-    'terms_of_use' => $_language->module['terms_of_use'],
+    'reg_title' =>  $languageService->module['reg_title'],
+    'reg_info_text' =>  $languageService->module['reg_info_text'],
+    'login_link' => $languageService->module['login_link'],
+    'login_text' =>  $languageService->module['login_text'],
+    'mail' => $languageService->module['mail'],
+    'username' => $languageService->module['username'],
+    'password' => $languageService->module['password'],
+    'password_repeat' => $languageService->module['password_repeat'],
+    'email_address' => $languageService->module['email_address'],
+    'enter_your_email' => $languageService->module['enter_your_email'],
+    'enter_your_name' => $languageService->module['enter_your_name'],
+    'enter_password' => $languageService->module['enter_password'],
+    'enter_password_repeat' => $languageService->module['enter_password_repeat'],
+    'pass_text' => $languageService->module['pass_text'],
+    'register' => $languageService->module['register'],
+    'terms_of_use_text' => $languageService->module['terms_of_use_text'],
+    'terms_of_use' => $languageService->module['terms_of_use'],
 ];
 
-// Wenn die Registrierung abgeschlossen ist
-// Wenn die Registrierung abgeschlossen ist
-
-
 echo $tpl->loadTemplate("register", "content", $data_array);
-
-
 
 ?>
 <!--<script src="https://www.google.com/recaptcha/api.js" async defer></script>-->

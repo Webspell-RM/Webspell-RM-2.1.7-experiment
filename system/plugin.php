@@ -30,6 +30,12 @@
  */
 
 use webspell\PluginSettings;
+use webspell\LanguageService;
+
+global $languageService;
+
+#$lang = $languageService->detectLanguage();
+#$languageService->readModule('plugin');
 
 global $modRewrite;
 if ($modRewrite && !empty($GLOBALS['site']))
@@ -112,8 +118,7 @@ class plugin_manager
 
 	function plugin_check($data, $site)
 	{
-		$_language = new \webspell\Language;
-		$_language->readModule('plugin');
+		
 		$return = array();
 		#whouseronline();
 		if (isset($data['activate']) == 1) {
@@ -128,7 +133,7 @@ class plugin_manager
 						return $return;
 					} else {
 						if (DEBUG === "ON") {
-							echo '<!-- <br /><span class="label label-danger">' . $_language->module['plugin_not_found'] . '</span> -->';
+							#echo '<!-- <br /><span class="label label-danger">' . $languageService->module['plugin_not_found'] . '</span> -->';
 						}
 						if (!file_exists(MODULE . $site . ".php")) {
 							$site = "404";
@@ -146,7 +151,8 @@ class plugin_manager
 					return $return;
 				} else {
 					if (DEBUG === "ON") {
-						return '<!-- <br /><span class="label label-danger">' . $_language->module['plugin_not_found'] . '</span> -->';
+						#return '<!-- <br /><span class="label label-danger">' . $languageService->module['plugin_not_found'] . '</span> -->';
+						return ;
 					}
 					if (!file_exists(MODULE . $site . ".php")) {
 						$site = "404";
@@ -158,7 +164,7 @@ class plugin_manager
 			}
 		} else {
 			if (DEBUG === "ON") {
-				echo ('<!-- <br /><span class="label label-warning">' . $_language->module['plugin_deactivated'] . '</span> -->');
+				echo ('<!-- <br /><span class="label label-warning">' . $languageService->module['plugin_deactivated'] . '</span> -->');
 			}
 			if (!file_exists(MODULE . $site . ".php")) {
 				$site = "404";
@@ -220,8 +226,8 @@ class plugin_manager
 	function plugin_widget($id, $name = false, $css = false)
 	{
 		$pid = intval($id);
-		$_language = new \webspell\Language;
-		$_language->readModule('plugin');
+		#$_language = new \webspell\Language;
+		#$_language->readModule('plugin');
 		if (!empty($pid)) {
 			$manager = new plugin_manager();
 			$row = $manager->plugin_widget_data("", $pid);
@@ -245,7 +251,7 @@ class plugin_manager
 				return false;
 			} else {
 				if ($this->_debug === "ON") {
-					return ('<span class="label label-danger">' . $_language->module['plugin_not_found'] . '</span>');
+					return ('<span class="label label-danger">' . $languageService->module['plugin_not_found'] . '</span>');
 				}
 			}
 		}
@@ -268,8 +274,7 @@ class plugin_manager
 	function plugin_hf($id, $name)
 	{
 		$pid = intval($id);
-		$_language = new \webspell\Language;
-		$_language->readModule('plugin');
+		
 		if (!empty($pid) and !empty($name)) {
 			$manager = new plugin_manager();
 			$row = $manager->plugin_data("", $pid);
@@ -282,7 +287,7 @@ class plugin_manager
 					return false;
 				} else {
 					if ($this->_debug === "ON") {
-						return ('<span class="label label-danger">' . $_language->module['plugin_not_found'] . '</span>');
+						return ('<span class="label label-danger">' . $languageService->module['plugin_not_found'] . '</span>');
 					}
 				}
 			}
@@ -512,7 +517,7 @@ class plugin_manager
 		$_lang = $pm->plugin_language("my-plugin", $plugin_path);
 	
 	*/
-	function plugin_language($name, $plugin_path)
+	/*function plugin_language($name, $plugin_path)
 	{
 		$res = safe_query("SELECT `default_language` FROM `settings` WHERE 1");
 		$row = mysqli_fetch_array($res);
@@ -563,7 +568,7 @@ class plugin_manager
 		} catch (EXCEPTION $ex) {
 			return $ex->message();
 		}
-	}
+	}*/
 
 	//@info		update website title for SEO
 	function plugin_updatetitle($site)

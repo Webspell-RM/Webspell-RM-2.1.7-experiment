@@ -1,154 +1,231 @@
 <?php
-/**
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- *                  Webspell-RM      /                        /   /                                          *
- *                  -----------__---/__---__------__----__---/---/-----__---- _  _ -                         *
- *                   | /| /  /___) /   ) (_ `   /   ) /___) /   / __  /     /  /  /                          *
- *                  _|/_|/__(___ _(___/_(__)___/___/_(___ _/___/_____/_____/__/__/_                          *
- *                               Free Content / Management System                                            *
- *                                           /                                                               *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @version         webspell-rm                                                                              *
- *                                                                                                           *
- * @copyright       2018-2025 by webspell-rm.de                                                              *
- * @support         For Support, Plugins, Templates and the Full Script visit webspell-rm.de                 *
- * @website         <https://www.webspell-rm.de>                                                             *
- * @forum           <https://www.webspell-rm.de/forum.html>                                                  *
- * @wiki            <https://www.webspell-rm.de/wiki.html>                                                   *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @license         Script runs under the GNU GENERAL PUBLIC LICENCE                                         *
- *                  It's NOT allowed to remove this copyright-tag                                            *
- *                  <http://www.fsf.org/licensing/licenses/gpl.html>                                         *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
- * @author          Code based on WebSPELL Clanpackage (Michael Gruber - webspell.at)                        *
- * @copyright       2005-2011 by webspell.org / webspell.info                                                *
- *                                                                                                           *
- *¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯*
-*/
 
-// Sprachmodul für die Navigation laden
-$_language->readModule('navigation');
+use webspell\LanguageService;
 
-/**
- * Funktion zur Erzeugung einer Navigation ohne Dropdown-Menüs.
- *
- * @param string $default_url Standard-URL, falls keine spezifische Seite gefunden wird.
- * @return string HTML-Ausgabe der Navigation oder Fehlernachricht im Debug-Modus.
- */
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+global $languageService, $_database, $tpl;
+
+$lang = $languageService->detectLanguage();
+#$languageService->readModule('navigation');
+$languageService->readModule('index');
+
+$loggedin = isset($_SESSION['userID']) && $_SESSION['userID'] > 0;
+$userID = $_SESSION['userID'] ?? 0;
+
+// Funktion zur Navigation ohne Dropdown
 function navigation_nodropdown($default_url) {
+    global $_database, $languageService;
+
     $newurl = $default_url;
-    
-    // Prüfe, ob mod_Rewrite aktiviert ist
-    $mr_res = mysqli_fetch_array(safe_query("SELECT * FROM `settings` WHERE 1"));
-    if ($mr_res['modRewrite'] == 1) {
+    $mr_res = mysqli_fetch_array(safe_query("SELECT * FROM `settings` WHERE 1 LIMIT 1"));
+    if ($mr_res && isset($mr_res['modRewrite']) && $mr_res['modRewrite'] == 1) {
         $urlParts = explode("/", trim($_SERVER["REQUEST_URI"], "/"));
-        if (!empty($urlParts[0]) && strpos($urlParts[0], '.') !== false) {
-            $newurl = "index.php?site=" . explode(".", $urlParts[0])[0];
-        } else {
-            $newurl = "index.php?site=" . $urlParts[0];
+        if (!empty($urlParts[0])) {
+            if (strpos($urlParts[0], '.') !== false) {
+                $newurl = "index.php?site=" . htmlspecialchars(explode(".", $urlParts[0])[0]);
+            } else {
+                $newurl = "index.php?site=" . htmlspecialchars($urlParts[0]);
+            }
         }
     }
-    
+
     try {
-        // Überprüfung, ob die URL in der Navigation existiert
-        $rex = safe_query("SELECT * FROM `navigation_website_sub` WHERE `url`='" . $newurl . "'");
+        $escapedUrl = mysqli_real_escape_string($_database ?? null, $newurl);
+        $rex = safe_query("SELECT * FROM `navigation_website_sub` WHERE `url`='" . $escapedUrl . "' LIMIT 1");
         if (mysqli_num_rows($rex)) {
             $output = "";
             $rox = mysqli_fetch_array($rex);
-            // Untermenüs abrufen
-            $res = safe_query("SELECT * FROM `navigation_website_sub` WHERE `mnavID`='".intval($rox['mnavID'])."' AND `indropdown`='0' ORDER BY `sort`");
+            $res = safe_query("SELECT * FROM `navigation_website_sub` WHERE `mnavID`='" . intval($rox['mnavID']) . "' AND `indropdown`='0' ORDER BY `sort`");
             while ($row = mysqli_fetch_array($res)) {
-                $name = $_language->module[strtolower($row['name'])] ?? $row['name'];
-                $output .= '<li class="nav-item"><a class="dropdown-item" href="' . $row['url'] . '">' . $name . '</a></li>';
+                $nameKey = strtolower($row['name']);
+                $name = $languageService->module[$nameKey] ?? $row['name'];
+                $url = htmlspecialchars($row['url']);
+                $target = '';
+                if (strpos($url, 'http://') === 0 || strpos($url, 'https://') === 0) {
+                    $target = ' target="_blank" rel="noopener noreferrer"';
+                }
+                $output .= '<li class="nav-item"><a class="dropdown-item" href="' . $url . '"' . $target . '>' . htmlspecialchars($name) . '</a></li>';
             }
             return $output;
         }
+        return '';
     } catch (Exception $e) {
-        if (DEBUG === "ON") {
-            return $e->getMessage();
+        if (defined('DEBUG') && DEBUG === "ON") {
+            return 'Fehler: ' . $e->getMessage();
         }
+        return '';
     }
 }
 
+// Navigation Hauptstruktur
 try {
-    // Hauptnavigation abrufen
     $res = safe_query("SELECT * FROM `navigation_website_main` ORDER BY `sort`");
     $lo = 0;
-    
+
     while ($row = mysqli_fetch_array($res)) {
-        // Array für Navigationseinträge vorbereiten
-        $head_array = [
-            'name' => $_language->module[strtolower($row['name'])] ?? $row['name'],
-            'url' => $row['url']
-        ];
-        
-        // Sprache für Navigationseinträge übersetzen
-        $translate = new multiLanguage(detectCurrentLanguage());
+        $translate = new multiLanguage($lang);
         $translate->detectLanguages($row['name']);
-        $head_array['name'] = $translate->getTextByLanguage($row['name']);
-        
-        // Wenn das Menü ein Dropdown ist
+        $name = $translate->getTextByLanguage($row['name']);
+
+        $head_array = [
+            'name' => $name,
+            'url' => $row['url'],
+            'windows' => $row['windows'] ? '' : '_blank',
+        ];
+
         if ($row['isdropdown'] == 1) {
-            // Login-Übersicht hinzufügen, falls erforderlich
             if ($lo == 1) {
-                $head_array['login_overview'] = $loggedin ? 
-                    '<li class="nav-item"><a class="dropdown-item" href="index.php?site=loginoverview">' . $_language->module['overview'] . '</a></li>' : 
-                    '<li class="nav-item"><a class="dropdown-item" href="index.php?site=login">' . $_language->module['login'] . '</a></li>';
+                $head_array['login_overview'] = $loggedin 
+                    ? '<li class="nav-item"><a class="dropdown-item" href="index.php?site=loginoverview">' . ($languageService->module['overview'] ?? 'Overview') . '</a></li>' 
+                    : '<li class="nav-item"><a class="dropdown-item" href="index.php?site=login">' . ($languageService->module['login'] ?? 'Login') . '</a></li>';
             } else {
                 $head_array['login_overview'] = "";
             }
             $lo++;
-            
-            // Untermenüs abrufen
-            $rex = safe_query("SELECT * FROM `navigation_website_sub` WHERE `mnavID`='" . $row['mnavID'] . "' AND `indropdown`='1' ORDER BY `sort`");
+
+            $rex = safe_query("SELECT * FROM `navigation_website_sub` WHERE `mnavID`='" . (int)$row['mnavID'] . "' AND `indropdown`='1' ORDER BY `sort`");
             if (mysqli_num_rows($rex)) {
-                // Template-Daten für Dropdown-Menü
-                $data_array = [
-                    'head' => $head_array,
-                    'sub_open' => [],
-                    'sub_nav' => [],
-                    'sub_close' => [],
-                    'dd_head' => [],
-                    'dd_foot' => [],
-                ];
+                echo $tpl->loadTemplate("navigation", "dd_head", $head_array, 'theme');
+                echo $tpl->loadTemplate("navigation", "sub_open", [], 'theme');
 
-                echo $tpl->loadTemplate("navigation", "dd_head", $data_array['head'], 'theme');
-                echo $tpl->loadTemplate("navigation", "sub_open", $data_array['sub_open'], 'theme');
-                
                 while ($rox = mysqli_fetch_array($rex)) {
-                    // Menüeinträge im Dropdown-Menü erzeugen
-                    if (!empty($rox['indropdown']) && $rox['indropdown'] == 1) {
-
-                        $translate = new multiLanguage(detectCurrentLanguage());
-                        $translate->detectLanguages($rox['name']);
-                        $name = $translate->getTextByLanguage($rox['name']);
-                        $sub_array = [
-                            'url' => strpos($rox['url'], 'http://') !== false ? $rox['url'] . '" target="_blank' : $rox['url'],
-                            'name' => $name
-                        ];
-                        echo $tpl->loadTemplate("navigation", "sub_nav", $sub_array, 'theme');
+                    $translate->detectLanguages($rox['name']);
+                    $sub_name = $translate->getTextByLanguage($rox['name']);
+                    $sub_url = $rox['url'];
+                    $target = '';
+                    if (strpos($sub_url, 'http://') === 0 || strpos($sub_url, 'https://') === 0) {
+                        $target = '_blank';
                     }
+
+                    $sub_array = [
+                        'url' => $sub_url,
+                        'name' => $sub_name,
+                        'target' => $target
+                    ];
+
+                    echo $tpl->loadTemplate("navigation", "sub_nav", $sub_array, 'theme');
                 }
-                
-                echo $tpl->loadTemplate("navigation", "sub_close", $data_array['sub_close'], 'theme');
-                echo $tpl->loadTemplate("navigation", "dd_foot", $data_array['dd_foot'], 'theme');
+
+                echo $tpl->loadTemplate("navigation", "sub_close", [], 'theme');
+                echo $tpl->loadTemplate("navigation", "dd_foot", [], 'theme');
             }
         } else {
-            // Falls kein Dropdown-Menü, normalen Navigationseintrag ausgeben
-            #$head_array['windows'] = $row['windows'] ? '' : '_blank';
-
-            $head_array = [
-                    'windows' => $row['windows'] ? '' : '_blank',
-                    'url' => strpos($rox['url'], 'http://') !== false ? $rox['url'] . '" target="_blank' : $rox['url'],
-                    'name' => $translate->getTextByLanguage($rox['name'])
-                ];
-
+            $target = '';
+            if (strpos($row['url'], 'http://') === 0 || strpos($row['url'], 'https://') === 0) {
+                $target = '_blank';
+            }
+            $head_array['target'] = $target;
             echo $tpl->loadTemplate("navigation", "main_head", $head_array, 'theme');
         }
     }
 } catch (Exception $e) {
-    echo $e->getMessage();
+    echo 'Fehler bei der Navigation: ' . $e->getMessage();
     return false;
+}
+
+// Login + Forum + Messenger + Avatar
+if ($loggedin) {
+    #$dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='forum' AND activate=1"));
+    $icon = '';
+
+    /*if ($dx['modulname'] == 'forum') {
+        $board_topics = [];
+        $q = safe_query("SELECT * FROM plugins_forum_topics");
+        while ($lp = mysqli_fetch_assoc($q)) {
+            $board_topics[] = $lp['topicID'];
+        }
+
+        $ergebnisz = safe_query("SELECT topics FROM user WHERE userID='$userID'");
+        $gv = mysqli_fetch_array($ergebnisz);
+
+        $icon = '<a data-toggle="tooltip" data-placement="bottom" title="' . $languageService->module['no_forum_post'] . '" href="index.php?site=forum">
+                    <span class="icon badge bg-light text-dark mt-0 position-relative">
+                        <i class="bi bi-chat"></i>
+                    </span>
+                 </a>';
+
+        if (!empty($gv['topics'])) {
+            $topic = explode("|", $gv['topics']);
+            if (is_array($topic)) {
+                $n = 1;
+                foreach ($topic as $topics) {
+                    if ($topics != "") {
+                        $badgeNumber = min($n, 10);
+                        $badgeLabel = ($badgeNumber == 10) ? "10+" : $badgeNumber;
+
+                        $icon = '<a data-toggle="tooltip" data-placement="bottom" title="' . $languageService->module['more_new_forum_post'] . '" href="index.php?site=forum">
+                                    <span class="badge bg-warning text-dark mt-0 position-relative">
+                                        <i class="bi bi-chat-dots"></i>
+                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                            ' . $badgeLabel . '
+                                            <span class="visually-hidden">unread messages</span>
+                                        </span>
+                                    </span>
+                                 </a>';
+                        $n++;
+                    }
+                }
+            }
+        }
+    }*/
+
+    $l_avatar = getavatar($userID) ?: "noavatar.png";
+
+    /*$dx = mysqli_fetch_array(safe_query("SELECT * FROM settings_plugins WHERE modulname='messenger' AND activate=1"));
+    if ($dx['modulname'] == 'messenger') {
+        $newmessagesCount = getnewmessages($userID);
+        $badgeNumber = min($newmessagesCount, 10);
+        $badgeLabel = ($badgeNumber == 10) ? "10+" : $badgeNumber;
+
+        if ($newmessagesCount > 0) {
+            $newmessages = '<a data-toggle="tooltip" data-placement="bottom" title="' . ($newmessagesCount == 1 ? $languageService->module['one_new_message'] : $languageService->module['more_new_message']) . '" href="index.php?site=messenger">
+                                <span class="icon badge text-bg-success position-relative">
+                                    <i class="bi bi-envelope-check"></i>
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                        ' . $badgeLabel . '
+                                        <span class="visually-hidden">unread messages</span>
+                                    </span>
+                                </span>
+                            </a>';
+        } else {
+            $newmessages = '<a data-toggle="tooltip" data-placement="bottom" title="' . $languageService->module['no_new_messages'] . '" href="index.php?site=messenger">
+                                <span class="icon badge text-bg-light position-relative">
+                                    <i class="bi bi-envelope"></i>
+                                </span>
+                            </a>';
+        }
+    } else {
+        $newmessages = '';
+    }*/
+
+    $dashboard = (checkUserRoleAssignment($userID, 1))
+        ? '<li><a class="dropdown-item" href="admin/admincenter.php" target="_blank">&nbsp;' . $languageService->module['admincenter'] . '</a></li>'
+        : '';
+
+    $data_array = [
+        'modulepath' => substr(MODULE, 0, -1),
+        #'icon' => $icon,
+        #'newmessages' => $newmessages,
+        'userID' => $userID,
+        'l_avatar' => $l_avatar,
+        'nickname' => getusername($userID),
+        'dashboard' => $dashboard,
+        'lang_log_off' => $languageService->module['log_off'],
+        'lang_overview' => $languageService->module['overview'],
+        'to_profil' => $languageService->module['to_profil'],
+        'lang_edit_profile' => $languageService->module['edit_profile'],
+        'my_account' => $languageService->module['my_account']
+    ];
+
+    echo $tpl->loadTemplate("navigation", "login_loggedin", $data_array, 'theme');
+} else {
+    $data_array = [
+        'modulepath' => substr(MODULE, 0, -1),
+        'lang_login' => $languageService->get('login')
+    ];
+
+    echo $tpl->loadTemplate("navigation", "login_login", $data_array, 'theme');
 }

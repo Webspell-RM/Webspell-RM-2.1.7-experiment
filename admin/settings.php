@@ -1,11 +1,21 @@
 <?php
 
-// Überprüfen, ob die Session bereits gestartet wurde
-if (session_status() == PHP_SESSION_NONE) {
+use webspell\LanguageService;
+
+// Session absichern
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-$_language->readModule('settings', false, true);
+// Standard setzen, wenn nicht vorhanden
+$_SESSION['language'] = $_SESSION['language'] ?? 'de';
+
+// Initialisieren
+global $languageService;
+$languageService = new LanguageService($_database);
+
+// Admin-Modul laden
+$languageService->readModule('settings', true);
 
 use webspell\AccessControl;
 // Den Admin-Zugriff für das Modul überprüfen
@@ -45,9 +55,9 @@ if(isset($_POST['submit'])) {
                 startpage='"  . $_POST[ 'startpage' ] . "'"
         );
         
-        redirect("admincenter.php?site=settings", $_language->module[ 'updated_successfully' ], 2);
+        redirect("admincenter.php?site=settings", $languageService->get('updated_successfully'), 2);
     } else {
-        redirect("admincenter.php?site=settings", $_language->module[ 'transaction_invalid' ], 3);  
+        redirect("admincenter.php?site=settings", $languageService->get('transaction_invalid'), 3);  
     }
 }
 
@@ -71,9 +81,9 @@ if (isset($_POST["saveedit"])) {
                     discord = '" . $_POST[ 'discord' ] . "'"
             );
 
-            redirect("admincenter.php?site=settings&action=social_setting", $_language->module['updated_successfully'], 2);
+            redirect("admincenter.php?site=settings&action=social_setting", $languageService->get('updated_successfully'), 2);
         } else {
-            redirect("admincenter.php?site=settings&action=social_setting", $_language->module['transaction_invalid'], 3);
+            redirect("admincenter.php?site=settings&action=social_setting", $languageService->get('transaction_invalid'), 3);
         }
 
 }
@@ -121,12 +131,12 @@ $it_lang = '<input class="form-check-input" type="checkbox" name="it_lang" value
 
 // Ausgabe starten
 echo '<div class="card">
-    <div class="card-header"><i class="bi bi-house-gear"></i> ' . $_language->module['settings'] . '</div>
+    <div class="card-header"><i class="bi bi-house-gear"></i> ' . $languageService->get('settings') . '</div>
     <div class="card-body">';
 
 echo '
-    <a href="admincenter.php?site=settings" class="btn btn-primary disabled" type="button"><i class="bi bi-gear"></i> ' . $_language->module['settings'] . '</a>
-    <a href="admincenter.php?site=settings&action=social_setting" class="btn btn-primary" type="button"><i class="bi bi-gear-wide-connected"></i> ' . $_language->module['social_settings'] . '</a>';
+    <a href="admincenter.php?site=settings" class="btn btn-primary disabled" type="button"><i class="bi bi-gear"></i> ' . $languageService->get('settings') . '</a>
+    <a href="admincenter.php?site=settings&action=social_setting" class="btn btn-primary" type="button"><i class="bi bi-gear-wide-connected"></i> ' . $languageService->get('social_settings') . '</a>';
 
 $CAPCLASS = new \webspell\Captcha;
 $CAPCLASS->createTransaction();
@@ -136,41 +146,41 @@ echo '<div class="">
     <form class="form-horizontal" method="post" id="post" name="post" action="admincenter.php?site=settings" onsubmit="return chkFormular();">
 
     <div class="card">
-        <div class="card-header"><i class="bi bi-gear"></i> ' . $_language->module['settings'] . '</div>
+        <div class="card-header"><i class="bi bi-gear"></i> ' . $languageService->get('settings') . '</div>
         <div class="card-body">
             <div class="row">
                 <div class="col-md-6">
 
                     <div class="mb-3 row">
-                        <div class="col-md-4">' . $_language->module['page_url'] . ':</div>
+                        <div class="col-md-4">' . $languageService->get('page_url') . ':</div>
                         <div class="col-md-8">
                             <input class="form-control" type="url" name="url" value="' . htmlspecialchars($ds['hpurl']) . '">
                         </div>
                     </div>
 
                     <div class="mb-3 row">
-                        <div class="col-md-4">' . $_language->module['since'] . ':</div>
+                        <div class="col-md-4">' . $languageService->get('since') . ':</div>
                         <div class="col-md-8">
                             <input class="form-control" type="text" name="since" value="' . htmlspecialchars($ds['since']) . '">
                         </div>
                     </div>
 
                     <div class="mb-3 row">
-                        <div class="col-md-4">SEO & ' . $_language->module['page_title'] . ':</div>
+                        <div class="col-md-4">SEO & ' . $languageService->get('page_title') . ':</div>
                         <div class="col-md-8">
                             <input class="form-control" type="text" name="hptitle" value="' . htmlspecialchars($ds['hptitle']) . '">
                         </div>
                     </div>
 
                     <div class="mb-3 row">
-                        <div class="col-md-4">' . $_language->module['meta_keywords'] . ':</div>
+                        <div class="col-md-4">' . $languageService->get('meta_keywords') . ':</div>
                         <div class="col-md-8">
                             <input class="form-control" type="text" name="keywords" value="' . htmlspecialchars($ds['keywords']) . '">
                         </div>
                     </div>
 
                     <div class="mb-3 row">
-                        <div class="col-md-4">' . $_language->module['meta_description'] . ':</div>
+                        <div class="col-md-4">' . $languageService->get('meta_description') . ':</div>
                         <div class="col-md-8">
                             <textarea class="form-control" name="description" rows="5">' . htmlspecialchars($ds['description']) . '</textarea>
                         </div>
@@ -181,28 +191,28 @@ echo '<div class="">
                 <div class="col-md-6">
 
                     <div class="mb-3 row">
-                        <div class="col-md-4">' . $_language->module['clan_name'] . ':</div>
+                        <div class="col-md-4">' . $languageService->get('clan_name') . ':</div>
                         <div class="col-md-8">
                             <input class="form-control" type="text" name="clanname" value="' . htmlspecialchars($ds['clanname']) . '">
                         </div>
                     </div>
 
                     <div class="mb-3 row">
-                        <div class="col-md-4">' . $_language->module['clan_tag'] . ':</div>
+                        <div class="col-md-4">' . $languageService->get('clan_tag') . ':</div>
                         <div class="col-md-8">
                             <input class="form-control" type="text" name="clantag" value="' . htmlspecialchars($ds['clantag']) . '">
                         </div>
                     </div>
 
                     <div class="mb-3 row">
-                        <div class="col-md-4">' . $_language->module['admin_name'] . ':</div>
+                        <div class="col-md-4">' . $languageService->get('admin_name') . ':</div>
                         <div class="col-md-8">
                             <input class="form-control" type="text" name="admname" value="' . htmlspecialchars($ds['adminname']) . '">
                         </div>
                     </div>
 
                     <div class="mb-3 row">
-                        <div class="col-md-4">' . $_language->module['admin_email'] . ':</div>
+                        <div class="col-md-4">' . $languageService->get('admin_email') . ':</div>
                         <div class="col-md-8">
                             <input class="form-control" type="email" name="admmail" value="' . htmlspecialchars($ds['adminemail']) . '">
                         </div>
@@ -212,11 +222,11 @@ echo '<div class="">
 
 $db = mysqli_fetch_array(safe_query("SELECT * FROM settings"));
 $lock = ($db['closed'] == '1') ? 'success' : 'danger';
-$text_lock = ($db['closed'] == '1') ? $_language->module['off_pagelock'] : $_language->module['on_pagelock'];
+$text_lock = ($db['closed'] == '1') ? $languageService->get('off_pagelock') : $languageService->get('on_pagelock');
 
 echo '
                     <div class="mb-3 row">
-                        <div class="col-md-4">' . $_language->module['additional_options'] . ':</div>
+                        <div class="col-md-4">' . $languageService->get('additional_options') . ':</div>
                         <div class="col-md-8">
                             <a class="btn btn-' . $lock . '" href="admincenter.php?site=site_lock">' . $text_lock . '</a>
                         </div>
@@ -224,7 +234,7 @@ echo '
 
 // Plugins einlesen
 $modules = ['news_manager', 'about_us', 'history', 'calendar', 'blog', 'forum'];
-$widget_alle = "<option value='blank'>" . $_language->module['no_startpage'] . "</option>\n";
+$widget_alle = "<option value='blank'>" . $languageService->get('no_startpage') . "</option>\n";
 $widget_alle .= "<option value='startpage'>Startpage</option>\n";
 
 foreach ($modules as $modul) {
@@ -242,7 +252,7 @@ $widget_startpage = str_replace(
 
 echo '
                     <div class="mb-3 row">
-                        <div class="col-md-4">' . $_language->module['startpage'] . ':</div>
+                        <div class="col-md-4">' . $languageService->get('startpage') . ':</div>
                         <div class="col-md-8">
                             <select class="form-select" name="startpage">' . $widget_startpage . '</select>
                         </div>
@@ -282,7 +292,7 @@ echo '
       
 <div class="card">
     <div class="card-header"><i class="bi bi-google"></i> 
-        '.$_language->module['reCaptcha'].' 
+        '.$languageService->get('reCaptcha').' 
     </div>
     <div class="card-body">
 
@@ -290,7 +300,7 @@ echo '
             <div class="col-md-4">
                 <div class="mb-3 row">
                     <label class="col-md-12">
-                '.$_language->module[ 'important_text' ].' </label>
+                '.$languageService->get('important_text').' </label>
                 </div>
             </div> 
 
@@ -304,12 +314,12 @@ echo '
 
             <div class="col-md-4">
                 <div class="mb-3 row">
-                    <label class="col-md-4 control-label">'.$_language->module['web-key'].' :</label>
+                    <label class="col-md-4 control-label">'.$languageService->get('web-key').' :</label>
                     <div class="col-md-8"><span class="text-muted mdall"><em><input class="form-control" type="text" name="webkey" value="'.$ds['webkey'].'"></em></span>
                     </div>
                 </div>
                 <div class="mb-3 row">
-                    <label class="col-md-4 control-label">'.$_language->module['secret-key'].' :</label>
+                    <label class="col-md-4 control-label">'.$languageService->get('secret-key').' :</label>
                     <div class="col-md-8"><span class="text-muted mdall"><em><input class="form-control" type="text" name="seckey" value="'.$ds['seckey'].'"></em></span>
                     </div>
                 </div>
@@ -327,7 +337,7 @@ echo '
 
         <div class="card">
             <div class="card-header"><i class="bi bi-three-dots"></i> 
-                '.$_language->module['other'].' 
+                '.$languageService->get('other').' 
             </div>
             <div class="card-body">
                 
@@ -336,11 +346,11 @@ echo '
                                 
                         <div class="mb-3 row">
                             <div class="col-md-5">
-                                '.$_language->module['default_language'].' :
+                                '.$languageService->get('default_language').' :
                             </div>
 
                             <div class="col-md-4">
-                                <span class="pull-left text-muted mdall"><em data-toggle="tooltip" data-html="true" title="'.$_language->module[ 'tooltip_40' ].'"><select class="form-select" name="language">
+                                <span class="pull-left text-muted mdall"><em data-toggle="tooltip" data-html="true" title="'.$languageService->get('tooltip_40').'"><select class="form-select" name="language">
                                                 '.$langdirs.' 
                                             </select></em></span>
                             </div>
@@ -350,31 +360,31 @@ echo '
 
 
                         <div class="mb-3 row">
-                            <div class="col-md-12">'.$_language->module['language_navi'].' </div>
+                            <div class="col-md-12">'.$languageService->get('language_navi').' </div>
                         </div>
                         <div class="mb-3 row">
                             <div class="col-md-5">
-                                '.$_language->module['de_language'].' :
+                                '.$languageService->get('de_language').' :
                             </div>
 
                             <div class="col-md-4 form-check form-switch" style="padding: 0px 43px;">
-                                <span class="text-start"><em data-toggle="tooltip" data-html="true" title="'.$_language->module[ 'tooltip_66' ].'">'.$de_lang.'</em></span>
+                                <span class="text-start"><em data-toggle="tooltip" data-html="true" title="'.$languageService->get('tooltip_66').'">'.$de_lang.'</em></span>
                             </div>
                         </div>
                         <div class="mb-3 row">
                             <div class="col-md-5">
-                                '.$_language->module['en_language'].' :
+                                '.$languageService->get('en_language').' :
                             </div>
                             <div class="col-md-4 form-check form-switch" style="padding: 0px 43px;">
-                                <span class="pull-left text-muted mdall"><em data-toggle="tooltip" data-html="true" title="'.$_language->module[ 'tooltip_67' ].'">'.$en_lang.'</em></span>
+                                <span class="pull-left text-muted mdall"><em data-toggle="tooltip" data-html="true" title="'.$languageService->get('tooltip_67').'">'.$en_lang.'</em></span>
                             </div>
                         </div>
                         <div class="mb-3 row">
                             <div class="col-md-5">
-                                '.$_language->module['it_language'].' :
+                                '.$languageService->get('it_language').' :
                             </div>
                             <div class="col-md-4 form-check form-switch" style="padding: 0px 43px;">
-                                <span class="pull-left text-muted mdall"><em data-toggle="tooltip" data-html="true" title="'.$_language->module[ 'tooltip_68' ].'">'.$it_lang.'</em></span>
+                                <span class="pull-left text-muted mdall"><em data-toggle="tooltip" data-html="true" title="'.$languageService->get('tooltip_68').'">'.$it_lang.'</em></span>
                             </div>
                         </div>
                         <div class="mb-3 row">
@@ -397,7 +407,7 @@ echo '
         <div class="mb-3 row">
             <div class="col-md-12"><br>
                 <input type="hidden" name="captcha_hash" value="'.$hash.'"> 
-                <button class="btn btn-warning" type="submit" name="submit"><i class="bi bi-box-arrow-down"></i> '.$_language->module['update'].' </button>
+                <button class="btn btn-warning" type="submit" name="submit"><i class="bi bi-box-arrow-down"></i> '.$languageService->get('update').' </button>
             </div>
         </div>
 
@@ -412,11 +422,11 @@ echo '
 } elseif ($action == "social_setting") {
 
         echo '<div class="card">
-                <div class="card-header"><i class="bi bi-gear-wide-connected"></i> ' . $_language->module['social_settings'] . '</div>
+                <div class="card-header"><i class="bi bi-gear-wide-connected"></i> ' . $languageService->get('social_settings') . '</div>
                 <div class="card-body">';
 
-        echo '<a href="admincenter.php?site=settings" class="btn btn-primary"><i class="bi bi-house-gear"></i> ' . $_language->module['settings'] . '</a>
-              <a href="admincenter.php?site=settings&action=social_setting" class="btn btn-primary disabled">' . $_language->module['social_settings'] . '</a>';
+        echo '<a href="admincenter.php?site=settings" class="btn btn-primary"><i class="bi bi-house-gear"></i> ' . $languageService->get('settings') . '</a>
+              <a href="admincenter.php?site=settings&action=social_setting" class="btn btn-primary disabled">' . $languageService->get('social_settings') . '</a>';
 
         $ds = mysqli_fetch_array(safe_query("SELECT * FROM settings_social_media"));
 
@@ -425,7 +435,7 @@ echo '
         $hash = $CAPCLASS->getHash();
 
         echo '<div class="card mt-4">
-                <div class="card-header"><i class="bi bi-gear-wide-connected"></i> ' . $_language->module['title_social_media'] . '</div>
+                <div class="card-header"><i class="bi bi-gear-wide-connected"></i> ' . $languageService->get('title_social_media') . '</div>
                 <div class="card-body">
                     <form action="admincenter.php?site=settings&action=social_setting" method="post" role="form" class="form-horizontal">';
 
@@ -468,7 +478,7 @@ echo '
                 <div class="col-sm-11">
                     <input type="hidden" name="captcha_hash" value="' . $hash . '" />
                     <input type="hidden" name="socialID" value="' . (int)$ds['socialID'] . '" />
-                    <button class="btn btn-warning" type="submit" name="saveedit"><i class="bi bi-box-arrow-down"></i> ' . $_language->module['update'] . '</button>
+                    <button class="btn btn-warning" type="submit" name="saveedit"><i class="bi bi-box-arrow-down"></i> ' . $languageService->get('update') . '</button>
                 </div>
               </div>
             </form>

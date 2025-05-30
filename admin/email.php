@@ -1,11 +1,21 @@
 <?php
 
-// Überprüfen, ob die Session bereits gestartet wurde
-if (session_status() == PHP_SESSION_NONE) {
+use webspell\LanguageService;
+
+// Session absichern
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-$_language->readModule('email', false, true);
+// Standard setzen, wenn nicht vorhanden
+$_SESSION['language'] = $_SESSION['language'] ?? 'de';
+
+// Initialisieren
+global $languageService;
+$languageService = new LanguageService($_database);
+
+// Admin-Modul laden
+$languageService->readModule('email', true);
 
 use webspell\AccessControl;
 
@@ -37,38 +47,38 @@ if (isset($_POST[ 'submit' ])) {
         );
         redirect("admincenter.php?site=email", "", 0);
     } else {
-        redirect("admincenter.php?site=email", $_language->module[ 'transaction_invalid' ], 3);
+        redirect("admincenter.php?site=email", $languageService->get('transaction_invalid'), 3);
     }
 } elseif (isset($_POST[ 'send' ])) {
     $to = $_POST[ 'email' ];
-    $subject = $_language->module[ 'test_subject' ];
-    $message = $_language->module[ 'test_message' ];
+    $subject = $languageService->get('test_subject');
+    $message = $languageService->get('test_message');
 
     $CAPCLASS = new \webspell\Captcha;
     if ($CAPCLASS->checkCaptcha(0, $_POST[ 'captcha_hash' ])) {
         $sendmail = \webspell\Email::sendEmail($admin_email, 'Test eMail', $to, $subject, $message);
         if ($sendmail['result'] == 'fail') {
             if (isset($sendmail['debug'])) {
-                echo '<b>' . $_language->module[ 'test_fail' ] . '</b>';
+                echo '<b>' . $languageService->get('test_fail') . '</b>';
                 echo '<br>' . $sendmail[ 'error' ];
                 echo '<br>' . $sendmail[ 'debug' ];
-                redirect("admincenter.php?site=email&amp;action=test", $_language->module[ 'test_fail' ], 10);
+                redirect("admincenter.php?site=email&amp;action=test", $languageService->get('test_fail'), 10);
             } else {
-                echo '<b>' . $_language->module[ 'test_fail' ] . '</b>';
+                echo '<b>' . $languageService->get('test_fail') . '</b>';
                 echo '<br>' . $sendmail[ 'error' ];
-                redirect("admincenter.php?site=email&amp;action=test", $_language->module[ 'test_fail' ], 10);
+                redirect("admincenter.php?site=email&amp;action=test", $languageService->get('test_fail'), 10);
             }
         } else {
             if (isset($sendmail[ 'debug' ])) {
                 echo '<b> Debug </b>';
                 echo '<br>' . $sendmail[ 'debug' ];
-                redirect("admincenter.php?site=email&amp;action=test", $_language->module[ 'test_ok' ], 10);
+                redirect("admincenter.php?site=email&amp;action=test", $languageService->get('test_ok'), 10);
             } else {
-                redirect("admincenter.php?site=email&amp;action=test", $_language->module[ 'test_ok' ], 3);
+                redirect("admincenter.php?site=email&amp;action=test", $languageService->get('test_ok'), 3);
             }
         }
     } else {
-        redirect("admincenter.php?site=email&amp;action=test", $_language->module[ 'transaction_invalid' ], 3);
+        redirect("admincenter.php?site=email&amp;action=test", $languageService->get('transaction_invalid'), 3);
     }
 } elseif ($action == "test") {
     $CAPCLASS = new \webspell\Captcha;
@@ -77,11 +87,11 @@ if (isset($_POST[ 'submit' ])) {
 
     echo'<div class="card">
             <div class="card-header">
-                ' . $_language->module['email'] . '
+                ' . $languageService->get('email') . '
             </div>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb t-5 p-2 bg-light">
-                    <li class="breadcrumb-item"><a href="admincenter.php?site=email">' . $_language->module[ 'email' ] . '</a></li>
+                    <li class="breadcrumb-item"><a href="admincenter.php?site=email">' . $languageService->get('email') . '</a></li>
                     <li class="breadcrumb-item active" aria-current="page">New / Edit</li>
                 </ol>
             </nav>
@@ -90,7 +100,7 @@ if (isset($_POST[ 'submit' ])) {
                     <form method="post" action="admincenter.php?site=email&amp;action=test" enctype="multipart/form-data">
                         <div class="mb-3 row">
                             <label class="col-sm-2 col-form-label">
-                                ' . $_language->module['email'] . ':
+                                ' . $languageService->get('email') . ':
                             </label>
                             <div class="col-sm-8">
                                 <input type="text" class="form-control" name="email" />
@@ -102,7 +112,7 @@ if (isset($_POST[ 'submit' ])) {
                         <div class="mb-3 row">
                             <div class="offset-sm-2 col-sm-8">
                                 <button class="btn btn-success btn-sm" type="submit" name="send">
-                                    ' . $_language->module['send'] . '
+                                    ' . $languageService->get('send') . '
                                 </button>
                             </div>
                         </div>
@@ -144,45 +154,45 @@ if (isset($_POST[ 'submit' ])) {
         $html = "";
     }
 
-    $smtp = "<option value='0'>" . $_language->module[ 'type_phpmail' ] . "</option><option value='1'>" .
-        $_language->module[ 'type_smtp' ] . "</option><option value='2'>" . $_language->module[ 'type_pop' ] .
+    $smtp = "<option value='0'>" . $languageService->get('type_phpmail') . "</option><option value='1'>" .
+        $languageService->get('type_smtp') . "</option><option value='2'>" . $languageService->get('type_pop') .
         "</option>";
     $smtp = str_replace("value='" . $ds[ 'smtp' ] . "'", "value='" . $ds[ 'smtp' ] . "' selected='selected'", $smtp);
 
     if (extension_loaded('openssl')) {
-        $secure = "<option value='0'>" . $_language->module[ 'secure_none' ] . "</option><option value='1'>" .
-            $_language->module[ 'secure_tls' ] . "</option><option value='2'>" . $_language->module[ 'secure_ssl' ] .
+        $secure = "<option value='0'>" . $languageService->get('secure_none') . "</option><option value='1'>" .
+            $languageService->get('secure_tls') . "</option><option value='2'>" . $languageService->get('secure_ssl') .
             "</option>";
     } else {
-        $secure = "<option value='0'>" . $_language->module[ 'secure_none' ] . "</option>";
+        $secure = "<option value='0'>" . $languageService->get('secure_none') . "</option>";
     }
 
     $secure =
         str_replace("value='" . $ds[ 'secure' ] . "'", "value='" . $ds[ 'secure' ] . "' selected='selected'", $secure);
 
-    $debug = "<option value='0'>" . $_language->module[ 'debug_0' ] . "</option><option value='1'>" .
-        $_language->module[ 'debug_1' ] . "</option><option value='2'>" . $_language->module[ 'debug_2' ] .
-        "</option><option value='3'>" . $_language->module[ 'debug_3' ] . "</option><option value='4'>" .
-        $_language->module[ 'debug_4' ] . "</option>";
+    $debug = "<option value='0'>" . $languageService->get('debug_0') . "</option><option value='1'>" .
+        $languageService->get('debug_1') . "</option><option value='2'>" . $languageService->get('debug_2') .
+        "</option><option value='3'>" . $languageService->get('debug_3') . "</option><option value='4'>" .
+        $languageService->get('debug_4') . "</option>";
     $debug =
         str_replace("value='" . $ds[ 'debug' ] . "'", "value='" . $ds[ 'debug' ] . "' selected='selected'", $debug);
 
     echo '<div class="card">
         <div class="card-header">
-            ' . $_language->module[ 'email' ] . '
+            ' . $languageService->get('email') . '
         </div>
         <nav aria-label="breadcrumb">
                         <ol class="breadcrumb t-5 p-2 bg-light">
-            <li class="breadcrumb-item active" aria-current="page">' . $_language->module[ 'email' ] . '</li>
+            <li class="breadcrumb-item active" aria-current="page">' . $languageService->get('email') . '</li>
           </ol>
         </nav>
 
 <div class="card-body">
 
 <div class="mb-3 row">
-    <label class="col-md-1 control-label">' . $_language->module['options'] . ':</label>
+    <label class="col-md-1 control-label">' . $languageService->get('options') . ':</label>
     <div class="col-md-8">
-      <a href="admincenter.php?site=email&amp;action=test" class="btn btn-primary btn-sm" type="button">' . $_language->module[ 'test_email' ] . '</a>
+      <a href="admincenter.php?site=email&amp;action=test" class="btn btn-primary btn-sm" type="button">' . $languageService->get('test_email') . '</a>
     </div>
   </div>';
 
@@ -250,7 +260,7 @@ if (isset($_POST[ 'submit' ])) {
 
         <table class="table table-bordered table-striped">
             <tr>
-                <td width="15%"><b>' . $_language->module['type'] . '</b></td>
+                <td width="15%"><b>' . $languageService->get('type') . '</b></td>
                 <td width="35%">
                     <div class="input-group">
                         <select class="form-select" id="select_smtp" name="smtp" onchange="javascript:HideFields2();"
@@ -260,7 +270,7 @@ if (isset($_POST[ 'submit' ])) {
             </tr>
 
             <tr id="tr_auth"' . $show_auth2 . '>
-                <td width="15%"><b>' . $_language->module['auth'] . '</b></td>
+                <td width="15%"><b>' . $languageService->get('auth') . '</b></td>
                 <td width="35%">
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" id="check_auth" name="auth"
@@ -272,7 +282,7 @@ if (isset($_POST[ 'submit' ])) {
             </tr>
 
             <tr id="tr_user"' . $show_auth . '>
-                <td width="15%"><b>' . $_language->module['user'] . '</b></td>
+                <td width="15%"><b>' . $languageService->get('user') . '</b></td>
                 <td width="35%">
                     <div class="input-group">
                         <input class="form-control" name="user" type="text" 
@@ -283,7 +293,7 @@ if (isset($_POST[ 'submit' ])) {
             </tr>
 
             <tr id="tr_password"' . $show_auth . '>
-                <td width="15%"><b>' . $_language->module['password'] . '</b></td>
+                <td width="15%"><b>' . $languageService->get('password') . '</b></td>
                 <td width="35%">
                     <div class="input-group">
                         <input class="form-control" type="password" name="password" 
@@ -294,7 +304,7 @@ if (isset($_POST[ 'submit' ])) {
             </tr>
 
             <tr id="tr_host"' . $show_auth2 . '>
-                <td width="15%"><b>' . $_language->module['host'] . '</b></td>
+                <td width="15%"><b>' . $languageService->get('host') . '</b></td>
                 <td width="35%">
                     <div class="input-group">
                         <input class="form-control" type="text" name="host" 
@@ -305,7 +315,7 @@ if (isset($_POST[ 'submit' ])) {
             </tr>
 
             <tr id="tr_port"' . $show_auth2 . '>
-                <td width="15%"><b>' . $_language->module['port'] . '</b></td>
+                <td width="15%"><b>' . $languageService->get('port') . '</b></td>
                 <td width="35%">
                     <div class="input-group">
                         <input class="form-control" id="input_port" type="text" name="port" 
@@ -316,7 +326,7 @@ if (isset($_POST[ 'submit' ])) {
             </tr>
 
             <tr id="tr_html">
-                <td width="15%"><b>' . $_language->module['html'] . '</b></td>
+                <td width="15%"><b>' . $languageService->get('html') . '</b></td>
                 <td width="35%">
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" id="check_html" name="html"
@@ -327,7 +337,7 @@ if (isset($_POST[ 'submit' ])) {
             </tr>
 
             <tr id="tr_secure"' . $show_auth2 . '>
-                <td width="15%"><b>' . $_language->module['secure'] . '</b></td>
+                <td width="15%"><b>' . $languageService->get('secure') . '</b></td>
                 <td width="35%">
                     <div class="input-group">
                         <select class="form-select" id="select_secure" name="secure" 
@@ -339,7 +349,7 @@ if (isset($_POST[ 'submit' ])) {
             </tr>
 
             <tr id="tr_debug"' . $show_auth2 . '>
-                <td width="15%"><b>' . $_language->module['debug'] . '</b></td>
+                <td width="15%"><b>' . $languageService->get('debug') . '</b></td>
                 <td width="35%">
                     <div class="input-group">
                         <select class="form-select" id="select_debug" name="debug" 
@@ -354,7 +364,7 @@ if (isset($_POST[ 'submit' ])) {
 
         <div style="clear: both; padding-top: 20px;">
             <input type="hidden" name="captcha_hash" value="' . $hash . '">
-            <input class="btn btn-success btn-sm" type="submit" name="submit" value="' . $_language->module['update'] . '">
+            <input class="btn btn-success btn-sm" type="submit" name="submit" value="' . $languageService->get('update') . '">
         </div>
 
     </form>

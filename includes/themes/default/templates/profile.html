@@ -1,10 +1,10 @@
 <!-- profile_head -->
-<div class="head-boxes {{ class }}">
-    <span class="head-boxes-head">{{ title }}</span>
+<div class="head-boxes {class}">
+    <span class="head-boxes-head">{title}</span>
     <h2 class="head-h2">
-        <span class="head-boxes-title">{{ title }}</span>
+        <span class="head-boxes-title">{title}</span>
     </h2>
-    <p class="head-boxes-foot">{{ subtitle }}</p>
+    <p class="head-boxes-foot">{subtitle}</p>
 </div>
 <!-- END -->
 
@@ -12,44 +12,44 @@
 <div class="card">
   <div class="card-body">
 
-{{ isLocked }}
+{isLocked}
 
     <div class="container my-4">
       <div class="row">
         <!-- Sidebar -->
         <div class="col-md-4 text-center">
-          <img src="{{ user_picture }}" class="img-fluid mb-3" width="150" alt="Profilbild">
-          <h4>{{ username }}</h4>
-          <span class="badge bg-primary"><i class="bi bi-star-fill me-1"></i>{{ user_points }} Punkte</span>
-          <p class="text-muted mt-2">{{ user_role }}</p>
+          <img src="{user_picture}" class="img-fluid mb-3" width="150" alt="Profilbild">
+          <h4>{username}</h4>
+          <span class="badge bg-primary"><i class="bi bi-star-fill me-1"></i>{user_points} Punkte</span>
+          <p class="text-muted mt-2">{user_role}</p>
 
           <!-- Level-Fortschritt -->
           <div class="my-2">
-            <small class="text-muted">Level {{ user_level }}</small>
+            <small class="text-muted">Level {user_level}</small>
             <div class="progress" style="height: 8px;">
-              <div class="progress-bar" role="progressbar" style="width: {{ level_progress }}%;" aria-valuenow="{{ level_progress }}" aria-valuemin="0" aria-valuemax="100"></div>
+              <div class="progress-bar" role="progressbar" style="width: {level_progress}%;" aria-valuenow="{level_progress}" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
           </div>
 
           <!-- Social Icons mit Tooltips -->
           <div class="d-flex justify-content-center gap-3 mt-3">
-            <a href="{{ github_url }}" target="_blank" data-bs-toggle="tooltip" title="GitHub">
+            <a href="{github_url}" target="_blank" data-bs-toggle="tooltip" title="GitHub">
               <i class="bi bi-github fs-4 text-dark"></i>
             </a>
-            <a href="{{ twitter_url }}" target="_blank" data-bs-toggle="tooltip" title="Twitter">
+            <a href="{twitter_url}" target="_blank" data-bs-toggle="tooltip" title="Twitter">
               <i class="bi bi-twitter-x fs-4 text-primary"></i>
             </a>
-            <a href="{{ instagram_url }}" target="_blank" data-bs-toggle="tooltip" title="Instagram">
+            <a href="{instagram_url}" target="_blank" data-bs-toggle="tooltip" title="Instagram">
               <i class="bi bi-instagram fs-4 text-danger"></i>
             </a>
-            <a href="{{ website_url }}" target="_blank" data-bs-toggle="tooltip" title="Website">
+            <a href="{website_url}" target="_blank" data-bs-toggle="tooltip" title="Website">
               <i class="bi bi-globe fs-4 text-success"></i>
             </a>
           </div>
 
           <!-- Profil bearbeiten -->
           <div class="mt-4">
-            {{ edit_button }}
+            {edit_button}
           </div>
         </div>
 
@@ -72,33 +72,33 @@
             <div class="tab-pane fade show active" id="about" role="tabpanel">
               <h5>Steckbrief</h5>
               <table class="table table-sm">
-                <tr><th>Vorname</th><td>{{ user_name }}</td></tr>
-                <tr><th>Nachname</th><td>{{ user_surname }}</td></tr>
-                <tr><th>Alter</th><td>{{ user_age }}</td></tr>
-                <tr><th>Ort</th><td>{{ user_location }}</td></tr>
-                <tr><th>Sexualität</th><td>{{ user_sexuality }}</td></tr>
-                <tr><th>Registriert seit</th><td>{{ register_date }}</td></tr>
-                <!--<tr><th>Letzter Besuch</th><td>{{ last_visit }}</td></tr>
-                <tr><th>Anzahl Logins</th><td>{{ user_activity }}</td></tr>-->
+                <tr><th>Vorname</th><td>{user_name}</td></tr>
+                <tr><th>Nachname</th><td>{user_surname}</td></tr>
+                <tr><th>Alter</th><td>{user_age}</td></tr>
+                <tr><th>Ort</th><td>{user_location}</td></tr>
+                <tr><th>Sexualität</th><td>{user_sexuality}</td></tr>
+                <tr><th>Registriert seit</th><td>{register_date}</td></tr>
+                <!--<tr><th>Letzter Besuch</th><td>{last_visit}</td></tr>
+                <tr><th>Anzahl Logins</th><td>{user_activity}</td></tr>-->
               </table>
 
               <h6 class="mt-3">Über mich</h6>
-              <p>{{ user_about }}</p>
+              <p>{user_about}</p>
 
               <h6>Signatur</h6>
-              <p class="text-muted fst-italic">{{ user_signature }}</p>
+              <p class="text-muted fst-italic">{user_signature}</p>
             </div>
 
             <!-- Beiträge -->
             <div class="tab-pane fade" id="posts" role="tabpanel">
               <h5>Letzte Beiträge</h5>
-              {{ user_posts }}
+              {user_posts}
             </div>
 
             <!-- Aktivität -->
             <div class="tab-pane fade" id="activity" role="tabpanel">
               <h5>Letzte Aktivität</h5>
-              {{ user_activity }}
+              {user_activity}
             </div>
           </div>
         </div>

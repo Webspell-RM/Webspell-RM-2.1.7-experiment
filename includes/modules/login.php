@@ -1,11 +1,18 @@
 <?php
-$_language->readModule('login');
-use webspell\LoginSecurity;
-global $_database;
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+use webspell\LoginSecurity;
+use webspell\LanguageService;
+
+global $languageService;
+
+$lang = $languageService->detectLanguage();
+$languageService->readModule('login');
+
+global $_database;
+
 
 $ip = $_SERVER['REMOTE_ADDR'];
 $message_zusatz = '';
@@ -134,21 +141,21 @@ if ($isEmailBanned) {
 
 // Formular anzeigen
 $data_array = [
-    'login_headline' => $_language->module['title'],    
-    'email_label' => $_language->module['email_label'],
-    'your_email' => $_language->module['your_email'],
-    'pass_label' => $_language->module['pass_label'],
-    'your_pass' => $_language->module['your_pass'],
-    'remember_me' => $_language->module['remember_me'],
-    'login_button' => $_language->module['login_button'],
-    'register_link' => $_language->module['register_link'],
-    'lostpassword_link' => $_language->module['lostpassword_link'],
+    'login_headline' => $languageService->module['title'],    
+    'email_label' => $languageService->module['email_label'],
+    'your_email' => $languageService->module['your_email'],
+    'pass_label' => $languageService->module['pass_label'],
+    'your_pass' => $languageService->module['your_pass'],
+    'remember_me' => $languageService->module['remember_me'],
+    'login_button' => $languageService->module['login_button'],
+    'register_link' => $languageService->module['register_link'],
+    'lostpassword_link' => $languageService->module['lostpassword_link'],
     'error_message' => $message,
     'message_zusatz' => $message_zusatz,
     'isIpBanned' => $isIpBanned,
-    'welcome_back' =>  $_language->module['welcome_back'],
-    'reg_text' =>  $_language->module['reg_text'],
-    'login_text' =>  $_language->module['login_text'],
+    'welcome_back' =>  $languageService->module['welcome_back'],
+    'reg_text' =>  $languageService->module['reg_text'],
+    'login_text' =>  $languageService->module['login_text'],
 ];
 
 echo $tpl->loadTemplate("login", "content", $data_array, 'theme');

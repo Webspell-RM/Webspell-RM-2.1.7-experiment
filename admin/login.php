@@ -1,5 +1,10 @@
 <?php
 
+// Session absichern
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 use webspell\LoginSecurity;
 
 ini_set('display_errors', 1);
@@ -20,7 +25,17 @@ include('../system/version.php');
 include('../system/multi_language.php');
 
 // Sprachmodul laden
-$_language->readModule('login', false, true);
+#$_language->readModule('login', false, true);
+use webspell\LanguageService;
+
+// Sprachauswahl setzen (falls noch nicht)
+if (!isset($_SESSION['language'])) {
+    $_SESSION['language'] = 'de';
+}
+
+// Objekt erstellen (ggf. $database übergeben)
+$languageService = new LanguageService($_database);
+$languageService->readModule('admincenter', true);
 
 $ip = $_SERVER['REMOTE_ADDR'];
 $message = '';
@@ -118,11 +133,10 @@ if (!empty($email) && LoginSecurity::isEmailBanned($ip, $email)) {
     $isIpBanned = true;
 }
 
-
 ?>
 
 <!DOCTYPE html>
-<html lang="<?= $_language->language ?>">
+<html lang="<?= $languageService->language ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -150,12 +164,12 @@ if (!empty($email) && LoginSecurity::isEmailBanned($ip, $email)) {
         <div class="container">
           <div class="row">
             <div class="col-md-9 col-lg-8 mx-auto">
-                <h2 class="login-heading mb-4"><span><?= $_language->module['signup'] ?></span></h2>
+                <h2 class="login-heading mb-4"><span><?= $languageService->module['signup'] ?></span></h2>
                 <div>
-                    <h5><?= $_language->module['dashboard'] ?></h5><br />
+                    <h5><?= $languageService->module['dashboard'] ?></h5><br />
                     <div class="alert alert-info">
-                        <?= $_language->module['welcome2'] ?> Login<br><br>
-                        <?= $_language->module['insertmail'] ?>
+                        <?= $languageService->module['welcome2'] ?> Login<br><br>
+                        <?= $languageService->module['insertmail'] ?>
                     </div>
                     <?php if ($closed === 1): ?>
                         <div class="alert alert-warning">
@@ -166,7 +180,7 @@ if (!empty($email) && LoginSecurity::isEmailBanned($ip, $email)) {
 
                 <form method="POST" action="">
                     <div class="mb-3">
-                        <label for="email"><?= $_language->module['email_address'] ?></label>
+                        <label for="email"><?= $languageService->module['email_address'] ?></label>
                         <input class="form-control" name="email" type="email" placeholder="Email" required>
                     </div>
 
@@ -175,7 +189,7 @@ if (!empty($email) && LoginSecurity::isEmailBanned($ip, $email)) {
                         <input class="form-control" name="password" type="password" placeholder="Passwort" required>
                     </div>
 
-                    <input type="submit" name="submit" value="<?= $_language->module['signup'] ?>" class="btn btn-primary btn-block">
+                    <input type="submit" name="submit" value="<?= $languageService->module['signup'] ?>" class="btn btn-primary btn-block">
                 </form>
 
                 <?php if (!empty($message)) : ?>

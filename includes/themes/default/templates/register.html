@@ -14,83 +14,83 @@
 
                                 <!-- Überschrift -->
                                 <div class="h3 fw-light">
-                                    <span>{{ reg_title }}</span>
+                                    <span>{reg_title}</span>
                                 </div>
 
                                 <!-- Fehlermeldungen -->
-                                {{ if error_message }}
-                                    <div class="alert alert-danger">{{ error_message }}</div>
-                                {{ endif }}
+                                {if error_message}
+                                    <div class="alert alert-danger">{error_message}</div>
+                                {endif}
 
                                 <!-- Erfolgsmeldung -->
-                                {{ if success_message }}
-                                    <div class="alert alert-success">{{ success_message }}</div>
-                                {{ endif }}
+                                {if success_message}
+                                    <div class="alert alert-success">{success_message}</div>
+                                {endif}
 
                                 <!-- Zusätzliche Nachricht -->
-                                {{ if message_zusatz }}
-                                    <p>{{ message_zusatz }}</p>
-                                {{ endif }}
+                                {if message_zusatz}
+                                    <p>{message_zusatz}</p>
+                                {endif}
 
-                                {{ if isreg }}
+                                {if isreg}
 
-                                {{ else }}
+                                {else}
 
                                 <!-- Login-Hinweis -->
                                 <p class="mb-4 text-end">
-                                    {{ login_text }}
-                                    <a href="index.php?site=login">{{ login_link }}</a>
+                                    {login_text}
+                                    <a href="index.php?site=login">{login_link}</a>
                                 </p>
 
                                 <!-- Formular -->
                                 <form action="index.php?site=register" method="POST" novalidate>
-                                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                                    <input type="hidden" name="csrf_token" value="{csrf_token}">
 
                                     <div class="mb-3">
-                                        <label for="username" class="form-label">{{ username }}</label>
+                                        <label for="username" class="form-label">{username}</label>
                                         <input type="text" name="username" class="form-control" id="username" required
-                                               pattern="[a-zA-Z0-9_-]{3,20}" value="{{ enter_your_name }}">
+                                               pattern="[a-zA-Z0-9_-]{3,20}" value="{enter_your_name}">
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="email" class="form-label">{{ email_address }}</label>
+                                        <label for="email" class="form-label">{email_address}</label>
                                         <input type="email" name="email" class="form-control" id="email" required
-                                               value="{{ enter_your_email }}">
+                                               value="{enter_your_email}">
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="password" class="form-label">{{ password }}</label>
+                                        <label for="password" class="form-label">{password}</label>
                                         <input type="password" name="password" class="form-control" id="password"
-                                               value="{{ enter_password }}" required>
-                                        <small class="form-text text-muted">{{ pass_text }}</small>
+                                               value="{enter_password}" required>
+                                        <small class="form-text text-muted">{pass_text}</small>
                                         <div id="passwordStrength" class="mt-2 bg-secondary"></div>
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="password_repeat" class="form-label">{{ password_repeat }}</label>
+                                        <label for="password_repeat" class="form-label">{password_repeat}</label>
                                         <input type="password" name="password_repeat" class="form-control"
-                                               id="password_repeat" value="{{ enter_password_repeat }}" required>
+                                               id="password_repeat" value="{enter_password_repeat}" required>
                                     </div>
 
                                     <div class="form-check mb-3">
                                         <input type="checkbox" name="terms" class="form-check-input" id="terms" required>
                                         <label for="terms" class="form-check-label">
-                                            {{ terms_of_use_text }} <a href="#">{{ terms_of_use }}</a>
+                                            {terms_of_use_text} <a href="#">{terms_of_use}</a>
                                         </label>
                                     </div>
 
                                     <!-- Optional reCAPTCHA -->
                                     <div class="mb-3">
-                                        <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
+                                        <div class="g-recaptcha" data-sitekey="{recaptcha_site_key}"></div>
                                     </div>
 
-                                    <button type="submit" class="btn btn-primary w-100">{{ register }}</button>
+                                    <button type="submit" class="btn btn-primary w-100">{register}</button>
                                 </form>
 
-                                {{ endif }}
+                                {endif}
 
                                 <hr>
-                                {{ reg_info_text }}
+                                {reg_info_text}
                             </div>
                         </div>
                         <!-- Ende Rechte Inhaltshälfte -->

@@ -1,11 +1,21 @@
 <?php
 
-// Überprüfen, ob die Session bereits gestartet wurde
-if (session_status() == PHP_SESSION_NONE) {
+use webspell\LanguageService;
+
+// Session absichern
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-$_language->readModule('startpage', false, true);
+// Standard setzen, wenn nicht vorhanden
+$_SESSION['language'] = $_SESSION['language'] ?? 'de';
+
+// Initialisieren
+global $languageService;
+$languageService = new LanguageService($_database);
+
+// Admin-Modul laden
+$languageService->readModule('startpage', true);
 
 use webspell\AccessControl;
 
@@ -33,14 +43,14 @@ if (isset($_POST['submit'])) {
         } else {
             safe_query("INSERT INTO settings_startpage (date, startpage_text, editor) VALUES (NOW(), '" . $startpage_text . "', '" . $editor . "')");
         }
-        echo '<div class="alert alert-success" role="alert">' . $_language->module['changes_successful'] . '</div>';
+        echo '<div class="alert alert-success" role="alert">' . $languageService->module['changes_successful'] . '</div>';
         echo '<script type="text/javascript">
                 setTimeout(function() {
                     window.location.href = "admincenter.php?site=settings_startpage";
                 }, 3000); // 3 Sekunden warten
             </script>';
     } else {
-        echo $_language->module['transaction_invalid'];
+        echo $languageService->module['transaction_invalid'];
         echo '<script type="text/javascript">
                 setTimeout(function() {
                     window.location.href = "admincenter.php?site=settings_startpage";
@@ -65,14 +75,14 @@ if (isset($ds['editor']) && $ds['editor'] == 1) {
 
 // Template laden
 $data_array = [
-    'startpage_label' => $_language->module['startpage'],
-    'title_head' => $_language->module['title_head'],
+    'startpage_label' => $languageService->module['startpage'],
+    'title_head' => $languageService->module['title_head'],
     'title' => htmlspecialchars($ds['title']),
     'startpage_text' => htmlspecialchars($ds['startpage_text']),
-    'editor_is_editor' => $_language->module['editor_is_editor'], // Fügt die Label für "Editor anzeigen" hinzu
+    'editor_is_editor' => $languageService->module['editor_is_editor'], // Fügt die Label für "Editor anzeigen" hinzu
     'editor_checked' => $editor_checked, // Setzt den Wert für die Checkbox
     'captcha_hash' => $hash,
-    'update_button_label' => $_language->module['update']
+    'update_button_label' => $languageService->module['update']
 ];
 
 echo $tpl->loadTemplate("startpage", "content", $data_array, 'admin');
