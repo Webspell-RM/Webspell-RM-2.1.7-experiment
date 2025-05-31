@@ -6,8 +6,12 @@ if (session_status() === PHP_SESSION_NONE) {
 
 global $_database;
 
-// Sprache aus Session oder URL bestimmen (Beispiel)
-if (isset($_SESSION['language'])) {
+// Sprache aus Session oder URL bestimmen
+if (isset($_GET['new_lang'])) {
+    // Nur Kleinbuchstaben erlauben
+    $lang = preg_replace('/[^a-z]/', '', strtolower($_GET['new_lang']));
+    $_SESSION['language'] = $lang;
+} elseif (isset($_SESSION['language'])) {
     $lang = $_SESSION['language'];
 } else {
     // Sprache aus DB auslesen
@@ -15,15 +19,8 @@ if (isset($_SESSION['language'])) {
     if ($result && $row = $result->fetch_assoc() && !empty($row['default_language'])) {
         $lang = $row['default_language'];
     } else {
-        $lang = 'en'; // Fallback
+        $lang = 'de'; // Fallback
     }
-    $_SESSION['language'] = $lang;
-}
-
-// Sprache via URL-Parameter ändern (Überschreiben + Session speichern)
-if (isset($_GET['lang'])) {
-    // Nur Kleinbuchstaben erlauben
-    $lang = preg_replace('/[^a-z]/', '', strtolower($_GET['lang']));
     $_SESSION['language'] = $lang;
 }
 
@@ -39,24 +36,26 @@ $lang_ok = '';
 $language_links = '';
 $flag_ok = '';
 
+// Aktueller Pfad (z. B. /contact, /about), ohne Query-String
+$currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
 while ($row = $result->fetch_assoc()) {
     $short = $row['iso_639_1'];
     $flag = $row['flag'];
 
-    // Falls kein Flag-Pfad hinterlegt, Default auf /admin/images/flags/ setzen
     if (empty($flag)) {
         $flag = "/admin/images/flags/{$short}.png";
     }
 
-    // Sprachname bevorzugt Native, sonst Englisch, sonst ISO-Code
     $name = $row['name_native'] ?: ($row['name_en'] ?: ucfirst($short));
 
-    // Aktuelle Query-Parameter holen und modifizieren
+    // Bestehende GET-Parameter übernehmen und 'new_lang' ersetzen
     $params = $_GET;
+    unset($params['new_lang']);
     $params['new_lang'] = $short;
-    $queryString = http_build_query($params);
 
-    $url = 'index.php?' . $queryString;
+    $queryString = http_build_query($params);
+    $url = $currentPath . '?' . $queryString;
 
     if ($short === $lang) {
         $lang_ok = '<a class="dropdown-item active" href="' . htmlspecialchars($url) . '" title="' . htmlspecialchars($name) . '">'
@@ -77,5 +76,5 @@ $data_array = [
     'languages' => $language_links,
 ];
 
-// Template laden (Semikolon nicht vergessen!)
+// Template laden
 echo $tpl->loadTemplate("navigation", "languages", $data_array, 'theme');

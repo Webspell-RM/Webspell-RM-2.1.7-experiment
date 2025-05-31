@@ -29,8 +29,20 @@
  */
 
 
-session_start();
+// === Fehleranzeige aktivieren ===
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
+// === Session starten ===
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// === Sprachsystem vorbereiten ===
+$_SESSION['language'] = $_SESSION['language'] ?? 'de';
+
+// === System-Dateien einbinden ===
 include_once("system/config.inc.php");
 include_once("system/settings.php");
 include_once("system/functions.php");
@@ -40,38 +52,33 @@ include_once("system/plugin.php");
 include_once("system/widget.php");
 include_once("system/multi_language.php");
 include_once("system/classes/track_visitor.php");
+include_once("system/init_language.php"); // setzt $languageService
+include_once("system/classes/Router.php");
 
-if (file_exists("includes/plugins/counter/counter_track.php")) {
-    include_once("includes/plugins/counter/counter_track.php");
-}
+// === Globale Variablen ===
+global $tpl;
+global $_database;
+global $languageService;
 
-if (file_exists("includes/plugins/whoisonline/whoisonline_tracker.php")) {
-    include_once("includes/plugins/whoisonline/whoisonline_tracker.php");
-}
-
+// === Template initialisieren ===
 $theme = new theme();
-
 $tpl = new template();
 $tpl->themes_path = rtrim($theme->get_active_theme(), '/\\') . DIRECTORY_SEPARATOR;
 $tpl->template_path = "templates" . DIRECTORY_SEPARATOR;
 
+// === Plugins initialisieren ===
 $_pluginmanager = new plugin_manager();
 
-$lang = getCurrentLanguage();
-
-define("MODULE", "./includes/modules/");
-define("PLUGIN", "./includes/plugins/");
-
-#$_language->readModule('index');
-#$index_language = $_language->module;
-
-// CSS / JS Komponenten laden
+// === CSS / JS Komponenten vorbereiten ===
 $components_css = "";
 if (!empty($components['css'])) {
     foreach ($components['css'] as $component) {
         $components_css .= '<link type="text/css" rel="stylesheet" href="' . htmlspecialchars($component) . '" />' . "\n";
     }
 }
+
+define("MODULE", "./includes/modules/");
+define("PLUGIN", "./includes/plugins/");
 
 $components_js = "";
 if (!empty($components['js'])) {
@@ -83,4 +90,31 @@ if (!empty($components['js'])) {
 $theme_css = headfiles("css", $tpl->themes_path);
 $theme_js = headfiles("js", $tpl->themes_path);
 
-include($tpl->themes_path . "index.php");
+// === Zusätzliche Tracker / Plugins ===
+if (file_exists("includes/plugins/counter/counter_track.php")) {
+    include_once("includes/plugins/counter/counter_track.php");
+}
+if (file_exists("includes/plugins/whoisonline/whoisonline_tracker.php")) {
+    include_once("includes/plugins/whoisonline/whoisonline_tracker.php");
+}
+
+// === Routing starten ===
+include_once("system/routes/web.php");
+
+// === Router aufrufen ===
+$router->dispatch($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
+#include($tpl->themes_path . "index.php");
+
+if (isset($_GET['site'])) {
+    $expected_uri = '/' . trim($_GET['site'], '/');
+    $request_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    
+    // Normalisiere beide Pfade ohne abschließenden Slash
+    $normalized_expected = rtrim($expected_uri, '/');
+    $normalized_request = rtrim($request_path, '/');
+
+    if ($normalized_request !== $normalized_expected) {
+        header("Location: $expected_uri", true, 301);
+        exit;
+    }
+}

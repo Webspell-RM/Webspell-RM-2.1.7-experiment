@@ -30,25 +30,18 @@
  */
 
 // Funktion zur Ausgabe des Seitentitels
-function get_sitetitle()
+function get_sitetitle(): string
 {
-    $sitetitle = new plugin_manager();
+    $pluginManager = new plugin_manager();
 
-    if (isset($_GET['site'])) {
-        $updated_title = $sitetitle->plugin_updatetitle($_GET['site']);
+    $site = $_GET['site'] ?? null;
+    $updatedTitle = $site ? $pluginManager->plugin_updatetitle($site) : null;
 
-        if ($updated_title) {
-            echo $updated_title;
-        } else {
-            echo PAGETITLE;
-        }
-    } else {
-        echo PAGETITLE;
-    }
+    return $updatedTitle ?: PAGETITLE;
 }
 
 // Ausgabe des Hauptinhalts
-function get_mainContent()
+/*function get_mainContent()
 {
     #global $cookievalue, $userID, $date, $loggedin, $_language, $tpl, $myclanname, $hp_url, $imprint_type, $admin_email, $admin_name;
     global $cookievalue, $userID, $date, $loggedin, $_language, $tpl, $hp_url, $imprint_type, $admin_email, $admin_name;
@@ -89,7 +82,93 @@ function get_mainContent()
         }
         include("includes/modules/" . $site . ".php");
     }
+}*/
+/*
+function get_mainContent() {
+    global $tpl;
+    
+
+    $settings = safe_query("SELECT * FROM `settings`");
+        if (!$settings) {
+            system_error("Fehler beim Abrufen der Einstellungen.");
+        }
+        $ds = mysqli_fetch_array($settings);
+
+        $site = isset($_GET['site']) ? htmlspecialchars($_GET['site'], ENT_QUOTES, 'UTF-8') : $ds['startpage'];
+
+
+    // ungültige Zeichen entfernen (optional)
+    $invalide = array('\\', '/', '/\/', ':', '.');
+    $site = str_replace($invalide, ' ', $site);
+
+    $module_dir = realpath(__DIR__ . '/../includes/modules');
+
+    $module_path = $module_dir . "/$site.php";
+
+    if (file_exists($module_path)) {
+        ob_start();
+        include $module_path;
+        return ob_get_clean();
+    } else {
+        // 404 laden
+        $error_page = $module_dir . "/404.php";
+        if (file_exists($error_page)) {
+            ob_start();
+            include $error_page;
+            return ob_get_clean();
+        } else {
+            return "<h1>404 - Seite nicht gefunden</h1>";
+        }
+    }
+
 }
+*/
+
+
+function get_mainContent() {
+    global $tpl;
+
+    $settings = safe_query("SELECT * FROM `settings`");
+    if (!$settings) {
+        system_error("Fehler beim Abrufen der Einstellungen.");
+    }
+    $ds = mysqli_fetch_array($settings);
+
+    $site = isset($_GET['site']) ? htmlspecialchars($_GET['site'], ENT_QUOTES, 'UTF-8') : $ds['startpage'];
+
+    // ungültige Zeichen entfernen
+    $invalide = array('\\', '/', '/\/', ':', '.');
+    $site = str_replace($invalide, ' ', $site);
+
+    // Modul- und Plugin-Verzeichnisse
+    $module_dir = realpath(__DIR__ . '/../includes/modules');
+    $plugin_dir = realpath(__DIR__ . '/../includes/plugins');
+
+    // Dateipfade
+    $module_path = $module_dir . "/$site.php";
+    $plugin_path = $plugin_dir . "/$site/$site.php";
+
+    if (file_exists($module_path)) {
+        ob_start();
+        include $module_path;
+        return ob_get_clean();
+    } elseif (file_exists($plugin_path)) {
+        ob_start();
+        include $plugin_path;
+        return ob_get_clean();
+    } else {
+        // 404 laden
+        $error_page = $module_dir . "/404.php";
+        if (file_exists($error_page)) {
+            ob_start();
+            include $error_page;
+            return ob_get_clean();
+        } else {
+            return "<h1>404 - Seite nicht gefunden</h1>";
+        }
+    }
+}
+
 
 // Widget-Registrierung
 function register_widget_module($widget_name)

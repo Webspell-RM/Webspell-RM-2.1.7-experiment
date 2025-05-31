@@ -28,12 +28,9 @@ $data_array = [
 // Template für den Kopfbereich laden
 echo $tpl->loadTemplate("privacy_policy", "head", $data_array, 'theme');
 
-// Funktion zum Abrufen der Datenschutzrichtlinie aus der Datenbank
-function getPrivacyPolicy() {
-    return safe_query("SELECT * FROM settings_privacy_policy LIMIT 1");
-}
+// Datenschutzrichtlinie direkt abrufen (ersetzt Funktion getPrivacyPolicy)
+$ergebnis = safe_query("SELECT * FROM settings_privacy_policy LIMIT 1");
 
-$ergebnis = getPrivacyPolicy();
 if (mysqli_num_rows($ergebnis)) {
     $ds = mysqli_fetch_array($ergebnis);
 

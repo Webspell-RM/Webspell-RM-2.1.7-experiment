@@ -38,7 +38,7 @@ if (session_status() === PHP_SESSION_NONE) {
 $_SESSION['language'] = $_SESSION['language'] ?? 'de';
 
 // Initialisieren
-global $languageService;
+global $_database,$languageService;
 $lang = $languageService->detectLanguage();
 $languageService = new LanguageService($_database);
 

@@ -6,7 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 use webspell\LanguageService;
 
-global $languageService;
+global $_database,$languageService;
 
 $lang = $languageService->detectLanguage();
 $languageService->readModule('edit_profile');
@@ -29,6 +29,30 @@ $userID = $_SESSION['userID'] ?? null;
 if (!$userID) {
     die('Nicht eingeloggt.');
 }
+
+/*
+if (isset($_GET['username']) && !empty($_GET['username'])) {
+    $username = $_GET['username'];
+
+    $stmt = $_database->prepare("SELECT userID FROM users WHERE username = ?");
+    $stmt->bind_param('s', $username);
+    $stmt->execute();
+    $stmt->bind_result($userID);
+    if (!$stmt->fetch()) {
+        http_response_code(404);
+        echo "Benutzer nicht gefunden.";
+        exit();
+    }
+    $stmt->close();
+} else {
+    // Falls es über userID läuft oder Session, hier fallback
+    $userID = $_SESSION['userID'] ?? 0;
+    if ($userID === 0) {
+        echo "Kein Benutzer angegeben.";
+        exit();
+    }
+}
+*/
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $firstname = $_POST['firstname'] ?? '';

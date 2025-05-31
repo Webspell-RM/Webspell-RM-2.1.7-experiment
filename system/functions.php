@@ -492,6 +492,13 @@ if (file_exists('classes/LanguageManager.php')) {
     systeminc('../system/classes/LanguageManager');
 }
 
+#if (file_exists('classes/Router.php')) {
+#    systeminc('classes/Router');
+#} else {
+#    systeminc('../system/classes/Router');
+#}
+
+
 
 function getCurrentLanguage(): string
 {
@@ -576,14 +583,14 @@ safe_query("DELETE FROM banned_ips WHERE deltime < '" . time() . "'");
 // SEO / PAGE TITLE
 // =======================
 if (stristr($_SERVER['PHP_SELF'], "/admin/") === false) {
-    #if (file_exists('seo.php')) {
-    #    systeminc('seo');
-    #} else {
-    #    systeminc('../system/seo');
-    #}
-    #define('PAGETITLE', getPageTitle());
+    if (file_exists('seo.php')) {
+        systeminc('seo');
+    } else {
+        systeminc('../system/seo');
+    }
+    define('PAGETITLE', getPageTitle());
 } else {
-    #define('PAGETITLE', $GLOBALS['hp_title']);
+    define('PAGETITLE', $GLOBALS['hp_title']);
 }
 
 // =======================
@@ -677,3 +684,33 @@ function get_all_settings() {
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function getRoutingSettingFromDB() {
+    global $_database; // falls du deine DB-Verbindung so hast
+
+    $result = $_database->query("SELECT use_routing FROM settings LIMIT 1");
+    if ($result) {
+        $row = $result->fetch_assoc();
+        return (bool)$row['use_routing']; // erwartet, dass use_routing 0 oder 1 ist
+    }
+    return false; // Default: Routing aus
+}

@@ -46,16 +46,37 @@ if (!isset($languageService)) {
 if (isset($_GET['new_lang'])) {
     $_SESSION['language'] = $_GET['new_lang'];
 
-    // Alle Parameter außer new_lang behalten
-    $params = $_GET;
-    unset($params['new_lang']);
+    // Wenn site in GET vorhanden → redirect nach /site
+    if (isset($_GET['site']) && !empty($_GET['site'])) {
+        $site = basename($_GET['site']);
+        header("Location: /$site");
+        exit;
+    }
 
-    $query = http_build_query($params);
-    $redirectUrl = 'index.php' . ($query ? '?' . $query : '');
+    // Wenn URI wie /contact?new_lang=en → redirect nach /contact ohne Parameter
+    $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    if (!empty($currentPath) && $currentPath !== '/') {
+        header("Location: $currentPath");
+        exit;
+    }
 
-    header('Location: ' . $redirectUrl);
+    // fallback zur Startseite
+    header("Location: /");
     exit;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -81,6 +102,8 @@ $theme_name = 'default';
 $description = $description ?? 'Standard Beschreibung für die Webseite';
 $keywords = $keywords ?? 'keyword1, keyword2, keyword3';
 
+
+
 // Header-Kompatibilität
 header('X-UA-Compatible: IE=edge');
 ?>
@@ -96,7 +119,7 @@ header('X-UA-Compatible: IE=edge');
     <meta name="description" content="<?php echo htmlspecialchars($description, ENT_QUOTES, 'UTF-8'); ?>">
     <meta name="keywords" content="<?php echo htmlspecialchars($keywords, ENT_QUOTES, 'UTF-8'); ?>">
     <meta name="robots" content="index, follow">
-    <!--<meta name="language" content="<?php #echo htmlspecialchars($_language->detectLanguage(), ENT_QUOTES, 'UTF-8'); ?>">-->
+    <meta name="language" content="<?php echo htmlspecialchars($_language->detectLanguage(), ENT_QUOTES, 'UTF-8'); ?>">
     <meta name="abstract" content="Anpasser an Webspell-RM">
 
     <!-- Meta Copyright -->
@@ -106,7 +129,7 @@ header('X-UA-Compatible: IE=edge');
     <meta name="distribution" content="global">
 
     <!-- Open Graph -->
-    <!--<meta property="og:title" content="<?php #echo htmlspecialchars(get_sitetitle(), ENT_QUOTES, 'UTF-8'); ?>">-->
+    <meta property="og:title" content="<?php echo htmlspecialchars(get_sitetitle(), ENT_QUOTES, 'UTF-8'); ?>">
     <meta property="og:description" content="<?php echo htmlspecialchars($description, ENT_QUOTES, 'UTF-8'); ?>">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://<?php echo htmlspecialchars($_SERVER['HTTP_HOST'], ENT_QUOTES, 'UTF-8'); ?>">
@@ -119,7 +142,7 @@ header('X-UA-Compatible: IE=edge');
     <link rel="SHORTCUT ICON" href="./includes/themes/<?php echo htmlspecialchars($theme_name, ENT_QUOTES, 'UTF-8'); ?>/images/favicon.ico">
 
     <!-- Head & Title -->
-    <title><?php #echo htmlspecialchars(get_sitetitle(), ENT_QUOTES, 'UTF-8'); ?></title>
+    <title><?php echo htmlspecialchars(get_sitetitle(), ENT_QUOTES, 'UTF-8'); ?></title>
     <base href="/">
 
     <link type="application/rss+xml" rel="alternate" href="tmp/rss.xml" title="<?php echo htmlspecialchars($myclanname ?? 'My Clan', ENT_QUOTES, 'UTF-8'); ?> - RSS Feed">
@@ -155,6 +178,7 @@ header('X-UA-Compatible: IE=edge');
                 <div class="col">
                     <?php echo get_content_up_modul(); ?>
                     <?php echo get_mainContent(); ?>
+                    
                     <?php echo get_content_down_modul(); ?>
                 </div>
                 <?php echo get_right_side_modul(); ?>

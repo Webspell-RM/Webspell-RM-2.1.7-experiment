@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 use webspell\LanguageService;
 
-global $languageService;
+global $_database,$languageService;
 
 $lang = $languageService->detectLanguage();
 $languageService->readModule('profile');
@@ -17,7 +17,7 @@ $class = htmlspecialchars($config['selected_style']);
 // Header-Daten
 $data_array_header = [
     'class'    => $class,
-    'title'    => $_language->module['title'],
+    'title' => $languageService->get('title'),
     'subtitle' => 'Profil'
 ];
 echo $tpl->loadTemplate("profile", "head", $data_array_header);
@@ -29,6 +29,32 @@ if ($userID === 0) {
     exit();
 }
 
+/*
+// Prüfe, ob 'username' per GET gesetzt ist (vom Router)
+if (isset($_GET['username']) && !empty($_GET['username'])) {
+    $username = $_GET['username'];
+
+    // UserID aus Username ermitteln
+    $stmt = $_database->prepare("SELECT userID FROM users WHERE username = ?");
+    $stmt->bind_param('s', $username);
+    $stmt->execute();
+    $stmt->bind_result($userID);
+    if (!$stmt->fetch()) {
+        // Username nicht gefunden => 404
+        http_response_code(404);
+        echo "Benutzer nicht gefunden.";
+        exit();
+    }
+    $stmt->close();
+} else {
+    // Fallback, z.B. userID aus GET oder Session
+    $userID = isset($_GET['userID']) ? (int)$_GET['userID'] : ($_SESSION['userID'] ?? 0);
+    if ($userID === 0) {
+        echo "Kein Benutzer angegeben.";
+        exit();
+    }
+}
+*/
 
 // user_profile laden
 $sql_users = "SELECT * FROM users WHERE userID = $userID LIMIT 1";
@@ -120,7 +146,8 @@ $github_url    = !empty($user_socials['github']) ? htmlspecialchars($user_social
 
 // Prüfen ob eigenes Profil
 $is_own_profile = ($_SESSION['userID'] ?? 0) === $userID;
-$edit_button = $is_own_profile ? '<a href="index.php?site=edit_profile" class="btn btn-outline-primary mt-3"><i class="fas fa-user-edit"></i> Profil bearbeiten</a>' : '';
+#$edit_button = $is_own_profile ? '<a href="/edit_profile/' . urlencode($username) . '" class="btn btn-outline-primary mt-3"><i class="fas fa-user-edit"></i> Profil bearbeiten</a>' : '';
+$edit_button = $is_own_profile ? '<a href="/edit_profile" class="btn btn-outline-primary mt-3"><i class="fas fa-user-edit"></i> Profil bearbeiten</a>' : '';
 
 // Banned-Status (aktuell leer, ggf. anpassen)
 #$isLocked = isset($user_users['is_locked']) ? (int)$user_users['is_locked'] : 0;
