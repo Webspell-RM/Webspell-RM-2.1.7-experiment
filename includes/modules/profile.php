@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 use webspell\LanguageService;
 
-global $_database,$languageService;
+global $_database, $languageService;
 
 $lang = $languageService->detectLanguage();
 $languageService->readModule('profile');
@@ -22,8 +22,15 @@ $data_array_header = [
 ];
 echo $tpl->loadTemplate("profile", "head", $data_array_header);
 
-// userID aus GET oder Session
-$userID = isset($_GET['userID']) ? (int)$_GET['userID'] : ($_SESSION['userID'] ?? 0);
+// userID aus GET oder Session (neu: prüfe 'userID' oder 'id')
+if (isset($_GET['userID'])) {
+    $userID = (int)$_GET['userID'];
+} elseif (isset($_GET['id'])) {
+    $userID = (int)$_GET['id'];
+} else {
+    $userID = $_SESSION['userID'] ?? 0;
+}
+
 if ($userID === 0) {
     echo "Kein Benutzer angegeben.";
     exit();
@@ -125,7 +132,7 @@ $last_visit = (!empty($last_visit_raw) && strtotime($last_visit_raw) !== false)
     ? date('d.m.Y H:i', strtotime($last_visit_raw))
     : 'Nie besucht';
 
-$points = isset($user_stats['points']) ? (int)$user_stats['points'] : 0;
+
 
 $avatar_url = !empty($user_profile['avatar']) ? '' . $user_profile['avatar'] : "/images/avatars/noavatar.png";
 
@@ -133,6 +140,38 @@ $location = !empty($user_profile['location']) ? htmlspecialchars($user_profile['
 $age = !empty($user_profile['age']) ? (int)$user_profile['age'] : 'Nicht angegeben';
 $sexuality = !empty($user_profile['sexuality']) ? htmlspecialchars($user_profile['sexuality']) : 'Nicht angegeben';
 
+
+
+
+$artikel     = getUserCount('plugins_articles', 'userID', $userID); // z. B. 5
+$kommentare  = getUserCount('comments', 'userID', $userID);         // z. B. 20
+$clanregeln  = getUserCount('plugins_clan_rules', 'userID', $userID); // z. B. 2
+
+$points = ($artikel * 10) + ($kommentare * 2) + ($clanregeln * 5);
+
+
+
+function getUserCount($table, $col, $userID) {
+    global $_database;
+    $stmt = $_database->prepare("SELECT COUNT(*) FROM `$table` WHERE `$col` = ?");
+    $stmt->bind_param('i', $userID);
+    $stmt->execute();
+    $stmt->bind_result($count);
+    $stmt->fetch();
+    $stmt->close();
+    return $count;
+}
+
+
+
+
+
+
+
+
+
+
+#$points = isset($user_stats['points']) ? (int)$user_stats['points'] : 0;
 // Levelberechnung
 $level = floor($points / 100);
 $level_percent = $points % 100;
@@ -178,8 +217,55 @@ $stmt->close();
 $logins = $logins_count > 0 ? $logins_count : 0;
 
 // Dummy-Daten für Beiträge & Kommentare (kannst du ersetzen)
-$posts    = 42;
-$comments = 103;
+#$posts    = 42;
+#$comments = 103;
+
+
+
+
+$post_type = '';
+
+$tables = [
+    ['table' => 'plugins_articles', 'user_col' => 'userID', 'type' => 'Artikel'],
+    ['table' => 'comments', 'user_col' => 'userID', 'type' => 'Kommentare'],
+    ['table' => 'plugins_clan_rules', 'user_col' => 'userID', 'type' => 'Clan-Regeln'],
+];
+
+$userID = $_GET['userID'] ?? 0;
+$counts = [];
+
+foreach ($tables as $table) {
+    $tableName = $table['table'];
+    $userCol = $table['user_col'];
+    $type = $table['type'] ?? ucfirst($tableName);
+
+    
+        $stmt = $_database->prepare("SELECT COUNT(*) FROM `$tableName` WHERE `$userCol` = ?");
+        if ($stmt) {
+            $stmt->bind_param('i', $userID);
+            $stmt->execute();
+            $stmt->bind_result($count);
+            $stmt->fetch();
+            $stmt->close();
+
+            $counts[$type] = $count;
+        } else {
+            $counts[$type] = 0;
+        }
+    
+}
+
+foreach ($counts as $type => $count) {
+    $post_type .= "<p>$type: $count</p>";
+}
+
+
+
+
+
+
+
+
 
 if ($isLocked == 1 ) {
     $isrowLocked='<div class="alert alert-danger d-flex align-items-center" role="alert">
@@ -199,7 +285,6 @@ $data_array = [
     'user_age'        => $age,
     'user_location'   => $location,
     'user_sexuality'  => $sexuality,
-    'user_posts'      => '<ul><li>Beitrag 1</li><li>Beitrag 2</li></ul>', // Ersetzen mit dynamischen Posts, wenn möglich
     'register_date'   => $register_date, 
     'user_activity'   => '<p>Zuletzt online: ' . $last_visit . '</p><p>Online-Zeit: ' . $online_time . '</p><p>Logins: ' . $logins . '</p>',
     'github_url'      => $github_url,
@@ -211,8 +296,9 @@ $data_array = [
     'user_level'      => $level,
     'level_progress'  => $level_percent,
     'edit_button'     => $edit_button,
-    'comments_count'  => $comments,
-    'posts_count'     => $posts,
+    #'comments_count'  => $comments,
+    'user_posts'      => $post_type, // Ersetzen mit dynamischen Posts, wenn möglich    
+    #'posts_count'     => $posts,
     'isLocked'        => $isrowLocked ?? '',
 ];
 

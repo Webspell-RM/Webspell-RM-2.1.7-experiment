@@ -103,45 +103,48 @@ if (!isset($languageService) || !$languageService instanceof LanguageService) {
                 break;
 
             case 'articles':
-                if (isset($parameters['articlecatID'])) {
-                    $articlecatID = (int)$parameters['articlecatID'];
-                } else {
-                    $articlecatID = 0;
+                $id = isset($parameters['id']) ? (int)$parameters['id'] : 0;
+                $articleID = isset($parameters['articleID']) ? (int)$parameters['articleID'] : 0;
+
+                // Kategorie holen (nur wenn benötigt)
+                $category_name = '';
+                if ($id > 0) {
+                    $result = safe_query("SELECT name FROM plugins_articles_categories WHERE id = $id");
+                    if ($row = mysqli_fetch_assoc($result)) {
+                        $category_name = $row['name'];
+                    }
                 }
-                if (isset($parameters['articleID'])) {
-                    $articleID = (int)$parameters['articleID'];
-                } else {
-                    $articleID = '';
+
+                // Artikelfrage holen (nur wenn benötigt)
+                $article_question = '';
+                if ($articleID > 0) {
+                    $result2 = safe_query("SELECT question FROM plugins_articles WHERE articleID = $articleID");
+                    if ($row2 = mysqli_fetch_assoc($result2)) {
+                        $article_question = $row2['question'];
+                    }
                 }
-                $get = mysqli_fetch_array(
-                    safe_query(
-                        "SELECT articlecatname FROM plugins_articles_categories WHERE articlecatID=" . (int)$articlecatID
-                    )
-                );
-                $get2 = mysqli_fetch_array(
-                    safe_query("SELECT question FROM plugins_articles WHERE articleID=" . (int)$articleID)
-                );
-                if ($action == "articlecat") {
-                    $returned_title[] = array(
-                        $languageService->get('articles'),
-                        'index.php?site=articles'
-                    );
-                    $returned_title[] = array($get['articlecatname']);
-                } elseif ($action == "articles") {
-                    $returned_title[] = array(
-                        $languageService->get('articles'),
-                        'index.php?site=articles'
-                    );
-                    $returned_title[] = array(
-                        $get['articlecatname'],
-                        'index.php?site=articles&amp;action=articlecat&amp;articlecatID=' . $articlecatID
-                    );
-                    $returned_title[] = array($get2['question']);
-                    $metadata['keywords'] = \webspell\Tags::getTags('articles', $articleID);
+
+                if ($action === 'articlecat') {
+                    $returned_title[] = [$languageService->get('articles'), 'index.php?site=articles'];
+                    if ($category_name) {
+                        $returned_title[] = [$category_name];
+                    }
+                } elseif ($action === 'articles') {
+                    $returned_title[] = [$languageService->get('articles'), 'index.php?site=articles'];
+
+                    if ($category_name) {
+                        $returned_title[] = [$category_name, 'index.php?site=articles&amp;action=articlecat&amp;id=' . $id];
+                    }
+
+                    if ($article_question) {
+                        $returned_title[] = [$article_question];
+                        $metadata['keywords'] = \webspell\Tags::getTags('articles', $articleID);
+                    }
                 } else {
-                    $returned_title[] = array($languageService->get('articles'));
+                    $returned_title[] = [$languageService->get('articles')];
                 }
                 break;
+
    
 
             case 'awards':

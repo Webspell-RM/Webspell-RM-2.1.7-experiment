@@ -99,13 +99,13 @@ if (file_exists("includes/plugins/whoisonline/whoisonline_tracker.php")) {
 }
 
 // === Routing starten ===
-include_once("system/routes/web.php");
+#include_once("system/routes/web.php");
 
 // === Router aufrufen ===
-$router->dispatch($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
-#include($tpl->themes_path . "index.php");
+#$router->dispatch($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
+include($tpl->themes_path . "index.php");
 
-if (isset($_GET['site'])) {
+/*if (isset($_GET['site'])) {
     $expected_uri = '/' . trim($_GET['site'], '/');
     $request_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     
@@ -117,4 +117,4 @@ if (isset($_GET['site'])) {
         header("Location: $expected_uri", true, 301);
         exit;
     }
-}
+}*/

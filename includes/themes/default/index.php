@@ -177,8 +177,7 @@ header('X-UA-Compatible: IE=edge');
                 <?php echo get_left_side_modul(); ?>
                 <div class="col">
                     <?php echo get_content_up_modul(); ?>
-                    <?php echo get_mainContent(); ?>
-                    
+                    <?php echo get_mainContent(); ?>                    
                     <?php echo get_content_down_modul(); ?>
                 </div>
                 <?php echo get_right_side_modul(); ?>

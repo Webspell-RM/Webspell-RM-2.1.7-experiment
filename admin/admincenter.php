@@ -302,7 +302,7 @@ header('Content-Type: text/html; charset=UTF-8');
 
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo $languageService->language ?>">
+<html lang="<?= htmlspecialchars($languageService->detectLanguage(), ENT_QUOTES, 'UTF-8') ?>">
 
 <head>
 
@@ -333,7 +333,7 @@ header('Content-Type: text/html; charset=UTF-8');
 	<link href="/admin/css/bootstrap-colorpicker.min.css" rel="stylesheet">
 
 	<!-- DataTables -->
-	<link href="/admin/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+	<!--<link href="/admin/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />-->
     
 
 </head>
@@ -424,15 +424,15 @@ header('Content-Type: text/html; charset=UTF-8');
 		<?php
 		
 
-		$roleID = RoleManager::getUserRoleID($userID);
+		#$roleID = RoleManager::getUserRoleID($userID);
 
-        if ($roleID !== null && RoleManager::roleHasPermission($roleID, 'ckeditor_full')) {
+        #if ($roleID !== null && RoleManager::roleHasPermission($roleID, 'ckeditor_full')) {
             echo '<script src="../components/ckeditor/ckeditor.js"></script>';
             echo '<script src="../components/ckeditor/config.js"></script>';
-        } else {
-            echo '<script src="../components/ckeditor/ckeditor.js"></script>';
-            echo '<script src="../components/ckeditor/user_config.js"></script>';
-        }
+        #} else {
+        #    echo '<script src="../components/ckeditor/ckeditor.js"></script>';
+        #    echo '<script src="../components/ckeditor/user_config.js"></script>';
+        #}
 		?>
 
 		<!-- jQuery -->
@@ -456,45 +456,9 @@ header('Content-Type: text/html; charset=UTF-8');
 			var calledfrom = 'admin';
 		</script>
 		<!-- dataTables -->
-		<script type="text/javascript" src="/admin/js/jquery.dataTables.min.js"></script>
-		<script type="text/javascript" src="/admin/js/dataTables.bootstrap5.min.js"></script>
-		<script>
-			$(document).ready(function() {
-				// Retrieve the value saved in localStorage (if it exists)
-				var savedPageLength = localStorage.getItem('datatable_page_length') || 10;
-
-				$('#plugini').DataTable({
-					'aLengthMenu': [
-						[10, 25, 50, 100, -1],
-						[10, 25, 50, 100, "<?php
-											$lang_datatable_all = detectCurrentLanguage();
-											echo ($lang_datatable_all == 'de') ? "Alle" : (($lang_datatable_all == 'en') ? "All" : "Tutti");
-											?>"]
-					],
-					'pageLength': parseInt(savedPageLength), // Set the saved value
-					'language': {
-						<?php
-						$lang_datatable = detectCurrentLanguage();
-						echo "'url': '/components/datatables/langs/" .
-							(($lang_datatable == 'de') ? "German" : (($lang_datatable == 'en') ? "English" : "Italian")) . ".json'";
-						?>
-					}
-				});
-
-				var table = $('#plugini').DataTable();
-
-				// Save the value when the user changes the number of items to show
-				table.on('length.dt', function(e, settings, len) {
-					localStorage.setItem('datatable_page_length', len);
-				});
-
-				// Delete confirmation modal
-				$('#confirm-delete').on('show.bs.modal', function(e) {
-					$(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
-					$('.debug-url').html('Delete URL: <strong>' + $(this).find('.btn-ok').attr('href') + '</strong>');
-				});
-			});
-		</script>
+		<!--<script type="text/javascript" src="/admin/js/jquery.dataTables.min.js"></script>
+		<script type="text/javascript" src="/admin/js/dataTables.bootstrap5.min.js"></script>-->
+		
 
 		<script type="text/javascript">
 			// setup tools tips trigger
