@@ -98,46 +98,78 @@ if (!isset($languageService) || !$languageService instanceof LanguageService) {
     if (isset($parameters['site'])) {
         switch ($parameters['site']) {
 
-            case 'about_us':
-                $returned_title[] = array($languageService->get('about_us'));
+            case 'about':
+                $result = safe_query("SELECT title, intro FROM plugins_about ORDER BY id ASC LIMIT 1");
+                $about = mysqli_fetch_assoc($result);
+
+                if ($about && !empty($about['title'])) {
+                    $returned_title[] = [
+                        $languageService->get('about'),
+                        'index.php?site=about'
+                    ];
+                    $returned_title[] = [$about['title']];
+
+                    // Meta Description aus Intro (auf ~160 Zeichen beschränken)
+                    $intro_excerpt = strip_tags($about['intro']);
+                    if (strlen($intro_excerpt) > 160) {
+                        $intro_excerpt = substr($intro_excerpt, 0, 157) . '...';
+                    }
+                    $metadata['description'] = $intro_excerpt;
+
+                    // Optional: Meta Keywords aus Intro erzeugen (vereinfacht)
+                    $keywords = implode(', ', array_slice(array_unique(explode(' ', strtolower($intro_excerpt))), 0, 10));
+                    $metadata['keywords'] = $keywords;
+                } else {
+                    $returned_title[] = [$languageService->get('about')];
+                }
                 break;
+
 
             case 'articles':
                 $id = isset($parameters['id']) ? (int)$parameters['id'] : 0;
                 $articleID = isset($parameters['articleID']) ? (int)$parameters['articleID'] : 0;
 
-                // Kategorie holen (nur wenn benötigt)
-                $category_name = '';
+                // Kategorie holen (inkl. Beschreibung)
+                $category = null;
                 if ($id > 0) {
-                    $result = safe_query("SELECT name FROM plugins_articles_categories WHERE id = $id");
+                    $result = safe_query("SELECT name, description FROM plugins_articles_categories WHERE id = $id");
                     if ($row = mysqli_fetch_assoc($result)) {
-                        $category_name = $row['name'];
+                        $category = $row;
                     }
                 }
 
-                // Artikelfrage holen (nur wenn benötigt)
-                $article_question = '';
+                // Artikel holen (inkl. Content)
+                $article = null;
                 if ($articleID > 0) {
-                    $result2 = safe_query("SELECT question FROM plugins_articles WHERE articleID = $articleID");
+                    $result2 = safe_query("SELECT title, content FROM plugins_articles WHERE id = $articleID");
                     if ($row2 = mysqli_fetch_assoc($result2)) {
-                        $article_question = $row2['question'];
+                        $article = $row2;
                     }
                 }
 
                 if ($action === 'articlecat') {
                     $returned_title[] = [$languageService->get('articles'), 'index.php?site=articles'];
-                    if ($category_name) {
-                        $returned_title[] = [$category_name];
+
+                    if ($category) {
+                        $returned_title[] = [$category['name']];
+                        // Meta-Beschreibung aus Kategorie-Beschreibung (max. 160 Zeichen, ohne HTML)
+                        $metadata['description'] = mb_substr(strip_tags($category['description']), 0, 160);
                     }
                 } elseif ($action === 'articles') {
                     $returned_title[] = [$languageService->get('articles'), 'index.php?site=articles'];
 
-                    if ($category_name) {
-                        $returned_title[] = [$category_name, 'index.php?site=articles&amp;action=articlecat&amp;id=' . $id];
+                    if ($category) {
+                        $returned_title[] = [
+                            $category['name'],
+                            'index.php?site=articles&amp;action=articlecat&amp;id=' . $id
+                        ];
                     }
 
-                    if ($article_question) {
-                        $returned_title[] = [$article_question];
+                    if ($article) {
+                        $returned_title[] = [$article['title']];
+                        // Meta-Beschreibung aus Artikel-Content (max. 160 Zeichen, ohne HTML)
+                        $metadata['description'] = mb_substr(strip_tags($article['content']), 0, 160);
+                        // Keywords aus Tags
                         $metadata['keywords'] = \webspell\Tags::getTags('articles', $articleID);
                     }
                 } else {
@@ -145,6 +177,48 @@ if (!isset($languageService) || !$languageService instanceof LanguageService) {
                 }
                 break;
 
+
+            case 'pricing':
+                $planID = isset($parameters['planID']) ? (int)$parameters['planID'] : 0;
+
+                // Alle Pläne holen (für Übersichtsseite)
+                if ($planID === 0) {
+                    $returned_title[] = [$languageService->get('pricing')];
+                }
+                // Einzelnen Plan mit Features holen (für Detailseite)
+                else {
+                    $plan = null;
+                    $features = [];
+
+                    // Plan holen
+                    $resultPlan = safe_query("SELECT title FROM plugins_pricing_plans WHERE id = $planID");
+                    if ($rowPlan = mysqli_fetch_assoc($resultPlan)) {
+                        $plan = $rowPlan;
+                    }
+
+                    // Features holen
+                    $resultFeatures = safe_query("SELECT feature_text FROM plugins_pricing_features WHERE plan_id = $planID AND available = 1 ORDER BY id ASC");
+                    while ($rowFeature = mysqli_fetch_assoc($resultFeatures)) {
+                        $features[] = $rowFeature['feature_text'];
+                    }
+
+                    // Titel setzen
+                    if ($plan) {
+                        $returned_title[] = [$languageService->get('pricing'), 'index.php?site=pricing'];
+                        $returned_title[] = [$plan['title']];
+
+                        // Keywords aus Features als CSV
+                        $metadata['keywords'] = implode(', ', $features);
+                        // Meta-Description: Plan-Titel plus kurze Feature-Liste (max. 160 Zeichen)
+                        $metaDescription = $plan['title'] . ': ' . implode(', ', $features);
+                        $metadata['description'] = mb_substr($metaDescription, 0, 160);
+                    } else {
+                        // Fallback
+                        $returned_title[] = [$languageService->get('pricing')];
+                    }
+                }
+                break;
+    
    
 
             case 'awards':
@@ -208,9 +282,7 @@ if (!isset($languageService) || !$languageService instanceof LanguageService) {
                 $returned_title[] = array($get['opponent']);
                 break;
 
-            case 'contact':
-                $returned_title[] = array($languageService->get('contact'));
-                break;
+            
 
             case 'counter_stats':
                 $returned_title[] = array($languageService->get('stats'));
@@ -378,117 +450,24 @@ if (!isset($languageService) || !$languageService instanceof LanguageService) {
                 break;
 
             case 'gallery':
-                if (isset($parameters['groupID'])) {
-                    $groupID = (int)$parameters['groupID'];
-                } else {
-                    $groupID = '';
-                }
-                if (isset($parameters['galleryID'])) {
-                    $galleryID = (int)$parameters['galleryID'];
-                } else {
-                    $galleryID = '';
-                }
-                if (isset($parameters['picID'])) {
-                    $picID = (int)$parameters['picID'];
-                } else {
-                    $picID = '';
-                }
-                if (isset($parameters['groupID'])) {
-                    $groupID = mysqli_fetch_array(
-                        safe_query(
-                            "SELECT groupID, name FROM plugins_gallery_groups WHERE groupID=" . (int)$groupID
-                        )
+                $picID = isset($parameters['picID']) ? (int)$parameters['picID'] : 0;
+
+                if ($picID > 0) {
+                    // Bildinfos holen
+                    $pic = mysqli_fetch_assoc(
+                        safe_query("SELECT id, filename, class FROM plugins_gallery WHERE id = $picID")
                     );
-                    $returned_title[] = array(
+
+                    $returned_title[] = [
                         $languageService->get('gallery'),
                         'index.php?site=gallery'
-                    );
-                    @$returned_title[] = array($groupID['name']);
-                } elseif (isset($parameters['galleryID'])) {
-                    $galleryID = mysqli_fetch_array(
-                        safe_query(
-                            "SELECT
-                                galleryID, name, groupID
-                            FROM
-                                plugins_gallery
-                            WHERE
-                                galleryID=" . (int)$galleryID
-                        )
-                    );
-                    $groupname = mysqli_fetch_array(
-                        safe_query(
-                            "SELECT
-                                name
-                            FROM
-                                plugins_gallery_groups
-                            WHERE
-                                groupID=" . (int)$galleryID['groupID']
-                        )
-                    );
-                    if (isset($groupname['name'])) {
-                        $groupname['name'] = $languageService->get('usergallery');
-                    } else {
-                        $groupname['name'] = '';
+                    ];
+
+                    if (!empty($pic['filename'])) {
+                        $returned_title[] = [$pic['filename']];
                     }
-                    $returned_title[] = array(
-                        $languageService->get('gallery'),
-                        'index.php?site=gallery'
-                    );
-                    $returned_title[] = array(
-                        $groupname['name'],
-                        'index.php?site=gallery&amp;galleryID=' . $galleryID['galleryID']
-                    );
-                    $returned_title[] = array($galleryID['name']);
-                } elseif (isset($parameters['galleryID'])) {
-                    $getgalleryname = mysqli_fetch_array(
-                        safe_query(
-                            "SELECT
-                                gal.groupID,
-                                gal.galleryID,
-                                gal.name
-                            FROM
-                                plugins_gallery AS pic,
-                                plugins_gallery AS gal
-                            WHERE
-                                pic.galleryID=" . (int)$parameters['galleryID'] . " AND
-                                gal.galleryID=pic.galleryID"
-                        )
-                    );
-                    $getgroupname = mysqli_fetch_array(
-                        safe_query(
-                            "SELECT
-                                name
-                            FROM
-                                plugins_gallery_groups
-                            WHERE
-                                groupID=" . (int)$getgalleryname['groupID']
-                        )
-                    );
-                    if ($getgroupname['name'] == "") {
-                        $getgroupname['name'] = $languageService->get('usergallery');
-                    } else {
-                    }
-                    $picID = mysqli_fetch_array(
-                        safe_query(
-                            "SELECT
-                                picID, galleryID, name
-                            FROM
-                                plugins_gallery
-                            WHERE
-                                picID=" . (int)$picID
-                        )
-                    );
-                    $returned_title[] = array(
-                        $languageService->get('gallery'),
-                        'index.php?site=gallery'
-                    );
-                    $returned_title[] = array(
-                        $getgalleryname['name'],
-                        'index.php?site=gallery&amp;groupID=' . $getgalleryname['galleryID']
-                    );
-                    $returned_title[] = array($picID['name']);
                 } else {
-                    $returned_title[] = array($languageService->get('gallery'));
+                    $returned_title[] = [$languageService->get('gallery')];
                 }
                 break;
 
@@ -509,61 +488,96 @@ if (!isset($languageService) || !$languageService instanceof LanguageService) {
                 break;
 
             case 'links':
-                if (isset($parameters['linkcatID'])) {
-                    $linkcatID = (int)$parameters['linkcatID'];
-                } else {
-                    $linkcatID = 0;
+                $category_id = isset($parameters['category_id']) ? (int)$parameters['category_id'] : 0;
+                $link_id = isset($parameters['link_id']) ? (int)$parameters['link_id'] : 0;
+
+                // Kategorie-Titel holen
+                $category_title = '';
+                if ($category_id > 0) {
+                    $resCat = safe_query("SELECT title FROM plugins_links_categories WHERE id = $category_id");
+                    if ($rowCat = mysqli_fetch_assoc($resCat)) {
+                        $category_title = $rowCat['title'];
+                    }
                 }
-                if (isset($parameters['linkID'])) {
-                    $linkID = (int)$parameters['linkID'];
-                } else {
-                    $linkID = '';
+
+                // Link-Daten holen (Titel, Beschreibung)
+                $link_title = '';
+                $link_description = '';
+                if ($link_id > 0) {
+                    $resLink = safe_query("SELECT title, description FROM plugins_links WHERE id = $link_id");
+                    if ($rowLink = mysqli_fetch_assoc($resLink)) {
+                        $link_title = $rowLink['title'];
+                        $link_description = $rowLink['description'];
+                    }
                 }
-                $get = mysqli_fetch_array(
-                    safe_query(
-                        "SELECT linkcatname FROM plugins_links_categories WHERE linkcatID=" . (int)$linkcatID
-                    )
-                );
-                $get2 = mysqli_fetch_array(
-                    safe_query("SELECT question FROM plugins_links WHERE linkID=" . (int)$linkID)
-                );
-                if ($action == "linkcat") {
-                    $returned_title[] = array(
+
+                if ($action === "category") {
+                    $returned_title[] = [
                         $languageService->get('links'),
                         'index.php?site=links'
-                    );
-                    $returned_title[] = array($get['linkcatname']);
-                } elseif ($action == "links") {
-                    $returned_title[] = array(
+                    ];
+                    if ($category_title !== '') {
+                        $returned_title[] = [$category_title];
+                    }
+                } elseif ($action === "link") {
+                    $returned_title[] = [
                         $languageService->get('links'),
                         'index.php?site=links'
-                    );
-                    $returned_title[] = array(
-                        $get['linkcatname'],
-                        'index.php?site=links&amp;action=linkcat&amp;linkcatID=' . $linkcatID
-                    );
-                    $returned_title[] = array($get2['question']);
-                    $metadata['keywords'] = \webspell\Tags::getTags('links', $linkID);
+                    ];
+                    if ($category_title !== '') {
+                        $returned_title[] = [
+                            $category_title,
+                            'index.php?site=links&amp;action=category&amp;category_id=' . $category_id
+                        ];
+                    }
+                    if ($link_title !== '') {
+                        $returned_title[] = [$link_title];
+                    }
+
+                    // Meta Description aus Beschreibung, gekürzt auf 160 Zeichen
+                    if ($link_description !== '') {
+                        $desc_excerpt = strip_tags($link_description);
+                        if (mb_strlen($desc_excerpt) > 160) {
+                            $desc_excerpt = mb_substr($desc_excerpt, 0, 157) . '...';
+                        }
+                        $metadata['description'] = $desc_excerpt;
+                    }
+
+                    // Keywords aus Tags generieren (Tags-System bleibt gleich)
+                    $metadata['keywords'] = \webspell\Tags::getTags('links', $link_id);
                 } else {
-                    $returned_title[] = array($languageService->get('links'));
+                    $returned_title[] = [$languageService->get('links')];
                 }
-                break;    
+                break;
+
+
+
+
 
             case 'linkus':
                 $returned_title[] = array($languageService->get('linkus'));
                 break;
 
+            case 'contact':
+                $returned_title[] = array($languageService->get('contact'));
+                break;
+
             case 'login':
-                $returned_title[] = array($languageService->get('login'));
+                $returned_title[] = [$languageService->get('login')];
                 break;
 
             case 'loginoverview':
-                $returned_title[] = array($languageService->get('loginoverview'));
+                $returned_title[] = [$languageService->get('loginoverview')];
                 break;
 
             case 'lostpassword':
-                $returned_title[] = array($languageService->get('lostpassword'));
+                $returned_title[] = [$languageService->get('lostpassword')];
                 break;
+
+            case 'register':
+                $returned_title[] = [$languageService->get('register')];
+                break;
+
 
             case 'members':
                 if (isset($parameters['squadID'])) {
@@ -654,8 +668,77 @@ if (!isset($languageService) || !$languageService instanceof LanguageService) {
                 break;
 
             case 'partners':
-                $returned_title[] = array($languageService->get('partners'));
+                $partnerID = isset($parameters['partnerID']) ? (int)$parameters['partnerID'] : 0;
+
+                if ($partnerID > 0) {
+                    // Partner-Daten aus DB holen
+                    $res = safe_query("SELECT name, description FROM plugins_partners WHERE id = " . $partnerID . " AND active = 1");
+                    if ($partner = mysqli_fetch_assoc($res)) {
+                        // Title für Breadcrumb / Navigation
+                        $returned_title[] = [
+                            $languageService->get('partners'),
+                            'index.php?site=partners'
+                        ];
+                        $returned_title[] = [$partner['name']];
+
+                        // Meta Description (kurz, aus description)
+                        if (!empty($partner['description'])) {
+                            $desc = strip_tags($partner['description']);
+                            if (strlen($desc) > 160) {
+                                $desc = substr($desc, 0, 157) . '...';
+                            }
+                            $metadata['description'] = $desc;
+                        }
+
+                        // Beispiel Keywords: aus Name und ggf. Beschreibung
+                        $keywords = explode(' ', $partner['name']);
+                        // Optional noch weitere Keywords aus Beschreibung extrahieren oder aus Tags generieren
+                        $metadata['keywords'] = implode(',', $keywords);
+
+                    } else {
+                        // Partner nicht gefunden
+                        $returned_title[] = [$languageService->get('partners')];
+                    }
+                } else {
+                    // Startseite oder Übersicht Partners
+                    $returned_title[] = [$languageService->get('partners')];
+                }
                 break;
+
+            case 'startpage':
+                $pageID = isset($parameters['pageID']) ? (int)$parameters['pageID'] : 0;
+
+                $title = '';
+                $startpage_text = '';
+
+                if ($pageID > 0) {
+                    $result = safe_query("SELECT title, startpage_text FROM settings_startpage WHERE pageID = $pageID");
+                    if ($row = mysqli_fetch_assoc($result)) {
+                        $title = $row['title'];
+                        $startpage_text = $row['startpage_text'];
+                    }
+                }
+
+                // Titel fürs Breadcrumb oder so
+                if ($title) {
+                    $returned_title[] = [$title];
+                } else {
+                    $returned_title[] = ['Startseite'];
+                }
+
+                // Meta Description aus Text (HTML-Tags entfernen, auf max 160 Zeichen kürzen)
+                if ($startpage_text) {
+                    $desc = strip_tags($startpage_text);
+                    if (mb_strlen($desc) > 160) {
+                        $desc = mb_substr($desc, 0, 157) . '...';
+                    }
+                    $metadata['description'] = $desc;
+                }
+                break;
+
+
+
+
 
             case 'polls':
                 if (isset($parameters['vote'])) {
@@ -692,22 +775,26 @@ if (!isset($languageService) || !$languageService instanceof LanguageService) {
                 break;
 
             case 'profile':
-                if (isset($parameters['id'])) {
-                    $id = (int)$parameters['id'];
-                } else {
-                    $id = '';
+                $id = isset($parameters['id']) ? (int)$parameters['id'] : 0;
+
+                $returned_title[] = [$languageService->get('profile')];
+
+                if ($id > 0) {
+                    $username = getusername($id);
+                    if ($username) {
+                        $returned_title[] = [$username];
+                        $metadata['keywords'] = \webspell\Tags::getTags('profile', $id);
+                    }
                 }
-                $returned_title[] = array($languageService->get('profile'));
-                $returned_title[] = array(getusername($id));
                 break;
 
-            case 'register':
-                $returned_title[] = array($languageService->get('register'));
-                break;
 
             case 'userlist':
-                $returned_title[] = array($languageService->get('userlist'));
+                $returned_title[] = [$languageService->get('userlist')];
+                // Optional: Meta-Daten, falls vorhanden
+                // $metadata['keywords'] = \webspell\Tags::getTags('userlist');
                 break;
+
 
             case 'search':
                 $returned_title[] = array($languageService->get('search'));
@@ -722,8 +809,35 @@ if (!isset($languageService) || !$languageService instanceof LanguageService) {
                 break;
 
             case 'sponsors':
-                $returned_title[] = array($languageService->get('sponsors'));
+                $returned_title[] = [$languageService->get('sponsors')];
+
+                if (isset($parameters['sponsorID'])) {
+                    $sponsorID = (int)$parameters['sponsorID'];
+
+                    // Name und optionale Beschreibung holen
+                    $sponsor = mysqli_fetch_assoc(
+                        safe_query("SELECT name, description FROM plugins_sponsors WHERE id = $sponsorID AND active = 1")
+                    );
+
+                    if (!empty($sponsor['name'])) {
+                        $returned_title[] = [$sponsor['name']];
+                    }
+
+                    // Meta Description aus Beschreibung, falls vorhanden
+                    if (!empty($sponsor['description'])) {
+                        $desc = strip_tags($sponsor['description']);
+                        if (strlen($desc) > 160) {
+                            $desc = substr($desc, 0, 157) . '...';
+                        }
+                        $metadata['description'] = $desc;
+                    }
+
+                    // Meta Keywords aus Tags
+                    $metadata['keywords'] = \webspell\Tags::getTags('sponsors', $sponsorID);
+                }
                 break;
+
+
 
             case 'planning':
                 $returned_title[] = array($languageService->get('planning'));
@@ -750,17 +864,32 @@ if (!isset($languageService) || !$languageService instanceof LanguageService) {
                 break;
 
             case 'static':
-                if (isset($parameters['staticID'])) {
-                    $staticID = (int)$parameters['staticID'];
-                } else {
-                    $staticID = '';
-                }
-                $get = mysqli_fetch_array(
-                    safe_query("SELECT title FROM settings_static WHERE staticID=" . (int)$staticID)
+                $staticID = isset($parameters['staticID']) ? (int)$parameters['staticID'] : 0;
+
+                $get = mysqli_fetch_assoc(
+                    safe_query("SELECT title, content FROM settings_static WHERE staticID = " . $staticID)
                 );
-                $returned_title[] = array($get['title']);
+
+                if (!empty($get['title'])) {
+                    $returned_title[] = [$get['title']];
+                } else {
+                    $returned_title[] = [$languageService->get('static')];
+                }
+
+                if (!empty($get['content'])) {
+                    // Meta Description aus content (HTML-Tags entfernen, Länge begrenzen)
+                    $desc = strip_tags($get['content']);
+                    $desc = trim(preg_replace('/\s+/', ' ', $desc)); // Whitespace reduzieren
+                    if (strlen($desc) > 160) {
+                        $desc = substr($desc, 0, 157) . '...';
+                    }
+                    $metadata['description'] = $desc;
+                }
+
                 $metadata['keywords'] = \webspell\Tags::getTags('static', $staticID);
+
                 break;
+
 
             case 'usergallery':
                 $returned_title[] = array($languageService->get('usergallery'));
@@ -775,7 +904,27 @@ if (!isset($languageService) || !$languageService instanceof LanguageService) {
                 break; 
 
             case 'privacy_policy':
-                $returned_title[] = array($languageService->get('privacy_policy'));
+                $privacyPolicyID = isset($parameters['privacy_policyID']) ? (int)$parameters['privacy_policyID'] : 0;
+
+                $get = mysqli_fetch_assoc(
+                    safe_query("SELECT privacy_policy_text FROM settings_privacy_policy WHERE privacy_policyID = " . $privacyPolicyID)
+                );
+
+                $returned_title[] = [$languageService->get('privacy_policy')];
+
+                if (!empty($get['privacy_policy_text'])) {
+                    // Meta Description aus Datenschutztext (HTML entfernen, auf max. 160 Zeichen kürzen)
+                    $desc = strip_tags($get['privacy_policy_text']);
+                    $desc = trim(preg_replace('/\s+/', ' ', $desc));
+                    if (strlen($desc) > 160) {
+                        $desc = substr($desc, 0, 157) . '...';
+                    }
+                    $metadata['description'] = $desc;
+                }
+
+                // Optional: Keywords, wenn du welche hinterlegen willst (z.B. Tags)
+                // $metadata['keywords'] = \webspell\Tags::getTags('privacy_policy', $privacyPolicyID);
+
                 break;
 
             case 'candidature':
@@ -803,8 +952,33 @@ if (!isset($languageService) || !$languageService instanceof LanguageService) {
                 break; 
                 
             case 'clan_rules':
-                $returned_title[] = array($languageService->get('clan_rules'));
+                $clanRulesID = isset($parameters['clan_rulesID']) ? (int)$parameters['clan_rulesID'] : 0;
+
+                $get = mysqli_fetch_assoc(
+                    safe_query("SELECT title, text FROM plugins_clan_rules WHERE clan_rulesID = " . $clanRulesID . " AND displayed = '1'")
+                );
+
+                $returned_title[] = [$languageService->get('clan_rules')];
+
+                if (!empty($get['title'])) {
+                    $returned_title[] = [$get['title']];
+                }
+
+                if (!empty($get['text'])) {
+                    // Meta Description aus dem Text (HTML entfernen, auf max. 160 Zeichen kürzen)
+                    $desc = strip_tags($get['text']);
+                    $desc = trim(preg_replace('/\s+/', ' ', $desc));
+                    if (strlen($desc) > 160) {
+                        $desc = substr($desc, 0, 157) . '...';
+                    }
+                    $metadata['description'] = $desc;
+                }
+
+                // Optional: Keywords, falls Tags verwendet werden
+                // $metadata['keywords'] = \webspell\Tags::getTags('clan_rules', $clanRulesID);
+
                 break;
+
                 
 
             case 'videos':

@@ -29,5 +29,5 @@
 */
 
 // Version von Webspell-RM festlegen
-$version = "2.1.7";  // Die aktuelle Version von Webspell-RM
+$version = "3.0.0";  // Die aktuelle Version von Webspell-RM
 ?>
