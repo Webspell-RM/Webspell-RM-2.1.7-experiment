@@ -54,6 +54,7 @@ include_once("system/multi_language.php");
 include_once("system/classes/track_visitor.php");
 include_once("system/init_language.php"); // setzt $languageService
 include_once("system/classes/Router.php");
+include_once("system/classes/Template.php");
 
 // === Globale Variablen ===
 global $tpl;
@@ -61,8 +62,14 @@ global $_database;
 global $languageService;
 
 // === Template initialisieren ===
-$theme = new theme();
-$tpl = new template();
+$tpl = new Template();
+Template::setInstance($tpl);
+
+// Jetzt kannst du getInstance() ohne Fehler aufrufen
+$instance = Template::getInstance();
+
+$theme = new Theme();
+
 $tpl->themes_path = rtrim($theme->get_active_theme(), '/\\') . DIRECTORY_SEPARATOR;
 $tpl->template_path = "templates" . DIRECTORY_SEPARATOR;
 

@@ -57,24 +57,24 @@ if (isset($_SESSION['language'])) {
     }
 
     public function readPluginModule(string $pluginName): void
-{
-    $lang = $this->currentLanguage;
+    {
+        $lang = $this->currentLanguage;
 
-    $file = $_SERVER['DOCUMENT_ROOT'] . "/includes/plugins/{$pluginName}/languages/{$lang}/{$pluginName}.php";
+        $file = $_SERVER['DOCUMENT_ROOT'] . "/includes/plugins/{$pluginName}/languages/{$lang}/{$pluginName}.php";
 
-    if (!file_exists($file)) {
-        $this->module = [];
-        return;
+        if (!file_exists($file)) {
+            $this->module = [];
+            return;
+        }
+
+        include $file;
+
+        if (isset($language_array) && is_array($language_array)) {
+            $this->module = $language_array;
+        } else {
+            $this->module = [];
+        }
     }
-
-    include $file;
-
-    if (isset($language_array) && is_array($language_array)) {
-        $this->module = $language_array;
-    } else {
-        $this->module = [];
-    }
-}
 
     public function get(string $key): string
     {

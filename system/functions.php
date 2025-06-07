@@ -683,34 +683,3 @@ function get_all_settings() {
     return [];
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function getRoutingSettingFromDB() {
-    global $_database; // falls du deine DB-Verbindung so hast
-
-    $result = $_database->query("SELECT use_routing FROM settings LIMIT 1");
-    if ($result) {
-        $row = $result->fetch_assoc();
-        return (bool)$row['use_routing']; // erwartet, dass use_routing 0 oder 1 ist
-    }
-    return false; // Default: Routing aus
-}

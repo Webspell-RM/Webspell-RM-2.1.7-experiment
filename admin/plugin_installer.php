@@ -11,7 +11,8 @@ if (session_status() === PHP_SESSION_NONE) {
 $_SESSION['language'] = $_SESSION['language'] ?? 'de';
 
 // Initialisieren
-global $languageService;
+global $_database,$languageService;
+$lang = $languageService->detectLanguage();
 $languageService = new LanguageService($_database);
 
 // Admin-Modul laden
@@ -197,7 +198,8 @@ foreach ($all_plugin_names as $name) {
         'folder' => $plugin_folder,
         'installed_version' => $installed_version,
         'installed' => $installed,
-        'update' => $update
+        'update' => $update,
+        'lang' => $plugin['lang'] ?? 'de'
     ];
 }
 
@@ -214,16 +216,32 @@ echo '
                 <tr>
                     <th width="20%">'.$languageService->get('plugin_name').'</th>
                     <th width="50%">'.$languageService->get('plugin_description').'</th>
+                    <th>'.$languageService->get('language').'</th>
                     <th>'.$languageService->get('plugin_version').'</th>
                     <th width="20%">'.$languageService->get('plugin_action').'</th>
                 </tr>
             </thead>
             <tbody>';
-
 foreach ($plugins_for_template as $plugin) {
+
+    $translate = new multiLanguage($lang);
+    $languages = $translate->detectLanguages($plugin['description']);
+    $description = $translate->getTextByLanguage($plugin['description']);
+
+    // Flaggen-HTML generieren
+    $flags_html = '';
+    $lang_codes = explode(',', $plugin['lang'] ?? '');
+    foreach ($lang_codes as $lang_code) {
+        $lang_code = trim($lang_code);
+        if ($lang_code !== '') {
+            $flags_html .= '<img src="images/flags/' . $lang_code . '.svg" alt="' . strtoupper($lang_code) . '" title="' . strtoupper($lang_code) . '" class="me-1" style="height:16px;">';
+        }
+    }
+
     echo '<tr>
         <td>'.htmlspecialchars($plugin['name']).'</td>
-        <td>'.htmlspecialchars($plugin['description']).'</td>
+        <td>'.$description.'</td>
+        <td>'.$flags_html.'</td>
         <td>'.htmlspecialchars($plugin['version']);
 
     if ($plugin['installed']) {
@@ -255,10 +273,10 @@ foreach ($plugins_for_template as $plugin) {
 echo '
             </tbody>
         </table>
-
         </div>
     </div>
 </div>';
+
 
 /**
  * Plugin-Dateien herunterladen und entpacken
