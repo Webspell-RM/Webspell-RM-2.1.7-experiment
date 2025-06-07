@@ -8,21 +8,18 @@ use webspell\LoginSecurity;
 use webspell\Email;
 use webspell\LanguageService;
 
-global $languageService;
+global $_database,$languageService;
 
 $lang = $languageService->detectLanguage();
 $languageService->readModule('register');
 
-// Fehler- und Feldspeicher
 $form_data = $_POST ?? [];
 
-// CSRF vorbereiten
 if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 $csrf_token = $_SESSION['csrf_token'];
 
-// Formulardaten erfassen
 $username = $_POST['username'] ?? '';
 $email = $_POST['email'] ?? '';
 $password = $_POST['password'] ?? '';
@@ -34,7 +31,6 @@ $registrierung_erfolgreich = false;
 $isreg = false;
 $message = '';
 
-// Zu viele Registrierungsversuche?
 $stmt = $_database->prepare("
     SELECT COUNT(*) FROM user_register_attempts 
     WHERE ip_address = ? AND attempt_time > (NOW() - INTERVAL 30 MINUTE)
@@ -45,69 +41,50 @@ $stmt->bind_result($attempt_count);
 $stmt->fetch();
 $stmt->close();
 
-// Registrierung verarbeiten
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if ($_POST['csrf_token'] !== $_SESSION['csrf_token']) {
         die("Ungültiges Formular (CSRF-Schutz).");
     }
 
-    // reCAPTCHA prüfen (optional)
-    /*if (!empty($_POST['g-recaptcha-response'])) {
-        $response = $_POST['g-recaptcha-response'];
-        $verify = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=DEIN_SECRET_KEY&response={$response}&remoteip={$ip_address}");
-        $captcha_result = json_decode($verify);
-        if (!$captcha_result->success) {
-            $_SESSION['error_message'] = "reCAPTCHA-Überprüfung fehlgeschlagen.";
-            header("Location: index.php?site=register");
-            exit;
-        }
-    }*/
-
-    $captcha_valid = true; // Standardwert für Tests
-
-    // Validierungen
+    $captcha_valid = true;
     $errors = false;
 
-    // Validierungen
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $_SESSION['error_message'] = "Ungültige E-Mail-Adresse.";
+        $_SESSION['error_message'] = $languageService->get('invalid_email');
         $errors = true;
     } elseif (!preg_match('/^[a-zA-Z0-9_-]{3,30}$/', $username)) {
-        $_SESSION['error_message'] = "Benutzername enthält ungültige Zeichen.";
+        $_SESSION['error_message'] = $languageService->get('invalid_username');
         $errors = true;
     } elseif (strlen($password) < 8 || !preg_match('/[A-Z]/', $password) || !preg_match('/[0-9]/', $password)) {
-        $_SESSION['error_message'] = "Passwort muss mindestens 8 Zeichen lang sein, eine Zahl und einen Großbuchstaben enthalten.";
+        $_SESSION['error_message'] = $languageService->get('invalid_password');
         $errors = true;
     } elseif ($password !== $password_repeat) {
-        $_SESSION['error_message'] = "Passwörter stimmen nicht überein.";
+        $_SESSION['error_message'] = $languageService->get('password_mismatch');
         $errors = true;
     } elseif (!$terms) {
-        $_SESSION['error_message'] = "Bitte akzeptiere die Nutzungsbedingungen.";
+        $_SESSION['error_message'] = $languageService->get('terms_required');
         $errors = true;
     }
 
-    // E-Mail prüfen
     $stmt = $_database->prepare("SELECT userID FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $stmt->store_result();
     if ($stmt->num_rows > 0) {
-        $errors[] = "E-Mail wird bereits verwendet.";
+        $errors[] = $languageService->get('email_exists');
     }
     $stmt->close();
 
-    // Wenn Fehler vorhanden
     if (!empty($errors)) {
-        $_SESSION['error_message'] = implode("<br>", $errors);
+        $_SESSION['error_message'] = implode("<br>", (array)$errors);
         header("Location: index.php?site=register");
         exit;
     }
 
-    // Benutzer anlegen
-    $avatar = 'noavatar.png'; // Standardwert für Avatar
-    $role = 1; // Standardwert für Role (Normaler Benutzer)
-    $is_active = 0; // Standardwert für Aktivierungsstatus (nicht aktiv bis Bestätigung)
+    $avatar = 'noavatar.png';
+    $role = 1;
+    $is_active = 0;
 
     $stmt = $_database->prepare("INSERT INTO users (username, email, registerdate, role, is_active, avatar) VALUES (?, ?, UNIX_TIMESTAMP(), ?, ?, ?)");
     $stmt->bind_param("ssiis", $username, $email, $role, $is_active, $avatar);
@@ -124,7 +101,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->bind_param("ssi", $password_hash, $pepper_encrypted, $userID);
     $stmt->execute();
 
-    // Versuch loggen
     $stmt = $_database->prepare("
         INSERT INTO user_register_attempts (ip_address, status, reason, username, email)
         VALUES (?, ?, ?, ?, ?)
@@ -142,9 +118,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->execute();
     $stmt->close();
 
-    $activation_code = bin2hex(random_bytes(32)); // 64 Zeichen sicherer Code
-
-    $activation_expires = time() + 86400; // Ablauf nach 24 Stunden
+    $activation_code = bin2hex(random_bytes(32));
+    $activation_expires = time() + 86400;
 
     $stmt = $_database->prepare("UPDATE users SET activation_code = ?, activation_expires = ? WHERE userID = ?");
     $stmt->bind_param("sii", $activation_code, $activation_expires, $userID);
@@ -161,18 +136,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $vars = ['%username%', '%activation_link%', '%hp_title%', '%hp_url%'];
     $repl = [$username, $activation_link, $hp_title, $hp_url];
 
-    $subject = str_replace($vars, $repl, $languageService->module['mail_subject']);
-    $message = str_replace($vars, $repl, $languageService->module['mail_text']);
-   
-    $module = 'Aktiviere deinen Account';            // Modulname für Absenderbezeichnung
-    // Optional: POP3 vor SMTP verwenden (kann auch weggelassen werden, Standard ist true)
+    $subject = str_replace($vars, $repl, $languageService->get('mail_subject'));
+    $message = str_replace($vars, $repl, $languageService->get('mail_text'));
+
+    $module = $languageService->get('mail_from_module');
+
     $sendmail = Email::sendEmail($admin_email, $module, $email, $subject, $message);
 
     if (is_array($sendmail) && isset($sendmail['result']) && $sendmail['result'] === 'done') {
-        $_SESSION['success_message'] = $languageService->module['register_successful'];
+        $_SESSION['success_message'] = $languageService->get('register_successful');
         $registrierung_erfolgreich = true;
     } else {
-        $_SESSION['error_message'] = 'Fehler beim Senden der Bestätigungs-E-Mail.';
+        $_SESSION['error_message'] = $languageService->get('mail_failed');
     }
 
     $isreg = true;
@@ -181,26 +156,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 $errormessage = '';
 $successmessage = '';
 
-// Meldung aus Session übernehmen, falls vorhanden
 if (isset($_SESSION['error_message'])) {
-    $errormessage = '' . $_SESSION['error_message'] . '';
+    $errormessage = $_SESSION['error_message'];
     unset($_SESSION['error_message']);
 }
 
 if (isset($_SESSION['success_message'])) {
-    $successmessage = '' . $_SESSION['success_message'] . '';
+    $successmessage = $_SESSION['success_message'];
     unset($_SESSION['success_message']);
 }
-
 
 if ($registrierung_erfolgreich) {
     $isreg = true;
 }
-// Vorbefüllung aus Session
+
 $values = $_SESSION['formdata'] ?? [];
 unset($_SESSION['formdata']);
-
-$registration_successful = !$isreg;  // <<< Diese Zeile hinzufügen
 
 $data_array = [
     'csrf_token' => htmlspecialchars($csrf_token),
@@ -212,48 +183,43 @@ $data_array = [
     'email' => $email,
     'password_repeat' => $password_repeat,
     'recaptcha_site_key' => 'DEIN_SITE_KEY',
-    'reg_title' =>  $languageService->module['reg_title'],
-    'reg_info_text' =>  $languageService->module['reg_info_text'],
-    'login_link' => $languageService->module['login_link'],
-    'login_text' =>  $languageService->module['login_text'],
-    'mail' => $languageService->module['mail'],
-    'username' => $languageService->module['username'],
-    'password' => $languageService->module['password'],
-    'password_repeat' => $languageService->module['password_repeat'],
-    'email_address' => $languageService->module['email_address'],
-    'enter_your_email' => $languageService->module['enter_your_email'],
-    'enter_your_name' => $languageService->module['enter_your_name'],
-    'enter_password' => $languageService->module['enter_password'],
-    'enter_password_repeat' => $languageService->module['enter_password_repeat'],
-    'pass_text' => $languageService->module['pass_text'],
-    'register' => $languageService->module['register'],
-    'terms_of_use_text' => $languageService->module['terms_of_use_text'],
-    'terms_of_use' => $languageService->module['terms_of_use'],
+    'reg_title' => $languageService->get('reg_title'),
+    'reg_info_text' =>  $languageService->get('reg_info_text'),
+    'login_link' => $languageService->get('login_link'),
+    'login_text' =>  $languageService->get('login_text'),
+    'mail' => $languageService->get('mail'),
+    'username_label' => $languageService->get('username'),
+    'password_label' => $languageService->get('password'),
+    'password_repeat_label' => $languageService->get('password_repeat'),
+    'email_address' => $languageService->get('email_address'),
+    'enter_your_email' => $languageService->get('enter_your_email'),
+    'enter_your_name' => $languageService->get('enter_your_name'),
+    'enter_password' => $languageService->get('enter_password'),
+    'enter_password_repeat' => $languageService->get('enter_password_repeat'),
+    'pass_text' => $languageService->get('pass_text'),
+    'register' => $languageService->get('register'),
+    'terms_of_use_text' => $languageService->get('terms_of_use_text'),
+    'terms_of_use' => $languageService->get('terms_of_use'),
 ];
 
 echo $tpl->loadTemplate("register", "content", $data_array);
 
 ?>
-<!--<script src="https://www.google.com/recaptcha/api.js" async defer></script>-->
-
 <script>
 document.getElementById("password").addEventListener("input", function () {
     const strengthText = document.getElementById("passwordStrength");
     const val = this.value;
     let strength = 0;
 
-    // Stärkeprüfungen
-    if (val.length >= 8) strength++; // Mindestlänge
-    if (/[A-Z]/.test(val)) strength++; // Ein Großbuchstabe
-    if (/\d/.test(val)) strength++; // Eine Zahl
-    if (/[\W_]/.test(val)) strength++; // Ein Sonderzeichen
+    if (val.length >= 8) strength++;
+    if (/[A-Z]/.test(val)) strength++;
+    if (/\d/.test(val)) strength++;
+    if (/[\W_]/.test(val)) strength++;
 
-    // Stärkegrade und zugehörige Farben
     const levels = ["Sehr schwach", "Schwach", "Okay", "Stark"];
-    const colors = ["#f44336", "#ff9800", "#ffeb3b", "#4caf50"]; // Rot, Orange, Gelb, Grün
+    const colors = ["#f44336", "#ff9800", "#ffeb3b", "#4caf50"];
 
-    // Setze den Textinhalt und die Farbe basierend auf der Stärke
     strengthText.textContent = levels[strength - 1] || "";
-    strengthText.style.color = colors[strength - 1] || "#f44336"; // Standardfarbe ist Rot
+    strengthText.style.color = colors[strength - 1] || "#f44336";
 });
 </script>

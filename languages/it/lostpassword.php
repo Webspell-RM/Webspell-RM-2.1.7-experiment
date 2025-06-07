@@ -1,25 +1,37 @@
 <?php
 
 $language_array = array(
+    'title' => 'Password dimenticata',
+    'forgotten_your_password' => 'Hai dimenticato la password?',
+    'info1' => 'Nessun problema!',
+    'info2' => 'Inserisci semplicemente l’indirizzo email con cui ti sei registrato.',
+    'info3' => 'Nessun problema. Puoi facilmente reimpostare la tua password e sceglierne una nuova. <br>Inserisci il tuo indirizzo email verificato nel modulo sopra e riceverai un’email di conferma. <br>Questa email conterrà una nuova password con cui potrai effettuare il login. Nel tuo profilo potrai poi impostare una nuova password personale.',
+    'your_email' => 'Il tuo indirizzo email',
+    'get_password' => 'Richiedi nuova password',
+    'return_to' => 'Torna al',
+    'login' => 'Login',
+    'email-address' => 'Indirizzo email',
+    'reg' => 'Registrati',
+    'need_account' => 'Non hai un account?',
+    'lastpassword_txt' => '<b>Hai dimenticato la password?</b>
+Nessun problema. Puoi facilmente reimpostare la tua password e sceglierne una nuova. Inserisci il tuo indirizzo email verificato nel modulo sopra e riceverai un’email di conferma. In questa email riceverai una nuova password con cui potrai accedere. Nel tuo profilo potrai poi impostare una nuova password personale.',
+    'register_link' => 'Registrati ora',
+    'welcome_back' => 'Bentornato!',
+    'reg_text' => 'Non hai ancora un account? Registrati gratuitamente ora.',
+    'login_text' => 'Inserisci i tuoi dati per accedere.',
+    'csrf_failed' => 'Controllo di sicurezza CSRF fallito. Riprova.',
 
-    'title'                    => 'Password persa',
-    'email_failed'             => 'Si è verificato un problema durante l\'invio della posta. Si prega di contattare il webmaster.',
-    'email_subject'            => 'Il tuo account per %pagetitle%',
-    'email_text'               => 'Il tuo account per %pagetitle%<p> ATTENZIONE la tua password è stata modificata</p><p>Il tuo indirizzo email: %email% <br>La tua nuova password: %new_password%</p><p>Buon divertimento sul nostro sito web </p>%homepage_url%',
-    'get_password'             => 'Ottenere una nuova Password',
-    'lost_password'            => 'password persa',
-    'no_mail_given'            => '<blockquote>Non hai inserito alcun indirizzo Email.</blockquote></blockquote>',
-    'no_user_found'            => '<blockquote>Nessun Utente trovato!</blockquote>',
-    'successful'               => '<blockquote>Il tuo account è stato trovato<br><br>Riceverai un\'E-mail con i dati del tuo Account in pochi secondi.<br><br>&#8226; <a href="index.php?site=login">Login</a></blockquote>',    
-    'your_email'               => 'La tua E-Mail',
-    'forgotten_your_password'  => 'Hai dimenticato la Password?',
-    'info3'                    => 'Non c\'è problema. Puoi facilmente reimpostare la password per averna una nuova.<br>Inserisci il tuo indirizzo E-mail qui sopra, e riceverai un\' E-mail di conferma.<br>In questa E-mail riceverai una password appena generata con cui puoi effettuare l\'accesso. Nel tuo profilo, puoi definire la tua nuova password.<br><br>',
-    'email-address'            => 'Indirizzo Email',
-    'return_to'                => 'Ritorna al ',
-    'login'                    => 'Log in',
-    'info1'                    => 'Non preoccuparti,',
-    'info2'                    => 'Siamo qui per aiutarti a recuperare la tua password.',
-    'reg'                      => 'Registrazione',
-    'need_account'             => 'Hai bisogno di un account?'
+    // Email contents
+    'email_subject' => 'Nuova password per %pagetitle%',
+    'email_text' => 'Il tuo account su %pagetitle%<p>ATTENZIONE: La tua password è stata reimpostata con successo!</p><p>Il tuo indirizzo email: %email%<br>La tua nuova password: %new_password%</p><p>Per favore, cambia la password dopo il login nel tuo profilo.</p><p>Buona navigazione sul nostro sito!</p>%homepage_url%',
+
+    // Success / Error
+    'successful' => '✅ Nuova password inviata con successo.',
+    'email_failed' => '❌ Invio dell’email fallito.',
+    'no_user_found' => '❌ Nessun utente trovato con questo indirizzo email.',
+    'no_mail_given' => '❌ Inserisci un indirizzo email.',
+    'error_no_pepper' => '❌ Nessun pepper trovato nel database.',
+    'error_decrypt_pepper' => '❌ Errore durante la decrittazione del pepper.'
 );
+
 

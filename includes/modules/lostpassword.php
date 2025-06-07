@@ -7,7 +7,7 @@ use webspell\LoginSecurity;
 use webspell\Email;
 use webspell\LanguageService;
 
-global $languageService;
+global $_database,$languageService;
 
 $lang = $languageService->detectLanguage();
 $languageService->readModule('lostpassword');

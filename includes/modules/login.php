@@ -2,161 +2,124 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-$message = '';
 
 use webspell\LoginSecurity;
+use webspell\Email;
 use webspell\LanguageService;
 
 global $languageService;
 
 $lang = $languageService->detectLanguage();
-$languageService->readModule('login');
+$languageService->readModule('lostpassword');
 
-global $_database;
+// Einstellungen laden
+$settings_result = safe_query("SELECT * FROM `settings`");
+$settings = mysqli_fetch_assoc($settings_result);
 
+$hp_title = $settings['title'] ?? 'Webspell-RM';
+$hp_url = $settings['hpurl'] ?? 'https://' . $_SERVER['HTTP_HOST'];
+$admin_email = $settings['adminemail'] ?? 'info@' . $_SERVER['HTTP_HOST'];
 
-$ip = $_SERVER['REMOTE_ADDR'];
-$message_zusatz = '';
-$isIpBanned = '';
-$is_active ='';
-$is_locked = '';
+$success = isset($_GET['success']) && $_GET['success'] == 1;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // E-Mail und Passwort-Hash aus POST-Daten holen und sicherstellen, dass die E-Mail gültig ist
-    $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
-    $password_hash = $_POST['password_hash'];
+if ($success && isset($_SESSION['success_message'])) {
+    $data_array = [
+        'title' => $languageService->get('title'),
+        'forgotten_your_password' => $languageService->get('forgotten_your_password'),
+        'message' => '<div class="alert alert-success" role="alert">' . $_SESSION['success_message'] . '</div>',
+        'return_to_login' => '<a href="index.php?site=login" class="btn btn-success">' . $languageService->get('login') . '</a>'
+    ];
+    unset($_SESSION['success_message']);
+    echo $tpl->loadTemplate("lostpassword", "success", $data_array, 'theme');
+    return;
+}
 
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $_SESSION['error_message'] = "❌ Ungültige E-Mail-Adresse.";
-        header("Location: index.php?site=login");
-        exit;
-    }
+if (isset($_POST['submit'])) {
+    $email = LoginSecurity::escape(trim($_POST['email']));
 
-    // Login-Versuch prüfen
-    $ip = $_SERVER['REMOTE_ADDR'];  // IP-Adresse des Benutzers
-    $loginResult = LoginSecurity::verifyLogin($email, $password_hash, $ip, $is_active, $is_locked);
+    if ($email !== '') {
+        $result = safe_query("SELECT * FROM `users` WHERE `email` = '" . $email . "'");
 
-    if ($loginResult['success']) {
-        // Überprüfen, ob die IP des Benutzers gebannt ist
-        if (LoginSecurity::isIpBanned($ip)) {
-            $message = '<div class="alert alert-danger" role="alert">Diese IP-Adresse wurde gesperrt. Bitte kontaktiere den Support.</div>';
-            $isIpBanned = true;
-        }
+        if (mysqli_num_rows($result)) {
+            $ds = mysqli_fetch_array($result);
 
-        // Hole die Benutzerdaten aus der Datenbank
-        $stmt = $_database->prepare("SELECT userID, username, email, is_locked FROM users WHERE email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $user = $result->fetch_assoc();
+            if (!empty($ds['password_pepper'])) {
+                $new_password_plain = LoginSecurity::generateReadablePassword();
+                $pepper_plain = LoginSecurity::decryptPepper($ds['password_pepper']);
 
-        // Überprüfen, ob der Benutzer gefunden wurde und ob er gesperrt ist
-        if ($user) {
-            if (!empty($user['is_locked']) && (int)$user['is_locked'] === 1) {
-                // Konto ist gesperrt
-                $message = '<div class="alert alert-danger" role="alert"><b>Dein Konto wurde vorübergehend gesperrt.</b><br><br>
-                Dies kann z.B. aufgrund von Regelverstößen, verdächtigen Aktivitäten oder auf deinen eigenen Wunsch hin erfolgt sein.<br><br>
-                Bitte wende dich an unser Support-Team, um weitere Details zu erfahren oder eine Entsperrung zu beantragen.</div>';
-                $isIpBanned = true;
+                if ($pepper_plain === false || $pepper_plain === '') {
+                    $_SESSION['error_message'] = $languageService->get('error_decrypt_pepper');
+                    header("Location: index.php?site=lostpassword");
+                    exit;
+                }
+
+                $new_password_hash = password_hash($new_password_plain . $ds['email'] . $pepper_plain, PASSWORD_BCRYPT);
+
+                safe_query("
+                    UPDATE `users`
+                    SET `password_hash` = '" . LoginSecurity::escape($new_password_hash) . "'
+                    WHERE `userID` = '" . intval($ds['userID']) . "'
+                ");
+
+                $vars = ['%pagetitle%', '%email%', '%new_password%', '%homepage_url%'];
+                $repl = [$hp_title, $ds['email'], $new_password_plain, $hp_url];
+
+                $subject = str_replace($vars, $repl, $languageService->get('email_subject'));
+                $message = str_replace($vars, $repl, $languageService->get('email_text'));
+
+                $sendmail = Email::sendEmail($admin_email, 'Passwort zurückgesetzt', $ds['email'], $subject, $message);
+
+                if ($sendmail['result'] === 'fail') {
+                    $_SESSION['error_message'] = $languageService->get('email_failed') . ' ' . $sendmail['error'];
+                    header("Location: index.php?site=lostpassword");
+                    exit;
+                } else {
+                    $_SESSION['success_message'] = str_replace($vars, $repl, $languageService->get('successful'));
+                    header("Location: index.php?site=lostpassword&success=1");
+                    exit;
+                }
             } else {
-                // Benutzerinformationen in der Session speichern
-                $_SESSION['userID'] = (int)$user['userID'];
-                $_SESSION['username'] = $user['username'];
-                $_SESSION['email'] = $user['email'];
-
-                // Session speichern
-                LoginSecurity::saveSession($user['userID']);
-                // Jetzt lastlogin setzen
-                $now = date('Y-m-d H:i:s');
-                $updateStmt = $_database->prepare("UPDATE users SET lastlogin = ? WHERE userID = ?");
-                $updateStmt->bind_param("si", $now, $user['userID']);
-                $updateStmt->execute();
-
-                $_SESSION['success_message'] = "Login erfolgreich!";
-                header("Location: index.php");
+                $_SESSION['error_message'] = $languageService->get('error_no_pepper');
+                header("Location: index.php?site=lostpassword");
                 exit;
             }
         } else {
-            // Benutzer nicht gefunden
-            $message = '<div class="alert alert-danger" role="alert">Benutzer nicht gefunden oder falsche E-Mail-Adresse.</div>';
+            $_SESSION['error_message'] = $languageService->get('no_user_found');
+            header("Location: index.php?site=lostpassword");
+            exit;
         }
-
     } else {
-        // Benutzerfehlerbehandlung bei Login
-        $userID = null;
-        $stmt = $_database->prepare("SELECT userID, is_active FROM users WHERE email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $res = $stmt->get_result();
-
-        if ($res && $res->num_rows > 0) {
-            $row = $res->fetch_assoc();
-            $userID = (int)$row['userID'];
-
-            // Überprüfen, ob der Benutzer aktiviert ist
-            if ((int)$row['is_active'] === 0) {
-                $message = '<div class="alert alert-danger" role="alert">Dein Konto wurde noch nicht aktiviert. Bitte überprüfe deine E-Mail.</div>';
-                $isIpBanned = true;
-            } else {
-                // Account ist aktiv -> Login prüfen oder fehlgeschlagenen Login behandeln
-                if (!LoginSecurity::isEmailOrIpBanned($email, $ip)) {
-                    LoginSecurity::trackFailedLogin($userID, $email, $ip);
-                    
-                    // Anzahl der Versuche abrufen
-                    $failCount = LoginSecurity::getFailCount($ip, $email);
-                    if ($failCount >= 5) {
-                        LoginSecurity::banIp($ip, $userID, "Zu viele Fehlversuche", $email);
-                        $_SESSION['error_message'] = "Zu viele Fehlversuche – Deine IP wurde gesperrt.";
-                    } else {
-                        $_SESSION['error_message'] = "Falsche E-Mail oder Passwort. Versuche: $failCount / 5";
-                    }
-                } else {
-                    $message = '<div class="alert alert-danger" role="alert">Diese E-Mail-Adresse oder IP wurde gesperrt. Bitte kontaktiere den Support.</div>';
-                    $isIpBanned = true;
-                }
-            }
-        } else {
-            $message = '<div class="alert alert-danger" role="alert">Benutzer nicht gefunden oder falsche E-Mail.</div>';
-            $isIpBanned = true;
-        }
-    }
-
-    // Überprüfen, ob eine Fehlermeldung in der Session gesetzt wurde
-    if (isset($_SESSION['error_message'])) {
-        $message = '<div class="alert alert-danger" role="alert">' . $_SESSION['error_message'] . '</div>';
-        unset($_SESSION['error_message']);
+        $_SESSION['error_message'] = $languageService->get('no_mail_given');
+        header("Location: index.php?site=lostpassword");
+        exit;
     }
 }
 
-// Prüfen, ob E-Mail gebannt ist
-if (!empty($email)) {
-    $isEmailBanned = LoginSecurity::isEmailBanned($ip, $email);
-} else {
-    $isEmailBanned = false; // Falls keine E-Mail gesetzt ist, kein Bann überprüfen
+$message = '';
+if (isset($_SESSION['error_message'])) {
+    $message = '<div class="alert alert-danger" role="alert">' . $_SESSION['error_message'] . '</div>';
+    unset($_SESSION['error_message']);
 }
 
-if ($isEmailBanned) {
-    $message = '<div class="alert alert-danger" role="alert">Diese E-Mail-Adresse wurde gesperrt. Bitte kontaktiere den Support.</div>';
-    $isIpBanned = true; // Setze hier isIpBanned auf true, da die E-Mail ebenfalls gesperrt ist
-}
-
-// Formular anzeigen
 $data_array = [
-    'login_headline' => $languageService->module['title'],    
-    'email_label' => $languageService->module['email_label'],
-    'your_email' => $languageService->module['your_email'],
-    'pass_label' => $languageService->module['pass_label'],
-    'your_pass' => $languageService->module['your_pass'],
-    'remember_me' => $languageService->module['remember_me'],
-    'login_button' => $languageService->module['login_button'],
-    'register_link' => $languageService->module['register_link'],
-    'lostpassword_link' => $languageService->module['lostpassword_link'],
+    'title' => $languageService->get('title'),
+    'forgotten_your_password' => $languageService->get('forgotten_your_password'),
+    'info1' => $languageService->get('info1'),
+    'info2' => $languageService->get('info2'),
+    'info3' => $languageService->get('info3'),
+    'your_email' => $languageService->get('your_email'),
+    'get_password' => $languageService->get('get_password'),
+    'return_to' => $languageService->get('return_to'),
+    'login' => $languageService->get('login'),
+    'email-address' => $languageService->get('email-address'),
+    'reg' => $languageService->get('reg'),
+    'need_account' => $languageService->get('need_account'),
     'error_message' => $message,
-    'message_zusatz' => $message_zusatz,
-    'isIpBanned' => $isIpBanned,
-    'welcome_back' =>  $languageService->module['welcome_back'],
-    'reg_text' =>  $languageService->module['reg_text'],
-    'login_text' =>  $languageService->module['login_text'],
+    'lastpassword_txt' => $languageService->get('lastpassword_txt'),
+    'register_link' => $languageService->get('register_link'),
+    'welcome_back' => $languageService->get('welcome_back'),
+    'reg_text' => $languageService->get('reg_text'),
+    'login_text' => $languageService->get('login_text'),
 ];
 
-echo $tpl->loadTemplate("login", "content", $data_array, 'theme');
+echo $tpl->loadTemplate("lostpassword", "content_area", $data_array, 'theme');
