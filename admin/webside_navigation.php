@@ -216,7 +216,7 @@ if ($action == "add") {
   <div class="mb-3 row">
     <div class="col-sm-offset-2 col-sm-10">
       <input type="hidden" name="captcha_hash" value="' . $hash . '">
-      <input class="btn btn-success" type="submit" name="save" value="' . $languageService->get('add_link') . '">
+      <input class="btn btn-success btn-sm" type="submit" name="save" value="' . $languageService->get('add_link') . '">
     </div>
   </div>
    
@@ -284,7 +284,7 @@ if ($action == "add") {
 <div class="mb-3 row">
     <div class="col-sm-offset-2 col-sm-10">
       <input type="hidden" name="captcha_hash" value="'.$hash.'" /><input type="hidden" name="snavID" value="' . $snavID . '">
-      <input class="btn btn-warning" type="submit" name="saveedit" value="' . $languageService->get('edit_link') . '">
+      <input class="btn btn-warning btn-sm" type="submit" name="saveedit" value="' . $languageService->get('edit_link') . '">
     </div>
   </div>
 
@@ -342,7 +342,7 @@ if ($action == "add") {
 <div class="mb-3 row">
     <div class="col-sm-offset-2 col-sm-10">
       <input type="hidden" name="captcha_hash" value="'.$hash.'" />
-      <input class="btn btn-success" type="submit" name="savecat" value="' . $languageService->get('add_category') . '">
+      <input class="btn btn-success btn-sm" type="submit" name="savecat" value="' . $languageService->get('add_category') . '">
     </div>
   </div>
 
@@ -413,7 +413,7 @@ if ($action == "add") {
   <div class="mb-3 row">
     <div class="col-sm-offset-2 col-sm-10">
       <input type="hidden" name="captcha_hash" value="'.$hash.'" /><br>
-      <input class="btn btn-warning" type="submit" name="saveeditcat" value="' . $languageService->get('edit_category') . '">
+      <input class="btn btn-warning btn-sm" type="submit" name="saveeditcat" value="' . $languageService->get('edit_category') . '">
     </div>
   </div>
     </form></div></div>';
@@ -423,7 +423,7 @@ if ($action == "add") {
         <div class="card-header">
             ' . $languageService->get('dashnavi') . '
         </div>
-           <nav aria-label="breadcrumb">
+ <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
     <li class="breadcrumb-item active" aria-current="page">' . $languageService->get('dashnavi') . '</li>
   </ol>
@@ -431,29 +431,22 @@ if ($action == "add") {
 
 <div class="card-body">';
 
-$thergebnis = safe_query("SELECT * FROM settings_themes WHERE active = '1'");
-    $db = mysqli_fetch_array($thergebnis);
-  echo'<div class="mb-12 row">
-    <label class="col-md-1 control-label"><h4>Template:</h4></label>
-    <div class="col-md-3"><div class="alert alert-info" role="alert" style="padding: 0px 5px">
-<h4>'.$themes_modulname.'</h4></div>
-    </div>
-  </div>
-<hr>
 
-<div class="form-group row">
+  echo'
+
+<div class="mb-3 row">
     <label class="col-md-1 control-label">' . $languageService->get('options') . ':</label>
     <div class="col-md-8">
-      <a class="btn btn-primary" href="admincenter.php?site=webside_navigation&amp;action=addcat" class="input">' .
+      <a class="btn btn-primary btn-sm" href="admincenter.php?site=webside_navigation&amp;action=addcat" class="input">' .
         $languageService->get('new_category') . '</a>
-        <a class="btn btn-primary" href="admincenter.php?site=webside_navigation&amp;action=add" class="input">' .
+        <a class="btn btn-primary btn-sm" href="admincenter.php?site=webside_navigation&amp;action=add" class="input">' .
         $languageService->get('new_link') . '</a>
     </div>
   </div>';
 
     echo '<form method="post" action="admincenter.php?site=webside_navigation">
-    <table class="table">
-<thead>
+    <table class="table table-bordered table-striped align-middle">
+            <thead class="table-light">
     <tr>
       <th width="25%" ><b>' . $languageService->get('name') . '</b></th>
       <th width="25%" ><b>Link</b></th>
@@ -487,11 +480,11 @@ $CAPCLASS = new \webspell\Captcha;
         } else {
             $sort = $list;
             $catactions =
-                '<a class="btn btn-warning" href="admincenter.php?site=webside_navigation&amp;action=editcat&amp;mnavID=' . $ds[ 'mnavID' ] .
+                '<a class="btn btn-warning btn-sm" href="admincenter.php?site=webside_navigation&amp;action=editcat&amp;mnavID=' . $ds[ 'mnavID' ] .
                 '" class="input">' . $languageService->get('edit') . '</a>
                 
 <!-- Button trigger modal -->
-    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirm-delete" data-href="admincenter.php?site=webside_navigation&amp;delcat=true&amp;mnavID=' . $ds[ 'mnavID' ] .
+    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirm-delete" data-href="admincenter.php?site=webside_navigation&amp;delcat=true&amp;mnavID=' . $ds[ 'mnavID' ] .
                 '&amp;captcha_hash=' . $hash . '">
     ' . $languageService->get('delete') . '
     </button>
@@ -503,13 +496,13 @@ $CAPCLASS = new \webspell\Captcha;
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">' . $languageService->get('dashnavi') . '</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="' . $languageService->get('close') . '"></button>
+        <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal" aria-label="' . $languageService->get('close') . '"></button>
       </div>
       <div class="modal-body"><p>' . $languageService->get('really_delete_category') . '</p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">' . $languageService->get('close') . '</button>
-        <a class="btn btn-danger btn-ok">' . $languageService->get('delete') . '</a>
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">' . $languageService->get('close') . '</button>
+        <a class="btn btn-danger btn-ok btn-sm">' . $languageService->get('delete') . '</a>
       </div>
     </div>
   </div>
@@ -527,7 +520,7 @@ $CAPCLASS = new \webspell\Captcha;
                 $data_array['$name'] = $ds['name'];
         }
 
-        echo '<tr class="table-secondary">
+        echo '<tr class="table-info">
             <td width="25%" class="td_head admin-nav-modal"><b>' . $name . '</b></td>
             <td width="25%" class="td_head admin-nav-modal"><small>' . $ds[ 'url' ] . '</small></td>
             <td width="25%" td_head">' . $catactions . '</td>
@@ -577,10 +570,10 @@ $CAPCLASS = new \webspell\Captcha;
                     <td class="' . $td . '"><small>' . $db[ 'url' ] . '</small></td>
                    
                    <td class="' . $td . '">
-<a href="admincenter.php?site=webside_navigation&amp;action=edit&amp;snavID=' . $db[ 'snavID' ] .'" class="btn btn-warning">' . $languageService->get('edit') . '</a>
+<a href="admincenter.php?site=webside_navigation&amp;action=edit&amp;snavID=' . $db[ 'snavID' ] .'" class="btn btn-warning btn-sm">' . $languageService->get('edit') . '</a>
 
 <!-- Button trigger modal -->
-    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirm-delete" data-href="admincenter.php?site=webside_navigation&amp;delete=true&amp;snavID=' . $db[ 'snavID' ] . '&amp;captcha_hash=' . $hash . '">
+    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirm-delete" data-href="admincenter.php?site=webside_navigation&amp;delete=true&amp;snavID=' . $db[ 'snavID' ] . '&amp;captcha_hash=' . $hash . '">
     ' . $languageService->get('delete') . '
     </button>
     <!-- Button trigger modal END-->
@@ -591,13 +584,13 @@ $CAPCLASS = new \webspell\Captcha;
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">' . $languageService->get('dashnavi') . '</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="' . $languageService->get('close') . '"></button>
+        <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal" aria-label="' . $languageService->get('close') . '"></button>
       </div>
       <div class="modal-body"><p>' . $languageService->get('really_delete_link') . '</p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">' . $languageService->get('close') . '</button>
-        <a class="btn btn-danger btn-ok">' . $languageService->get('delete') . '</a>
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">' . $languageService->get('close') . '</button>
+        <a class="btn btn-danger btn-ok btn-sm">' . $languageService->get('delete') . '</a>
       </div>
     </div>
   </div>
@@ -616,7 +609,7 @@ $CAPCLASS = new \webspell\Captcha;
     }
     
     echo '	<tr>
-                <td class="td_head" colspan="4" align="right"><input class="btn btn-primary" type="submit" name="sortieren" value="' .
+                <td class="td_head" colspan="4" align="right"><input class="btn btn-primary btn-sm" type="submit" name="sortieren" value="' .
         $languageService->get('to_sort') . '"></td>
             </tr>
         </table>
@@ -647,7 +640,7 @@ $CAPCLASS = new \webspell\Captcha;
               '.$languageService->get('info').'
         </div>
         <br />
-              <p><a class="btn btn-warning" href="/admin/admincenter.php?site=settings_templates">'.$languageService->get('activate_template').'</a></p>
+              <p><a class="btn btn-warning btn-sm" href="/admin/admincenter.php?site=settings_templates">'.$languageService->get('activate_template').'</a></p>
               <br />
             </center>
         </div>

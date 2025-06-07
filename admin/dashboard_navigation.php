@@ -714,8 +714,8 @@ echo '<div class="card">
         </div>';
 
 echo '<form method="post" action="admincenter.php?site=dashboard_navigation">
-    <table class="table">
-        <thead>
+    <table class="table table-bordered table-striped align-middle">
+            <thead class="table-light">
             <tr>
                 <th width="25%"><b>' . $languageService->get('name') . '</b></th>
                 <th width="25%"><b>Link</b></th>
@@ -805,7 +805,7 @@ while ($ds = mysqli_fetch_array($ergebnis)) {
         $name = $translate->getTextByLanguage($name);
     }
 
-    echo '<tr class="table-secondary">
+    echo '<tr class="table-info">
         <td width="25%" class="td_head admin-nav-modal"><b>' . $name . '</b></td>
         <td width="25%" class="td_head admin-nav-modal"></td>
         <td width="20%" class="td_head"></td>
