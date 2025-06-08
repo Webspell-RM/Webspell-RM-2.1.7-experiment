@@ -952,10 +952,10 @@ if (!isset($languageService) || !$languageService instanceof LanguageService) {
                 break; 
                 
             case 'clan_rules':
-                $clanRulesID = isset($parameters['clan_rulesID']) ? (int)$parameters['clan_rulesID'] : 0;
+                $clanRulesID = isset($parameters['id']) ? (int)$parameters['id'] : 0;
 
                 $get = mysqli_fetch_assoc(
-                    safe_query("SELECT title, text FROM plugins_clan_rules WHERE clan_rulesID = " . $clanRulesID . " AND displayed = '1'")
+                    safe_query("SELECT title, text FROM plugins_clan_rules WHERE id = " . $clanRulesID . " AND displayed = '1'")
                 );
 
                 $returned_title[] = [$languageService->get('clan_rules')];

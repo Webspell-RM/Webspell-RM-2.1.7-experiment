@@ -36,33 +36,6 @@ if ($userID === 0) {
     exit();
 }
 
-/*
-// Prüfe, ob 'username' per GET gesetzt ist (vom Router)
-if (isset($_GET['username']) && !empty($_GET['username'])) {
-    $username = $_GET['username'];
-
-    // UserID aus Username ermitteln
-    $stmt = $_database->prepare("SELECT userID FROM users WHERE username = ?");
-    $stmt->bind_param('s', $username);
-    $stmt->execute();
-    $stmt->bind_result($userID);
-    if (!$stmt->fetch()) {
-        // Username nicht gefunden => 404
-        http_response_code(404);
-        echo "Benutzer nicht gefunden.";
-        exit();
-    }
-    $stmt->close();
-} else {
-    // Fallback, z.B. userID aus GET oder Session
-    $userID = isset($_GET['userID']) ? (int)$_GET['userID'] : ($_SESSION['userID'] ?? 0);
-    if ($userID === 0) {
-        echo "Kein Benutzer angegeben.";
-        exit();
-    }
-}
-*/
-
 // user_profile laden
 $sql_users = "SELECT * FROM users WHERE userID = $userID LIMIT 1";
 $result_users = $_database->query($sql_users);
@@ -72,27 +45,22 @@ if (!$result_users || $result_users->num_rows === 0) {
 }
 $user_users = $result_users->fetch_assoc();
 
-// user_profile laden
 $sql_profiles = "SELECT * FROM user_profiles WHERE userID = $userID LIMIT 1";
 $result_profiles = $_database->query($sql_profiles);
 $user_profile = $result_profiles->fetch_assoc();
 
-// user_stats laden
 $sql_stats = "SELECT * FROM user_stats WHERE userID = $userID LIMIT 1";
 $result_stats = $_database->query($sql_stats);
 $user_stats = $result_stats && $result_stats->num_rows > 0 ? $result_stats->fetch_assoc() : [];
 
-// user_settings laden (optional, falls benötigt)
 $sql_settings = "SELECT * FROM user_settings WHERE userID = $userID LIMIT 1";
 $result_settings = $_database->query($sql_settings);
 $user_settings = $result_settings && $result_settings->num_rows > 0 ? $result_settings->fetch_assoc() : [];
 
-// user_socials laden
 $sql_socials = "SELECT * FROM user_socials WHERE userID = $userID LIMIT 1";
 $result_socials = $_database->query($sql_socials);
 $user_socials = $result_socials && $result_socials->num_rows > 0 ? $result_socials->fetch_assoc() : [];
 
-// user + role + lastlogin + registerdate laden
 $sql = "
     SELECT 
         u.username,
@@ -109,8 +77,6 @@ $result = $_database->query($sql);
 if ($result && $row = $result->fetch_assoc()) {
     $username = htmlspecialchars($row['username']);
     $role_name = !empty($row['role_name']) ? htmlspecialchars($row['role_name']) : 'Benutzer';
-
-    // registerdate und lastlogin aus users holen
     $register_date_raw = $row['registerdate'];
     $last_visit_raw = $row['lastlogin'];
 } else {
@@ -120,7 +86,6 @@ if ($result && $row = $result->fetch_assoc()) {
     $last_visit_raw = null;
 }
 
-// Werte vorbereiten und sichern
 $firstname    = htmlspecialchars($user_profile['firstname'] ?? 'Nicht angegeben');
 $lastname     = htmlspecialchars($user_profile['lastname'] ?? 'Nicht angegeben');
 $about_me     = !empty($user_profile['about_me']) ? htmlspecialchars($user_profile['about_me']) : 'Keine Informationen über mich.';
@@ -132,69 +97,33 @@ $last_visit = (!empty($last_visit_raw) && strtotime($last_visit_raw) !== false)
     ? date('d.m.Y H:i', strtotime($last_visit_raw))
     : 'Nie besucht';
 
-
-
 $avatar_url = !empty($user_profile['avatar']) ? '' . $user_profile['avatar'] : "/images/avatars/noavatar.png";
-
 $location = !empty($user_profile['location']) ? htmlspecialchars($user_profile['location']) : 'Unbekannter Ort';
 $age = !empty($user_profile['age']) ? (int)$user_profile['age'] : 'Nicht angegeben';
 $sexuality = !empty($user_profile['sexuality']) ? htmlspecialchars($user_profile['sexuality']) : 'Nicht angegeben';
 
+$articles  = getUserCount('plugins_articles', 'userID', $userID);
+$comments  = getUserCount('comments', 'userID', $userID);
+$rules     = getUserCount('plugins_rules', 'userID', $userID);
+$links     = getUserCount('plugins_links', 'userID', $userID);
+$partners  = getUserCount('plugins_partners', 'userID', $userID);
+$sponsors  = getUserCount('plugins_sponsors', 'userID', $userID);
+$points    = ($articles * 10) + ($comments * 2) + ($rules * 5) + ($links * 5) + ($partners * 5) + ($sponsors * 5);
 
-
-
-$artikel     = getUserCount('plugins_articles', 'userID', $userID); // z. B. 5
-$kommentare  = getUserCount('comments', 'userID', $userID);         // z. B. 20
-$clanregeln  = getUserCount('plugins_clan_rules', 'userID', $userID); // z. B. 2
-
-$points = ($artikel * 10) + ($kommentare * 2) + ($clanregeln * 5);
-
-
-
-function getUserCount($table, $col, $userID) {
-    global $_database;
-    $stmt = $_database->prepare("SELECT COUNT(*) FROM `$table` WHERE `$col` = ?");
-    $stmt->bind_param('i', $userID);
-    $stmt->execute();
-    $stmt->bind_result($count);
-    $stmt->fetch();
-    $stmt->close();
-    return $count;
-}
-
-
-
-
-
-
-
-
-
-
-#$points = isset($user_stats['points']) ? (int)$user_stats['points'] : 0;
-// Levelberechnung
 $level = floor($points / 100);
 $level_percent = $points % 100;
 
-// Social URLs
 $facebook_url  = !empty($user_socials['facebook']) ? htmlspecialchars($user_socials['facebook']) : '#';
 $twitter_url   = !empty($user_socials['twitter']) ? htmlspecialchars($user_socials['twitter']) : '#';
 $instagram_url = !empty($user_socials['instagram']) ? htmlspecialchars($user_socials['instagram']) : '#';
 $website_url   = !empty($user_socials['website']) ? htmlspecialchars($user_socials['website']) : '#';
 $github_url    = !empty($user_socials['github']) ? htmlspecialchars($user_socials['github']) : '#';
 
-// Prüfen ob eigenes Profil
 $is_own_profile = ($_SESSION['userID'] ?? 0) === $userID;
-#$edit_button = $is_own_profile ? '<a href="/edit_profile/' . urlencode($username) . '" class="btn btn-outline-primary mt-3"><i class="fas fa-user-edit"></i> Profil bearbeiten</a>' : '';
-$edit_button = $is_own_profile ? '<a href="/edit_profile" class="btn btn-outline-primary mt-3"><i class="fas fa-user-edit"></i> Profil bearbeiten</a>' : '';
+$edit_button = $is_own_profile ? '<a href="/edit_profile" class="btn btn-outline-primary mt-3"><i class="fas fa-user-edit"></i>' . $languageService->get('edit_profile_button') . '</a>' : '';
 
-// Banned-Status (aktuell leer, ggf. anpassen)
-#$isLocked = isset($user_users['is_locked']) ? (int)$user_users['is_locked'] : 0;
 $isLocked = isset($user_users['is_locked']) && (int)$user_users['is_locked'] === 1;
-#$isLocked = $user_users['is_locked'] === 1;
 
-
-// Letzte Aktivität und Online-Zeit berechnen
 $last_activity = (!empty($last_visit_raw) && strtotime($last_visit_raw) !== false) ? strtotime($last_visit_raw) : 0;
 $current_time = time();
 
@@ -207,7 +136,6 @@ if ($last_activity > 0 && $last_activity <= $current_time) {
     $online_time = "Keine Aktivität";
 }
 
-// Anzahl der Logins aus user_sessions
 $stmt = $_database->prepare("SELECT COUNT(*) AS login_count FROM user_sessions WHERE userID = ?");
 $stmt->bind_param('i', $userID);
 $stmt->execute();
@@ -216,22 +144,32 @@ $stmt->fetch();
 $stmt->close();
 $logins = $logins_count > 0 ? $logins_count : 0;
 
-// Dummy-Daten für Beiträge & Kommentare (kannst du ersetzen)
-#$posts    = 42;
-#$comments = 103;
-
-
-
+function getUserCount($table, $col, $userID) {
+    global $_database;
+    if (!tableExists($table)) {
+        return 0;
+    }
+    $stmt = $_database->prepare("SELECT COUNT(*) FROM `$table` WHERE `$col` = ?");
+    $stmt->bind_param('i', $userID);
+    $stmt->execute();
+    $stmt->bind_result($count);
+    $stmt->fetch();
+    $stmt->close();
+    return $count;
+}
 
 $post_type = '';
+$userID = $_GET['userID'] ?? 0;
 
 $tables = [
     ['table' => 'plugins_articles', 'user_col' => 'userID', 'type' => 'Artikel'],
     ['table' => 'comments', 'user_col' => 'userID', 'type' => 'Kommentare'],
     ['table' => 'plugins_clan_rules', 'user_col' => 'userID', 'type' => 'Clan-Regeln'],
+    ['table' => 'plugins_partners', 'user_col' => 'userID', 'type' => 'Partners'],
+    ['table' => 'plugins_sponsors', 'user_col' => 'userID', 'type' => 'Sponsoren'],
+    ['table' => 'plugins_links', 'user_col' => 'userID', 'type' => 'Links'],
 ];
 
-$userID = $_GET['userID'] ?? 0;
 $counts = [];
 
 foreach ($tables as $table) {
@@ -239,33 +177,14 @@ foreach ($tables as $table) {
     $userCol = $table['user_col'];
     $type = $table['type'] ?? ucfirst($tableName);
 
-    
-        $stmt = $_database->prepare("SELECT COUNT(*) FROM `$tableName` WHERE `$userCol` = ?");
-        if ($stmt) {
-            $stmt->bind_param('i', $userID);
-            $stmt->execute();
-            $stmt->bind_result($count);
-            $stmt->fetch();
-            $stmt->close();
-
-            $counts[$type] = $count;
-        } else {
-            $counts[$type] = 0;
-        }
-    
+    if (tableExists($tableName)) {
+        $counts[$type] = getUserCount($tableName, $userCol, $userID);
+    }
 }
 
 foreach ($counts as $type => $count) {
     $post_type .= "<p>$type: $count</p>";
 }
-
-
-
-
-
-
-
-
 
 if ($isLocked == 1 ) {
     $isrowLocked='<div class="alert alert-danger d-flex align-items-center" role="alert">
@@ -296,11 +215,43 @@ $data_array = [
     'user_level'      => $level,
     'level_progress'  => $level_percent,
     'edit_button'     => $edit_button,
-    #'comments_count'  => $comments,
-    'user_posts'      => $post_type, // Ersetzen mit dynamischen Posts, wenn möglich    
-    #'posts_count'     => $posts,
+    'user_posts'      => $post_type,
     'isLocked'        => $isrowLocked ?? '',
+
+    // Sprachvariablen ergänzen
+    'lang_alt_profile_picture' => $languageService->get('alt_profile_picture'),
+    'lang_points'              => $languageService->get('points'),
+    'lang_level'               => $languageService->get('level'),
+    'lang_tooltip_github'      => $languageService->get('tooltip_github'),
+    'lang_tooltip_twitter'     => $languageService->get('tooltip_twitter'),
+    'lang_tooltip_instagram'   => $languageService->get('tooltip_instagram'),
+    'lang_tooltip_website'     => $languageService->get('tooltip_website'),
+
+    'lang_tab_about'           => $languageService->get('tab_about'),
+    'lang_tab_posts'           => $languageService->get('tab_posts'),
+    'lang_tab_activity'        => $languageService->get('tab_activity'),
+
+    'lang_about_title'         => $languageService->get('about_title'),
+    'lang_about_firstname'     => $languageService->get('about_firstname'),
+    'lang_about_lastname'      => $languageService->get('about_lastname'),
+    'lang_about_age'           => $languageService->get('about_age'),
+    'lang_about_location'      => $languageService->get('about_location'),
+    'lang_about_sexuality'     => $languageService->get('about_sexuality'),
+    'lang_registered_since'    => $languageService->get('registered_since'),
+    'lang_about_text'          => $languageService->get('about_text'),
+    'lang_about_signature'     => $languageService->get('about_signature'),
+
+    'lang_latest_posts'        => $languageService->get('latest_posts'),
+    'lang_latest_activity'     => $languageService->get('latest_activity'),
 ];
+
 
 // Ausgabe Template
 echo $tpl->loadTemplate("profile", "content", $data_array);
+
+// Neue Ausgabe-Zeile mit Fallback-Check
+#if ($tpl->templateExists("profile", "content")) {
+#    echo $tpl->loadTemplate("profile", "content", $data_array);
+#} else {
+#    echo "<div class='alert alert-warning'>Profil-Template nicht gefunden.</div>";
+#}

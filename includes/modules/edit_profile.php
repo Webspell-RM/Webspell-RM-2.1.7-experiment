@@ -165,20 +165,47 @@ if ($row = $result->fetch_assoc()) {
 }
 
 $data_array = [
-    'userID' => $userID,
-    'firstname' => $firstname,
-    'lastname' => $lastname,
-    'location' => $location,
-    'about_me' => $about_me,
-    'avatar_url' => $avatar,
-    'twitter' => $twitter,
-    'facebook' => $facebook,
-    'website' => $website,
-    'github' => $github,
-    'instagram' => $instagram,
-    'dark_mode_checked' => $dark_mode ? 'checked' : '',
-    'email_notifications_checked' => $email_notifications ? 'checked' : '',
+    // Userdaten mit htmlspecialchars zur Sicherheit
+    'userID' => htmlspecialchars($userID ?? ''),
+    'firstname' => htmlspecialchars($firstname ?? ($user['firstname'] ?? '')),
+    'lastname' => htmlspecialchars($lastname ?? ($user['lastname'] ?? '')),
+    'location' => htmlspecialchars($location ?? ($user['location'] ?? '')),
+    'about_me' => htmlspecialchars($about_me ?? ($user['about_me'] ?? '')),
+    
+    // Avatar-URL: wenn $avatar gesetzt, sonst aus $user['avatar']
+    'avatar_url' => !empty($avatar) ? $avatar : (!empty($user['avatar']) ? '/path/to/avatars/' . htmlspecialchars($user['avatar']) : ''),
+    
+    // Social Media
+    'twitter' => htmlspecialchars($twitter ?? ($user['twitter'] ?? '')),
+    'facebook' => htmlspecialchars($facebook ?? ($user['facebook'] ?? '')),
+    'website' => htmlspecialchars($website ?? ($user['website'] ?? '')),
+    'github' => htmlspecialchars($github ?? ($user['github'] ?? '')),
+    'instagram' => htmlspecialchars($instagram ?? ($user['instagram'] ?? '')),
+    
+    // Settings Checkbox (checked oder leer)
+    'dark_mode_checked' => !empty($dark_mode) ? 'checked' : (!empty($user['dark_mode']) ? 'checked' : ''),
+    'email_notifications_checked' => !empty($email_notifications) ? 'checked' : (!empty($user['email_notifications']) ? 'checked' : ''),
+    
+    // Sprachstrings
+    'edit_profile_title' => $languageService->get('edit_profile_title'),
+    'label_firstname' => $languageService->get('label_firstname'),
+    'label_lastname' => $languageService->get('label_lastname'),
+    'label_location' => $languageService->get('label_location'),
+    'label_about_me' => $languageService->get('label_about_me'),
+    'label_avatar' => $languageService->get('label_avatar'),
+    'title_social_networks' => $languageService->get('title_social_networks'),
+    'label_twitter' => $languageService->get('label_twitter'),
+    'label_facebook' => $languageService->get('label_facebook'),
+    'label_website' => $languageService->get('label_website'),
+    'label_github' => $languageService->get('label_github'),
+    'label_instagram' => $languageService->get('label_instagram'),
+    'title_settings' => $languageService->get('title_settings'),
+    'label_dark_mode' => $languageService->get('label_dark_mode'),
+    'label_email_notifications' => $languageService->get('label_email_notifications'),
+    'btn_save' => $languageService->get('btn_save'),
 ];
+
+
 
 echo $tpl->loadTemplate("edit_profiles", "content", $data_array, 'theme');
 ?>
