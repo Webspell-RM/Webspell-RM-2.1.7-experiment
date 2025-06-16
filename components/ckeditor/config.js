@@ -16,6 +16,7 @@ CKEDITOR.editorConfig = function(config) {
     config.removePlugins = 'elementspath'; // Entfernt das unnötige "Elementspath"-Plugin
     config.resize_enabled = false; // Deaktiviert das Größenänderungs-Feature im Editor
     config.FormatOutput = false ;
+    config.extraPlugins = 'langtags';   
 };
 
 //CKEDITOR.replace('message');
